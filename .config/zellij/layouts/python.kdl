@@ -1,0 +1,19 @@
+layout {
+    pane split_direction="vertical" {
+        pane
+        pane split_direction="horizontal" {
+            pane
+            pane
+        }
+    }
+    pane size=1 borderless=true {
+        plugin location="zellij:compact-bar"
+    }
+}
+keybinds {
+    shared {
+        bind "Alt 1" { Run "git" "status"; }
+        bind "Alt 2" { Run "git" "diff"; }
+        bind "Alt 3" { Run "exa" "--color" "always"; }
+    }
+}

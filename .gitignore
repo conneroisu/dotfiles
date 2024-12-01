@@ -1,0 +1,19 @@
+.oh-my-zsh/
+.oh-my-zsh
+.config/obsidian/Cache/*
+.config/obsidian/Cache/
+.config/obsidian/Code Cache/
+.config/obsidian/Code Cache/*
+.config/obsidian/IndexedDB/
+.config/obsidian/IndexedDB/*
+.config/obsidian/GPUCache/
+.config/obsidian/GPUCache/*
+.config/obsidian/DawnCache/
+.config/obsidian/DawnCache/*
+.config/obsidian/Service Worker/CacheStorage/
+.config/obsidian/Service Worker/CacheStorage/*
+.config/obsidian/Service Worker/ScriptCache/
+.config/obsidian/Service Worker/ScriptCache/*
+.vscode-insiders/
+HyprPanel/
+./.config/ags/

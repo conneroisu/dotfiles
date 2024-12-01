@@ -1,0 +1,6 @@
+customCommands:
+  - key: <c-a>
+    description: Pick AI commit
+    command: gita
+    context: files
+    subprocess: true

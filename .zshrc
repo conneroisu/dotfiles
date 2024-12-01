@@ -36,7 +36,7 @@ setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_sa
 alias cf='cd $(find . -type d -path "./.git" -prune -o -type d -print | fzf --reverse --preview "ls --color {}")'
 alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 
-eval "$(goenv init -)"
+eval "$(goenv init -)" # TODO: Remove this once moved to nixos
 eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh --cmd cd)"

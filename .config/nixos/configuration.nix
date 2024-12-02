@@ -25,7 +25,6 @@
   # Enable networking
   networking.networkmanager.enable = true;
 
-  # Set your time zone.
   time.timeZone = "America/Chicago";
 
   # Select internationalisation properties.
@@ -77,7 +76,12 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
-  programs.hyprland.withUWSM = true;
+  
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+  };
+  
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.connerohnesorge = {
     isNormalUser = true;
@@ -87,7 +91,7 @@
       "wheel"
     ];
     packages = with pkgs; [
-      #  thunderbird
+      hyprland
     ];
   };
   environment.variables.EDITOR = "nvim";
@@ -108,6 +112,8 @@
     git
     xz
     unzip
+    gnumake
+    cmake
 
     # CLIs
     turso-cli
@@ -147,6 +153,8 @@
     pfetch-rs
     aquamarine
     xfce.thunar
+    wl-clipboard
+    kitty
 
     nix-ld
     nixfmt-rfc-style

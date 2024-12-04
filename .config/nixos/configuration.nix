@@ -157,6 +157,7 @@
     xfce.thunar
     wl-clipboard
     kitty
+    xdg-desktop-portal-hyprland
 
     nix-ld
     nixfmt-rfc-style

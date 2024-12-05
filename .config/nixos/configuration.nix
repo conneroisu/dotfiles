@@ -7,24 +7,24 @@
   inputs,
   ...
 }: {
-  imports = [
-    # Include the results of the hardware scan.
-    ./hardware-configuration.nix
-  ];
+imports = [
+  # Include the results of the hardware scan.
+  ./hardware-configuration.nix
+];
 
-  # Bootloader.
-  boot = {
-    plymouth.enable = true;
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
-    blacklistedKernelModules = ["nvidia" "nvidia_uvm" "nvidia_drm" "nvidia_modeset"];
-  };
+# Bootloader.
+boot = {
+  plymouth.enable = true;
+  loader.systemd-boot.enable = true;
+  loader.efi.canTouchEfiVariables = true;
+  blacklistedKernelModules = ["nvidia" "nvidia_uvm" "nvidia_drm" "nvidia_modeset"];
+};
 
-  networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  nixpkgs.config.allowUnfree = true;
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
+networking.hostName = "nixos"; # Define your hostname.
+# networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+nixpkgs.config.allowUnfree = true;
+# Configure network proxy if necessary
+# networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
@@ -283,6 +283,7 @@
     jdt-language-server
     lexical
     actionlint
+    verible
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

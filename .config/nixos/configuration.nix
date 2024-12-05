@@ -129,6 +129,7 @@
     nix-index
     nix-prefetch-git
     jq
+    yq
     delta
     tree
     fd
@@ -139,8 +140,10 @@
     hyprpaper
     uwsm
     hyprwayland-scanner
+    wlsunset
     pipewire
     grimblast
+    grim
     xdg-desktop-portal-hyprland
     uv
     rofi
@@ -177,23 +180,20 @@
     gcc
     starship
     nodejs
-    shellcheck
-    vhdl-ls
     obsidian
     stow
     ghdl
     emacs
-    nil
     nvc
     atuin
     pkgconf
+    delve
     zoxide
     sad
-    lua-language-server
+    shfmt
 
     elixir
     ocaml
-    ocamlPackages.ocaml-lsp
     dune_3
     basedpyright
 
@@ -238,6 +238,23 @@
         pip
       ]
     ))
+
+    # LSP
+    lua-language-server
+    nil
+    ocamlPackages.ocaml-lsp
+    shellcheck
+    vhdl-ls
+    ltex-ls
+    hyprls
+    zls
+    sqls
+    yaml-language-server
+    svelte-language-server
+    matlab-language-server
+    cmake-language-server
+    astro-language-server
+    jdt-language-server
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

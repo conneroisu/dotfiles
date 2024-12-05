@@ -28,6 +28,7 @@
         pkgs = (nixpkgs.legacyPackages.${system}.extend fabric-overlay).extend unstable-overlay;
       in
       {
+      programs.zsh.enable = true;
         formatter = pkgs.nixfmt-rfc-style;
         devShells.default = pkgs.callPackage ./shell.nix { inherit pkgs; };
         packages.default = pkgs.callPackage ./derivation.nix { inherit (pkgs) lib python3Packages; };

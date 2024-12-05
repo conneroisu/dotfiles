@@ -49,9 +49,9 @@
       stdenv.mkDerivation = {
         nativeBuildInputs = [ pkgs.pkg-config ];
         buildInputs = with pkgs; [
-        dbus
-        webkitgtk
-        openssl
+          dbus
+          webkitgtk
+          openssl
         ];
         dbus = pkgs.dbus;
       };

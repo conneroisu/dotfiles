@@ -1,4 +1,6 @@
 .oh-my-zsh/
+.DS_Store
+._*
 .oh-my-zsh
 .config/obsidian/Cache/*
 .config/obsidian/Cache/

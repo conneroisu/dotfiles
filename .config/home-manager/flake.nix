@@ -18,21 +18,21 @@
     }:
     {
       homeConfigurations = {
-        "connerohnesorge@nixos" = home-manager.lib.homeManagerConfiguration ({
+        "connerohnesorge@nixos" = home-manager.lib.homeManagerConfiguration {
           modules = [ ./linux.nix ./home.nix ];
           pkgs = import nixpkgs {
             system = "x86_64-linux";
             config.allowUnfree = true;
           };
-        });
+        };
 
-        "connerohnesorge@your-mac" = home-manager.lib.homeManagerConfiguration ({
+        "connerohnesorge@your-mac" = home-manager.lib.homeManagerConfiguration {
           modules = [ import ./darwin.nix ./home.nix ];
           pkgs = import nixpkgs {
             system = "aarch64-darwin";
             config.allowUnfree = true;
           };
-        });
+        };
       };
     };
 }

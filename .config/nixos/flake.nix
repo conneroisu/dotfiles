@@ -3,12 +3,12 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.11";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nix-ld = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:Mic92/nix-ld";
     };
     zen-browser.url = "github:conneroisu/zen-browser-flake";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
   outputs = {

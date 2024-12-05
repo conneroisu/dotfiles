@@ -1,6 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   config,
   pkgs,
@@ -54,18 +51,20 @@
 
   virtualisation.docker.enable = true;
   hardware = {
-    bluetooth.enable = true;
-    bluetooth.powerOnBoot = true;
-    graphics = {
+    bluetooth = {
       enable = true;
-      extraPackages = with pkgs; [
-        mesa
-        mesa.drivers
-      ];
-    };
-    bluetooth.settings = {
-      General = {
-        Experimental = true;
+      powerOnBoot = true;
+      graphics = {
+        enable = true;
+        extraPackages = with pkgs; [
+          mesa
+          mesa.drivers
+        ];
+      };
+      settings = {
+        General = {
+          Experimental = true;
+        };
       };
     };
     nvidia = {
@@ -135,14 +134,12 @@
     cmake
     go-task
     neovim
-    
-    
+
+    waybar
     hyprland
     tlp
-    gnome-bluetooth
-    blueberry
-
     swappy
+
     nerdfonts
     unzip
     turso-cli
@@ -211,6 +208,7 @@
     rustup
     gcc
     starship
+
     nodejs
     obsidian
     stow
@@ -278,6 +276,7 @@
     # LSP
     lua-language-server
     nixd
+    statix
     ocamlPackages.ocaml-lsp
     shellcheck
     vhdl-ls

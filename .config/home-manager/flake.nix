@@ -26,7 +26,7 @@
           };
         };
 
-        "connerohnesorge@your-mac" = home-manager.lib.homeManagerConfiguration {
+        "connerohnesorge@Conners-MacBook-Air.local" = home-manager.lib.homeManagerConfiguration {
           modules = [ import ./darwin.nix ./home.nix ];
           pkgs = import nixpkgs {
             system = "aarch64-darwin";

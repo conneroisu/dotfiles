@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nix-ld = {
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,6 +15,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-unstable,
     nix-ld,
     nixos-hardware,
     ...
@@ -21,16 +23,19 @@
     system = "x86_64-linux";
     pkgs = import nixpkgs {
       inherit system;
-      config = {
-        allowUnfree = true;
-      };
+      config = {allowUnfree = true;};
     };
+    unstable-pkgs = import nixpkgs-unstable {
+      inherit system;
+      config = {allowUnfree = true;};
+    };
+    inputs = self.inputs;
+    dbus = pkgs.dbus;
   in {
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit system;
-          inputs = self.inputs;
+          inherit system pkgs unstable-pkgs inputs;
         };
         modules = [
           ./configuration.nix
@@ -42,13 +47,13 @@
       };
     };
     stdenv.mkDerivation = {
+      inherit dbus;
       nativeBuildInputs = [pkgs.pkg-config];
       buildInputs = with pkgs; [
         dbus
         webkitgtk
         openssl
       ];
-      dbus = pkgs.dbus;
     };
   };
 }

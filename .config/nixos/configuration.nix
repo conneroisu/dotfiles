@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  unstable-pkgs,
   inputs,
   ...
 }: {
@@ -55,7 +56,7 @@
       enable = true;
       extraPackages = with pkgs; [
         mesa
-          mesa.drivers
+        mesa.drivers
       ];
     };
     bluetooth = {
@@ -226,6 +227,8 @@
 
     elixir
     ocaml
+    go
+
     dune_3
     basedpyright
 
@@ -286,6 +289,14 @@
     lexical
     actionlint
     verible
+    revive
+    golangci-lint-langserver
+    golangci-lint
+    templ
+    gomodifytags
+    gotests
+    impl
+    unstable-pkgs.iferr
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

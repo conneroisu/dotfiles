@@ -6,6 +6,8 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 export BUN_INSTALL="$HOME/.bun"
 export FLYCTL_INSTALL="/home/connerohnesorge/.fly"
+export GOPATH="$HOME/.go"
+export PATH="$HOME/.cargo/bin:$PATH"
 path=(
     $HOME/.cargo/bin
     $BUN_INSTALL/bin
@@ -23,7 +25,7 @@ path=(
 export PATH=$PATH:path
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
@@ -36,7 +38,7 @@ setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_sa
 alias cf='cd $(find . -type d -path "./.git" -prune -o -type d -print | fzf --reverse --preview "ls --color {}")'
 alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 
-eval "$(goenv init -)" # TODO: Remove this once moved to nixos
+# eval "$(goenv init -)" # TODO: Remove this once moved to nixos
 eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh --cmd cd)"

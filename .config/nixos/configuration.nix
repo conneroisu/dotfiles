@@ -119,6 +119,7 @@
     hyprland = {
       enable = true;
       withUWSM = true;
+      xwayland.enable = true;
     };
   };
 
@@ -134,9 +135,14 @@
     cmake
     go-task
     neovim
+    
+    
     hyprland
+    tlp
+    gnome-bluetooth
+    blueberry
 
-swappy
+    swappy
     nerdfonts
     unzip
     turso-cli

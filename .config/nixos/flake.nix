@@ -8,7 +8,7 @@
       url = "github:Mic92/nix-ld";
     };
     zen-browser.url = "github:conneroisu/zen-browser-flake";
-  nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
   outputs = {

@@ -49,13 +49,19 @@
   };
 
   # Let Home Manager install and manage itself.
-  programs={
-  home-manager.enable = true;
-  zed-editor.enable = true;
-  git = {
-    enable = true;
-    userName = "connerohnesorge";
-    userEmail = "conneroisu@outlook.com";
-  };
+  programs = {
+    home-manager.enable = true;
+    zed-editor.enable = true;
+    git = {
+      enable = true;
+      lfs.enable = true;
+      userName = "connerohnesorge";
+      userEmail = "conneroisu@outlook.com";
+      extraConfig = {
+        push = {
+          autoSetupRemote = true;
+        };
+      };
+    };
   };
 }

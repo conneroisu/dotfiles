@@ -8,12 +8,14 @@
       url = "github:Mic92/nix-ld";
     };
     zen-browser.url = "github:conneroisu/zen-browser-flake";
+  nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
   outputs = {
     self,
     nixpkgs,
     nix-ld,
+    nixos-hardware,
     ...
   }: let
     system = "x86_64-linux";
@@ -33,16 +35,10 @@
         modules = [
           ./configuration.nix
           nix-ld.nixosModules.nix-ld
+          nixos-hardware.nixosModules.dell-xps-15-9510
 
           {programs.nix-ld.dev.enable = true;}
         ];
-      };
-    };
-    templates = {
-      bar = {
-        path = ./my-bar-project;
-        description = "Example of a Fabric bar using Nix";
-        welcomeText = '''';
       };
     };
     stdenv.mkDerivation = {

@@ -7,24 +7,24 @@
   inputs,
   ...
 }: {
-imports = [
-  # Include the results of the hardware scan.
-  ./hardware-configuration.nix
-];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
-# Bootloader.
-boot = {
-  plymouth.enable = true;
-  loader.systemd-boot.enable = true;
-  loader.efi.canTouchEfiVariables = true;
-  blacklistedKernelModules = ["nvidia" "nvidia_uvm" "nvidia_drm" "nvidia_modeset"];
-};
+  # Bootloader.
+  boot = {
+    plymouth.enable = true;
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+    blacklistedKernelModules = ["nvidia" "nvidia_uvm" "nvidia_drm" "nvidia_modeset"];
+  };
 
-networking.hostName = "nixos"; # Define your hostname.
-# networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-nixpkgs.config.allowUnfree = true;
-# Configure network proxy if necessary
-# networking.proxy.default = "http://user:password@proxy:port/";
+  networking.hostName = "nixos"; # Define your hostname.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  nixpkgs.config.allowUnfree = true;
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
@@ -74,27 +74,29 @@ nixpkgs.config.allowUnfree = true;
       open = true;
     };
   };
-  services.xserver = {
-    enable = true;
-    videoDrivers = ["nvidia"];
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
-    xkb = {
-      layout = "us";
-      variant = "";
+  services = {
+    xserver = {
+      enable = true;
+      videoDrivers = ["nvidia"];
+      displayManager.gdm.enable = true;
+      desktopManager.gnome.enable = true;
+      xkb = {
+        layout = "us";
+        variant = "";
+      };
+    };
+
+    # Enable CUPS to print documents.
+    printing.enable = true;
+
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
     };
   };
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
   security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -197,6 +199,7 @@ nixpkgs.config.allowUnfree = true;
     docker
     docker-compose
     docker-compose-language-service
+    quartus-prime-lite
     ollama
     tailwindcss
     rustup
@@ -224,7 +227,8 @@ nixpkgs.config.allowUnfree = true;
     basedpyright
 
     pkg-config
-    python312 (python312.withPackages (
+    python312
+    (python312.withPackages (
       ps:
         with ps; [
           numpy

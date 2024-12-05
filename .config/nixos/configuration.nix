@@ -142,6 +142,7 @@
     pipewire
     grimblast
     xdg-desktop-portal-hyprland
+    uv
     rofi
     gpu-screen-recorder
     matugen
@@ -151,7 +152,10 @@
     xfce.thunar
     wl-clipboard
     kitty
-    
+    gtk3
+    gtk-layer-shell
+    gobject-introspection
+
     nix-ld
     vmware-horizon-client
     nixfmt-rfc-style
@@ -173,6 +177,7 @@
     gcc
     starship
     nodejs
+    shellcheck
     vhdl-ls
     obsidian
     stow
@@ -181,41 +186,58 @@
     nil
     nvc
     atuin
+    pkgconf
     zoxide
-    
+    sad
+    lua-language-server
+
     elixir
     ocaml
     ocamlPackages.ocaml-lsp
     dune_3
+    basedpyright
+
     python312
-    python312Packages.numpy
-    python312Packages.pandas
-    python312Packages.scipy
-    python312Packages.matplotlib
-    python312Packages.scikitlearn
-    python312Packages.torch
-    python312Packages.opencv4
-    python312Packages.torchvision
-    python312Packages.selenium
-    python312Packages.pyarrow
-    python312Packages.psycopg
-    python312Packages.mysqlclient
-    python312Packages.ollama
-    python312Packages.black
-    python312Packages.requests
-    python312Packages.uvicorn
-    python312Packages.flask
-    python312Packages.fastapi
-    python312Packages.django
-    python312Packages.gunicorn
-    python312Packages.pydantic
-    python312Packages.mypy
-    python312Packages.torchdiffeq
-    python312Packages.beautifulsoup4
-    python312Packages.pillow
-    python312Packages.gym
-    python312Packages.pypdf
-    python312Packages.pytest
+    pkg-config
+    (python312.withPackages (
+      ps: with ps; [
+        numpy
+        pandas
+        scipy
+        matplotlib
+        scikitlearn
+        torch
+        opencv4
+        torchvision
+        selenium
+        pyarrow
+        psycopg
+        mysqlclient
+        ollama
+        black
+        requests
+        uvicorn
+        flask
+        fastapi
+        django
+        gunicorn
+        pydantic
+        mypy
+        torchdiffeq
+        beautifulsoup4
+        pillow
+        gym
+        pypdf
+        click
+        pytest
+        cairo
+        pycairo
+        loguru
+        pygobject3
+        pygobject-stubs
+        pip
+      ]
+    ))
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

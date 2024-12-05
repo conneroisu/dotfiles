@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fabric-nix-example"
+version = "0.0.1"
+requires-python = ">= 3.11"
+authors = [
+]
+maintainers = [
+]
+description = "Fabric using Nix example."
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[project.scripts]
+bar = "bar.bar:main"
+
+[tool.setuptools]
+packages = ["bar"]
+
+[tool.setuptools.package-data]
+bar = ["bar.css"]
+
+

@@ -113,6 +113,7 @@
     hyprland
     unzip
     turso-cli
+    spotify
     flyctl
     gh
     google-chrome

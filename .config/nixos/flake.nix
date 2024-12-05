@@ -1,20 +1,30 @@
 {
-  description = "A simple NixOS flake";
+  description = "Conner Ohnesorge's NixOS Config";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.11";
   };
 
   outputs =
-    { self, nixpkgs, ... }@inputs:
+    { self, nixpkgs }:
+
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
+      };
+    in
     {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          # Import the previous configuration.nix we used,
-          # so the old configuration file still takes effect
-          ./configuration.nix
-        ];
+      nixosConfigurations = {
+        nixos = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit system; };
+          modules = [
+            ./configuration.nix
+          ];
+        };
       };
     };
 }

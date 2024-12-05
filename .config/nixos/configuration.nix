@@ -1,18 +1,24 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot = {
+    plymouth.enable = true;
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+    blacklistedKernelModules = ["nvidia" "nvidia_uvm" "nvidia_drm" "nvidia_modeset"];
+  };
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -46,9 +52,16 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  virtualisation.docker.enable = true;
   hardware = {
+    bluetooth.enable = true;
+    bluetooth.powerOnBoot = true;
     graphics = {
       enable = true;
+      extraPackages = with pkgs; [
+        mesa
+        mesa.drivers
+      ];
     };
     bluetooth.settings = {
       General = {
@@ -56,12 +69,14 @@
       };
     };
     nvidia = {
-    modesetting.enable = true;
-      package = pkgs.nvidiaPackages.stable;
+      modesetting.enable = true;
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      open = true;
     };
   };
   services.xserver = {
     enable = true;
+    videoDrivers = ["nvidia"];
     displayManager.gdm.enable = true;
     desktopManager.gnome.enable = true;
     xkb = {
@@ -79,12 +94,6 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
@@ -103,9 +112,7 @@
     ];
   };
 
-  # Install firefox.
   programs = {
-    firefox.enable = true;
     zsh.enable = true;
     hyprland = {
       enable = true;
@@ -117,6 +124,8 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     pkgs.home-manager
+    google-chrome
+    inputs.zen-browser.packages."${system}".default
     wget
     git
     gnumake
@@ -124,12 +133,12 @@
     go-task
     neovim
     hyprland
+    nerdfonts
     unzip
     turso-cli
     spotify
     flyctl
     gh
-    google-chrome
     nh
     gcc
     zig
@@ -206,52 +215,54 @@
     lshw
     sad
     shfmt
+    nvidia-docker
+    nvtopPackages.nvidia
 
     elixir
     ocaml
     dune_3
     basedpyright
 
-    python312
     pkg-config
-    (python312.withPackages (
-      ps: with ps; [
-        numpy
-        pandas
-        scipy
-        matplotlib
-        scikitlearn
-        torch
-        opencv4
-        torchvision
-        selenium
-        pyarrow
-        psycopg
-        mysqlclient
-        ollama
-        black
-        requests
-        uvicorn
-        flask
-        fastapi
-        django
-        gunicorn
-        pydantic
-        mypy
-        torchdiffeq
-        beautifulsoup4
-        pillow
-        gym
-        pypdf
-        click
-        pytest
-        cairo
-        pycairo
-        loguru
-        pygobject3
-        pygobject-stubs
-        pip
-      ]
+    python312 (python312.withPackages (
+      ps:
+        with ps; [
+          numpy
+          pandas
+          scipy
+          matplotlib
+          scikitlearn
+          torch
+          opencv4
+          torchvision
+          selenium
+          pyarrow
+          psycopg
+          mysqlclient
+          ollama
+          black
+          requests
+          uvicorn
+          flask
+          fastapi
+          django
+          gunicorn
+          pydantic
+          mypy
+          torchdiffeq
+          beautifulsoup4
+          pillow
+          gym
+          pypdf
+          click
+          pytest
+          cairo
+          pycairo
+          loguru
+          pygobject3
+          pygobject-stubs
+          pip
+        ]
     ))
 
     # LSP
@@ -271,6 +282,7 @@
     astro-language-server
     jdt-language-server
     lexical
+    actionlint
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -299,5 +311,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
-
 }

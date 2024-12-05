@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "nix-ld": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1733143273,
+        "narHash": "sha256-pVogdQb09YrbVyFrzadfF1fseT6W2We4lNKRvWPPHsY=",
+        "owner": "Mic92",
+        "repo": "nix-ld",
+        "rev": "1e17dfe486a0c4dc245f5177a7328930b8392b34",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "repo": "nix-ld",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1733261153,
@@ -16,9 +36,45 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1727348695,
+        "narHash": "sha256-J+PeFKSDV+pHL7ukkfpVzCOO7mBSrrpJ3svwBFABbhI=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "1925c603f17fc89f4c8f6bf6f631a802ad85d784",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nix-ld": "nix-ld",
+        "nixpkgs": "nixpkgs",
+        "zen-browser": "zen-browser"
+      }
+    },
+    "zen-browser": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1733402832,
+        "narHash": "sha256-vuSJm4w1a+ujMW9grXBmR9wKeLTaRKu7fu7WwueqATo=",
+        "owner": "conneroisu",
+        "repo": "zen-browser-flake",
+        "rev": "5dd6479dc882ff95ef4f03c0991656760a92f8a1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "conneroisu",
+        "repo": "zen-browser-flake",
+        "type": "github"
       }
     }
   },

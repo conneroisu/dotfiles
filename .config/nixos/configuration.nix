@@ -139,8 +139,11 @@
     hyprcursor
     hyprkeys
     hyprpaper
-    uwsm
+    hyprsunset
     hyprwayland-scanner
+    hyprutils
+    xdg-desktop-portal-hyprland
+    uwsm
     tlp
     swappy
 
@@ -165,14 +168,11 @@
     yq
     delta
     tree
-    hyprutils
     dunst
-    wlsunset
     pipewire
     grimblast
     grim
     slurp
-    xdg-desktop-portal-hyprland
     uv
     rofi
     gpu-screen-recorder
@@ -261,13 +261,7 @@
           pillow
           gym
           pypdf
-          click
           pytest
-          cairo
-          pycairo
-          loguru
-          pygobject3
-          pygobject-stubs
           pip
         ]
     ))

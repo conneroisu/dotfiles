@@ -51,16 +51,16 @@
 
   virtualisation.docker.enable = true;
   hardware = {
+    graphics = {
+      enable = true;
+      extraPackages = with pkgs; [
+        mesa
+          mesa.drivers
+      ];
+    };
     bluetooth = {
       enable = true;
       powerOnBoot = true;
-      graphics = {
-        enable = true;
-        extraPackages = with pkgs; [
-          mesa
-          mesa.drivers
-        ];
-      };
       settings = {
         General = {
           Experimental = true;
@@ -135,8 +135,12 @@
     go-task
     neovim
 
-    waybar
     hyprland
+    hyprcursor
+    hyprkeys
+    hyprpaper
+    uwsm
+    hyprwayland-scanner
     tlp
     swappy
 
@@ -163,11 +167,6 @@
     tree
     hyprutils
     dunst
-    hyprcursor
-    hyprkeys
-    hyprpaper
-    uwsm
-    hyprwayland-scanner
     wlsunset
     pipewire
     grimblast

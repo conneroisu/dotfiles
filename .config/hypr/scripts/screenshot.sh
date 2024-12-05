@@ -12,3 +12,5 @@ NOTE="Screenshot @ $ppath"
 # Notify using hyprctl and dunstify
 # hyprctl notify 1 10000 0 "$NOTE"
 dunstify "$NOTE" -t 10000 -A "copy, Copy to clipboard" --action="copy:wl-copy $ppath"
+
+# grim -g "$(slurp)" - | swappy -f -

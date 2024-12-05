@@ -135,6 +135,8 @@
     go-task
     neovim
     hyprland
+
+swappy
     nerdfonts
     unzip
     turso-cli
@@ -167,6 +169,7 @@
     pipewire
     grimblast
     grim
+    slurp
     xdg-desktop-portal-hyprland
     uv
     rofi

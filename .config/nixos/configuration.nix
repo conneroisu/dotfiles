@@ -162,7 +162,6 @@
     nix-ld
     vmware-horizon-client
     nixfmt-rfc-style
-    lexical
     tealdeer
     sox
     zinit
@@ -175,6 +174,7 @@
     docker
     docker-compose
     docker-compose-language-service
+    ollama
     tailwindcss
     rustup
     gcc
@@ -255,6 +255,7 @@
     cmake-language-server
     astro-language-server
     jdt-language-server
+    lexical
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

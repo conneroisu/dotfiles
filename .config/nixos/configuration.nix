@@ -46,6 +46,20 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  hardware = {
+    graphics = {
+      enable = true;
+    };
+    bluetooth.settings = {
+      General = {
+        Experimental = true;
+      };
+    };
+    nvidia = {
+    modesetting.enable = true;
+      package = pkgs.nvidiaPackages.stable;
+    };
+  };
   services.xserver = {
     enable = true;
     displayManager.gdm.enable = true;
@@ -59,8 +73,6 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -109,6 +121,7 @@
     git
     gnumake
     cmake
+    go-task
     neovim
     hyprland
     unzip
@@ -161,8 +174,8 @@
     gobject-introspection
 
     nix-ld
+    alejandra
     vmware-horizon-client
-    nixfmt-rfc-style
     tealdeer
     sox
     zinit
@@ -190,6 +203,7 @@
     pkgconf
     delve
     zoxide
+    lshw
     sad
     shfmt
 
@@ -242,7 +256,7 @@
 
     # LSP
     lua-language-server
-    nil
+    nixd
     ocamlPackages.ocaml-lsp
     shellcheck
     vhdl-ls

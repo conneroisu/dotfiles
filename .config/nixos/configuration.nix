@@ -156,7 +156,6 @@
     yq
     delta
     tree
-    fd
     hyprutils
     dunst
     hyprcursor
@@ -175,7 +174,6 @@
     matugen
     brightnessctl
     pfetch-rs
-    aquamarine
     xfce.thunar
     wl-clipboard
     kitty

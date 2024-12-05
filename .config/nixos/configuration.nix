@@ -150,7 +150,6 @@
     ripgrep
     fzf
     fd
-    bat
     nix-index
     nix-prefetch-git
     jq

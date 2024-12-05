@@ -222,6 +222,7 @@
     elixir
     ocaml
     go
+    goreleaser
 
     dune_3
     basedpyright

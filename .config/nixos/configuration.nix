@@ -17,6 +17,10 @@
     blacklistedKernelModules = ["nvidia" "nvidia_uvm" "nvidia_drm" "nvidia_modeset"];
   };
 
+  xdg = {
+    enable = true;
+    extraPortals = ["xdg-desktop-portal-hyprland"];
+  };
   networking.hostName = "nixos"; # Define your hostname.
   networking.networkmanager.enable = true;
 

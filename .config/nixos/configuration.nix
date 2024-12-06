@@ -6,7 +6,6 @@
   ...
 }: {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 
@@ -19,10 +18,8 @@
   };
 
   networking.hostName = "nixos"; # Define your hostname.
-  nixpkgs.config.allowUnfree = true;
   networking.networkmanager.enable = true;
 
-  # Set your time zone.
   time.timeZone = "America/Chicago";
   nix.settings.experimental-features = [
     "nix-command"
@@ -53,19 +50,24 @@
         mesa.drivers
       ];
     };
-    bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-      settings = {
-        General = {
-          Experimental = true;
-        };
-      };
-    };
     nvidia = {
       modesetting.enable = true;
       package = config.boot.kernelPackages.nvidiaPackages.stable;
       open = true;
+    };
+    bluetooth = {
+      enable = true;
+      settings = {
+        General = {
+          Name = "Hello";
+          ControllerMode = "dual";
+          FastConnectable = "true";
+          Experimental = "true";
+        };
+        Policy = {
+          AutoEnable = "true";
+        };
+      };
     };
   };
   services = {
@@ -79,23 +81,19 @@
         variant = "";
       };
     };
-
-    # Enable CUPS to print documents.
     printing.enable = true;
-
     pipewire = {
       enable = true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
     };
+    libinput.enable = true;
   };
   security.rtkit.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.connerohnesorge = {
     isNormalUser = true;
     description = "Conner Ohnesorge";
@@ -120,6 +118,11 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    nix-index
+    nix-ld
+    nix-prefetch-git
+    alejandra
+    
     pkgs.home-manager
     google-chrome
     inputs.zen-browser.packages."${system}".default
@@ -140,7 +143,6 @@
     xdg-desktop-portal-hyprland
     uwsm
     tlp
-    swappy
 
     nerdfonts
     unzip
@@ -157,8 +159,6 @@
     ripgrep
     fzf
     fd
-    nix-index
-    nix-prefetch-git
     jq
     yq
     delta
@@ -181,8 +181,6 @@
     gtk-layer-shell
     gobject-introspection
 
-    nix-ld
-    alejandra
     vmware-horizon-client
     tealdeer
     sox
@@ -208,6 +206,7 @@
     stow
     ghdl
     emacs
+    htop
     nvc
     atuin
     pkgconf
@@ -261,6 +260,7 @@
           pypdf
           pytest
           pip
+          sympy
         ]
     ))
 

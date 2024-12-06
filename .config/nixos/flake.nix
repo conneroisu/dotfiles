@@ -29,8 +29,8 @@
       inherit system;
       config = {allowUnfree = true;};
     };
-    inputs = self.inputs;
-    dbus = pkgs.dbus;
+    inherit (self) inputs;
+    inherit (pkgs) dbus;
   in {
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {

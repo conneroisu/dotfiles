@@ -38,10 +38,9 @@
           inherit system pkgs unstable-pkgs inputs;
         };
         modules = [
+          nixos-hardware.nixosModules.dell-xps-15-9510
           ./configuration.nix
           nix-ld.nixosModules.nix-ld
-          nixos-hardware.nixosModules.dell-xps-15-9510
-
           {programs.nix-ld.dev.enable = true;}
         ];
       };

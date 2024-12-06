@@ -122,6 +122,7 @@
     nix-ld
     nix-prefetch-git
     alejandra
+    nh
     
     pkgs.home-manager
     google-chrome
@@ -143,6 +144,12 @@
     xdg-desktop-portal-hyprland
     uwsm
     tlp
+    dunst
+    pipewire
+    grimblast
+    grim
+    slurp
+    rofi
 
     nerdfonts
     unzip
@@ -150,26 +157,16 @@
     spotify
     flyctl
     gh
-    nh
     gcc
     zig
     llvm
     kitty
-    zsh
     ripgrep
-    fzf
-    fd
-    jq
-    yq
+    zsh
+    fzf fd jq yq
     delta
     tree
-    dunst
-    pipewire
-    grimblast
-    grim
-    slurp
     uv
-    rofi
     gpu-screen-recorder
     matugen
     brightnessctl
@@ -179,14 +176,13 @@
     kitty
     gtk3
     gtk-layer-shell
-    gobject-introspection
 
+    zellij
     vmware-horizon-client
     tealdeer
     sox
     zinit
     bat
-    zellij
     gum
     alsa-utils
     alsa-lib
@@ -206,14 +202,16 @@
     stow
     ghdl
     emacs
-    htop
     nvc
     atuin
-    pkgconf
-    delve
-    zoxide
+    
     lshw
+    htop
+    pkgconf
+    
+    zoxide
     sad
+    zed-editor
     shfmt
     nvidia-docker
     nvtopPackages.nvidia
@@ -292,6 +290,11 @@
     gotests
     impl
     unstable-pkgs.iferr
+
+    # Debuggers
+
+    delve
+    gdb
   ];
 
   # Leave this.

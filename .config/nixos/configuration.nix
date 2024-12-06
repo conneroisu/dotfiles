@@ -92,8 +92,6 @@
   };
   security.rtkit.enable = true;
 
-  # Enable touchpad support (enabled default in most desktopManager).
-
   users.users.connerohnesorge = {
     isNormalUser = true;
     description = "Conner Ohnesorge";
@@ -115,8 +113,6 @@
     };
   };
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
     nix-index
     nix-ld
@@ -133,6 +129,7 @@
     cmake
     go-task
     neovim
+    ripgrep
 
     hyprland
     hyprcursor
@@ -161,8 +158,9 @@
     zig
     llvm
     kitty
-    ripgrep
     zsh
+    zinit
+    atuin
     fzf fd jq yq
     delta
     tree
@@ -181,7 +179,6 @@
     vmware-horizon-client
     tealdeer
     sox
-    zinit
     bat
     gum
     alsa-utils
@@ -203,7 +200,6 @@
     ghdl
     emacs
     nvc
-    atuin
     
     lshw
     htop

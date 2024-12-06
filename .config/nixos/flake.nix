@@ -10,6 +10,7 @@
       url = "github:Mic92/nix-ld";
     };
     zen-browser.url = "github:conneroisu/zen-browser-flake";
+    stylix.url = "github:danth/stylix";
   };
 
   outputs = {
@@ -18,6 +19,7 @@
     nixpkgs-unstable,
     nix-ld,
     nixos-hardware,
+    stylix,
     ...
   }: let
     system = "x86_64-linux";
@@ -35,13 +37,14 @@
     nixosConfigurations = {
       nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit system pkgs unstable-pkgs inputs;
+          inherit system pkgs unstable-pkgs inputs stylix;
         };
         modules = [
           nixos-hardware.nixosModules.dell-xps-15-9510
           ./configuration.nix
           nix-ld.nixosModules.nix-ld
           {programs.nix-ld.dev.enable = true;}
+          inputs.stylix.nixosModules.stylix
         ];
       };
     };

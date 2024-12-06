@@ -119,7 +119,7 @@
     nix-prefetch-git
     alejandra
     nh
-    
+
     pkgs.home-manager
     google-chrome
     inputs.zen-browser.packages."${system}".default
@@ -161,7 +161,10 @@
     zsh
     zinit
     atuin
-    fzf fd jq yq
+    fzf
+    fd
+    jq
+    yq
     delta
     tree
     uv
@@ -180,6 +183,7 @@
     tealdeer
     sox
     bat
+    eza
     gum
     alsa-utils
     alsa-lib
@@ -200,11 +204,11 @@
     ghdl
     emacs
     nvc
-    
+
     lshw
     htop
     pkgconf
-    
+
     zoxide
     sad
     zed-editor
@@ -293,6 +297,10 @@
     gdb
   ];
 
+  stylix = {
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
+    image = ./../../../Pictures/klaus-desktop.jpg;
+  };
   # Leave this.
   system.stateVersion = "24.11";
 }

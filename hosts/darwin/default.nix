@@ -20,12 +20,11 @@ in
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
 
-  nix.settings.experimental-features = "nix-command flakes";
   # Setup user, packages, programs
   nix = {
     package = pkgs.nix;
     configureBuildUsers = true;
-
+    experimental-features = "nix-command flakes";
     settings = {
       trusted-users = [
         "@admin"

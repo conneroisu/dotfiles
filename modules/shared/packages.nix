@@ -1,20 +1,32 @@
-{ pkgs, unstable-pkgs, ... }:
+{
+  inputs,
+  pkgs,
+  unstable-pkgs,
+  ...
+}:
 
 [
-  pkgs.alejandra
-  pkgs.nix-prefetch-git
+  pkgs.home-manager
   pkgs.nerdfonts
   pkgs.spotify
-  pkgs.git
-  pkgs.go-task
   pkgs.ollama
-  pkgs.zsh
-  pkgs.gh
   pkgs.kitty
   pkgs.docker
   pkgs.docker-compose
+  pkgs.sqlite
+  pkgs.sqlite-vec
+
+  # Web
+  inputs.zen-browser.packages."${system}".default
+  pkgs.wget
+  pkgs.zip
+
+  # Shells
+  pkgs.zsh
 
   # Command Line Tools
+  pkgs.git
+  pkgs.nix-prefetch-git
   pkgs.htop
   pkgs.gum
   pkgs.stow
@@ -33,9 +45,7 @@
   pkgs.eza
   pkgs.uv
   pkgs.tailwindcss
-  pkgs.sqlite
-  pkgs.wget
-  pkgs.zip
+  pkgs.tealdeer
 
   # Editors
   pkgs.neovim
@@ -53,26 +63,44 @@
   pkgs.gh
 
   # Build Tools
+  pkgs.llvm
   pkgs.gnumake
+  pkgs.go-task
   pkgs.gcc
   pkgs.cmake
   pkgs.pkgconf
   pkgs.pkg-config
+  pkgs.meson
+  pkgs.nvc
 
   # Languages
   pkgs.go
   pkgs.goreleaser
+  pkgs.rustup
   pkgs.nodePackages.live-server
   pkgs.nodePackages.nodemon
   pkgs.nodePackages.prettier
   pkgs.nodePackages.npm
   pkgs.nodejs
+  pkgs.ocaml
+  pkgs.dune_3
+  pkgs.zig
+  pkgs.ruby
+  pkgs.elixir
+  pkgs.luajitPackages.luarocks
 
   # Language Servers
+  pkgs.templ
+  pkgs.elixir-ls
+  pkgs.zls
+  pkgs.rubyfmt
+  pkgs.ruby-lsp
+  pkgs.ocamlPackages.ocaml-lsp
   pkgs.lua-language-server
   pkgs.basedpyright
   pkgs.shfmt
   pkgs.nixd
+  pkgs.alejandra
   pkgs.statix
   pkgs.ocamlPackages.ocaml-lsp
   pkgs.shellcheck
@@ -95,11 +123,14 @@
   pkgs.golangci-lint
   pkgs.templ
   pkgs.gopls
+  pkgs.cobra-cli
   pkgs.gomodifytags
   pkgs.gotests
   pkgs.impl
   pkgs.docker-compose-language-service
   pkgs.shfmt
   pkgs.shellcheck
+  pkgs.jdt-language-server
+  pkgs.cbfmt
   unstable-pkgs.iferr
 ]

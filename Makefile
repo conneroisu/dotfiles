@@ -1,11 +1,8 @@
 
 stow:
-	stow --ignore=.git --ignore=Makefile --ignore=README.md --ignore=test.sh --ignore=Dockerfile --ignore=.config/ags --ignore=.config/nix-darwin .
+	sh ./scripts/stow.sh
 nix: 
-	cp -r ./.config/nix-darwin/ ~/.config/nix-darwin/
-	make stow
 	darwin-rebuild switch --flake ~/.config/nix-darwin
-	
 
 nixos-init:
 	sudo cp /etc/nixos/hardware-configuration.nix ./.config/nixos/hardware-configuration.nix

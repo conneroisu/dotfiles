@@ -5,6 +5,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-darwin.url = "github:LnL7/nix-darwin";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    nix-ld = {
+      url = "github:Mic92/nix-ld";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    zen-browser.url = "github:conneroisu/zen-browser-flake";
+    stylix.url = "github:danth/stylix";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,13 +32,7 @@
   outputs =
     inputs@{
       self,
-      nix-darwin,
-      nixpkgs,
-      home-manager,
-      nix-homebrew,
-      homebrew-core,
-      homebrew-cask,
-      homebrew-bundle,
+      ...
     }:
     let
       configuration =
@@ -78,6 +78,7 @@
             stow
             nil
             nvc
+            uv
             ruby
             zig
             elixir
@@ -136,30 +137,40 @@
             htmx-lsp
             texlab
             ltex-ls
+            raycast
             shellcheck
             jdt-language-server
             zls
             jq-lsp
             luajitPackages.luarocks
             wget
-            # python312Packages.basedpyright # TODO: add to nixpkgs
+            nixd
+            basedpyright
 
+            nh
             # Formatters
             hclfmt
+            tree
             nixfmt-rfc-style
             cbfmt
           ];
 
           nix.settings.experimental-features = "nix-command flakes";
 
-          # programs.zsh.enable = true;
-
           # Set Git commit hash for darwin-version.
-          system.configurationRevision = self.rev or self.dirtyRev or null;
+          system = {
+            configurationRevision = self.rev or self.dirtyRev or null;
+            stateVersion = 5;
+            defaults = {
+              dock.autohide = true;
 
-          # Used for backwards compatibility, please read the changelog before changing.
-          # $ darwin-rebuild changelog
-          system.stateVersion = 5;
+              trackpad = {
+                Clicking = true;
+                TrackpadThreeFingerDrag = true;
+              };
+
+            };
+          };
 
           environment.shells = [ pkgs.zsh ];
           users.users.connerohnesorge = {
@@ -186,8 +197,8 @@
             ];
           };
 
-          # The platform the configuration will be used on.
           nixpkgs.hostPlatform = "aarch64-darwin";
+          security.pam.enableSudoTouchIdAuth = true;
           nixpkgs.config.allowUnfree = true;
           system.activationScripts.applications.text =
             let
@@ -213,16 +224,16 @@
     in
     {
       # $ darwin-rebuild build --flake .#Conners-MacBook-Air
-      darwinConfigurations."Conners-MacBook-Air" = nix-darwin.lib.darwinSystem {
+      darwinConfigurations."Conners-MacBook-Air" = inputs.nix-darwin.lib.darwinSystem {
         modules = [
           configuration
-          home-manager.darwinModules.home-manager
+          inputs.home-manager.darwinModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             # home-manager.users.connerohnesorge = import ./home.nix;
           }
-          nix-homebrew.darwinModules.nix-homebrew
+          inputs.nix-homebrew.darwinModules.nix-homebrew
           {
             nix-homebrew = {
               # Install Homebrew under the default prefix
@@ -231,9 +242,9 @@
               enableRosetta = true;
               user = "connerohnesorge";
               taps = {
-                "homebrew/homebrew-core" = homebrew-core;
-                "homebrew/homebrew-cask" = homebrew-cask;
-                "homebrew/homebrew-bundle" = homebrew-bundle;
+                "homebrew/homebrew-core" = inputs.homebrew-core;
+                "homebrew/homebrew-cask" = inputs.homebrew-cask;
+                "homebrew/homebrew-bundle" = inputs.homebrew-bundle;
               };
               mutableTaps = false;
             };

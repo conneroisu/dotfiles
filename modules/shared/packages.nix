@@ -15,11 +15,15 @@
   pkgs.docker-compose
   pkgs.sqlite
   pkgs.sqlite-vec
-
+  pkgs.coreutils
+  pkgs.unrar
+  pkgs.unzip
+  pkgs.age
+  pkgs.age-plugin-yubikey
   # Web
-  inputs.zen-browser.packages."${system}".default
   pkgs.wget
   pkgs.zip
+  pkgs.cachix
 
   # Shells
   pkgs.zsh
@@ -81,6 +85,7 @@
   pkgs.nodePackages.nodemon
   pkgs.nodePackages.prettier
   pkgs.nodePackages.npm
+  pkgs.bun
   pkgs.nodejs
   pkgs.ocaml
   pkgs.dune_3
@@ -120,6 +125,7 @@
   pkgs.verible
   pkgs.revive
   pkgs.golangci-lint-langserver
+  pkgs.reftools
   pkgs.golangci-lint
   pkgs.templ
   pkgs.gopls

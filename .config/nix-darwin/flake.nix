@@ -9,7 +9,6 @@
       url = "github:Mic92/nix-ld";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    zen-browser.url = "github:conneroisu/zen-browser-flake";
     stylix.url = "github:danth/stylix";
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -52,6 +51,9 @@
             neovim
             zsh
             zinit
+            devenv
+            pkgs.direnv
+            pkgs.nix-direnv
             jq
             bat
             fzf
@@ -73,6 +75,7 @@
             llvm
             rustup
             obsidian
+            statix
             vhdl-ls
             nodejs
             stow
@@ -123,6 +126,7 @@
             flyctl
 
             golangci-lint
+            nil
             go
             revive
             templ
@@ -142,6 +146,10 @@
             jdt-language-server
             zls
             jq-lsp
+            gopls
+            revive
+            impl
+
             luajitPackages.luarocks
             wget
             nixd
@@ -180,10 +188,9 @@
 
           home-manager.users.connerohnesorge = {
             home.stateVersion = "25.05";
-            home.packages =
-              with pkgs;
-              [
-              ];
+            home.packages = with pkgs; [
+              devenv
+            ];
           };
           homebrew = {
             enable = true;
@@ -196,9 +203,10 @@
               # "ghdl"
             ];
           };
-
           nixpkgs.hostPlatform = "aarch64-darwin";
           security.pam.enableSudoTouchIdAuth = true;
+          programs.direnv.enable = true;
+          programs.direnv.nix-direnv.enable = true;
           nixpkgs.config.allowUnfree = true;
           system.activationScripts.applications.text =
             let

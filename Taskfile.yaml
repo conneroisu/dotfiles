@@ -8,7 +8,7 @@ vars:
 tasks:
   stow:
     cmds:
-      - sh ./scripts/stow.sh
+      - sh ./stow.sh
   nix:
     cmds:
       - darwin-rebuild switch --flake ~/.config/nix-darwin

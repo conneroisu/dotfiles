@@ -10,4 +10,5 @@ stow --ignore=.git/ \
 	--ignore=./hosts/ \
 	--ignore=./modules/ \
 	--ignore=./overlays/ \
+	--ignore=./stow.sh \
 .

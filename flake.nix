@@ -2,117 +2,57 @@
   description = "Conner Ohnesorge's Nix Config";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nix-darwin = {
-      url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    homebrew-core = {
-      url = "github:homebrew/homebrew-core";
-      flake = false;
-    };
-    homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
-      flake = false;
-    };
-    homebrew-bundle = {
-      url = "github:homebrew/homebrew-bundle";
-      flake = false;
-    };
-    nix-ld = {
-      url = "github:Mic92/nix-ld";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixos-hardware.url = "github:nixos/nixos-hardware";
+    nix-darwin.url = "github:lnl7/nix-darwin";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    homebrew-core.url = "github:Homebrew/homebrew-core";
+    homebrew-core.flake = false;
+    homebrew-cask.url = "github:Homebrew/homebrew-cask";
+    homebrew-cask.flake = false;
+    homebrew-bundle.url = "github:Homebrew/homebrew-bundle";
+    homebrew-bundle.flake = false;
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
     zen-browser.url = "github:conneroisu/zen-browser-flake";
     stylix.url = "github:danth/stylix";
   };
 
   outputs =
     {
-      self,
       nixpkgs,
-      nixpkgs-unstable,
-      nix-ld,
-      nixos-hardware,
-      stylix,
       ...
-    }:
+    }@inputs:
     let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config = {
-          allowUnfree = true;
-        };
-      };
-      unstable-pkgs = import nixpkgs-unstable {
-        inherit system;
-        config = {
-          allowUnfree = true;
-        };
-      };
-      inherit (self) inputs;
-      inherit (pkgs) dbus;
+      user = "connerohnesorge";
     in
     {
       nixosConfigurations = {
-        nixos = nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit
-              system
-              pkgs
-              unstable-pkgs
-              inputs
-              stylix
-              ;
-          };
+        nixos = inputs.nixpkgs.lib.nixosSystem {
+          specialArgs = inputs;
           modules = [
-            nixos-hardware.nixosModules.dell-xps-15-9510
-            ./configuration.nix
-            nix-ld.nixosModules.nix-ld
+            inputs.nixos-hardware.nixosModules.dell-xps-15-9510
+            inputs.nix-ld.nixosModules.nix-ld
             { programs.nix-ld.dev.enable = true; }
             inputs.stylix.nixosModules.stylix
+            ./hosts/nixos
           ];
         };
       };
-      darwinConfigurations."Conners-MacBook-Air" = inputs.nix-darwin.lib.darwinSystem {
-        modules = [
-          configuration
-          inputs.home-manager.darwinModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            # home-manager.users.connerohnesorge = import ./home.nix;
-          }
-          inputs.nix-homebrew.darwinModules.nix-homebrew
-          {
-            nix-homebrew = {
-              # Install Homebrew under the default prefix
-              enable = true;
-              # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
-              enableRosetta = true;
-              user = "connerohnesorge";
-              taps = {
-                "homebrew/homebrew-core" = inputs.homebrew-core;
-                "homebrew/homebrew-cask" = inputs.homebrew-cask;
-                "homebrew/homebrew-bundle" = inputs.homebrew-bundle;
-              };
-              mutableTaps = false;
-            };
-          }
-          ./hosts/darwin
-        ];
-      };
-      stdenv.mkDerivation = {
-        inherit dbus;
-        nativeBuildInputs = [ pkgs.pkg-config ];
-        buildInputs = with pkgs; [
-          dbus
-          webkitgtk
-          openssl
-        ];
+      darwinConfigurations = {
+        "Conners-MacBook-Air" = inputs.nix-darwin.lib.darwinSystem {
+          inherit (inputs.nixpkgs) system;
+          specialArgs = inputs;
+          modules = [
+            inputs.home-manager.darwinModules.home-manager
+            inputs.nix-homebrew.darwinModules.nix-homebrew
+            ./hosts/darwin
+          ];
+        };
       };
     };
 }

@@ -107,7 +107,7 @@
               useUserPackages = true;
               users.connerohnesorge = import ./home.nix;
               extraSpecialArgs = {
-                inherit inputs self darwinPkgs;
+                inherit inputs self darwinPkgs unstable-pkgs;
               };
             };
           }

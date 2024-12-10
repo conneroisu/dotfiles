@@ -177,10 +177,11 @@ in
       lshw
       htop
       pkgconf
-
+      verible
       nvidia-docker
       nvtopPackages.nvidia
 
+      gdb
       pkg-config
     ]);
 

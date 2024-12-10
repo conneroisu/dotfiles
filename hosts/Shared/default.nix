@@ -191,9 +191,6 @@
     ## VHDL
     vhdl-ls
 
-    ## Verilog
-    verible
-
     luajitPackages.luarocks
     wget
     # Formatters
@@ -207,6 +204,5 @@
 
     # Debuggers
     delve
-    gdb
   ];
 }

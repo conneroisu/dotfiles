@@ -127,6 +127,7 @@ in
   environment.systemPackages =
     sharedPkgs
     ++ (with pkgs; [
+      nix-ld
       alejandra
       nh
       pkgs.home-manager

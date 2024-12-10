@@ -124,7 +124,6 @@
     nil
     statix
     nix-index
-    nix-ld
     nix-prefetch-git
 
     ## Lua

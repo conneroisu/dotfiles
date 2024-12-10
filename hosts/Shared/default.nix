@@ -1,5 +1,9 @@
-{ pkgs, unstable-pkgs, ... }:
 {
+  pkgs,
+  unstable-pkgs,
+  agenix,
+  ...
+}: {
   environment.systemPackages = with pkgs; [
     git
     git-lfs
@@ -10,6 +14,8 @@
     vim
     obsidian
     stow
+    infisical
+    agenix.packages.${system}.default
 
     # Shell
     zsh
@@ -84,38 +90,39 @@
     dune_3
     python312
     (python312.withPackages (
-      ps: with ps; [
-        numpy
-        pandas
-        scipy
-        matplotlib
-        scikitlearn
-        torch
-        opencv4
-        torchvision
-        selenium
-        pyarrow
-        psycopg
-        mysqlclient
-        ollama
-        black
-        requests
-        uvicorn
-        flask
-        fastapi
-        django
-        gunicorn
-        pydantic
-        mypy
-        torchdiffeq
-        beautifulsoup4
-        pillow
-        gym
-        pypdf
-        pytest
-        pip
-        sympy
-      ]
+      ps:
+        with ps; [
+          numpy
+          pandas
+          scipy
+          matplotlib
+          scikitlearn
+          torch
+          opencv4
+          torchvision
+          selenium
+          pyarrow
+          psycopg
+          mysqlclient
+          ollama
+          black
+          requests
+          uvicorn
+          flask
+          fastapi
+          django
+          gunicorn
+          pydantic
+          mypy
+          torchdiffeq
+          beautifulsoup4
+          pillow
+          gym
+          pypdf
+          pytest
+          pip
+          sympy
+        ]
     ))
 
     # Language Servers

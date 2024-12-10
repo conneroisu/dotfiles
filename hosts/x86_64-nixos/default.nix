@@ -1,13 +1,14 @@
 {
   config,
   pkgs,
+  agenix,
   unstable-pkgs,
   inputs,
   ...
 }:
 
 let
-  sharedPkgs = (import ../Shared { inherit pkgs unstable-pkgs; }).environment.systemPackages;
+  sharedPkgs = (import ../Shared { inherit pkgs unstable-pkgs agenix; }).environment.systemPackages;
 in
 {
   imports = [

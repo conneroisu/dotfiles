@@ -39,12 +39,16 @@
     self,
     darwin,
     nix-ld,
+    agenix,
     stylix,
     nixpkgs,
+    nixpkgs-unstable,
     home-manager,
     nix-homebrew,
     nixos-hardware,
-    nixpkgs-unstable,
+    homebrew-core,
+    homebrew-cask,
+    homebrew-bundle,
     ...
   }: let
     systems = {
@@ -75,7 +79,7 @@
       nixos = nixpkgs.lib.nixosSystem {
         system = systems.x86_64-linux;
         specialArgs = {
-          inherit  inputs stylix self;
+          inherit  inputs agenix stylix self home-manager;
           pkgs = x86_64-linux-pkgs;
           unstable-pkgs = x86_64-linux-unstable-pkgs;
         };
@@ -85,7 +89,8 @@
           nixos-hardware.nixosModules.dell-xps-15-9510
           nix-ld.nixosModules.nix-ld
           {programs.nix-ld.dev.enable = true;}
-          inputs.stylix.nixosModules.stylix
+          stylix.nixosModules.stylix
+          agenix.nixosModules.default
         ];
       };
     };
@@ -96,12 +101,13 @@
       "Conners-MacBook-Air" = darwin.lib.darwinSystem {
         system = systems.aarch64-darwin;
         specialArgs = {
-          inherit inputs self;
+          inherit inputs self agenix;
           pkgs = aarch64-darwin-pkgs;
           unstable-pkgs = aarch64-darwin-unstable-pkgs;
         };
         modules = [
           home-manager.darwinModules.home-manager
+          agenix.darwinModules.default
           ./hosts/aarch64-darwin
           {
             home-manager = {
@@ -122,9 +128,9 @@
               enableRosetta = true;
               user = "connerohnesorge";
               taps = {
-                "homebrew/homebrew-core" = inputs.homebrew-core;
-                "homebrew/homebrew-cask" = inputs.homebrew-cask;
-                "homebrew/homebrew-bundle" = inputs.homebrew-bundle;
+                "homebrew/homebrew-core" = homebrew-core;
+                "homebrew/homebrew-cask" = homebrew-cask;
+                "homebrew/homebrew-bundle" = homebrew-bundle;
               };
               mutableTaps = false;
             };

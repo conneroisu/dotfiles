@@ -34,11 +34,12 @@
     };
   };
 
-  outputs = inputs @ {
+  outputs = {
     self,
     darwin,
     nix-ld,
     stylix,
+    zen-browser,
     nixpkgs,
     nixpkgs-unstable,
     home-manager,
@@ -77,17 +78,17 @@
       nixos = nixpkgs.lib.nixosSystem {
         system = systems.x86_64-linux;
         specialArgs = {
-          inherit  stylix self home-manager;
+          inherit stylix self home-manager zen-browser;
           pkgs = x86_64-linux-pkgs;
           unstable-pkgs = x86_64-linux-unstable-pkgs;
         };
         modules = [
           home-manager.nixosModules.home-manager
-          ./hosts/x86_64-nixos
           nixos-hardware.nixosModules.dell-xps-15-9510
+          stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
           {programs.nix-ld.dev.enable = true;}
-          stylix.nixosModules.stylix
+          ./hosts/x86_64-nixos
         ];
       };
     };
@@ -98,37 +99,19 @@
       "Conners-MacBook-Air" = darwin.lib.darwinSystem {
         system = systems.aarch64-darwin;
         specialArgs = {
-          inherit  self;
+          inherit self homebrew-core homebrew-cask homebrew-bundle;
           pkgs = aarch64-darwin-pkgs;
           unstable-pkgs = aarch64-darwin-unstable-pkgs;
         };
         modules = [
           home-manager.darwinModules.home-manager
+          nix-homebrew.darwinModules.nix-homebrew
           ./hosts/aarch64-darwin
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
               users.connerohnesorge = import ./home.nix;
-              extraSpecialArgs = {
-                inherit  self;
-                pkgs = aarch64-darwin-pkgs;
-                unstable-pkgs = aarch64-darwin-unstable-pkgs;
-              };
-            };
-          }
-          nix-homebrew.darwinModules.nix-homebrew
-          {
-            nix-homebrew = {
-              enable = true;
-              enableRosetta = true;
-              user = "connerohnesorge";
-              taps = {
-                "homebrew/homebrew-core" = homebrew-core;
-                "homebrew/homebrew-cask" = homebrew-cask;
-                "homebrew/homebrew-bundle" = homebrew-bundle;
-              };
-              mutableTaps = false;
             };
           }
         ];

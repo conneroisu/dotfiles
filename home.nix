@@ -1,7 +1,6 @@
 {
   pkgs,
   pkgs-unstable,
-  inputs,
   ...
 }: {
   # Home Manager needs a bit of information about you and the paths it should
@@ -23,6 +22,7 @@
     stateVersion = "24.11"; # Please read the comment before changing.
 
     packages = [
+    pkgs.cowsay
       # # Adds the 'hello' command to your environment. It prints a friendly
       # # "Hello, world!" when run.
       # pkgs.hello

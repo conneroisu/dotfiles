@@ -16,6 +16,7 @@ in
     ++ (with pkgs; [
       # Macos Only
       aerospace
+      raycast
       google-chrome
     ]);
 
@@ -43,7 +44,7 @@ in
   };
 
   home-manager.users.connerohnesorge = {
-    home.stateVersion = "25.05";
+    home.stateVersion = "24.11";
     home.packages = with pkgs; [
       devenv
     ];

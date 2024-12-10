@@ -4,7 +4,12 @@
   unstable-pkgs,
   inputs,
   ...
-}: {
+}:
+
+let
+  sharedPkgs = (import ../shared { inherit pkgs unstable-pkgs; }).environment.systemPackages;
+in
+{
   imports = [
     ./hardware-configuration.nix
   ];
@@ -14,7 +19,12 @@
     plymouth.enable = true;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    blacklistedKernelModules = ["nvidia" "nvidia_uvm" "nvidia_drm" "nvidia_modeset"];
+    blacklistedKernelModules = [
+      "nvidia"
+      "nvidia_uvm"
+      "nvidia_drm"
+      "nvidia_modeset"
+    ];
   };
 
   networking.hostName = "nixos"; # Define your hostname.
@@ -73,7 +83,7 @@
   services = {
     xserver = {
       enable = true;
-      videoDrivers = ["nvidia"];
+      videoDrivers = [ "nvidia" ];
       displayManager.gdm.enable = true;
       desktopManager.gnome.enable = true;
       xkb = {
@@ -113,24 +123,15 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    nix-index
-    nix-ld
-    nix-prefetch-git
+  environment.systemPackages = sharedPkgs ++ (with pkgs; [
     alejandra
     nh
-
     pkgs.home-manager
     google-chrome
     inputs.zen-browser.packages."${system}".default
     wget
     git
-    gnumake
-    cmake
-    go-task
     neovim
-    ripgrep
-
     hyprland
     hyprcursor
     hyprkeys
@@ -147,27 +148,8 @@
     grim
     slurp
     rofi
-
-    nerdfonts
-    unzip
-    turso-cli
     spotify
-    flyctl
     gh
-    gcc
-    zig
-    llvm
-    kitty
-    zsh
-    zinit
-    atuin
-    fzf
-    fd
-    jq
-    yq
-    delta
-    tree
-    uv
     gpu-screen-recorder
     matugen
     brightnessctl
@@ -177,14 +159,8 @@
     kitty
     gtk3
     gtk-layer-shell
-
-    zellij
     vmware-horizon-client
-    tealdeer
     sox
-    bat
-    eza
-    gum
     alsa-utils
     alsa-lib
     alsa-oss
@@ -192,110 +168,17 @@
     docker-compose
     docker-compose-language-service
     quartus-prime-lite
-    ollama
-    tailwindcss
-    rustup
-    gcc
-    starship
-
-    nodejs
-    obsidian
-    stow
     ghdl
-    emacs
     nvc
-
     lshw
     htop
     pkgconf
 
-    zoxide
-    sad
-    zed-editor
-    shfmt
     nvidia-docker
     nvtopPackages.nvidia
 
-    elixir
-    ocaml
-    go
-    goreleaser
-
-    dune_3
-    basedpyright
-
     pkg-config
-    python312
-    (python312.withPackages (
-      ps:
-        with ps; [
-          numpy
-          pandas
-          scipy
-          matplotlib
-          scikitlearn
-          torch
-          opencv4
-          torchvision
-          selenium
-          pyarrow
-          psycopg
-          mysqlclient
-          ollama
-          black
-          requests
-          uvicorn
-          flask
-          fastapi
-          django
-          gunicorn
-          pydantic
-          mypy
-          torchdiffeq
-          beautifulsoup4
-          pillow
-          gym
-          pypdf
-          pytest
-          pip
-          sympy
-        ]
-    ))
-
-    # LSP
-    lua-language-server
-    nixd
-    statix
-    ocamlPackages.ocaml-lsp
-    shellcheck
-    vhdl-ls
-    ltex-ls
-    hyprls
-    zls
-    sqls
-    yaml-language-server
-    svelte-language-server
-    matlab-language-server
-    cmake-language-server
-    astro-language-server
-    jdt-language-server
-    lexical
-    actionlint
-    verible
-    revive
-    golangci-lint-langserver
-    golangci-lint
-    templ
-    gomodifytags
-    gotests
-    impl
-    unstable-pkgs.iferr
-
-    # Debuggers
-
-    delve
-    gdb
-  ];
+  ]);
 
   stylix = {
     enable = true;

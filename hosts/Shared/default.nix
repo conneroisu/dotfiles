@@ -1,35 +1,46 @@
-# shared/default.nix
 { pkgs, unstable-pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
+    git
     pkgs.home-manager
+    gnumake
+    cmake
+    go-task
     vim
-    neovim
+    obsidian
+    stow
+
+    # Shell
     zsh
     zinit
+    starship
     devenv
     pkgs.direnv
     pkgs.nix-direnv
-    jq
     bat
+    fd
+    jq
+    yq
+    delta
     fzf
-    gh
+    nerdfonts
     kitty
-    docker
     zellij
+    gh
+    docker
     atuin
     zoxide
+    gum
+    bat
+    eza
     nixos-generators
     emacs
 
-    fd
     delta
-    sad
     tailwindcss
-    starship
+    sad
     gcc
     llvm
-    rustup
     obsidian
     statix
     vhdl-ls
@@ -38,84 +49,165 @@
     nil
     nvc
     uv
-    ruby
-    zig
-    elixir
-    ocaml
-    ocamlPackages.ocaml-lsp
-    dune_3
-    python312
-    python312Packages.numpy
-    python312Packages.pandas
-    python312Packages.scipy
-    python312Packages.matplotlib
-    python312Packages.scikitlearn
-    python312Packages.torch
-    python312Packages.opencv4
-    python312Packages.torchvision
-    python312Packages.selenium
-    python312Packages.pyarrow
-    python312Packages.psycopg
-    python312Packages.mysqlclient
-    python312Packages.ollama
-    python312Packages.black
-    python312Packages.requests
-    python312Packages.uvicorn
-    python312Packages.flask
-    python312Packages.fastapi
-    python312Packages.django
-    python312Packages.gunicorn
-    python312Packages.pydantic
-    python312Packages.mypy
-    python312Packages.torchdiffeq
-    python312Packages.beautifulsoup4
-    python312Packages.pillow
-    python312Packages.gym
-    python312Packages.pypdf
-    python312Packages.pytest
+    unzip
     ripgrep
-    vscode
     tealdeer
     meson
+    goreleaser
+    sqlite
+    sqlite-vec
+    ollama
 
+    # Editors
+    neovim
+    zed-editor
+    vscode
+
+    # Platforms
     turso-cli
     flyctl
 
-    golangci-lint
-    nil
+    # Languages
     go
+    nodejs
+    rustup
     revive
     templ
     iferr
     golines
+    ruby
+    zig
     gomodifytags
-    sqls
-    sqlite
-    sqlite-vec
+    elixir
+    ocaml
+    dune_3
+    python312
+    (python312.withPackages (
+      ps: with ps; [
+        numpy
+        pandas
+        scipy
+        matplotlib
+        scikitlearn
+        torch
+        opencv4
+        torchvision
+        selenium
+        pyarrow
+        psycopg
+        mysqlclient
+        ollama
+        black
+        requests
+        uvicorn
+        flask
+        fastapi
+        django
+        gunicorn
+        pydantic
+        mypy
+        torchdiffeq
+        beautifulsoup4
+        pillow
+        gym
+        pypdf
+        pytest
+        pip
+        sympy
+      ]
+    ))
+
     # Language Servers
+
+    ## Nix
+    nixd
+    nil
+    statix
+    nix-index
+    nix-ld
+    nix-prefetch-git
+
+    ## Lua
     lua-language-server
+
+    ## JSON
+    jq-lsp
+
+    ## HTMX
     htmx-lsp
+
+    ## Latex
     texlab
     ltex-ls
-    raycast
+
+    ## Bash
     shellcheck
+
+    ## Java
     jdt-language-server
+
+    ## Zig
     zls
-    jq-lsp
+
+    ## Go
     gopls
     revive
     impl
+    unstable-pkgs.iferr
+    golangci-lint-langserver
+    golangci-lint
+    templ
+    gomodifytags
+    gotests
+
+    ## Python
+    basedpyright
+
+    ## Yaml
+    yaml-language-server
+    actionlint
+
+    ## Svelte
+    svelte-language-server
+
+    ## Matlab
+    matlab-language-server
+
+    ## cmake
+    cmake-language-server
+
+    ## Astro
+    astro-language-server
+
+    ## Elixir
+    elixir-ls
+    lexical
+
+    ## Hyprland
+    hyprls
+
+    ## Sql
+    sqls
+
+    ## VHDL
+    vhdl-ls
+
+    ## Verilog
+    verible
 
     luajitPackages.luarocks
     wget
-    nixd
-    basedpyright
-
-    nh
     # Formatters
     hclfmt
+    shfmt
+    rustfmt
+    black
     tree
-    nixfmt-rfc-style
+    alejandra
     cbfmt
+
+    # Debuggers
+    delve
+    gdb
   ];
 }

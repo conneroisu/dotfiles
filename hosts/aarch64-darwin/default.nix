@@ -4,11 +4,16 @@
   unstable-pkgs,
   config,
   ...
-}:
-let
-  sharedPkgs = (import ../Shared { inherit pkgs unstable-pkgs; }).environment.systemPackages;
-in
-{
+}: let
+  sharedPkgs =
+    (
+      import ../Shared {
+        inherit pkgs unstable-pkgs;
+      }
+    )
+    .environment
+    .systemPackages;
+in {
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages =
@@ -18,6 +23,7 @@ in
       aerospace
       raycast
       google-chrome
+      utm
     ]);
 
   nix.settings.experimental-features = "nix-command flakes";
@@ -33,11 +39,10 @@ in
         Clicking = true;
         TrackpadThreeFingerDrag = true;
       };
-
     };
   };
 
-  environment.shells = [ pkgs.zsh ];
+  environment.shells = [pkgs.zsh];
   users.users.connerohnesorge = {
     home = "/Users/connerohnesorge";
     name = "connerohnesorge";
@@ -65,14 +70,13 @@ in
   programs.direnv.enable = true;
   programs.direnv.nix-direnv.enable = true;
   nixpkgs.config.allowUnfree = true;
-  system.activationScripts.applications.text =
-    let
-      env = pkgs.buildEnv {
-        name = "system-applications";
-        paths = config.environment.systemPackages;
-        pathsToLink = "/Applications";
-      };
-    in
+  system.activationScripts.applications.text = let
+    env = pkgs.buildEnv {
+      name = "system-applications";
+      paths = config.environment.systemPackages;
+      pathsToLink = "/Applications";
+    };
+  in
     pkgs.lib.mkForce ''
       # Set up applications.
       echo "setting up /Applications..." >&2
@@ -85,5 +89,4 @@ in
         ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
       done
     '';
-
 }

@@ -62,25 +62,43 @@
         allowUnfree = true;
       };
     };
-
+    aarch64-pkgs = import nixpkgs {
+      system = systems.aarch64-linux;
+      config = {
+        allowUnfree = true;
+      };
+    };
     darwinPkgs = import nixpkgs {
       system = systems.aarch64-darwin;
       config = {
         allowUnfree = true;
       };
     };
-
     unstable-pkgs = import nixpkgs-unstable {
       system = systems.x86_64-linux;
       config = {
         allowUnfree = true;
       };
     };
+    aarch64-unstable-pkgs = import nixpkgs-unstable {
+      system = systems.aarch64-linux;
+      config = {
+        allowUnfree = true;
+      };
+    };
+    darwin-unstable-pkgs = import nixpkgs-unstable {
+      system = systems.aarch64-darwin;
+      config = {
+        allowUnfree = true;
+      };
+    };
   in {
     nixosConfigurations = {
+
+      # nix build .#nixosConfigurations.nixos -o nixos
       nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {
-          inherit (systems) x86_64-linux;
+          system = systems.x86_64-linux;
           inherit pkgs unstable-pkgs inputs stylix self;
         };
         modules = [
@@ -97,7 +115,9 @@
         system = systems.aarch64-linux;
         specialArgs = {
           system = systems.aarch64-linux;
-          inherit pkgs unstable-pkgs inputs stylix self;
+          inherit  inputs stylix self;
+          pkgs = aarch64-pkgs;
+          unstable-pkgs = aarch64-unstable-pkgs;
         };
         modules = [
           ./hosts/iso-aarch64
@@ -110,7 +130,9 @@
         system = systems.aarch64-darwin;
         specialArgs = {
           inherit (systems) aarch64-darwin;
-          inherit inputs self darwinPkgs unstable-pkgs;
+          inherit inputs self;
+          pkgs = darwinPkgs;
+          unstable-pkgs = darwin-unstable-pkgs;
         };
         modules = [
           ./hosts/aarch64-darwin
@@ -121,7 +143,9 @@
               useUserPackages = true;
               users.connerohnesorge = import ./home.nix;
               extraSpecialArgs = {
-                inherit inputs self darwinPkgs unstable-pkgs;
+                inherit inputs self;
+                pkgs = darwinPkgs;
+                unstable-pkgs = darwin-unstable-pkgs;
               };
             };
           }

@@ -16,21 +16,9 @@ in
   	"${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
 
-  # Bootloader.
-  boot = {
-    plymouth.enable = true;
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
-    blacklistedKernelModules = [
-      "nvidia"
-      "nvidia_uvm"
-      "nvidia_drm"
-      "nvidia_modeset"
-    ];
-  };
-
   networking.hostName = "nixos"; # Define your hostname.
   networking.networkmanager.enable = true;
+  networking.wireless.enable = false;
 
   time.timeZone = "America/Chicago";
   nix.settings.experimental-features = [
@@ -133,8 +121,7 @@ in
       alejandra
       nh
       pkgs.home-manager
-      google-chrome
-      inputs.zen-browser.packages."${system}".default
+      firefox
       wget
       git
       neovim
@@ -154,9 +141,7 @@ in
       grim
       slurp
       rofi
-      spotify
       gh
-      gpu-screen-recorder
       matugen
       brightnessctl
       pfetch-rs
@@ -165,7 +150,6 @@ in
       kitty
       gtk3
       gtk-layer-shell
-      vmware-horizon-client
       sox
       alsa-utils
       alsa-lib
@@ -173,7 +157,6 @@ in
       docker
       docker-compose
       docker-compose-language-service
-      quartus-prime-lite
       ghdl
       nvc
       lshw
@@ -187,13 +170,6 @@ in
       pkg-config
     ]);
 
-  stylix = {
-    enable = true;
-    autoEnable = true;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-    image = ./../../../Pictures/klaus-desktop.jpg;
-    polarity = "dark";
-  };
   # Leave this.
   system.stateVersion = "24.11";
 }

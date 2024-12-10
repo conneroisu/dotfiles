@@ -47,9 +47,8 @@
     # '';
     ".zshrc".source = ./.zshrc;
     "vhdl_ls.toml".source = ./vhdl_ls.toml;
-    ".vimrc".source = ./vimrc;
+    ".vimrc".source = ./.vimrc;
     ".obsidian.vimrc".source = ./.obsidian.vimrc;
-    ".config/nvim".source = ./.config/nvim;
   };
 
   # Let Home Manager install and manage itself.

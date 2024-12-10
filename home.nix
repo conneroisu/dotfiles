@@ -7,7 +7,8 @@
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "connerohnesorge";
-  home.homeDirectory = if pkgs.stdenv.isDarwin 
+  home.homeDirectory =
+    if pkgs.stdenv.isDarwin
     then "/Users/connerohnesorge"
     else "/home/connerohnesorge";
   # Linux-only packages

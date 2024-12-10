@@ -7,7 +7,10 @@
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "connerohnesorge";
-
+  home.homeDirectory = if pkgs.stdenv.isDarwin 
+    then "/Users/connerohnesorge"
+    else "/home/connerohnesorge";
+  # Linux-only packages
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.
@@ -49,6 +52,9 @@
     "vhdl_ls.toml".source = ./vhdl_ls.toml;
     ".vimrc".source = ./.vimrc;
     ".obsidian.vimrc".source = ./.obsidian.vimrc;
+    "./.config/starship.toml".source = ./.config/starship.toml;
+    "./.config/rofi/config.rasi".source = ./.config/rofi/config.rasi;
+    "./.config/zellij/config.kdl".source = ./.config/zellij/config.kdl;
   };
 
   # Let Home Manager install and manage itself.

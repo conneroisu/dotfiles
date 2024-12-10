@@ -1,3 +1,0 @@
-{
-  home.homeDirectory = "/Users/connerohnesorge";
-}

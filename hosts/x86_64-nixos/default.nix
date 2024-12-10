@@ -7,7 +7,7 @@
 }:
 
 let
-  sharedPkgs = (import ../shared { inherit pkgs unstable-pkgs; }).environment.systemPackages;
+  sharedPkgs = (import ../Shared { inherit pkgs unstable-pkgs; }).environment.systemPackages;
 in
 {
   imports = [

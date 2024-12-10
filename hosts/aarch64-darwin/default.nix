@@ -6,7 +6,7 @@
   ...
 }:
 let
-  sharedPkgs = (import ../shared { inherit pkgs unstable-pkgs; }).environment.systemPackages;
+  sharedPkgs = (import ../Shared { inherit pkgs unstable-pkgs; }).environment.systemPackages;
 in
 {
   # List packages installed in system profile. To search by name, run:

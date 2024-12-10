@@ -36,19 +36,20 @@ in
     "flakes"
   ];
 
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
+  i18n = {
+    # Select internationalisation properties.
+    defaultLocale = "en_US.UTF-8";
+    extraLocaleSettings = {
+      LC_ADDRESS = "en_US.UTF-8";
+      LC_IDENTIFICATION = "en_US.UTF-8";
+      LC_MEASUREMENT = "en_US.UTF-8";
+      LC_MONETARY = "en_US.UTF-8";
+      LC_NAME = "en_US.UTF-8";
+      LC_NUMERIC = "en_US.UTF-8";
+      LC_PAPER = "en_US.UTF-8";
+      LC_TELEPHONE = "en_US.UTF-8";
+      LC_TIME = "en_US.UTF-8";
+    };
   };
 
   virtualisation.docker.enable = true;
@@ -123,62 +124,64 @@ in
     };
   };
 
-  environment.systemPackages = sharedPkgs ++ (with pkgs; [
-    alejandra
-    nh
-    pkgs.home-manager
-    google-chrome
-    inputs.zen-browser.packages."${system}".default
-    wget
-    git
-    neovim
-    hyprland
-    hyprcursor
-    hyprkeys
-    hyprpaper
-    hyprsunset
-    hyprwayland-scanner
-    hyprutils
-    xdg-desktop-portal-hyprland
-    uwsm
-    tlp
-    dunst
-    pipewire
-    grimblast
-    grim
-    slurp
-    rofi
-    spotify
-    gh
-    gpu-screen-recorder
-    matugen
-    brightnessctl
-    pfetch-rs
-    xfce.thunar
-    wl-clipboard
-    kitty
-    gtk3
-    gtk-layer-shell
-    vmware-horizon-client
-    sox
-    alsa-utils
-    alsa-lib
-    alsa-oss
-    docker
-    docker-compose
-    docker-compose-language-service
-    quartus-prime-lite
-    ghdl
-    nvc
-    lshw
-    htop
-    pkgconf
+  environment.systemPackages =
+    sharedPkgs
+    ++ (with pkgs; [
+      alejandra
+      nh
+      pkgs.home-manager
+      google-chrome
+      inputs.zen-browser.packages."${system}".default
+      wget
+      git
+      neovim
+      hyprland
+      hyprcursor
+      hyprkeys
+      hyprpaper
+      hyprsunset
+      hyprwayland-scanner
+      hyprutils
+      xdg-desktop-portal-hyprland
+      uwsm
+      tlp
+      dunst
+      pipewire
+      grimblast
+      grim
+      slurp
+      rofi
+      spotify
+      gh
+      gpu-screen-recorder
+      matugen
+      brightnessctl
+      pfetch-rs
+      xfce.thunar
+      wl-clipboard
+      kitty
+      gtk3
+      gtk-layer-shell
+      vmware-horizon-client
+      sox
+      alsa-utils
+      alsa-lib
+      alsa-oss
+      docker
+      docker-compose
+      docker-compose-language-service
+      quartus-prime-lite
+      ghdl
+      nvc
+      lshw
+      htop
+      pkgconf
 
-    nvidia-docker
-    nvtopPackages.nvidia
+      nvidia-docker
+      nvtopPackages.nvidia
 
-    pkg-config
-  ]);
+      pkg-config
+    ]);
 
   stylix = {
     enable = true;

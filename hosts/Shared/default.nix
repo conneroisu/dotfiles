@@ -1,0 +1,121 @@
+# shared/default.nix
+{ pkgs, unstable-pkgs, ... }:
+{
+  environment.systemPackages = with pkgs; [
+    pkgs.home-manager
+    vim
+    neovim
+    zsh
+    zinit
+    devenv
+    pkgs.direnv
+    pkgs.nix-direnv
+    jq
+    bat
+    fzf
+    gh
+    kitty
+    docker
+    zellij
+    atuin
+    zoxide
+    nixos-generators
+    emacs
+
+    fd
+    delta
+    sad
+    tailwindcss
+    starship
+    gcc
+    llvm
+    rustup
+    obsidian
+    statix
+    vhdl-ls
+    nodejs
+    stow
+    nil
+    nvc
+    uv
+    ruby
+    zig
+    elixir
+    ocaml
+    ocamlPackages.ocaml-lsp
+    dune_3
+    python312
+    python312Packages.numpy
+    python312Packages.pandas
+    python312Packages.scipy
+    python312Packages.matplotlib
+    python312Packages.scikitlearn
+    python312Packages.torch
+    python312Packages.opencv4
+    python312Packages.torchvision
+    python312Packages.selenium
+    python312Packages.pyarrow
+    python312Packages.psycopg
+    python312Packages.mysqlclient
+    python312Packages.ollama
+    python312Packages.black
+    python312Packages.requests
+    python312Packages.uvicorn
+    python312Packages.flask
+    python312Packages.fastapi
+    python312Packages.django
+    python312Packages.gunicorn
+    python312Packages.pydantic
+    python312Packages.mypy
+    python312Packages.torchdiffeq
+    python312Packages.beautifulsoup4
+    python312Packages.pillow
+    python312Packages.gym
+    python312Packages.pypdf
+    python312Packages.pytest
+    ripgrep
+    vscode
+    tealdeer
+    meson
+
+    turso-cli
+    flyctl
+
+    golangci-lint
+    nil
+    go
+    revive
+    templ
+    iferr
+    golines
+    gomodifytags
+    sqls
+    sqlite
+    sqlite-vec
+    # Language Servers
+    lua-language-server
+    htmx-lsp
+    texlab
+    ltex-ls
+    raycast
+    shellcheck
+    jdt-language-server
+    zls
+    jq-lsp
+    gopls
+    revive
+    impl
+
+    luajitPackages.luarocks
+    wget
+    nixd
+    basedpyright
+
+    nh
+    # Formatters
+    hclfmt
+    tree
+    nixfmt-rfc-style
+    cbfmt
+  ];
+}

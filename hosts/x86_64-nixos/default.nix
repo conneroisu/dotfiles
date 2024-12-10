@@ -4,12 +4,9 @@
   unstable-pkgs,
   inputs,
   ...
-}:
-
-let
-  sharedPkgs = (import ../Shared { inherit pkgs unstable-pkgs ; }).environment.systemPackages;
-in
-{
+}: let
+  sharedPkgs = (import ../Shared {inherit pkgs unstable-pkgs;}).environment.systemPackages;
+in {
   imports = [
     ./hardware-configuration.nix
   ];
@@ -84,7 +81,7 @@ in
   services = {
     xserver = {
       enable = true;
-      videoDrivers = [ "nvidia" ];
+      videoDrivers = ["nvidia"];
       displayManager.gdm.enable = true;
       desktopManager.gnome.enable = true;
       xkb = {
@@ -152,6 +149,10 @@ in
       grim
       slurp
       rofi
+      rofi-rbw
+      rofi-obsidian
+      rofi-bluetooth
+      rofi-power-menu
       spotify
       gh
       gpu-screen-recorder

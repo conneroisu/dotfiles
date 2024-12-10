@@ -51,6 +51,8 @@
   }: let
     systems = {
       x86_64-linux = "x86_64-linux";
+      x86_64-darwin = "x86_64-darwin";
+      aarch64-linux = "aarch64-linux";
       aarch64-darwin = "aarch64-darwin";
     };
     
@@ -127,6 +129,18 @@
           }
         ];
       };
+    };
+    
+    # nix build .#nixosConfigurations.iso-aarch64.config.system.build.isoImage
+    iso-aarch64 = nixpkgs.lib.nixosSystem {
+      system = systems.aarch64-linux;
+      specialArgs = {
+        inherit (systems) aarch64-linux;
+        inherit pkgs unstable-pkgs inputs stylix self;
+      };
+      modules = [
+        ./hosts/iso-aarch64-nixos
+      ];
     };
   };
 }

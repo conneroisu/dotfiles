@@ -55,21 +55,21 @@
       aarch64-linux = "aarch64-linux";
       aarch64-darwin = "aarch64-darwin";
     };
-    
+
     pkgs = import nixpkgs {
       system = systems.x86_64-linux;
       config = {
         allowUnfree = true;
       };
     };
-    
+
     darwinPkgs = import nixpkgs {
       system = systems.aarch64-darwin;
       config = {
         allowUnfree = true;
       };
     };
-    
+
     unstable-pkgs = import nixpkgs-unstable {
       system = systems.x86_64-linux;
       config = {
@@ -87,12 +87,24 @@
           ./hosts/x86_64-nixos
           nixos-hardware.nixosModules.dell-xps-15-9510
           nix-ld.nixosModules.nix-ld
-          { programs.nix-ld.dev.enable = true; }
+          {programs.nix-ld.dev.enable = true;}
           inputs.stylix.nixosModules.stylix
         ];
       };
+
+      # nix build .#nixosConfigurations.iso-aarch64.config.system.build.isoImage
+      iso-aarch64 = nixpkgs.lib.nixosSystem {
+        system = systems.aarch64-linux;
+        specialArgs = {
+          system = systems.aarch64-linux;
+          inherit pkgs unstable-pkgs inputs stylix self;
+        };
+        modules = [
+          ./hosts/iso-aarch64
+        ];
+      };
     };
-    
+
     darwinConfigurations = {
       "Conners-MacBook-Air" = darwin.lib.darwinSystem {
         system = systems.aarch64-darwin;
@@ -129,18 +141,6 @@
           }
         ];
       };
-    };
-    
-    # nix build .#nixosConfigurations.iso-aarch64.config.system.build.isoImage
-    iso-aarch64 = nixpkgs.lib.nixosSystem {
-      system = systems.aarch64-linux;
-      specialArgs = {
-        inherit (systems) aarch64-linux;
-        inherit pkgs unstable-pkgs inputs stylix self;
-      };
-      modules = [
-        ./hosts/iso-aarch64-nixos
-      ];
     };
   };
 }

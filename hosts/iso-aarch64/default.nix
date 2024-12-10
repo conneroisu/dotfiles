@@ -15,7 +15,6 @@ in
   imports = [
   	"${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
-  pkgs.hostPlatform.system = "${system}";
 
   # Bootloader.
   boot = {

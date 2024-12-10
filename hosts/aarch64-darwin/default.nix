@@ -48,12 +48,6 @@ in {
     name = "connerohnesorge";
   };
 
-  home-manager.users.connerohnesorge = {
-    home.stateVersion = "24.11";
-    home.packages = with pkgs; [
-      devenv
-    ];
-  };
   homebrew = {
     enable = true;
     brews = [

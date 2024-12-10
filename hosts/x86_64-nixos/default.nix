@@ -192,6 +192,7 @@ in
     image = ./../../../Pictures/klaus-desktop.jpg;
     polarity = "dark";
   };
+
   # Leave this.
   system.stateVersion = "24.11";
 }

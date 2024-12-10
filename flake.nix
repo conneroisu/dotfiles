@@ -32,21 +32,19 @@
       url = "github:homebrew/homebrew-bundle";
       flake = false;
     };
+    agenix.url = "github:ryantm/agenix";
   };
 
   outputs = inputs @ {
     self,
-    nixpkgs,
-    nixpkgs-unstable,
-    nix-ld,
-    nixos-hardware,
-    stylix,
-    home-manager,
     darwin,
+    nix-ld,
+    stylix,
+    nixpkgs,
+    home-manager,
     nix-homebrew,
-    homebrew-core,
-    homebrew-cask,
-    homebrew-bundle,
+    nixos-hardware,
+    nixpkgs-unstable,
     ...
   }: let
     systems = {
@@ -55,53 +53,40 @@
       aarch64-linux = "aarch64-linux";
       aarch64-darwin = "aarch64-darwin";
     };
-
-    pkgs = import nixpkgs {
+    x86_64-linux-pkgs = import nixpkgs {
       system = systems.x86_64-linux;
-      config = {
-        allowUnfree = true;
-      };
+      config = {allowUnfree = true;};
     };
-    aarch64-pkgs = import nixpkgs {
-      system = systems.aarch64-linux;
-      config = {
-        allowUnfree = true;
-      };
-    };
-    darwinPkgs = import nixpkgs {
-      system = systems.aarch64-darwin;
-      config = {
-        allowUnfree = true;
-      };
-    };
-    unstable-pkgs = import nixpkgs-unstable {
+    x86_64-linux-unstable-pkgs = import nixpkgs-unstable {
       system = systems.x86_64-linux;
-      config = {
-        allowUnfree = true;
-      };
+      config = {allowUnfree = true;};
     };
-    aarch64-unstable-pkgs = import nixpkgs-unstable {
+    aarch64-linux-pkgs = import nixpkgs {
       system = systems.aarch64-linux;
-      config = {
-        allowUnfree = true;
-      };
+      config = {allowUnfree = true;};
     };
-    darwin-unstable-pkgs = import nixpkgs-unstable {
+    aarch64-darwin-pkgs = import nixpkgs {
       system = systems.aarch64-darwin;
-      config = {
-        allowUnfree = true;
-      };
+      config = {allowUnfree = true;};
+    };
+    aarch64-linux-unstable-pkgs = import nixpkgs-unstable {
+      system = systems.aarch64-linux;
+      config = {allowUnfree = true;};
+    };
+    aarch64-darwin-unstable-pkgs = import nixpkgs-unstable {
+      system = systems.aarch64-darwin;
+      config = {allowUnfree = true;};
     };
   in {
     nixosConfigurations = {
-
       # nix build .#nixosConfigurations.nixos -o nixos
       nixos = nixpkgs.lib.nixosSystem {
+        system = systems.x86_64-linux;
         specialArgs = {
-          system = systems.x86_64-linux;
-          inherit pkgs unstable-pkgs inputs stylix self;
+          inherit x86_64-linux-pkgs x86_64-linux-unstable-pkgs inputs stylix self;
         };
         modules = [
+          home-manager.nixosModules.home-manager
           ./hosts/x86_64-nixos
           nixos-hardware.nixosModules.dell-xps-15-9510
           nix-ld.nixosModules.nix-ld
@@ -109,34 +94,35 @@
           inputs.stylix.nixosModules.stylix
         ];
       };
-
       # nix build .#nixosConfigurations.iso-aarch64.config.system.build.isoImage
       iso-aarch64 = nixpkgs.lib.nixosSystem {
         system = systems.aarch64-linux;
         specialArgs = {
           system = systems.aarch64-linux;
-          inherit  inputs stylix self;
-          pkgs = aarch64-pkgs;
-          unstable-pkgs = aarch64-unstable-pkgs;
+          inherit inputs stylix self;
+          pkgs = aarch64-linux-pkgs;
+          unstable-pkgs = aarch64-linux-unstable-pkgs;
         };
         modules = [
           ./hosts/iso-aarch64
+          home-manager.nixosModules.home-manager
         ];
       };
     };
 
     darwinConfigurations = {
+      # nix build .#darwinConfigurations.Conners-MacBook-Air -o Conners-MacBook-Air
+      # darwin-rebuild switch --flake .#darwinConfigurations.Conners-MacBook-Air
       "Conners-MacBook-Air" = darwin.lib.darwinSystem {
         system = systems.aarch64-darwin;
         specialArgs = {
-          inherit (systems) aarch64-darwin;
           inherit inputs self;
-          pkgs = darwinPkgs;
-          unstable-pkgs = darwin-unstable-pkgs;
+          pkgs = aarch64-darwin-pkgs;
+          unstable-pkgs = aarch64-darwin-unstable-pkgs;
         };
         modules = [
-          ./hosts/aarch64-darwin
           home-manager.darwinModules.home-manager
+          ./hosts/aarch64-darwin
           {
             home-manager = {
               useGlobalPkgs = true;
@@ -144,8 +130,8 @@
               users.connerohnesorge = import ./home.nix;
               extraSpecialArgs = {
                 inherit inputs self;
-                pkgs = darwinPkgs;
-                unstable-pkgs = darwin-unstable-pkgs;
+                pkgs = aarch64-darwin-pkgs;
+                unstable-pkgs = aarch64-darwin-unstable-pkgs;
               };
             };
           }

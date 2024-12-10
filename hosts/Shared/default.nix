@@ -2,6 +2,7 @@
 {
   environment.systemPackages = with pkgs; [
     git
+    git-lfs
     pkgs.home-manager
     gnumake
     cmake

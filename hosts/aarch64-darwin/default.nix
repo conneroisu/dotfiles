@@ -1,7 +1,6 @@
 {
   self,
   pkgs,
-  agenix,
   unstable-pkgs,
   config,
   ...
@@ -9,7 +8,7 @@
   sharedPkgs =
     (
       import ../Shared {
-        inherit pkgs unstable-pkgs agenix;
+        inherit pkgs unstable-pkgs;
       }
     )
     .environment

@@ -10,8 +10,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-ld = {
-      inputs.nixpkgs.follows = "nixpkgs";
       url = "github:Mic92/nix-ld";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
@@ -32,14 +32,12 @@
       url = "github:homebrew/homebrew-bundle";
       flake = false;
     };
-    agenix.url = "github:ryantm/agenix";
   };
 
   outputs = inputs @ {
     self,
     darwin,
     nix-ld,
-    agenix,
     stylix,
     nixpkgs,
     nixpkgs-unstable,
@@ -79,7 +77,7 @@
       nixos = nixpkgs.lib.nixosSystem {
         system = systems.x86_64-linux;
         specialArgs = {
-          inherit  inputs agenix stylix self home-manager;
+          inherit  stylix self home-manager;
           pkgs = x86_64-linux-pkgs;
           unstable-pkgs = x86_64-linux-unstable-pkgs;
         };
@@ -90,7 +88,6 @@
           nix-ld.nixosModules.nix-ld
           {programs.nix-ld.dev.enable = true;}
           stylix.nixosModules.stylix
-          agenix.nixosModules.default
         ];
       };
     };
@@ -101,13 +98,12 @@
       "Conners-MacBook-Air" = darwin.lib.darwinSystem {
         system = systems.aarch64-darwin;
         specialArgs = {
-          inherit inputs self agenix;
+          inherit  self;
           pkgs = aarch64-darwin-pkgs;
           unstable-pkgs = aarch64-darwin-unstable-pkgs;
         };
         modules = [
           home-manager.darwinModules.home-manager
-          agenix.darwinModules.default
           ./hosts/aarch64-darwin
           {
             home-manager = {
@@ -115,7 +111,7 @@
               useUserPackages = true;
               users.connerohnesorge = import ./home.nix;
               extraSpecialArgs = {
-                inherit inputs self;
+                inherit  self;
                 pkgs = aarch64-darwin-pkgs;
                 unstable-pkgs = aarch64-darwin-unstable-pkgs;
               };

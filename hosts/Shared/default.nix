@@ -1,7 +1,6 @@
 {
   pkgs,
   unstable-pkgs,
-  agenix,
   ...
 }: {
   environment.systemPackages = with pkgs; [
@@ -14,8 +13,7 @@
     vim
     obsidian
     stow
-    infisical
-    agenix.packages.${system}.default
+    unstable-pkgs.infisical
 
     # Shell
     zsh

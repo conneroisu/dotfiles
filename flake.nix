@@ -105,6 +105,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              users.connerohnesorge = import ./home.nix;
               extraSpecialArgs = {
                 inherit inputs self darwinPkgs;
               };

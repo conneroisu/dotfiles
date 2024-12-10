@@ -61,16 +61,8 @@
       system = systems.x86_64-linux;
       config = {allowUnfree = true;};
     };
-    aarch64-linux-pkgs = import nixpkgs {
-      system = systems.aarch64-linux;
-      config = {allowUnfree = true;};
-    };
     aarch64-darwin-pkgs = import nixpkgs {
       system = systems.aarch64-darwin;
-      config = {allowUnfree = true;};
-    };
-    aarch64-linux-unstable-pkgs = import nixpkgs-unstable {
-      system = systems.aarch64-linux;
       config = {allowUnfree = true;};
     };
     aarch64-darwin-unstable-pkgs = import nixpkgs-unstable {
@@ -83,7 +75,9 @@
       nixos = nixpkgs.lib.nixosSystem {
         system = systems.x86_64-linux;
         specialArgs = {
-          inherit x86_64-linux-pkgs x86_64-linux-unstable-pkgs inputs stylix self;
+          inherit  inputs stylix self;
+          pkgs = x86_64-linux-pkgs;
+          unstable-pkgs = x86_64-linux-unstable-pkgs;
         };
         modules = [
           home-manager.nixosModules.home-manager
@@ -92,20 +86,6 @@
           nix-ld.nixosModules.nix-ld
           {programs.nix-ld.dev.enable = true;}
           inputs.stylix.nixosModules.stylix
-        ];
-      };
-      # nix build .#nixosConfigurations.iso-aarch64.config.system.build.isoImage
-      iso-aarch64 = nixpkgs.lib.nixosSystem {
-        system = systems.aarch64-linux;
-        specialArgs = {
-          system = systems.aarch64-linux;
-          inherit inputs stylix self;
-          pkgs = aarch64-linux-pkgs;
-          unstable-pkgs = aarch64-linux-unstable-pkgs;
-        };
-        modules = [
-          ./hosts/iso-aarch64
-          home-manager.nixosModules.home-manager
         ];
       };
     };

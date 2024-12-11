@@ -3,6 +3,7 @@
   pkgs,
   unstable-pkgs,
   config,
+  zen-browser,
   homebrew-core,
   homebrew-cask,
   homebrew-bundle,
@@ -11,7 +12,7 @@
   sharedPkgs =
     (
       import ../Shared {
-        inherit pkgs unstable-pkgs;
+        inherit pkgs unstable-pkgs zen-browser;
       }
     )
     .environment
@@ -27,6 +28,7 @@ in {
       raycast
       google-chrome
       utm
+      virtualbox
     ]);
 
   nix.settings.experimental-features = "nix-command flakes";

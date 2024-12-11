@@ -1,6 +1,7 @@
 {
   pkgs,
   unstable-pkgs,
+  zen-browser,
   ...
 }: {
   environment.systemPackages = with pkgs; [
@@ -14,6 +15,8 @@
     obsidian
     stow
     unstable-pkgs.infisical
+
+    zen-browser.packages."${system}".default
 
     # Shell
     zsh

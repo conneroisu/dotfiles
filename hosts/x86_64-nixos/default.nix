@@ -5,7 +5,7 @@
   zen-browser,
   ...
 }: let
-  sharedPkgs = (import ../Shared {inherit pkgs unstable-pkgs;}).environment.systemPackages;
+  sharedPkgs = (import ../Shared {inherit pkgs unstable-pkgs zen-browser;}).environment.systemPackages;
 in {
   imports = [
     ./hardware-configuration.nix
@@ -129,7 +129,6 @@ in {
       nh
       pkgs.home-manager
       google-chrome
-      zen-browser.packages."${system}".default
       wget
       git
       neovim

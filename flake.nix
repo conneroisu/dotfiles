@@ -17,7 +17,9 @@
       url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    zen-browser.url = "github:conneroisu/zen-browser-flake";
+    zen-browser = {
+      url = "github:conneroisu/zen-browser-flake/master";
+    };
     stylix.url = "github:danth/stylix";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     homebrew-core = {
@@ -32,55 +34,55 @@
       url = "github:homebrew/homebrew-bundle";
       flake = false;
     };
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     self,
+    nixpkgs,
+    nixpkgs-unstable,
+    zen-browser,
     darwin,
     nix-ld,
     stylix,
-    zen-browser,
-    nixpkgs,
-    nixpkgs-unstable,
     home-manager,
     nix-homebrew,
     nixos-hardware,
     homebrew-core,
     homebrew-cask,
     homebrew-bundle,
+    nixos-generators,
     ...
-  }: let
+  } @ inputs: let
     systems = {
       x86_64-linux = "x86_64-linux";
       x86_64-darwin = "x86_64-darwin";
       aarch64-linux = "aarch64-linux";
       aarch64-darwin = "aarch64-darwin";
     };
-    x86_64-linux-pkgs = import nixpkgs {
-      system = systems.x86_64-linux;
-      config = {allowUnfree = true;};
-    };
-    x86_64-linux-unstable-pkgs = import nixpkgs-unstable {
-      system = systems.x86_64-linux;
-      config = {allowUnfree = true;};
-    };
-    aarch64-darwin-pkgs = import nixpkgs {
-      system = systems.aarch64-darwin;
-      config = {allowUnfree = true;};
-    };
-    aarch64-darwin-unstable-pkgs = import nixpkgs-unstable {
-      system = systems.aarch64-darwin;
-      config = {allowUnfree = true;};
-    };
   in {
     nixosConfigurations = {
-      # nix build .#nixosConfigurations.nixos -o nixos
-      nixos = nixpkgs.lib.nixosSystem {
+      # nix build .#nixosConfigurations.nixosXPS -o nixosXPS
+      nixosXPS = nixpkgs.lib.nixosSystem {
         system = systems.x86_64-linux;
         specialArgs = {
-          inherit stylix self home-manager zen-browser;
-          pkgs = x86_64-linux-pkgs;
-          unstable-pkgs = x86_64-linux-unstable-pkgs;
+          inherit
+            self
+            stylix
+            home-manager
+            zen-browser
+            ;
+          pkgs = import nixpkgs {
+            system = systems.x86_64-linux;
+            config = {allowUnfree = true;};
+          };
+          unstable-pkgs = import nixpkgs-unstable {
+            system = systems.x86_64-linux;
+            config = {allowUnfree = true;};
+          };
         };
         modules = [
           home-manager.nixosModules.home-manager
@@ -91,6 +93,36 @@
           ./hosts/x86_64-nixos
         ];
       };
+      # nix build .#nixosVM
+      nixosVM = nixos-generators.nixosGenerate {
+        system = systems.aarch64-linux;
+        vbox = {
+          specialArgs = {
+            inherit
+              self
+              stylix
+              home-manager
+              zen-browser
+              ;
+            pkgs = import nixpkgs {
+              system = systems.aarch64-linux;
+              config = {allowUnfree = true;};
+            };
+            unstable-pkgs = import nixpkgs-unstable {
+              system = systems.aarch64-linux;
+              config = {allowUnfree = true;};
+            };
+          };
+          modules = [
+            home-manager.nixosModules.home-manager
+            stylix.nixosModules.stylix
+            nix-ld.nixosModules.nix-ld
+            {programs.nix-ld.dev.enable = true;}
+            ./hosts/x86_64-nixos
+          ];
+        };
+        format = "virtualbox";
+      };
     };
 
     darwinConfigurations = {
@@ -99,9 +131,21 @@
       "Conners-MacBook-Air" = darwin.lib.darwinSystem {
         system = systems.aarch64-darwin;
         specialArgs = {
-          inherit self homebrew-core homebrew-cask homebrew-bundle;
-          pkgs = aarch64-darwin-pkgs;
-          unstable-pkgs = aarch64-darwin-unstable-pkgs;
+          inherit
+            self
+            homebrew-core
+            homebrew-cask
+            homebrew-bundle
+            zen-browser
+            ;
+          pkgs = import nixpkgs {
+            system = systems.aarch64-darwin;
+            config = {allowUnfree = true;};
+          };
+          unstable-pkgs = import nixpkgs-unstable {
+            system = systems.aarch64-darwin;
+            config = {allowUnfree = true;};
+          };
         };
         modules = [
           home-manager.darwinModules.home-manager

@@ -34,10 +34,6 @@
       url = "github:homebrew/homebrew-bundle";
       flake = false;
     };
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
@@ -54,7 +50,6 @@
     homebrew-core,
     homebrew-cask,
     homebrew-bundle,
-    nixos-generators,
     ...
   } @ inputs: let
     systems = {
@@ -92,36 +87,6 @@
           {programs.nix-ld.dev.enable = true;}
           ./hosts/x86_64-nixos
         ];
-      };
-      # nix build .#nixosVM
-      nixosVM = nixos-generators.nixosGenerate {
-        system = systems.aarch64-linux;
-        vbox = {
-          specialArgs = {
-            inherit
-              self
-              stylix
-              home-manager
-              zen-browser
-              ;
-            pkgs = import nixpkgs {
-              system = systems.aarch64-linux;
-              config = {allowUnfree = true;};
-            };
-            unstable-pkgs = import nixpkgs-unstable {
-              system = systems.aarch64-linux;
-              config = {allowUnfree = true;};
-            };
-          };
-          modules = [
-            home-manager.nixosModules.home-manager
-            stylix.nixosModules.stylix
-            nix-ld.nixosModules.nix-ld
-            {programs.nix-ld.dev.enable = true;}
-            ./hosts/x86_64-nixos
-          ];
-        };
-        format = "virtualbox";
       };
     };
 

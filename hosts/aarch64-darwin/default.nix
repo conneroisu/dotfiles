@@ -28,7 +28,6 @@ in {
       raycast
       google-chrome
       utm
-      virtualbox
     ]);
 
   nix.settings.experimental-features = "nix-command flakes";

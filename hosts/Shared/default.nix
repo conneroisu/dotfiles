@@ -43,6 +43,7 @@
     eza
     nixos-generators
     emacs
+    sleek
 
     delta
     tailwindcss
@@ -65,6 +66,7 @@
     sqlite
     sqlite-vec
     ollama
+    jetbrains.datagrip
 
     # Editors
     neovim

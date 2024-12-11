@@ -61,15 +61,9 @@
   in {
     nixosConfigurations = {
       # nix build .#nixosConfigurations.nixosXPS -o nixosXPS
-      nixosXPS = nixpkgs.lib.nixosSystem {
+      nixos = nixpkgs.lib.nixosSystem {
         system = systems.x86_64-linux;
         specialArgs = {
-          inherit
-            self
-            stylix
-            home-manager
-            zen-browser
-            ;
           pkgs = import nixpkgs {
             system = systems.x86_64-linux;
             config = {allowUnfree = true;};
@@ -78,6 +72,12 @@
             system = systems.x86_64-linux;
             config = {allowUnfree = true;};
           };
+          inherit
+            self
+            home-manager
+            stylix
+            zen-browser
+            ;
         };
         modules = [
           home-manager.nixosModules.home-manager
@@ -96,13 +96,6 @@
       "Conners-MacBook-Air" = darwin.lib.darwinSystem {
         system = systems.aarch64-darwin;
         specialArgs = {
-          inherit
-            self
-            homebrew-core
-            homebrew-cask
-            homebrew-bundle
-            zen-browser
-            ;
           pkgs = import nixpkgs {
             system = systems.aarch64-darwin;
             config = {allowUnfree = true;};
@@ -111,6 +104,13 @@
             system = systems.aarch64-darwin;
             config = {allowUnfree = true;};
           };
+          inherit
+            self
+            homebrew-core
+            homebrew-cask
+            homebrew-bundle
+            zen-browser
+            ;
         };
         modules = [
           home-manager.darwinModules.home-manager

@@ -88,6 +88,33 @@
           ./hosts/x86_64-nixos
         ];
       };
+
+      aarch-nixos = nixpkgs.lib.nixosSystem {
+        system = systems.aarch64-linux;
+        specialArgs = {
+          pkgs = import nixpkgs {
+            system = systems.aarch64-linux;
+            config = {allowUnfree = true;};
+          };
+          unstable-pkgs = import nixpkgs-unstable {
+            system = systems.aarch64-linux;
+            config = {allowUnfree = true;};
+          };
+          inherit
+            self
+            home-manager
+            stylix
+            zen-browser
+            ;
+        };
+        modules = [
+          home-manager.nixosModules.home-manager
+          stylix.nixosModules.stylix
+          nix-ld.nixosModules.nix-ld
+          {programs.nix-ld.dev.enable = true;}
+          ./hosts/aarch64-nixos
+        ];
+      };
     };
 
     darwinConfigurations = {

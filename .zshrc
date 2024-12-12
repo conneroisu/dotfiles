@@ -71,3 +71,47 @@ zstyle ':completion:*' menu no
 
 # bun completions
 [ -s "/home/connerohnesorge/.bun/_bun" ] && source "/home/connerohnesorge/.bun/_bun"
+
+command_not_found_handler() {
+    local cmd="$1"
+    local packages
+
+    # Use nix-locate to find packages containing this command.
+    # `nix-locate` is often used with some filtering options, e.g.:
+    # nix-locate -w "$cmd" 
+    # If your system differs, adjust accordingly.
+    packages=$(rippkgs -i ~/dotfiles/rippkgs-index.sqlite "$cmd")
+
+    if [[ -z "$packages" ]]; then
+        echo "Command not found: $cmd"
+        return 127
+    fi
+
+    echo "The command '$cmd' was not found, but the following packages from Nix might provide it:"
+    echo "$packages"
+
+    echo "Fetching more info on these packages using rippkgs..."
+    echo "====================================================="
+    # Using rippkgs to get details. Adjust flags/options as needed.
+    # We’ll assume $packages is a newline-separated list of package attributes or names.
+    echo "$packages" | while read -r pkg; do
+        # If rippkgs supports a format like `rippkgs <pkg>`, adjust this line accordingly.
+        rippkgs "$pkg"
+        echo "-----------------------------------------------------"
+    done
+
+    # Prompt the user
+    echo "Do you want to install any of these packages to provide '$cmd'? (y/n)"
+    read -r answer
+    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+        # Here you might call `nix-env -iA` or `nix profile install`, depending on Nix version.
+        # If multiple packages provide this command, you might need more logic to select which.
+        echo "Which package would you like to install?"
+        read -r selection
+        # Perform the installation
+        nix-env -iA "$selection" # Adjust for flakes or new Nix if necessary
+    fi
+
+    # Returning a non-zero status code, assuming not installed
+    return 127
+}

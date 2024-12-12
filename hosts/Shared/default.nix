@@ -45,6 +45,10 @@
     emacs
     sleek
 
+    nil
+    nh
+    rippkgs
+
     delta
     tailwindcss
     sad
@@ -55,10 +59,10 @@
     vhdl-ls
     nodejs
     stow
-    nil
     nvc
     uv
     unzip
+    htop
     ripgrep
     tealdeer
     meson
@@ -67,6 +71,7 @@
     sqlite-vec
     ollama
     jetbrains.datagrip
+    pkg-config
 
     # Editors
     neovim
@@ -204,6 +209,8 @@
 
     luajitPackages.luarocks
     wget
+    pfetch-rs
+    matugen
     # Formatters
     hclfmt
     shfmt

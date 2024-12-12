@@ -130,9 +130,6 @@ in {
       nh
       pkgs.home-manager
       google-chrome
-      wget
-      git
-      neovim
       hyprland
       hyprcursor
       hyprkeys
@@ -154,11 +151,9 @@ in {
       rofi-bluetooth
       rofi-power-menu
       spotify
-      gh
+      android-studio
       gpu-screen-recorder
-      matugen
       brightnessctl
-      pfetch-rs
       xfce.thunar
       wl-clipboard
       kitty
@@ -176,14 +171,11 @@ in {
       ghdl
       nvc
       lshw
-      htop
       pkgconf
       verible
       nvidia-docker
       nvtopPackages.nvidia
-
       gdb
-      pkg-config
     ]);
 
   stylix = {

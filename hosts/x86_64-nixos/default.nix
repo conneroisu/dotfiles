@@ -1,7 +1,7 @@
 {
-  config,
   pkgs,
   unstable-pkgs,
+  config,
   zen-browser,
   ...
 }: let
@@ -10,6 +10,8 @@ in {
   imports = [
     ./hardware-configuration.nix
   ];
+  # Leave this.
+  system.stateVersion = "24.11";
 
   # Bootloader.
   boot = {
@@ -178,6 +180,9 @@ in {
       gdb
     ]);
 
+  # NixosOnly Programs
+  programs.nix-ld.dev.enable = true;
+  
   stylix = {
     enable = true;
     autoEnable = true;
@@ -185,7 +190,4 @@ in {
     image = ./../../../Pictures/klaus-desktop.jpg;
     polarity = "dark";
   };
-
-  # Leave this.
-  system.stateVersion = "24.11";
 }

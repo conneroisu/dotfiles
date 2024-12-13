@@ -3,32 +3,20 @@
   pkgs,
   unstable-pkgs,
   config,
-  zen-browser,
   homebrew-core,
   homebrew-cask,
   homebrew-bundle,
   ...
-}: let
-  sharedPkgs =
-    (
-      import ../Shared {
-        inherit pkgs unstable-pkgs zen-browser;
-      }
-    )
-    .environment
-    .systemPackages;
-in {
+}: {
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  environment.systemPackages =
-    sharedPkgs
-    ++ (with pkgs; [
+  environment.systemPackages = with pkgs; [
       # Macos Only
       aerospace
       raycast
       google-chrome
       utm
-    ]);
+    ];
 
   nix.settings.experimental-features = "nix-command flakes";
 

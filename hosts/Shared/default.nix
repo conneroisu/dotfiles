@@ -5,7 +5,6 @@
   ...
 }: {
   programs = {
-    java.enable = true;
     zsh.enable = true;
 
     direnv.enable = true;

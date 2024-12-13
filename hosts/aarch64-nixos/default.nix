@@ -132,7 +132,6 @@
     kitty
     gtk3
     gtk-layer-shell
-    vmware-horizon-client
     sox
     alsa-utils
     alsa-lib
@@ -140,7 +139,6 @@
     docker
     docker-compose
     docker-compose-language-service
-    quartus-prime-lite
     pkgconf
   ];
 

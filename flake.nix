@@ -42,8 +42,8 @@
   } @ inputs: let
     systems = {
       x86_64-linux = "x86_64-linux";
-      x86_64-darwin = "x86_64-darwin";
       aarch64-linux = "aarch64-linux";
+      x86_64-darwin = "x86_64-darwin";
       aarch64-darwin = "aarch64-darwin";
     };
   in {
@@ -67,6 +67,27 @@
           nix-ld.nixosModules.nix-ld
           ./hosts/Shared
           ./hosts/xps-nixos
+        ];
+      };
+      aarch-nixos = nixpkgs.lib.nixosSystem {
+        system = systems.aarch64-linux;
+        specialArgs = {
+          pkgs = import nixpkgs {
+            system = systems.aarch64-linux;
+            config = {allowUnfree = true;};
+          };
+          unstable-pkgs = import nixpkgs-unstable {
+            system = systems.aarch64-linux;
+            config = {allowUnfree = true;};
+          };
+          inherit self stylix zen-browser;
+        };
+        modules = [
+          nixos-hardware.nixosModules.dell-xps-15-9510
+          stylix.nixosModules.stylix
+          nix-ld.nixosModules.nix-ld
+          ./hosts/Shared
+          ./hosts/aarch64-nixos
         ];
       };
     };

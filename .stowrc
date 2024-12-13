@@ -1,0 +1,14 @@
+--ignore .git
+--ignore .gitmodules
+--ignore .gitignore
+--ignore .DS_Store
+--ignore flake.lock
+--ignore flake.nix
+--ignore infisical.json
+--ignore .stowrc
+--ignore Makefile
+--ignore Taskfile.yaml
+--ignore .mypy_cache/
+--ignore ./.venv
+--ignore venv
+--ignore ./hosts/

@@ -83,7 +83,6 @@
           inherit self stylix zen-browser;
         };
         modules = [
-          stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
           ./hosts/Shared
           ./hosts/aarch64-nixos

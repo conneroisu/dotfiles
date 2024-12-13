@@ -83,7 +83,6 @@
           inherit self stylix zen-browser;
         };
         modules = [
-          nixos-hardware.nixosModules.dell-xps-15-9510
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
           ./hosts/Shared

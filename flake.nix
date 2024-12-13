@@ -53,10 +53,12 @@
         specialArgs = {
           pkgs = import nixpkgs {
             system = systems.x86_64-linux;
+            hostPlatform = systems.x86_64-linux;
             config = {allowUnfree = true;};
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.x86_64-linux;
+            hostPlatform = systems.x86_64-linux;
             config = {allowUnfree = true;};
           };
           inherit self stylix zen-browser;
@@ -74,10 +76,12 @@
         specialArgs = {
           pkgs = import nixpkgs {
             system = systems.aarch64-linux;
+            hostPlatform = systems.aarch64-linux;
             config = {allowUnfree = true;};
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.aarch64-linux;
+            hostPlatform = systems.aarch64-linux;
             config = {allowUnfree = true;};
           };
           inherit self stylix zen-browser;
@@ -96,10 +100,12 @@
         specialArgs = {
           pkgs = import nixpkgs {
             system = systems.aarch64-darwin;
+            hostPlatform = systems.aarch64-darwin;
             config = {allowUnfree = true;};
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.aarch64-darwin;
+            hostPlatform = systems.aarch64-darwin;
             config = {allowUnfree = true;};
           };
           inherit self zen-browser;

@@ -126,8 +126,6 @@
     rofi-obsidian
     rofi-bluetooth
     rofi-power-menu
-    spotify
-    android-studio
     gpu-screen-recorder
     brightnessctl
     xfce.thunar
@@ -145,9 +143,6 @@
     docker-compose-language-service
     quartus-prime-lite
     pkgconf
-    verible
-    nvidia-docker
-    nvtopPackages.nvidia
   ];
 
   # Leave this.

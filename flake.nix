@@ -5,46 +5,41 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    darwin = {
-      url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-ld = {
-      url = "github:Mic92/nix-ld";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    zen-browser = {
-      url = "github:conneroisu/zen-browser-flake/master";
-    };
+    
+    home-manager.url = "github:nix-community/home-manager/release-24.11";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    
+    nix-ld.url = "github:Mic92/nix-ld";
+    nix-ld.inputs.nixpkgs.follows = "nixpkgs";
+    
+    zen-browser.url = "github:Conneroisu/zen-browser-flake/master";
+    
     stylix.url = "github:danth/stylix";
+    
+    darwin.url = "github:LnL7/nix-darwin/master";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
+    
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    homebrew-core = {
-      url = "github:homebrew/homebrew-core";
-      flake = false;
-    };
-    homebrew-cask = {
-      url = "github:homebrew/homebrew-cask";
-      flake = false;
-    };
-    homebrew-bundle = {
-      url = "github:homebrew/homebrew-bundle";
-      flake = false;
-    };
+    
+    homebrew-core.url = "github:Homebrew/homebrew-core";
+    homebrew-core.flake = false;
+    
+    homebrew-cask.url = "github:Homebrew/homebrew-cask";
+    homebrew-bundle.url = "github:Homebrew/homebrew-bundle";
+
+    homebrew-cask.flake = false;
+    homebrew-bundle.flake = false;
   };
 
   outputs = {
     self,
     nixpkgs,
     nixpkgs-unstable,
+    home-manager,
     zen-browser,
-    darwin,
     nix-ld,
     stylix,
-    home-manager,
+    darwin,
     nix-homebrew,
     nixos-hardware,
     homebrew-core,
@@ -86,33 +81,6 @@
           nix-ld.nixosModules.nix-ld
           {programs.nix-ld.dev.enable = true;}
           ./hosts/x86_64-nixos
-        ];
-      };
-
-      aarch-nixos = nixpkgs.lib.nixosSystem {
-        system = systems.aarch64-linux;
-        specialArgs = {
-          pkgs = import nixpkgs {
-            system = systems.aarch64-linux;
-            config = {allowUnfree = true;};
-          };
-          unstable-pkgs = import nixpkgs-unstable {
-            system = systems.aarch64-linux;
-            config = {allowUnfree = true;};
-          };
-          inherit
-            self
-            home-manager
-            stylix
-            zen-browser
-            ;
-        };
-        modules = [
-          home-manager.nixosModules.home-manager
-          stylix.nixosModules.stylix
-          nix-ld.nixosModules.nix-ld
-          {programs.nix-ld.dev.enable = true;}
-          ./hosts/aarch64-nixos
         ];
       };
     };

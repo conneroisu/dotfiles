@@ -92,25 +92,6 @@ command_not_found_handler() {
 
     echo "Fetching more info on these packages using rippkgs..."
     echo "====================================================="
-    # Using rippkgs to get details. Adjust flags/options as needed.
-    # We’ll assume $packages is a newline-separated list of package attributes or names.
-    echo "$packages" | while read -r pkg; do
-        # If rippkgs supports a format like `rippkgs <pkg>`, adjust this line accordingly.
-        rippkgs "$pkg"
-        echo "-----------------------------------------------------"
-    done
-
-    # Prompt the user
-    echo "Do you want to install any of these packages to provide '$cmd'? (y/n)"
-    read -r answer
-    if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
-        # Here you might call `nix-env -iA` or `nix profile install`, depending on Nix version.
-        # If multiple packages provide this command, you might need more logic to select which.
-        echo "Which package would you like to install?"
-        read -r selection
-        # Perform the installation
-        nix-env -iA "$selection" # Adjust for flakes or new Nix if necessary
-    fi
 
     # Returning a non-zero status code, assuming not installed
     return 127

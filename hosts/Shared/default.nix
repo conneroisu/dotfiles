@@ -4,6 +4,13 @@
   zen-browser,
   ...
 }: {
+  programs = {
+    java.enable = true;
+    zsh.enable = true;
+
+    direnv.enable = true;
+    direnv.nix-direnv.enable = true;
+  };
   environment.systemPackages = with pkgs; [
     git
     git-lfs
@@ -17,6 +24,7 @@
     unstable-pkgs.infisical
 
     zen-browser.packages."${system}".default
+    jdk23
 
     # Shell
     zsh
@@ -48,6 +56,7 @@
     nil
     nh
     rippkgs
+    update-nix-fetchgit
 
     delta
     tailwindcss

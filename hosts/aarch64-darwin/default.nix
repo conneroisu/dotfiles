@@ -77,8 +77,6 @@ in {
   };
   nixpkgs.hostPlatform = "aarch64-darwin";
   security.pam.enableSudoTouchIdAuth = true;
-  programs.direnv.enable = true;
-  programs.direnv.nix-direnv.enable = true;
   nixpkgs.config.allowUnfree = true;
   system.activationScripts.applications.text = let
     env = pkgs.buildEnv {

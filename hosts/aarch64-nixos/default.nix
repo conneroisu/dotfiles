@@ -15,7 +15,7 @@
     loader.efi.canTouchEfiVariables = true;
   };
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "aarch-nixos"; # Define your hostname.
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/Chicago";
@@ -154,14 +154,6 @@
     nvidia-docker
     nvtopPackages.nvidia
   ];
-
-  stylix = {
-    enable = true;
-    autoEnable = true;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-    image = ./../../../Pictures/klaus-desktop.jpg;
-    polarity = "dark";
-  };
 
   # Leave this.
   system.stateVersion = "24.11";

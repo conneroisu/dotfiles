@@ -72,7 +72,7 @@
   services = {
     xserver = {
       enable = true;
-      videoDrivers = ["nvidia"];
+      videoDrivers = [];
       displayManager.gdm.enable = true;
       desktopManager.gnome.enable = true;
       xkb = {
@@ -81,11 +81,6 @@
       };
     };
     printing.enable = true;
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      pulse.enable = true;
-    };
     libinput.enable = true;
   };
   security.rtkit.enable = true;

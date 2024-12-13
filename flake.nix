@@ -6,9 +6,6 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    home-manager.url = "github:nix-community/home-manager/release-24.11";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
     nix-ld.url = "github:Mic92/nix-ld";
     nix-ld.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -35,7 +32,6 @@
     self,
     nixpkgs,
     nixpkgs-unstable,
-    home-manager,
     zen-browser,
     nix-ld,
     stylix,
@@ -62,10 +58,9 @@
           system = systems.x86_64-linux;
           config = {allowUnfree = true;};
         };
-        inherit self home-manager stylix zen-browser;
+        inherit self stylix zen-browser;
       };
       modules = [
-        home-manager.nixosModules.home-manager
         nixos-hardware.nixosModules.dell-xps-15-9510
         stylix.nixosModules.stylix
         nix-ld.nixosModules.nix-ld
@@ -95,17 +90,9 @@
           ;
       };
       modules = [
-        home-manager.darwinModules.home-manager
         nix-homebrew.darwinModules.nix-homebrew
         ./hosts/Shared
         ./hosts/aarch64-darwin
-        {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            users.connerohnesorge = import ./home.nix;
-          };
-        }
       ];
     };
   };

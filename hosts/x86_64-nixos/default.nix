@@ -130,7 +130,6 @@ in {
       nix-ld
       alejandra
       nh
-      pkgs.home-manager
       google-chrome
       hyprland
       hyprcursor

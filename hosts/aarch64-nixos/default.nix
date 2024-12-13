@@ -69,7 +69,6 @@
       };
     };
   };
-
   services = {
     xserver = {
       enable = true;
@@ -117,9 +116,8 @@
     nix-ld
     alejandra
     nh
-    pkgs.home-manager
     google-chrome
-    hyprland
+    unstable-pkgs.hyprland
     hyprcursor
     hyprkeys
     hyprpaper

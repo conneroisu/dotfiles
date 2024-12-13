@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   unstable-pkgs,
   zen-browser,
@@ -10,10 +11,10 @@
     direnv.enable = true;
     direnv.nix-direnv.enable = true;
   };
+
   environment.systemPackages = with pkgs; [
     git
     git-lfs
-    pkgs.home-manager
     gnumake
     cmake
     go-task

@@ -126,7 +126,6 @@
     rofi-obsidian
     rofi-bluetooth
     rofi-power-menu
-    gpu-screen-recorder
     brightnessctl
     xfce.thunar
     wl-clipboard

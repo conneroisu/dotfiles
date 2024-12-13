@@ -47,53 +47,56 @@
       aarch64-darwin = "aarch64-darwin";
     };
   in {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      system = systems.x86_64-linux;
-      specialArgs = {
-        pkgs = import nixpkgs {
-          system = systems.x86_64-linux;
-          config = {allowUnfree = true;};
+    nixosConfigurations = {
+      xps-nixos = nixpkgs.lib.nixosSystem {
+        system = systems.x86_64-linux;
+        specialArgs = {
+          pkgs = import nixpkgs {
+            system = systems.x86_64-linux;
+            config = {allowUnfree = true;};
+          };
+          unstable-pkgs = import nixpkgs-unstable {
+            system = systems.x86_64-linux;
+            config = {allowUnfree = true;};
+          };
+          inherit self stylix zen-browser;
         };
-        unstable-pkgs = import nixpkgs-unstable {
-          system = systems.x86_64-linux;
-          config = {allowUnfree = true;};
-        };
-        inherit self stylix zen-browser;
+        modules = [
+          nixos-hardware.nixosModules.dell-xps-15-9510
+          stylix.nixosModules.stylix
+          nix-ld.nixosModules.nix-ld
+          ./hosts/Shared
+          ./hosts/xps-nixos
+        ];
       };
-      modules = [
-        nixos-hardware.nixosModules.dell-xps-15-9510
-        stylix.nixosModules.stylix
-        nix-ld.nixosModules.nix-ld
-        ./hosts/Shared
-        ./hosts/x86_64-nixos
-      ];
     };
 
-    darwinConfigurations."Conners-MacBook-Air" = darwin.lib.darwinSystem {
-      system = systems.aarch64-darwin;
-      specialArgs = {
-        pkgs = import nixpkgs {
-          system = systems.aarch64-darwin;
-          config = {allowUnfree = true;};
+    darwinConfigurations = {
+      "Conners-MacBook-Air" = darwin.lib.darwinSystem {
+        system = systems.aarch64-darwin;
+        specialArgs = {
+          pkgs = import nixpkgs {
+            system = systems.aarch64-darwin;
+            config = {allowUnfree = true;};
+          };
+          unstable-pkgs = import nixpkgs-unstable {
+            system = systems.aarch64-darwin;
+            config = {allowUnfree = true;};
+          };
+          inherit self zen-browser;
+          inherit
+            (inputs)
+            homebrew-core
+            homebrew-cask
+            homebrew-bundle
+            ;
         };
-        unstable-pkgs = import nixpkgs-unstable {
-          system = systems.aarch64-darwin;
-          config = {allowUnfree = true;};
-        };
-        inherit self;
-        inherit
-          (inputs)
-          homebrew-core
-          homebrew-cask
-          homebrew-bundle
-          zen-browser
-          ;
+        modules = [
+          nix-homebrew.darwinModules.nix-homebrew
+          ./hosts/Shared
+          ./hosts/aarch64-darwin
+        ];
       };
-      modules = [
-        nix-homebrew.darwinModules.nix-homebrew
-        ./hosts/Shared
-        ./hosts/aarch64-darwin
-      ];
     };
   };
 }

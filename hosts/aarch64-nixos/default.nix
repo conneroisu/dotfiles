@@ -106,7 +106,6 @@
     nix-ld
     alejandra
     nh
-    google-chrome
     unstable-pkgs.hyprland
     hyprcursor
     hyprkeys

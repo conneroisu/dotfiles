@@ -44,10 +44,6 @@
   hardware = {
     graphics = {
       enable = true;
-      extraPackages = with pkgs; [
-        mesa
-        mesa.drivers
-      ];
     };
     nvidia = {
       modesetting.enable = true;

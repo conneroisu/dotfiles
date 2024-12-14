@@ -559,15 +559,15 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1734028846,
-        "narHash": "sha256-DFJ6uibOvVtu4HI9lNwDz4nt4dTI+KuYVKi6FQMByJo=",
-        "owner": "Conneroisu",
+        "lastModified": 1734124481,
+        "narHash": "sha256-xhPYBg7J7yaseMu3TMF1bMlJYJfDiWCZKs94lL9tatg=",
+        "owner": "conneroisu",
         "repo": "zen-browser-flake",
-        "rev": "04287de87db614821fdc19b7c7cf3c5840e8c809",
+        "rev": "f835e3c59981510544b7775e282a2f4c4a497836",
         "type": "github"
       },
       "original": {
-        "owner": "Conneroisu",
+        "owner": "conneroisu",
         "ref": "master",
         "repo": "zen-browser-flake",
         "type": "github"

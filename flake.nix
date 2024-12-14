@@ -9,7 +9,7 @@
     nix-ld.url = "github:Mic92/nix-ld";
     nix-ld.inputs.nixpkgs.follows = "nixpkgs";
 
-    zen-browser.url = "github:Conneroisu/zen-browser-flake/master";
+    zen-browser.url = "github:conneroisu/zen-browser-flake/master";
 
     stylix.url = "github:danth/stylix";
 

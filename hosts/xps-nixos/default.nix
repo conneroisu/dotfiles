@@ -9,6 +9,7 @@
 in {
   imports = [
     ./hardware-configuration.nix
+    ./../Shared/nixos.nix
   ];
   # Leave this.
   system.stateVersion = "24.11";
@@ -179,8 +180,6 @@ in {
       gdb
     ]);
 
-  # NixosOnly Programs
-  programs.nix-ld.dev.enable = true;
   
   stylix = {
     enable = true;

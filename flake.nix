@@ -46,6 +46,7 @@
       x86_64-darwin = "x86_64-darwin";
       aarch64-darwin = "aarch64-darwin";
     };
+    config = { allowUnfree = true; };
   in {
     nixosConfigurations = {
       xps-nixos = nixpkgs.lib.nixosSystem {
@@ -54,12 +55,12 @@
           pkgs = import nixpkgs {
             system = systems.x86_64-linux;
             hostPlatform = systems.x86_64-linux;
-            config = {allowUnfree = true;};
+            inherit config;
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.x86_64-linux;
             hostPlatform = systems.x86_64-linux;
-            config = {allowUnfree = true;};
+            inherit config;
           };
           inherit self stylix zen-browser;
         };
@@ -77,12 +78,12 @@
           pkgs = import nixpkgs {
             system = systems.aarch64-linux;
             hostPlatform = systems.aarch64-linux;
-            config = {allowUnfree = true;};
+            inherit config;
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.aarch64-linux;
             hostPlatform = systems.aarch64-linux;
-            config = {allowUnfree = true;};
+            inherit config;
           };
           inherit self stylix zen-browser;
         };
@@ -101,12 +102,12 @@
           pkgs = import nixpkgs {
             system = systems.aarch64-darwin;
             hostPlatform = systems.aarch64-darwin;
-            config = {allowUnfree = true;};
+            inherit config;
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.aarch64-darwin;
             hostPlatform = systems.aarch64-darwin;
-            config = {allowUnfree = true;};
+            inherit config;
           };
           inherit self zen-browser;
           inherit

@@ -110,7 +110,7 @@ in {
       "wheel"
     ];
     packages = with pkgs; [
-      #  thunderbird
+       thunderbird
     ];
   };
 

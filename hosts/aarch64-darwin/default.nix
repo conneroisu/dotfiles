@@ -11,14 +11,15 @@
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
-      # Macos Only
-      aerospace
-      raycast
-      google-chrome
-      utm
-    ];
+    # Macos Only
+    aerospace
+    raycast
+    google-chrome
+    utm
+  ];
 
   nix.settings.experimental-features = "nix-command flakes";
+  nix.settings.trusted-users = ["root" "connerohnesorge" "@wheel"];
 
   # Set Git commit hash for darwin-version.
   system = {

@@ -19,13 +19,20 @@
     cmake
     go-task
     vim
-    obsidian
     stow
     unstable-pkgs.infisical
 
     zen-browser.packages."${system}".default
     jdk23
 
+    # Apps
+    kitty
+    obsidian
+    neovim
+    emacs
+    zed-editor
+    vscode
+    
     # Shell
     zsh
     zinit
@@ -40,7 +47,6 @@
     delta
     fzf
     nerdfonts
-    kitty
     zellij
     gh
     docker
@@ -50,7 +56,6 @@
     bat
     eza
     nixos-generators
-    emacs
     sleek
 
     nil
@@ -81,11 +86,6 @@
     ollama
     jetbrains.datagrip
     pkg-config
-
-    # Editors
-    neovim
-    zed-editor
-    vscode
 
     # Platforms
     turso-cli

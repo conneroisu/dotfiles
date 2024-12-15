@@ -140,6 +140,7 @@
     docker-compose
     docker-compose-language-service
     pkgconf
+    ente-auth
   ];
 
   # Leave this.

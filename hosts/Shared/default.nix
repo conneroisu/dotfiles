@@ -50,6 +50,7 @@
     zellij
     gh
     docker
+    podman
     atuin
     zoxide
     gum

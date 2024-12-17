@@ -12,6 +12,10 @@
     direnv.nix-direnv.enable = true;
   };
 
+  environment.variables = {
+    EDITOR = "nvim";
+  };
+
   environment.systemPackages = with pkgs; [
     git
     git-lfs

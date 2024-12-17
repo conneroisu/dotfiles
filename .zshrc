@@ -71,28 +71,3 @@ zstyle ':completion:*' menu no
 
 # bun completions
 [ -s "/home/connerohnesorge/.bun/_bun" ] && source "/home/connerohnesorge/.bun/_bun"
-
-command_not_found_handler() {
-    local cmd="$1"
-    local packages
-
-    # Use nix-locate to find packages containing this command.
-    # `nix-locate` is often used with some filtering options, e.g.:
-    # nix-locate -w "$cmd" 
-    # If your system differs, adjust accordingly.
-    packages=$(rippkgs -i ~/dotfiles/rippkgs-index.sqlite "$cmd")
-
-    if [[ -z "$packages" ]]; then
-        echo "Command not found: $cmd"
-        return 127
-    fi
-
-    echo "The command '$cmd' was not found, but the following packages from Nix might provide it:"
-    echo "$packages"
-
-    echo "Fetching more info on these packages using rippkgs..."
-    echo "====================================================="
-
-    # Returning a non-zero status code, assuming not installed
-    return 127
-}

@@ -21,6 +21,7 @@
     vim
     stow
     unstable-pkgs.infisical
+    doppler
 
     zen-browser.packages."${system}".default
     jdk23

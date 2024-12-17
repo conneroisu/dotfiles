@@ -11,7 +11,6 @@ git clone --recurse-submodules -j8 https://github.com/conneroisu/dotfiles.git
 cd dotfiles
 
 # MACOS
-
 darwin-rebuild switch --flake . --show-trace
 
 # LINUX

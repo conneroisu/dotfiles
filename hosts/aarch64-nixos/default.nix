@@ -2,6 +2,7 @@
   config,
   pkgs,
   unstable-pkgs,
+  ashell,
   ...
 }: {
   imports = [
@@ -107,6 +108,7 @@
     alejandra
     nh
     unstable-pkgs.hyprland
+    ashell.defaultPackage.x86_64-linux
     hyprcursor
     hyprkeys
     hyprpaper

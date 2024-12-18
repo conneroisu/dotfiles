@@ -24,11 +24,9 @@
     go-task
     vim
     stow
-    unstable-pkgs.infisical
-    doppler
+    unstable-pkgs.doppler
 
     zen-browser.packages."${system}".default
-    jdk23
 
     # Apps
     kitty
@@ -37,7 +35,7 @@
     emacs
     zed-editor
     vscode
-    
+
     # Shell
     zsh
     zinit
@@ -54,8 +52,6 @@
     nerdfonts
     zellij
     gh
-    docker
-    podman
     atuin
     zoxide
     gum
@@ -63,8 +59,8 @@
     eza
     nixos-generators
     sleek
+    chafa
 
-    nil
     nh
     rippkgs
     update-nix-fetchgit
@@ -102,14 +98,11 @@
     nodejs
     rustup
     revive
-    templ
     iferr
     golines
     ruby
     zig
     gomodifytags
-    elixir
-    ocaml
     dune_3
     python312
     (python312.withPackages (
@@ -179,17 +172,6 @@
     ## Zig
     zls
 
-    ## Go
-    gopls
-    revive
-    impl
-    unstable-pkgs.iferr
-    golangci-lint-langserver
-    golangci-lint
-    templ
-    gomodifytags
-    gotests
-
     ## Python
     basedpyright
 
@@ -200,18 +182,11 @@
     ## Svelte
     svelte-language-server
 
-    ## Matlab
-    matlab-language-server
-
     ## cmake
     cmake-language-server
 
     ## Astro
     astro-language-server
-
-    ## Elixir
-    elixir-ls
-    lexical
 
     ## Hyprland
     hyprls
@@ -234,6 +209,7 @@
     tree
     alejandra
     cbfmt
+    marksman
 
     # Debuggers
     delve

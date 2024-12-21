@@ -4,9 +4,7 @@
   config,
   zen-browser,
   ...
-}: let
-  sharedPkgs = (import ../Shared {inherit pkgs unstable-pkgs zen-browser;}).environment.systemPackages;
-in {
+}: {
   imports = [
     ./hardware-configuration.nix
     ./../Shared/nixos.nix
@@ -124,60 +122,58 @@ in {
     };
   };
 
-  environment.systemPackages =
-    sharedPkgs
-    ++ (with pkgs; [
-      nix-ld
-      alejandra
-      nh
-      google-chrome
-      hyprland
-      hyprcursor
-      hyprkeys
-      hyprpaper
-      hyprsunset
-      hyprwayland-scanner
-      hyprutils
-      xdg-desktop-portal-hyprland
-      uwsm
-      tlp
-      dunst
-      pipewire
-      grimblast
-      grim
-      slurp
-      rofi
-      rofi-rbw
-      rofi-obsidian
-      rofi-bluetooth
-      rofi-power-menu
-      spotify
-      android-studio
-      gpu-screen-recorder
-      brightnessctl
-      xfce.thunar
-      wl-clipboard
-      kitty
-      gtk3
-      gtk-layer-shell
-      vmware-horizon-client
-      sox
-      alsa-utils
-      alsa-lib
-      alsa-oss
-      docker
-      docker-compose
-      docker-compose-language-service
-      quartus-prime-lite
-      ghdl
-      nvc
-      lshw
-      pkgconf
-      verible
-      nvidia-docker
-      nvtopPackages.nvidia
-      gdb
-    ]);
+  environment.systemPackages = with pkgs; [
+    nix-ld
+    alejandra
+    nh
+    google-chrome
+    hyprland
+    hyprcursor
+    hyprkeys
+    hyprpaper
+    hyprsunset
+    hyprwayland-scanner
+    hyprutils
+    xdg-desktop-portal-hyprland
+    uwsm
+    tlp
+    dunst
+    pipewire
+    grimblast
+    grim
+    slurp
+    rofi
+    rofi-rbw
+    rofi-obsidian
+    rofi-bluetooth
+    rofi-power-menu
+    spotify
+    android-studio
+    gpu-screen-recorder
+    brightnessctl
+    xfce.thunar
+    wl-clipboard
+    kitty
+    gtk3
+    gtk-layer-shell
+    vmware-horizon-client
+    sox
+    alsa-utils
+    alsa-lib
+    alsa-oss
+    docker
+    docker-compose
+    docker-compose-language-service
+    quartus-prime-lite
+    ghdl
+    nvc
+    lshw
+    pkgconf
+    verible
+    nvidia-docker
+    nvtopPackages.nvidia
+    gdb
+  ];
 
   stylix = {
     enable = true;

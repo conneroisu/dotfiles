@@ -110,7 +110,7 @@ in {
       "wheel"
     ];
     packages = with pkgs; [
-       thunderbird
+      thunderbird
     ];
   };
 
@@ -179,7 +179,6 @@ in {
       gdb
     ]);
 
-  
   stylix = {
     enable = true;
     autoEnable = true;

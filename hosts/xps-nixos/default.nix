@@ -63,7 +63,6 @@ in {
     };
     nvidia = {
       modesetting.enable = true;
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
       open = true;
     };
     bluetooth = {

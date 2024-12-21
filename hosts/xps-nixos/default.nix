@@ -169,7 +169,6 @@
     nvc
     lshw
     pkgconf
-    verible
     nvidia-docker
     nvtopPackages.nvidia
     gdb

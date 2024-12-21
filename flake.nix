@@ -32,7 +32,6 @@
 
   outputs = {
     self,
-    config,
     nixpkgs,
     nixpkgs-unstable,
     zen-browser,
@@ -66,7 +65,7 @@
             hostPlatform = systems.x86_64-linux;
             inherit pkgconf;
           };
-          inherit self config stylix zen-browser ashell;
+          inherit self stylix zen-browser ashell;
         };
         modules = [
           nixos-hardware.nixosModules.dell-xps-15-9510

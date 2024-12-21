@@ -32,6 +32,7 @@
 
   outputs = {
     self,
+    config,
     nixpkgs,
     nixpkgs-unstable,
     zen-browser,
@@ -49,7 +50,7 @@
       x86_64-darwin = "x86_64-darwin";
       aarch64-darwin = "aarch64-darwin";
     };
-    config = {allowUnfree = true;};
+    pkgconf = {allowUnfree = true;};
   in {
     nixosConfigurations = {
       xps-nixos = nixpkgs.lib.nixosSystem {
@@ -58,14 +59,14 @@
           pkgs = import nixpkgs {
             system = systems.x86_64-linux;
             hostPlatform = systems.x86_64-linux;
-            inherit config;
+            inherit pkgconf;
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.x86_64-linux;
             hostPlatform = systems.x86_64-linux;
-            inherit config;
+            inherit pkgconf;
           };
-          inherit self stylix zen-browser ashell;
+          inherit self config stylix zen-browser ashell;
         };
         modules = [
           nixos-hardware.nixosModules.dell-xps-15-9510
@@ -73,27 +74,6 @@
           nix-ld.nixosModules.nix-ld
           ./hosts/Shared
           ./hosts/xps-nixos
-        ];
-      };
-      aarch-nixos = nixpkgs.lib.nixosSystem {
-        system = systems.aarch64-linux;
-        specialArgs = {
-          pkgs = import nixpkgs {
-            system = systems.aarch64-linux;
-            hostPlatform = systems.aarch64-linux;
-            inherit config;
-          };
-          unstable-pkgs = import nixpkgs-unstable {
-            system = systems.aarch64-linux;
-            hostPlatform = systems.aarch64-linux;
-            inherit config;
-          };
-          inherit self stylix zen-browser;
-        };
-        modules = [
-          nix-ld.nixosModules.nix-ld
-          ./hosts/Shared
-          ./hosts/aarch64-nixos
         ];
       };
     };
@@ -105,12 +85,12 @@
           pkgs = import nixpkgs {
             system = systems.aarch64-darwin;
             hostPlatform = systems.aarch64-darwin;
-            inherit config;
+            inherit pkgconf;
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.aarch64-darwin;
             hostPlatform = systems.aarch64-darwin;
-            inherit config;
+            inherit pkgconf;
           };
           inherit self zen-browser;
           inherit

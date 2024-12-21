@@ -14,7 +14,6 @@
     # Macos Only
     aerospace
     raycast
-    google-chrome
     utm
   ];
 

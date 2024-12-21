@@ -19,14 +19,11 @@
   environment.systemPackages = with pkgs; [
     git
     git-lfs
+    unstable-pkgs.doppler
+    zen-browser.packages."${system}".default
     gnumake
     cmake
-    go-task
-    vim
     stow
-    unstable-pkgs.doppler
-
-    zen-browser.packages."${system}".default
 
     # Apps
     kitty
@@ -48,6 +45,7 @@
     jq
     yq
     delta
+    cachix
     fzf
     nerdfonts
     zellij
@@ -57,7 +55,11 @@
     gum
     bat
     eza
+    delta
+    unzip
+    htop
     nixos-generators
+    tealdeer
     sleek
     chafa
 
@@ -65,22 +67,14 @@
     rippkgs
     update-nix-fetchgit
 
-    delta
-    tailwindcss
     sad
     gcc
     llvm
-    obsidian
-    statix
-    vhdl-ls
     nodejs
     stow
     nvc
     uv
-    unzip
-    htop
     ripgrep
-    tealdeer
     meson
     goreleaser
     sqlite
@@ -94,16 +88,10 @@
     flyctl
 
     # Languages
-    go
     nodejs
-    rustup
-    revive
-    iferr
-    golines
     ruby
+    rustup
     zig
-    gomodifytags
-    dune_3
     python312
     (python312.withPackages (
       ps:
@@ -158,6 +146,7 @@
 
     ## HTMX
     htmx-lsp
+    tailwindcss
 
     ## Latex
     texlab
@@ -166,12 +155,6 @@
     ## Bash
     shellcheck
 
-    ## Java
-    jdt-language-server
-
-    ## Zig
-    zls
-
     ## Python
     basedpyright
 
@@ -179,23 +162,11 @@
     yaml-language-server
     actionlint
 
-    ## Svelte
-    svelte-language-server
-
-    ## cmake
-    cmake-language-server
-
-    ## Astro
-    astro-language-server
-
     ## Hyprland
     hyprls
 
     ## Sql
     sqls
-
-    ## VHDL
-    vhdl-ls
 
     luajitPackages.luarocks
     wget

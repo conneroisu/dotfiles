@@ -7,6 +7,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
+    ./../Shared/nixos.nix
   ];
 
   # Bootloader.

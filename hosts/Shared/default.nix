@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   unstable-pkgs,
   zen-browser,

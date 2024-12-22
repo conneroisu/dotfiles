@@ -2,4 +2,4 @@
 
 hyprnotify &
 
-ashell &
+waybar &

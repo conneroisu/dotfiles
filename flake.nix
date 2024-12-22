@@ -70,6 +70,7 @@
           nixos-hardware.nixosModules.dell-xps-15-9510
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
+          {programs.nix-ld.dev.enable = true;}
           ./hosts/Shared
           ./hosts/xps-nixos
         ];

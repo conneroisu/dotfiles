@@ -2,12 +2,10 @@
   pkgs,
   unstable-pkgs,
   config,
-  zen-browser,
   ...
 }: {
   imports = [
     ./hardware-configuration.nix
-    ./../Shared/nixos.nix
   ];
   # Leave this.
   system.stateVersion = "24.11";
@@ -25,7 +23,7 @@
     ];
   };
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "xps-nixos"; # Define your hostname.
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/Chicago";
@@ -127,7 +125,7 @@
     alejandra
     nh
     google-chrome
-    hyprland
+    unstable-pkgs.hyprland
     hyprcursor
     hyprkeys
     hyprpaper

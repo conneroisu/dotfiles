@@ -23,6 +23,7 @@
     gnumake
     cmake
     stow
+    home-manager
 
     # Apps
     kitty

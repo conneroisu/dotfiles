@@ -154,7 +154,6 @@
     android-studio
     gpu-screen-recorder
     brightnessctl
-    xfce.thunar
     wl-clipboard
     kitty
     gtk3
@@ -183,5 +182,9 @@
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
     image = ./../../../Pictures/klaus-desktop.jpg;
     polarity = "dark";
+    targets = {
+      grub.enable = false;
+      plymouth.enable = false;
+    };
   };
 }

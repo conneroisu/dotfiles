@@ -84,6 +84,7 @@
     ollama
     jetbrains.datagrip
     pkg-config
+    spicetify-cli
 
     # Platforms
     turso-cli

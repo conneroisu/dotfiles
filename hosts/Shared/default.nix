@@ -13,6 +13,7 @@
 
   environment.variables = {
     EDITOR = "nvim";
+    GTK_THEME = "adw-gtk3-dark";
   };
 
   environment.systemPackages = with pkgs; [

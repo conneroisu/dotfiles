@@ -52,7 +52,6 @@
     };
   };
 
-  virtualisation.docker.enable = true;
   hardware = {
     graphics = {
       enable = true;
@@ -185,6 +184,9 @@
     targets = {
       grub.enable = false;
       plymouth.enable = false;
+      gnome.enable = true;
+      gtk.enable = true;
+      spicetify.enable = true;
     };
   };
 }

@@ -13,8 +13,6 @@
 
     stylix.url = "github:danth/stylix";
 
-    ashell.url = "github:MalpenZibo/ashell";
-
     darwin.url = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -36,7 +34,6 @@
     nixpkgs-unstable,
     zen-browser,
     nix-ld,
-    ashell,
     stylix,
     darwin,
     nix-homebrew,
@@ -64,7 +61,7 @@
             hostPlatform = systems.x86_64-linux;
             config.allowUnfree = true;
           };
-          inherit self stylix zen-browser ashell;
+          inherit self stylix zen-browser;
         };
         modules = [
           nixos-hardware.nixosModules.dell-xps-15-9510

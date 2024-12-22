@@ -32,6 +32,10 @@
     "flakes"
   ];
 
+  nix.extraOptions = ''
+    trusted-users = root connerohnesorge
+  '';
+
   i18n = {
     # Select internationalisation properties.
     defaultLocale = "en_US.UTF-8";
@@ -132,6 +136,7 @@
     hyprsunset
     hyprwayland-scanner
     hyprutils
+    waybar
     xdg-desktop-portal-hyprland
     uwsm
     tlp

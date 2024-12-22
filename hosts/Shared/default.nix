@@ -61,6 +61,7 @@
     tealdeer
     sleek
     chafa
+    tree-sitter
 
     nh
     rippkgs

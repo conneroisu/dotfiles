@@ -5,13 +5,15 @@
   stylix,
   ...
 }: {
-  home.username = "connerohnesorge";
-  home.homeDirectory = "/home/connerohnesorge";
+  home = {
+    username = "connerohnesorge";
+    homeDirectory = "/home/connerohnesorge";
 
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "24.05"; # Please read the comment before changing.
+    # You should not change this value, even if you update Home Manager. If you do
+    # want to update the value, then make sure to first check the Home Manager
+    # release notes.
+    stateVersion = "24.05"; # Please read the comment before changing.
+  };
 
   stylix = {
     enable = true;
@@ -37,7 +39,7 @@
   # or
   #
   #  /etc/profiles/per-user/connerohnesorge/etc/profile.d/hm-session-vars.sh
-  #
+
   home.sessionVariables = {
     EDITOR = "nvim";
     GTK_THEME = "adw-gtk3-dark";

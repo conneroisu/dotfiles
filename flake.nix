@@ -52,12 +52,10 @@
         system = systems.x86_64-linux;
         specialArgs = {
           pkgs = import nixpkgs {
-            system = systems.x86_64-linux;
             hostPlatform = systems.x86_64-linux;
             config.allowUnfree = true;
           };
           unstable-pkgs = import nixpkgs-unstable {
-            system = systems.x86_64-linux;
             hostPlatform = systems.x86_64-linux;
             config.allowUnfree = true;
           };

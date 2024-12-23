@@ -25,10 +25,15 @@
         inherit pkgs;
         # Specify your home configuration modules here, for example,
         # the path to your home.nix.
-        modules = [
-          stylix.homeManagerModules.stylix
-          ./home.nix
-        ];
+        modules =
+          if pkgs.stdenv.isDarwin
+          then [
+            ./home.nix
+          ]
+          else [
+            stylix.homeManagerModules.stylix
+            ./home.nix
+          ];
 
         # Optionally use extraSpecialArgs
         # to pass through arguments to home.nix

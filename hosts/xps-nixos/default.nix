@@ -24,7 +24,7 @@
     ];
   };
 
-  networking.hostName = "xps-nixos"; # Define your hostname.
+  networking.hostName = "xps-nixos";
   networking.networkmanager.enable = true;
 
   time.timeZone = "America/Chicago";
@@ -140,6 +140,7 @@
     hyprsunset
     hyprwayland-scanner
     hyprutils
+    hyprnotify
     hyprwm-qtutils.packages.${system}.hyprland-qtutils
     waybar
     xdg-desktop-portal-hyprland
@@ -185,7 +186,7 @@
     enable = true;
     autoEnable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-    image = ./../../../Pictures/klaus-desktop.jpg;
+    image = ./../../../Pictures/klaus-desktop.jpeg;
     polarity = "dark";
     targets = {
       grub.enable = false;

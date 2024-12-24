@@ -2,6 +2,7 @@
   pkgs,
   unstable-pkgs,
   config,
+  hyprwm-qtutils,
   ...
 }: {
   imports = [
@@ -138,6 +139,7 @@
     hyprsunset
     hyprwayland-scanner
     hyprutils
+    hyprwm-qtutils.packages.${system}.hyprland-qtutils
     waybar
     xdg-desktop-portal-hyprland
     uwsm

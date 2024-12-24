@@ -12,7 +12,10 @@
     zen-browser.url = "github:conneroisu/zen-browser-flake/master";
 
     stylix.url = "github:danth/stylix";
-
+    hyprwm-qtutils = {
+      url = "github:hyprwm/hyprland-qtutils"; # Note: correct repo name
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     darwin.url = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -38,6 +41,7 @@
     darwin,
     nix-homebrew,
     nixos-hardware,
+    hyprwm-qtutils,
     ...
   } @ inputs: let
     systems = {
@@ -53,13 +57,15 @@
         specialArgs = {
           pkgs = import nixpkgs {
             hostPlatform = systems.x86_64-linux;
+            system = systems.x86_64-linux;
             config.allowUnfree = true;
           };
           unstable-pkgs = import nixpkgs-unstable {
             hostPlatform = systems.x86_64-linux;
+            system = systems.x86_64-linux;
             config.allowUnfree = true;
           };
-          inherit self stylix zen-browser;
+          inherit self stylix zen-browser hyprwm-qtutils;
         };
         modules = [
           nixos-hardware.nixosModules.dell-xps-15-9510

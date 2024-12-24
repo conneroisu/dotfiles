@@ -32,6 +32,8 @@
     "flakes"
   ];
 
+  virtualisation.docker.enable = true;
+
   nix.extraOptions = ''
     trusted-users = root connerohnesorge
   '';
@@ -107,6 +109,7 @@
     extraGroups = [
       "networkmanager"
       "wheel"
+      "docker"
     ];
     packages = with pkgs; [
       thunderbird

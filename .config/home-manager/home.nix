@@ -74,5 +74,36 @@
   };
 
   # Let Home Manager install and manage itself.
-  programs.home-manager.enable = true;
+  programs = {
+    zed-editor = {
+      enable = true;
+      extensions = [
+        "nix"
+        "dockerfile"
+        "toml"
+        "html"
+        "templ"
+        "latex"
+        "svelte"
+        "golangci-lint"
+        "astro"
+        "python-lsp"
+        "ocaml"
+        "vhdl"
+        "verilog"
+      ];
+      userSettings = {
+        ui_font_size = 16;
+        buffer_font_size = 16;
+        telemetry.enable = false;
+        vim_mode = true;
+        theme = {
+          mode = "dark";
+          dark = "One Dark";
+          light = "One Light";
+        };
+      };
+    };
+    home-manager.enable = true;
+  };
 }

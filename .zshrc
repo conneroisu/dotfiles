@@ -58,6 +58,7 @@ zi light-mode for \
 zi light zsh-users/zsh-autosuggestions
 zi load zsh-users/zsh-completions
 zi load zsh-users/zsh-syntax-highlighting
+zi load nix-community/nix-zsh-completions
 zi load Aloxaf/fzf-tab
 zi load jeffreytse/zsh-vi-mode
 

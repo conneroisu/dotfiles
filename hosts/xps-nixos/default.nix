@@ -101,6 +101,7 @@
       pulse.enable = true;
     };
     libinput.enable = true;
+    hypridle.enable = true;
   };
   security.rtkit.enable = true;
 
@@ -125,6 +126,7 @@
       withUWSM = true;
       xwayland.enable = true;
     };
+    hyprlock.enable = true;
   };
 
   environment.systemPackages = with pkgs; [

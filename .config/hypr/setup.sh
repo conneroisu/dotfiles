@@ -26,9 +26,3 @@ start_process "waybar" "waybar" || {
     echo "Failed to start waybar"
     exit 1
 }
-
-# Start hypridle
-start_process "hypridle" "hypridle" || {
-    echo "Failed to start hypridle"
-    exit 1
-}

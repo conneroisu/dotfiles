@@ -3,3 +3,6 @@
 hyprnotify &
 
 waybar &
+
+hypridle &
+

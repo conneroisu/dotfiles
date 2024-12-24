@@ -136,6 +136,7 @@
     hyprcursor
     hyprkeys
     hyprpaper
+    hypridle
     hyprsunset
     hyprwayland-scanner
     hyprutils

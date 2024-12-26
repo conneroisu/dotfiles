@@ -69,6 +69,7 @@
     };
     bluetooth = {
       enable = true;
+      powerOnBoot = true;
       settings = {
         General = {
           Name = "Hello";
@@ -82,6 +83,7 @@
       };
     };
   };
+
   services = {
     xserver = {
       enable = true;
@@ -102,7 +104,10 @@
     };
     libinput.enable = true;
     hypridle.enable = true;
+    tlp.enable = true;
+    power-profiles-daemon.enable = false;
   };
+
   security.rtkit.enable = true;
 
   users.users.connerohnesorge = {
@@ -182,6 +187,7 @@
     nvidia-docker
     nvtopPackages.nvidia
     gdb
+    wgnord
   ];
 
   stylix = {

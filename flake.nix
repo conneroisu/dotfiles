@@ -74,6 +74,7 @@
           {programs.nix-ld.dev.enable = true;}
           ./hosts/Shared
           ./hosts/xps-nixos
+          ./modules/nordvpn
         ];
       };
     };

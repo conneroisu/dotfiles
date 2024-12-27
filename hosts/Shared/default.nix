@@ -2,7 +2,6 @@
   pkgs,
   unstable-pkgs,
   zen-browser,
-  ghostty,
   ...
 }: {
   programs = {
@@ -23,7 +22,6 @@
     git-lfs
     unstable-pkgs.doppler
     zen-browser.packages."${system}".default
-    ghostty.packages."${system}".default
     gnumake
     cmake
     stow

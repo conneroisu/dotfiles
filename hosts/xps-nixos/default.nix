@@ -2,6 +2,7 @@
   pkgs,
   unstable-pkgs,
   config,
+  ghostty,
   hyprwm-qtutils,
   ...
 }: {
@@ -159,6 +160,7 @@
     hyprwayland-scanner
     hyprutils
     hyprnotify
+    ghostty.packages."${system}".default
     hyprwm-qtutils.packages.${system}.hyprland-qtutils
     waybar
     xdg-desktop-portal-hyprland

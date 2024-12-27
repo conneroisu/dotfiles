@@ -34,6 +34,7 @@
     emacs
     zed-editor
     vscode
+    gtkwave
 
     # Shell
     zsh

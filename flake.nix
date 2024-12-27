@@ -115,7 +115,7 @@
         };
         modules = [
           nix-homebrew.darwinModules.nix-homebrew
-          agenix.darwinModules.agenix
+          agenix.darwinModules.default
           ./hosts/Shared
           ./hosts/aarch64-darwin
         ];

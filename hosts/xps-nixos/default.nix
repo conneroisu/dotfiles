@@ -6,9 +6,11 @@
   agenix,
   ...
 }: {
-  age.secrets.nordToken.file = ../../..secrets/
+  age.secrets.nordToken.file = ../../.secrets/nordToken.age;
   imports = [
     ./hardware-configuration.nix
+    ../../pkgs/applications/networking/wgnord
+    ../../modules/nixos/services
   ];
   # Leave this.
   system.stateVersion = "24.11";
@@ -197,6 +199,7 @@
     nvidia-docker
     nvtopPackages.nvidia
     gdb
+    wgnord
   ];
 
   stylix = {
@@ -214,15 +217,3 @@
     };
   };
 }
-
-Failed! 1 error found at:
-- <anonymous file on stdin>: unexpected TOKEN_ASSIGN at 134..174, wanted any of [TOKEN_SEMICOLON]
-
-Failed! 1 error found at:
-- <anonymous file on stdin>: unexpected TOKEN_ASSIGN at 134..174, wanted any of [TOKEN_SEMICOLON]
-
-Failed! 1 error found at:
-- <anonymous file on stdin>: unexpected TOKEN_ASSIGN at 134..174, wanted any of [TOKEN_SEMICOLON]
-
-Failed! 1 error found at:
-- <anonymous file on stdin>: unexpected TOKEN_ASSIGN at 134..174, wanted any of [TOKEN_SEMICOLON]

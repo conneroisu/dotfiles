@@ -3,8 +3,10 @@
   unstable-pkgs,
   config,
   hyprwm-qtutils,
+  agenix,
   ...
 }: {
+  age.secrets.nordToken.file = ../../..secrets/
   imports = [
     ./hardware-configuration.nix
   ];
@@ -143,6 +145,7 @@
 
   environment.systemPackages = with pkgs; [
     nix-ld
+    agenix.packages.x86_64-linux.default
     alejandra
     nh
     google-chrome
@@ -211,3 +214,15 @@
     };
   };
 }
+
+Failed! 1 error found at:
+- <anonymous file on stdin>: unexpected TOKEN_ASSIGN at 134..174, wanted any of [TOKEN_SEMICOLON]
+
+Failed! 1 error found at:
+- <anonymous file on stdin>: unexpected TOKEN_ASSIGN at 134..174, wanted any of [TOKEN_SEMICOLON]
+
+Failed! 1 error found at:
+- <anonymous file on stdin>: unexpected TOKEN_ASSIGN at 134..174, wanted any of [TOKEN_SEMICOLON]
+
+Failed! 1 error found at:
+- <anonymous file on stdin>: unexpected TOKEN_ASSIGN at 134..174, wanted any of [TOKEN_SEMICOLON]

@@ -69,7 +69,7 @@
             system = systems.x86_64-linux;
             config.allowUnfree = true;
           };
-          inherit self stylix zen-browser hyprwm-qtutils;
+          inherit self stylix zen-browser hyprwm-qtutils agenix;
         };
         modules = [
           nixos-hardware.nixosModules.dell-xps-15-9510

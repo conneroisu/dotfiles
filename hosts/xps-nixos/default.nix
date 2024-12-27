@@ -24,8 +24,15 @@
     ];
   };
 
-  networking.hostName = "xps-nixos";
-  networking.networkmanager.enable = true;
+  networking = {
+    hostName = "xps-nixos";
+    networkmanager.enable = true;
+    nat = {
+      enable = true;
+      externalInterface = "eth0";
+      internalInterfaces = ["wg0"];
+    };
+  };
 
   time.timeZone = "America/Chicago";
   nix.settings.experimental-features = [
@@ -187,7 +194,6 @@
     nvidia-docker
     nvtopPackages.nvidia
     gdb
-    wgnord
   ];
 
   stylix = {

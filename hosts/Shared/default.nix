@@ -25,6 +25,7 @@
     cmake
     stow
     home-manager
+    age
 
     # Apps
     kitty

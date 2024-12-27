@@ -13,9 +13,12 @@
 
     stylix.url = "github:danth/stylix";
     hyprwm-qtutils = {
-      url = "github:hyprwm/hyprland-qtutils"; # Note: correct repo name
+      url = "github:hyprwm/hyprland-qtutils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    agenix.url = "github:ryantm/agenix";
+
     darwin.url = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -42,6 +45,7 @@
     nix-homebrew,
     nixos-hardware,
     hyprwm-qtutils,
+    agenix,
     ...
   } @ inputs: let
     systems = {
@@ -71,10 +75,10 @@
           nixos-hardware.nixosModules.dell-xps-15-9510
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
+          agenix.nixosModules.default
           {programs.nix-ld.dev.enable = true;}
           ./hosts/Shared
           ./hosts/xps-nixos
-          ./modules/nordvpn
         ];
       };
     };
@@ -103,6 +107,7 @@
         };
         modules = [
           nix-homebrew.darwinModules.nix-homebrew
+          agenix.darwinModules.agenix
           ./hosts/Shared
           ./hosts/aarch64-darwin
         ];

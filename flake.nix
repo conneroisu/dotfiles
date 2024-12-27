@@ -12,10 +12,13 @@
     zen-browser.url = "github:conneroisu/zen-browser-flake/master";
 
     stylix.url = "github:danth/stylix";
+
     hyprwm-qtutils = {
       url = "github:hyprwm/hyprland-qtutils";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    vpn-confinement.url = "github:Maroka-chan/VPN-Confinement";
 
     agenix.url = "github:ryantm/agenix";
 
@@ -46,6 +49,7 @@
     nixos-hardware,
     hyprwm-qtutils,
     agenix,
+    vpn-confinement,
     ...
   } @ inputs: let
     systems = {
@@ -60,22 +64,28 @@
         system = systems.x86_64-linux;
         specialArgs = {
           pkgs = import nixpkgs {
-            hostPlatform = systems.x86_64-linux;
             system = systems.x86_64-linux;
             config.allowUnfree = true;
           };
           unstable-pkgs = import nixpkgs-unstable {
-            hostPlatform = systems.x86_64-linux;
             system = systems.x86_64-linux;
             config.allowUnfree = true;
           };
-          inherit self stylix zen-browser hyprwm-qtutils agenix;
+          inherit
+            self
+            stylix
+            zen-browser
+            hyprwm-qtutils
+            agenix
+            vpn-confinement
+            ;
         };
         modules = [
           nixos-hardware.nixosModules.dell-xps-15-9510
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
           agenix.nixosModules.default
+          vpn-confinement.nixosModules.default
           {programs.nix-ld.dev.enable = true;}
           ./hosts/Shared
           ./hosts/xps-nixos
@@ -89,15 +99,13 @@
         specialArgs = {
           pkgs = import nixpkgs {
             system = systems.aarch64-darwin;
-            hostPlatform = systems.aarch64-darwin;
             config.allowUnfree = true;
           };
           unstable-pkgs = import nixpkgs-unstable {
             system = systems.aarch64-darwin;
-            hostPlatform = systems.aarch64-darwin;
             config.allowUnfree = true;
           };
-          inherit self zen-browser;
+          inherit self zen-browser agenix vpn-confinement;
           inherit
             (inputs)
             homebrew-core

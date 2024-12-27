@@ -6,11 +6,12 @@
   agenix,
   ...
 }: {
+  age.identityPaths = [
+    "/home/connerohnesorge/..ssh/id_ed25519"
+  ];
   age.secrets.nordToken.file = ../../.secrets/nordToken.age;
   imports = [
     ./hardware-configuration.nix
-    ../../pkgs/applications/networking/wgnord
-    ../../modules/nixos/services
   ];
   # Leave this.
   system.stateVersion = "24.11";

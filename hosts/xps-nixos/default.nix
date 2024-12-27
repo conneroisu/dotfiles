@@ -3,20 +3,23 @@
   unstable-pkgs,
   config,
   hyprwm-qtutils,
-  agenix,
   ...
 }: {
-  age.identityPaths = [
-    "/home/connerohnesorge/..ssh/id_ed25519"
-  ];
-  age.secrets.nordToken.file = ../../.secrets/nordToken.age;
   imports = [
     ./hardware-configuration.nix
   ];
   # Leave this.
   system.stateVersion = "24.11";
+  sops = {
+    defaultSopsFile = ./../../secrets/secrets.yaml;
+    defaultSopsFormat = "yaml";
+    age.keyFile = "/home/connerohnesorge/.config/sops/age/keys.txt";
+    secrets = {
+      "wireguard/public_key".owner = "connerohnesorge";
+      "wireguard/private_key".owner = "connerohnesorge";
+    };
+  };
 
-  # Bootloader.
   boot = {
     plymouth.enable = true;
     loader.systemd-boot.enable = true;
@@ -32,11 +35,6 @@
   networking = {
     hostName = "xps-nixos";
     networkmanager.enable = true;
-    nat = {
-      enable = true;
-      externalInterface = "eth0";
-      internalInterfaces = ["wg0"];
-    };
   };
 
   time.timeZone = "America/Chicago";
@@ -118,6 +116,7 @@
     hypridle.enable = true;
     tlp.enable = true;
     power-profiles-daemon.enable = false;
+    ollama.enable = true;
   };
 
   security.rtkit.enable = true;
@@ -148,7 +147,6 @@
 
   environment.systemPackages = with pkgs; [
     nix-ld
-    agenix.packages.x86_64-linux.default
     alejandra
     nh
     google-chrome
@@ -200,7 +198,6 @@
     nvidia-docker
     nvtopPackages.nvidia
     gdb
-    wgnord
   ];
 
   stylix = {

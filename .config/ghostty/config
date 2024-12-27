@@ -5,3 +5,5 @@ macos-titlebar-style = hidden
 window-decoration = false
 
 background = #000000
+
+bold-is-bright = true

@@ -69,6 +69,8 @@
     sleek
     chafa
     tree-sitter
+    wireguard-tools
+    wireguard-ui
 
     nh
     rippkgs
@@ -189,6 +191,7 @@
     alejandra
     cbfmt
     marksman
+    sops
 
     # Debuggers
     delve

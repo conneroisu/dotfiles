@@ -22,7 +22,7 @@
 
     vpn-confinement.url = "github:Maroka-chan/VPN-Confinement";
 
-    agenix.url = "github:ryantm/agenix";
+    sops-nix.url = "github:Mic92/sops-nix";
 
     darwin.url = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -50,7 +50,7 @@
     nix-homebrew,
     nixos-hardware,
     hyprwm-qtutils,
-    agenix,
+    sops-nix,
     vpn-confinement,
     ghostty,
     ...
@@ -74,7 +74,6 @@
             stylix
             zen-browser
             hyprwm-qtutils
-            agenix
             vpn-confinement
             ghostty
             ;
@@ -83,7 +82,7 @@
           nixos-hardware.nixosModules.dell-xps-15-9510
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
-          agenix.nixosModules.default
+          sops-nix.nixosModules.default
           vpn-confinement.nixosModules.default
           {programs.nix-ld.dev.enable = true;}
           ./hosts/Shared
@@ -101,7 +100,6 @@
           inherit
             self
             zen-browser
-            agenix
             vpn-confinement
             ghostty
             ;
@@ -114,7 +112,7 @@
         };
         modules = [
           nix-homebrew.darwinModules.nix-homebrew
-          agenix.darwinModules.default
+          sops-nix.darwinModules.default
           ./hosts/Shared
           ./hosts/aarch64-darwin
         ];

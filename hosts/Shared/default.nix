@@ -2,6 +2,7 @@
   pkgs,
   unstable-pkgs,
   zen-browser,
+  ghostty,
   ...
 }: {
   programs = {
@@ -13,6 +14,7 @@
 
   environment.variables = {
     EDITOR = "nvim";
+    SHELL = "zsh";
     GTK_THEME = "adw-gtk3-dark";
   };
 
@@ -21,6 +23,7 @@
     git-lfs
     unstable-pkgs.doppler
     zen-browser.packages."${system}".default
+    ghostty.packages."${system}".default
     gnumake
     cmake
     stow

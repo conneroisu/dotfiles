@@ -18,6 +18,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    ghostty.url = "github:ghostty-org/ghostty/main";
+
     vpn-confinement.url = "github:Maroka-chan/VPN-Confinement";
 
     agenix.url = "github:ryantm/agenix";
@@ -50,6 +52,7 @@
     hyprwm-qtutils,
     agenix,
     vpn-confinement,
+    ghostty,
     ...
   } @ inputs: let
     systems = {
@@ -58,19 +61,14 @@
       x86_64-darwin = "x86_64-darwin";
       aarch64-darwin = "aarch64-darwin";
     };
+    config = {allowUnfree = true;};
   in {
     nixosConfigurations = {
-      xps-nixos = nixpkgs.lib.nixosSystem {
+      xps-nixos = nixpkgs.lib.nixosSystem rec {
         system = systems.x86_64-linux;
         specialArgs = {
-          pkgs = import nixpkgs {
-            system = systems.x86_64-linux;
-            config.allowUnfree = true;
-          };
-          unstable-pkgs = import nixpkgs-unstable {
-            system = systems.x86_64-linux;
-            config.allowUnfree = true;
-          };
+          pkgs = import nixpkgs {inherit system config;};
+          unstable-pkgs = import nixpkgs-unstable {inherit system config;};
           inherit
             self
             stylix
@@ -78,6 +76,7 @@
             hyprwm-qtutils
             agenix
             vpn-confinement
+            ghostty
             ;
         };
         modules = [
@@ -94,18 +93,18 @@
     };
 
     darwinConfigurations = {
-      "Conners-MacBook-Air" = darwin.lib.darwinSystem {
+      "Conners-MacBook-Air" = darwin.lib.darwinSystem rec {
         system = systems.aarch64-darwin;
         specialArgs = {
-          pkgs = import nixpkgs {
-            system = systems.aarch64-darwin;
-            config.allowUnfree = true;
-          };
-          unstable-pkgs = import nixpkgs-unstable {
-            system = systems.aarch64-darwin;
-            config.allowUnfree = true;
-          };
-          inherit self zen-browser agenix vpn-confinement;
+          pkgs = import nixpkgs {inherit system config;};
+          unstable-pkgs = import nixpkgs-unstable {inherit system config;};
+          inherit
+            self
+            zen-browser
+            agenix
+            vpn-confinement
+            ghostty
+            ;
           inherit
             (inputs)
             homebrew-core

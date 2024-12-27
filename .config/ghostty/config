@@ -1,0 +1,7 @@
+font-family = "CodeNewRoman Nerd Font"
+
+macos-titlebar-style = hidden
+
+window-decoration = false
+
+background = #000000

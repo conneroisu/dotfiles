@@ -31,14 +31,16 @@
   # (the default) this is the recommended approach. When using systemd-networkd it's
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-  networking.useDHCP = lib.mkDefault true;
-  interfaces.enp0s13f0u3u1c2 = {
-    useDHCP = true; # If you want to use DHCP
-    # Or for static IP:
-    # ipv4.addresses = [ {
-    #   address = "192.168.1.2";
-    #   prefixLength = 24;
-    # } ];
+  networking = {
+    useDHCP = lib.mkDefault true;
+    interfaces.enp0s13f0u3u1c2 = {
+      useDHCP = true; # If you want to use DHCP
+      # Or for static IP:
+      # ipv4.addresses = [ {
+      #   address = "192.168.1.2";
+      #   prefixLength = 24;
+      # } ];
+    };
   };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

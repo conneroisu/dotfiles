@@ -107,6 +107,7 @@
       ps:
         with ps; [
           numpy
+          requests
           pandas
           scipy
           matplotlib

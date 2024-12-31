@@ -84,7 +84,7 @@
         specialArgs = {
           pkgs = import nixpkgs {inherit system config;};
           unstable-pkgs = import nixpkgs-unstable {inherit system config;};
-          inherit self stylix;
+          inherit self stylix zen-browser ghostty;
         };
         modules = [
           nixos-hardware.nixosModules.raspberry-pi-4

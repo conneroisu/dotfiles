@@ -22,8 +22,9 @@
 
   boot = {
     plymouth.enable = true;
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
+    #     loader.systemd-boot.enable = true;
+    #     loader.efi.canTouchEfiVariables = true;
+    # # generic-extlinux-compatible.enable = false;
   };
 
   time.timeZone = "America/Chicago";
@@ -107,7 +108,6 @@
     alejandra
     nh
     gh
-    google-chrome
     ghostty.packages."${system}".default
     waybar
     pipewire
@@ -120,7 +120,6 @@
     alsa-utils
     alsa-lib
     alsa-oss
-    ghdl
     lshw
     pkgconf
   ];

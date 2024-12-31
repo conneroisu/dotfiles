@@ -36,6 +36,10 @@
   networking = {
     hostName = "xps-nixos";
     networkmanager.enable = true;
+    defaultGateway = {
+      address = "192.168.1.1";
+      interface = "wlp0s20f3";
+    };
   };
 
   time.timeZone = "America/Chicago";

@@ -27,8 +27,7 @@
     stow
     home-manager
     age
-vscode-langservers-extracted
-
+    vscode-langservers-extracted
     # Apps
     kitty
     obsidian

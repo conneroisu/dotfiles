@@ -20,8 +20,6 @@
 
     ghostty.url = "github:ghostty-org/ghostty/main";
 
-    vpn-confinement.url = "github:Maroka-chan/VPN-Confinement";
-
     sops-nix.url = "github:Mic92/sops-nix";
 
     darwin.url = "github:LnL7/nix-darwin/master";
@@ -51,7 +49,6 @@
     nixos-hardware,
     hyprwm-qtutils,
     sops-nix,
-    vpn-confinement,
     ghostty,
     ...
   } @ inputs: let
@@ -69,21 +66,13 @@
         specialArgs = {
           pkgs = import nixpkgs {inherit system config;};
           unstable-pkgs = import nixpkgs-unstable {inherit system config;};
-          inherit
-            self
-            stylix
-            zen-browser
-            hyprwm-qtutils
-            vpn-confinement
-            ghostty
-            ;
+          inherit self stylix zen-browser hyprwm-qtutils ghostty;
         };
         modules = [
           nixos-hardware.nixosModules.dell-xps-15-9510
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
           sops-nix.nixosModules.default
-          vpn-confinement.nixosModules.default
           {programs.nix-ld.dev.enable = true;}
           ./hosts/Shared
           ./hosts/xps-nixos
@@ -95,17 +84,14 @@
         specialArgs = {
           pkgs = import nixpkgs {inherit system config;};
           unstable-pkgs = import nixpkgs-unstable {inherit system config;};
-          inherit
-            self
-            stylix
-            ;
+          inherit self stylix;
         };
         modules = [
-          nixos-hardware.nixosModules.raspberry-pi/4
+          nixos-hardware.nixosModules.raspberry-pi-4
           stylix.nixosModules.stylix
-          nix-ld.nixosModules.nix-ld
+          # nix-ld.nixosModules.nix-ld
           sops-nix.nixosModules.default
-          {programs.nix-ld.dev.enable = true;}
+          # {programs.nix-ld.dev.enable = true;}
           ./hosts/Shared
           ./hosts/aarch64-redbarron
         ];
@@ -118,12 +104,7 @@
         specialArgs = {
           pkgs = import nixpkgs {inherit system config;};
           unstable-pkgs = import nixpkgs-unstable {inherit system config;};
-          inherit
-            self
-            zen-browser
-            vpn-confinement
-            ghostty
-            ;
+          inherit self zen-browser ghostty;
           inherit
             (inputs)
             homebrew-core

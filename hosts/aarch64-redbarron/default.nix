@@ -5,6 +5,9 @@
   ghostty,
   ...
 }: {
+  imports = [
+    ./hardware.nix
+  ];
   # Leave this.
   system.stateVersion = "24.11";
   sops = {

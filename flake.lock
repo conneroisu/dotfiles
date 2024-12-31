@@ -761,16 +761,15 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1734627697,
-        "narHash": "sha256-RO2BJRXhzSQgCARKHg9QAzo51yTrVc+2xSZMmGlADQ8=",
+        "lastModified": 1735685017,
+        "narHash": "sha256-aXq6jQuaC9EdQcoocoKfqMPN+niB8hZ/JfokkAezP9w=",
         "owner": "conneroisu",
         "repo": "zen-browser-flake",
-        "rev": "37de36cf3867ab668569907b754f502e73d369d0",
+        "rev": "e67e11400c8ac4a8ab96de87ae777818f3dab7e5",
         "type": "github"
       },
       "original": {
         "owner": "conneroisu",
-        "ref": "master",
         "repo": "zen-browser-flake",
         "type": "github"
       }

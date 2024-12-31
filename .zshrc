@@ -42,8 +42,9 @@ alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh --cmd cd)"
-eval "$(turso completion zsh)"
 eval "$(starship init zsh)"
+eval "$(turso completion zsh)"
+eval "$(fly completion zsh)"
 export LD_LIBRARY_PATH=/usr/local/lib64/:$LD_LIBRARY_PATH
 export PHP_INI_SCAN_DIR="/home/connerohnesorge/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
 

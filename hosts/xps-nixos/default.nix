@@ -118,6 +118,14 @@
     tlp.enable = true;
     power-profiles-daemon.enable = false;
     ollama.enable = true;
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      publish = {
+        enable = true;
+        addresses = true;
+      };
+    };
   };
 
   security.rtkit.enable = true;
@@ -165,6 +173,7 @@
     waybar
     xdg-desktop-portal-hyprland
     uwsm
+    networkmanager_dmenu
     tlp
     dunst
     pipewire

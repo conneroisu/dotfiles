@@ -8,7 +8,6 @@
     "memory",
     "cpu",
     "temperature",
-    "custom/powerDraw"
   ],
   "modules-center": [
     "hyprland/workspaces",
@@ -34,11 +33,6 @@
     "format-calendar": "<span color='#aeaeae'><b>{}</b></span>",
     "format-calendar-weeks": "<span color='#aeaeae'><b>W{:%V}</b></span>",
     "format-calendar-weekdays": "<span color='#aeaeae'><b>{}</b></span>"
-  },
-  "hyprland/language": {
-    "format": "Lang: {long}",
-    "format-en": "AMERICA, HELL YEAH!",
-    "keyboard-name": "at-translated-set-2-keyboard"
   },
   "disk": {
     "interval": 30,
@@ -68,12 +62,6 @@
     "interval": 1,
     "critical-threshold": 80,
     "on-click": "foot btop",
-  },
-  "custom/powerDraw": {
-    "format": "{}",
-    "interval": 1,
-    // "exec": "~/.config/waybar/scripts/powerdraw.sh",
-    "return-type": "json"
   },
   "hyprland/workspaces": {
     "format": "<span font='18px'>{icon}</span>",

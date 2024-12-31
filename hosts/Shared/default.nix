@@ -74,6 +74,8 @@
     rippkgs
     update-nix-fetchgit
 
+    dnsutils
+
     sad
     gcc
     llvm

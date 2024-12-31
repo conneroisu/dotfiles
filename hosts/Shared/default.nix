@@ -27,6 +27,7 @@
     stow
     home-manager
     age
+vscode-langservers-extracted
 
     # Apps
     kitty

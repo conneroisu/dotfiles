@@ -89,6 +89,27 @@
           ./hosts/xps-nixos
         ];
       };
+
+      redbaron = nixpkgs.lib.nixosSystem rec {
+        system = systems.aarch64-linux;
+        specialArgs = {
+          pkgs = import nixpkgs {inherit system config;};
+          unstable-pkgs = import nixpkgs-unstable {inherit system config;};
+          inherit
+            self
+            stylix
+            ;
+        };
+        modules = [
+          nixos-hardware.nixosModules.raspberry-pi/4
+          stylix.nixosModules.stylix
+          nix-ld.nixosModules.nix-ld
+          sops-nix.nixosModules.default
+          {programs.nix-ld.dev.enable = true;}
+          ./hosts/Shared
+          ./hosts/aarch64-redbarron
+        ];
+      };
     };
 
     darwinConfigurations = {

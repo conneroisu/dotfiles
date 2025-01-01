@@ -15,6 +15,7 @@
     aerospace
     raycast
     utm
+    xcodes
   ];
 
   nix.settings.experimental-features = "nix-command flakes";

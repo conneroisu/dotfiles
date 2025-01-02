@@ -19,7 +19,6 @@
   ...
 }: {
   imports = [
-    ./hardware.nix
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
     (modulesPath + "/installer/scan/not-detected.nix")
     ./disko.nix

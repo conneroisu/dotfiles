@@ -27,7 +27,6 @@
     xcodes
   ];
 
-  nix.settings.experimental-features = "nix-command flakes";
   nix.settings.trusted-users = ["root" "connerohnesorge" "@wheel"];
 
   # Set Git commit hash for darwin-version.
@@ -51,30 +50,28 @@
     name = "connerohnesorge";
   };
 
-  inputs = {
-    homebrew = {
-      enable = true;
-      brews = [
-        "goenv"
-        "ollama"
-        "go-task"
-      ];
-      casks = [
-        # "ghdl"
-      ];
-    };
+  homebrew = {
+    enable = true;
+    brews = [
+      "goenv"
+      "ollama"
+      "go-task"
+    ];
+    casks = [
+      # "ghdl"
+    ];
+  };
 
-    nix-homebrew = {
-      enable = true;
-      enableRosetta = true;
-      user = "connerohnesorge";
-      taps = {
-        "homebrew/homebrew-core" = inputs.homebrew-core;
-        "homebrew/homebrew-cask" = inputs.homebrew-cask;
-        "homebrew/homebrew-bundle" = inputs.homebrew-bundle;
-      };
-      mutableTaps = false;
+  nix-homebrew = {
+    enable = true;
+    enableRosetta = true;
+    user = "connerohnesorge";
+    taps = {
+      "homebrew/homebrew-core" = inputs.homebrew-core;
+      "homebrew/homebrew-cask" = inputs.homebrew-cask;
+      "homebrew/homebrew-bundle" = inputs.homebrew-bundle;
     };
+    mutableTaps = false;
   };
   security.pam.enableSudoTouchIdAuth = true;
   system.activationScripts.applications.text = let

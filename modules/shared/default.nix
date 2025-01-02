@@ -53,7 +53,6 @@ in {
     vscode
     gtkwave
     inputs.zen-browser.packages."${system}".default
-    inputs.ghostty.packages."${system}".default
 
     # Shell
     zsh

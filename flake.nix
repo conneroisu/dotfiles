@@ -56,7 +56,7 @@
     inherit (inputs) snowfall-lib;
     lib = snowfall-lib.mkLib {
       inherit inputs;
-      inherit (inputs) stylix;
+      inherit (inputs) stylix nix-darwin homebrew-core homebrew-cask homebrew-bundle;
       src = ./.;
 
       snowfall = {
@@ -88,6 +88,11 @@
             nix.settings.experimental-features = [
               "nix-command"
               "flakes"
+            ];
+          }
+          {
+            environment.systemPackages = [
+              inputs.ghostty.packages."${system}".default
             ];
           }
           {

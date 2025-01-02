@@ -15,25 +15,42 @@
   systems, # An attribute map of your defined hosts.
   # All other arguments come from the system system.
   config,
+  modulesPath,
   ...
 }: {
   imports = [
     ./hardware.nix
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    (modulesPath + "/installer/scan/not-detected.nix")
+    ./disko.nix
   ];
+
   # Leave this.
   system.stateVersion = "24.11";
 
   boot = {
     plymouth.enable = true;
+    loader.grub = {
+      # no need to set devices, disko will add all devices that have a EF02 partition to the list already
+      # devices = [ ];
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+    };
     #     loader.systemd-boot.enable = true;
     #     loader.efi.canTouchEfiVariables = true;
     # # generic-extlinux-compatible.enable = false;
   };
 
+  services.openssh.enable = true;
+
+  users.users.root.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFmAertOR3AYYKKvgGcaKFlqrKuGiWX4BEkgQp5/t+4+"
+  ];
+
   time.timeZone = "America/Chicago";
 
   nix.extraOptions = ''
-    trusted-users = root connerohnesorge
+    trusted-users = root connerohnesorge pilot
   '';
 
   i18n = {
@@ -107,10 +124,8 @@
     alejandra
     nh
     gh
-    waybar
     pipewire
     brightnessctl
-    wl-clipboard
     gtk3
     gtk-layer-shell
     usbutils
@@ -120,6 +135,10 @@
     alsa-oss
     lshw
     pkgconf
+    emulationstation
+    curl
+    wget
+    gh
   ];
 
   stylix = {

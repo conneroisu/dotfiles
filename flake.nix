@@ -50,6 +50,9 @@
       url = "github:hercules-ci/gitignore.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    inputs.disko.url = "github:nix-community/disko";
+    inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let

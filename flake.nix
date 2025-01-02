@@ -94,11 +94,6 @@
             ];
           }
           {
-            environment.systemPackages = [
-              inputs.ghostty.packages."${system}".default
-            ];
-          }
-          {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
           }

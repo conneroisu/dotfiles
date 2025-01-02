@@ -13,69 +13,44 @@
   format, # A normalized name for the system target (eg. `iso`).
   virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
   systems, # An attribute map of your defined hosts.
+  # All other arguments come from the system system.
   config,
+  modulesPath,
   ...
-}: let
-  unstable-pkgs = import inputs.nixpkgs-unstable {
-    inherit system;
-    config = {
-    };
-  };
-in {
-  # Your configuration.
+}: {
   imports = [
-    ./hardware.nix
+    ./hardware-configuration.nix
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    (modulesPath + "/installer/scan/not-detected.nix")
+    ./disko.nix
   ];
 
-  snowfallorg.users.connerohnesorge = {
-    admin = true;
-    create = false;
-    home = {
-      enable = true;
-    };
-  };
   # Leave this.
   system.stateVersion = "24.11";
 
   boot = {
     plymouth.enable = true;
-    loader.systemd-boot.enable = true;
-    loader.efi.canTouchEfiVariables = true;
-    blacklistedKernelModules = [
-      "nvidia"
-      "nvidia_uvm"
-      "nvidia_drm"
-      "nvidia_modeset"
-    ];
+    loader.grub = {
+      # no need to set devices, disko will add all devices that have a EF02 partition to the list already
+      # devices = [ ];
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+    };
+    #     loader.systemd-boot.enable = true;
+    #     loader.efi.canTouchEfiVariables = true;
+    # # generic-extlinux-compatible.enable = false;
   };
 
-  networking = {
-    hostName = "xps-nixos";
-    networkmanager.enable = true;
-    defaultGateway = {
-      # address = "192.168.1.1";
-      # interface = "wlp0s20f3";
-      address = "192.168.1.19";
-      interface = "enp0s13f0u3u1c2";
-    };
-  };
+  services.openssh.enable = true;
 
-  systemd.network = {
-    enable = true;
-    networks."40-enp0s13f0u3u1c2" = {
-      matchConfig.Name = "enp0s13f0u3u1c2";
-      networkConfig = {
-        DHCP = "ipv4";
-      };
-    };
-  };
+  users.users.root.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFmAertOR3AYYKKvgGcaKFlqrKuGiWX4BEkgQp5/t+4+"
+  ];
 
   time.timeZone = "America/Chicago";
 
-  virtualisation.docker.enable = true;
-
   nix.extraOptions = ''
-    trusted-users = root connerohnesorge
+    trusted-users = root connerohnesorge pilot
   '';
 
   i18n = {
@@ -102,31 +77,16 @@ in {
         mesa.drivers
       ];
     };
-    nvidia = {
-      modesetting.enable = true;
-      open = true;
-    };
     bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-      settings = {
-        General = {
-          Name = "Hello";
-          ControllerMode = "dual";
-          FastConnectable = "true";
-          Experimental = "true";
-        };
-        Policy = {
-          AutoEnable = "true";
-        };
-      };
+      enable = false;
     };
   };
 
   services = {
+    printing.enable = false;
+    power-profiles-daemon.enable = false;
     xserver = {
       enable = true;
-      videoDrivers = ["nvidia"];
       displayManager.gdm.enable = true;
       desktopManager.gnome.enable = true;
       xkb = {
@@ -134,7 +94,6 @@ in {
         variant = "";
       };
     };
-    printing.enable = true;
     pipewire = {
       enable = true;
       alsa.enable = true;
@@ -142,10 +101,6 @@ in {
       pulse.enable = true;
     };
     libinput.enable = true;
-    hypridle.enable = true;
-    tlp.enable = true;
-    power-profiles-daemon.enable = false;
-    ollama.enable = true;
   };
 
   security.rtkit.enable = true;
@@ -154,88 +109,44 @@ in {
     isNormalUser = true;
     description = "Conner Ohnesorge";
     extraGroups = [
-      "networkmanager"
       "wheel"
-      "docker"
     ];
-    packages = with pkgs; [
-      thunderbird
+    packages = [
     ];
   };
 
   programs = {
-    steam.enable = true;
     zsh.enable = true;
-    hyprland = {
-      enable = true;
-      withUWSM = true;
-      xwayland.enable = true;
-    };
-    hyprlock.enable = true;
   };
 
   environment.systemPackages = with pkgs; [
     nix-ld
     alejandra
     nh
-    google-chrome
-    unstable-pkgs.hyprland
-    hyprcursor
-    hyprkeys
-    hyprpaper
-    hypridle
-    hyprsunset
-    hyprwayland-scanner
-    hyprutils
-    hyprnotify
-    inputs.hyprwm-qtutils.packages.${system}.hyprland-qtutils
     inputs.ghostty.packages."${system}".default
-    waybar
-    xdg-desktop-portal-hyprland
-    uwsm
-    networkmanager_dmenu
-    tlp
-    dunst
+    gh
     pipewire
-    grimblast
-    grim
-    slurp
-    rofi
-    rofi-rbw
-    rofi-obsidian
-    rofi-bluetooth
-    rofi-power-menu
-    spotify
-    android-studio
-    gpu-screen-recorder
     brightnessctl
-    wl-clipboard
     gtk3
     gtk-layer-shell
     usbutils
-    vmware-horizon-client
     sox
     alsa-utils
     alsa-lib
     alsa-oss
-    docker
-    docker-compose
-    docker-compose-language-service
-    quartus-prime-lite
-    ghdl
-    nvc
     lshw
     pkgconf
-    nvidia-docker
-    nvtopPackages.nvidia
-    gdb
+    emulationstation
+    curl
+    wget
+    gh
   ];
 
   stylix = {
     enable = true;
     autoEnable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-    image = ./../../../assets/klaus-desktop.jpeg;
+    image = "";
     polarity = "dark";
     targets = {
       grub.enable = false;

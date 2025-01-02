@@ -51,15 +51,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    inputs.disko.url = "github:nix-community/disko";
-    inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: let
     inherit (inputs) snowfall-lib;
     lib = snowfall-lib.mkLib {
       inherit inputs;
-      inherit (inputs) stylix nix-darwin homebrew-core homebrew-cask homebrew-bundle;
+      inherit (inputs) stylix nix-darwin homebrew-core homebrew-cask homebrew-bundle disko;
       src = ./.;
 
       snowfall = {

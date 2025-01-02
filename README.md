@@ -22,14 +22,3 @@ sudo nixos-rebuild switch --flake .
 
 ## Development
 
-
-### Host
-
-4 hosts are defined in `./hosts/`.
-
-- ./hosts/x86_64-linux/
-- ./hosts/x86_64-darwin/
-- ./hosts/aarch64-darwin/
-- ./hosts/aarch64-linux/
-
-The hosts' shared packages are defined in `./hosts/Shared/`.

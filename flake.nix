@@ -22,6 +22,16 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
 
+    snowfall-lib = {
+      url = "github:snowfallorg/lib";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     darwin.url = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -35,90 +45,78 @@
 
     homebrew-cask.flake = false;
     homebrew-bundle.flake = false;
+
+    gitignore = {
+      url = "github:hercules-ci/gitignore.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    nixpkgs-unstable,
-    zen-browser,
-    nix-ld,
-    stylix,
-    darwin,
-    nix-homebrew,
-    nixos-hardware,
-    hyprwm-qtutils,
-    sops-nix,
-    ghostty,
-    ...
-  } @ inputs: let
-    systems = {
-      x86_64-linux = "x86_64-linux";
-      aarch64-linux = "aarch64-linux";
-      x86_64-darwin = "x86_64-darwin";
-      aarch64-darwin = "aarch64-darwin";
-    };
-    config = {allowUnfree = true;};
-  in {
-    nixosConfigurations = {
-      xps-nixos = nixpkgs.lib.nixosSystem rec {
-        system = systems.x86_64-linux;
-        specialArgs = {
-          pkgs = import nixpkgs {inherit system config;};
-          unstable-pkgs = import nixpkgs-unstable {inherit system config;};
-          inherit self stylix zen-browser hyprwm-qtutils ghostty;
+  outputs = inputs: let
+    inherit (inputs) snowfall-lib;
+    lib = snowfall-lib.mkLib {
+      inherit inputs;
+      inherit (inputs) stylix;
+      src = ./.;
+
+      snowfall = {
+        namespace = "csnow";
+        meta = {
+          name = "conneroisu-snow";
+          title = "Conner Ohnesorge's Snowflake";
         };
-        modules = [
-          nixos-hardware.nixosModules.dell-xps-15-9510
+      };
+    };
+  in
+    lib.mkFlake {
+      inherit inputs;
+      src = ./.;
+      channels-config = {
+        allowUnfree = true;
+      };
+
+      systems.modules = {
+        # Add modules to all NixOS systems.
+        nixos = with inputs; [
+          ./modules/shared
+          home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
-          sops-nix.nixosModules.default
           {programs.nix-ld.dev.enable = true;}
-          ./hosts/Shared
-          ./hosts/xps-nixos
-        ];
-      };
-
-      redbaron = nixpkgs.lib.nixosSystem rec {
-        system = systems.aarch64-linux;
-        specialArgs = {
-          pkgs = import nixpkgs {inherit system config;};
-          unstable-pkgs = import nixpkgs-unstable {inherit system config;};
-          inherit self stylix zen-browser ghostty;
-        };
-        modules = [
-          nixos-hardware.nixosModules.raspberry-pi-4
-          stylix.nixosModules.stylix
-          # nix-ld.nixosModules.nix-ld
           sops-nix.nixosModules.default
-          # {programs.nix-ld.dev.enable = true;}
-          ./hosts/Shared
-          ./hosts/aarch64-redbarron
+          {
+            nix.settings.experimental-features = [
+              "nix-command"
+              "flakes"
+            ];
+          }
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+          }
         ];
-      };
-    };
 
-    darwinConfigurations = {
-      "Conners-MacBook-Air" = darwin.lib.darwinSystem rec {
-        system = systems.aarch64-darwin;
-        specialArgs = {
-          pkgs = import nixpkgs {inherit system config;};
-          unstable-pkgs = import nixpkgs-unstable {inherit system config;};
-          inherit self zen-browser ghostty;
-          inherit
-            (inputs)
-            homebrew-core
-            homebrew-cask
-            homebrew-bundle
-            ;
-        };
-        modules = [
+        # Add modules to all Darwin systems.
+        darwin = with inputs; [
+          ./modules/shared
           nix-homebrew.darwinModules.nix-homebrew
+          home-manager.darwinModules.home-manager
           sops-nix.darwinModules.default
-          ./hosts/Shared
-          ./hosts/aarch64-darwin
+          {
+            nix.settings.experimental-features = [
+              "nix-command"
+              "flakes"
+            ];
+          }
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+          }
         ];
       };
+
+      outputs-builder = channels: {
+        formatter = channels.nixpkgs.alejandra;
+      };
     };
-  };
 }

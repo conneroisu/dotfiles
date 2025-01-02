@@ -1,25 +1,41 @@
 {
+  # Snowfall Lib provides a customized `lib` instance with access to your flake's library
+  # as well as the libraries available from your flake's inputs.
+  lib,
+  # An instance of `pkgs` with your overlays and packages applied is also available.
   pkgs,
-  unstable-pkgs,
+  # You also have access to your flake's inputs.
+  inputs,
+  # Additional metadata is provided by Snowfall Lib.
+  namespace, # The namespace used for your flake, defaulting to "internal" if not set.
+  system, # The system architecture for this host (eg. `x86_64-linux`).
+  target, # The Snowfall Lib target for this system (eg. `x86_64-iso`).
+  format, # A normalized name for the system target (eg. `iso`).
+  virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
+  systems, # An attribute map of your defined hosts.
   config,
-  ghostty,
-  hyprwm-qtutils,
   ...
-}: {
+}: let
+  unstable-pkgs = import inputs.nixpkgs-unstable {
+    inherit system;
+    config = {
+    };
+  };
+in {
+  # Your configuration.
   imports = [
     ./hardware.nix
   ];
-  # Leave this.
-  system.stateVersion = "24.11";
-  sops = {
-    defaultSopsFile = ./../../secrets/secrets.yaml;
-    defaultSopsFormat = "yaml";
-    age.keyFile = "/home/connerohnesorge/.config/sops/age/keys.txt";
-    secrets = {
-      "wireguard/public_key".owner = "connerohnesorge";
-      "wireguard/private_key".owner = "connerohnesorge";
+
+  snowfallorg.users.connerohnesorge = {
+    admin = true;
+    create = false;
+    home = {
+      enable = true;
     };
   };
+  # Leave this.
+  system.stateVersion = "24.11";
 
   boot = {
     plymouth.enable = true;
@@ -55,10 +71,6 @@
   };
 
   time.timeZone = "America/Chicago";
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
 
   virtualisation.docker.enable = true;
 
@@ -176,8 +188,7 @@
     hyprwayland-scanner
     hyprutils
     hyprnotify
-    ghostty.packages."${system}".default
-    hyprwm-qtutils.packages.${system}.hyprland-qtutils
+    inputs.hyprwm-qtutils.packages.${system}.hyprland-qtutils
     waybar
     xdg-desktop-portal-hyprland
     uwsm
@@ -223,7 +234,7 @@
     enable = true;
     autoEnable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-    image = ./../../../Pictures/klaus-desktop.jpeg;
+    image = ./../../../assets/klaus-desktop.jpeg;
     polarity = "dark";
     targets = {
       grub.enable = false;

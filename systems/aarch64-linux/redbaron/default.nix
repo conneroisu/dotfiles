@@ -1,8 +1,20 @@
 {
+  # Snowfall Lib provides a customized `lib` instance with access to your flake's library
+  # as well as the libraries available from your flake's inputs.
+  lib,
+  # An instance of `pkgs` with your overlays and packages applied is also available.
   pkgs,
-  unstable-pkgs,
+  # You also have access to your flake's inputs.
+  inputs,
+  # Additional metadata is provided by Snowfall Lib.
+  namespace, # The namespace used for your flake, defaulting to "internal" if not set.
+  system, # The system architecture for this host (eg. `x86_64-linux`).
+  target, # The Snowfall Lib target for this system (eg. `x86_64-iso`).
+  format, # A normalized name for the system target (eg. `iso`).
+  virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
+  systems, # An attribute map of your defined hosts.
+  # All other arguments come from the system system.
   config,
-  ghostty,
   ...
 }: {
   imports = [
@@ -10,15 +22,6 @@
   ];
   # Leave this.
   system.stateVersion = "24.11";
-  sops = {
-    defaultSopsFile = ./../../secrets/secrets.yaml;
-    defaultSopsFormat = "yaml";
-    age.keyFile = "/home/connerohnesorge/.config/sops/age/keys.txt";
-    secrets = {
-      "wireguard/public_key".owner = "connerohnesorge";
-      "wireguard/private_key".owner = "connerohnesorge";
-    };
-  };
 
   boot = {
     plymouth.enable = true;
@@ -28,10 +31,6 @@
   };
 
   time.timeZone = "America/Chicago";
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
 
   nix.extraOptions = ''
     trusted-users = root connerohnesorge
@@ -108,7 +107,6 @@
     alejandra
     nh
     gh
-    ghostty.packages."${system}".default
     waybar
     pipewire
     brightnessctl

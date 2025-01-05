@@ -34,7 +34,6 @@
     gomarkdoc
     gotests
     gotools
-    gomarkdoc
     templ
     sqlc
     flyctl
@@ -85,9 +84,6 @@
       done
       cd -
       templ generate
-    '';
-    run.exec = ''
-      go run $(git rev-parse --show-toplevel)/cmd/api
     '';
     tests.exec = ''go test -v -short ./...'';
     unit-tests.exec = ''go test -v ./...'';

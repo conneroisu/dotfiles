@@ -38,6 +38,7 @@ in {
   system.stateVersion = "24.11";
 
   boot = {
+    extraModulePackages = [config.boot.kernelPackages.wireguard];
     plymouth.enable = true;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
@@ -162,7 +163,6 @@ in {
       thunderbird
     ];
   };
-
   programs = {
     steam.enable = true;
     zsh.enable = true;

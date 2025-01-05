@@ -85,7 +85,6 @@ in {
     chafa
     tree-sitter
 
-    wireguard
     wireguard-tools
     wireguard-ui
 

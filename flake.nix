@@ -85,6 +85,7 @@
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
+          disko.nixosModules.disko
           {programs.nix-ld.dev.enable = true;}
           sops-nix.nixosModules.default
           {

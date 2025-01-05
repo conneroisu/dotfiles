@@ -6,7 +6,6 @@
   pkgs,
   # You also have access to your flake's inputs.
   inputs,
-  # Additional metadata is provided by Snowfall Lib.
   namespace, # The namespace used for your flake, defaulting to "internal" if not set.
   system, # The system architecture for this host (eg. `x86_64-linux`).
   target, # The Snowfall Lib target for this system (eg. `x86_64-iso`).
@@ -21,23 +20,15 @@
   imports = [
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
     (modulesPath + "/installer/scan/not-detected.nix")
-    ./disko.nix
   ];
 
   # Leave this.
   system.stateVersion = "24.11";
 
   boot = {
-    plymouth.enable = true;
-    loader.grub = {
-      # no need to set devices, disko will add all devices that have a EF02 partition to the list already
-      # devices = [ ];
-      efiSupport = true;
-      efiInstallAsRemovable = true;
-    };
-    #     loader.systemd-boot.enable = true;
-    #     loader.efi.canTouchEfiVariables = true;
-    # # generic-extlinux-compatible.enable = false;
+    plymouth.enable = false;
+    loader.grub.enable = false;
+    loader.generic-extlinux-compatible.enable = true;
   };
 
   services.openssh.enable = true;
@@ -104,6 +95,9 @@
 
   security.rtkit.enable = true;
 
+  snowfallorg.users.root = {
+    password = "connerohnesorge";
+  };
   users.users.connerohnesorge = {
     isNormalUser = true;
     description = "Conner Ohnesorge";
@@ -144,7 +138,7 @@
     enable = true;
     autoEnable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-    image = "";
+    image = ./../../../assets/klaus-desktop.jpeg;
     polarity = "dark";
     targets = {
       grub.enable = false;
@@ -152,6 +146,37 @@
       gnome.enable = true;
       gtk.enable = true;
       spicetify.enable = true;
+    };
+  };
+
+  disko.devices = {
+    disk = {
+      my-disk = {
+        device = "/dev/sda";
+        type = "disk";
+        content = {
+          type = "gpt";
+          partitions = {
+            ESP = {
+              type = "EF00";
+              size = "500M";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
+              };
+            };
+            root = {
+              size = "100%";
+              content = {
+                type = "filesystem";
+                format = "ext4";
+                mountpoint = "/";
+              };
+            };
+          };
+        };
+      };
     };
   };
 }

@@ -19,6 +19,7 @@
   unstable-pkgs = import inputs.nixpkgs-unstable {
     inherit system;
     config = {
+      allowUnfree = true;
     };
   };
 in {
@@ -38,7 +39,6 @@ in {
   system.stateVersion = "24.11";
 
   boot = {
-    extraModulePackages = [config.boot.kernelPackages.wireguard];
     plymouth.enable = true;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
@@ -146,7 +146,11 @@ in {
     hypridle.enable = true;
     tlp.enable = true;
     power-profiles-daemon.enable = false;
-    ollama.enable = true;
+    ollama = {
+      enable = true;
+      package = unstable-pkgs.ollama;
+      acceleration = "cuda";
+    };
   };
 
   security.rtkit.enable = true;

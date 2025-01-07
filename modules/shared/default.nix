@@ -106,7 +106,7 @@ in {
     goreleaser
     sqlite
     sqlite-vec
-    ollama
+    unstable-pkgs.ollama
     jetbrains.datagrip
     pkg-config
     spicetify-cli

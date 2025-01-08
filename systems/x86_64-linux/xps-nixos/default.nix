@@ -221,6 +221,7 @@ in {
     sox
     alsa-utils
     alsa-lib
+    yazi
     alsa-oss
     docker
     docker-compose

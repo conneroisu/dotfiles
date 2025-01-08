@@ -53,6 +53,10 @@
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   outputs = inputs: let
@@ -86,6 +90,7 @@
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
           disko.nixosModules.disko
+          nur.modules.nixos.default
           {programs.nix-ld.dev.enable = true;}
           sops-nix.nixosModules.default
           {
@@ -118,7 +123,6 @@
           }
         ];
       };
-
       outputs-builder = channels: {
         formatter = channels.nixpkgs.alejandra;
       };

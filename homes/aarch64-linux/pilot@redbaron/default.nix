@@ -32,8 +32,10 @@
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
     image = ./../../../assets/klaus-desktop.jpeg;
     polarity = "dark";
-    targets.rofi.enable = true;
-    targets.kitty.enable = true;
+    targets = {
+      rofi.enable = true;
+      kitty.enable = true;
+    };
   };
 
   gtk = {

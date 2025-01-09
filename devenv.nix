@@ -1,8 +1,8 @@
 {
   pkgs,
-  lib,
-  config,
-  inputs,
+  # lib,
+  # config,
+  # inputs,
   ...
 }: {
   name = "dotfiles";
@@ -11,23 +11,18 @@
     nix.enable = true;
   };
 
+  git-hooks = {
+    hooks = {
+      alejandra.enable = true;
+      deadnix.enable = true;
+    };
+  };
+
   packages = with pkgs; [
     git
-    sqldiff
     pprof
     podman
     revive
-    iferr
-    impl
-    golangci-lint
-    golangci-lint-langserver
-    gopls
-    gomodifytags
-    gomarkdoc
-    gotests
-    gotools
-    templ
-    sqlc
     flyctl
     air
     wireguard-tools

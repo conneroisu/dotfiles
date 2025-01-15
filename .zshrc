@@ -35,7 +35,8 @@ SAVEHIST=10000
 # Defines the characters that zsh considers part of a word (^W)
 WORDCHARS='*?[]~=&;!#$%^(){}<>,|`'
 setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_save_no_dups hist_ignore_dups hist_reduce_blanks hist_find_no_dups
-alias cf='cd $(find . -type d -path "./.git" -prune -o -type d -print | fzf --reverse --preview "ls --color {}")'
+# alias cf='cd $(find . -type d -path "./.git" -prune -o -type d -print | fzf --reverse --preview "ls --color {}")'
+alias cf='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.*" -print | fzf --reverse --preview "ls --color {}")'
 alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 
 # eval "$(goenv init -)" # TODO: Remove this once moved to nixos

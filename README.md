@@ -4,6 +4,8 @@
 
 dotfiles for my personal setup
 
+Uses [snowfall](https://github.com/snowfallorg/lib) for configuration management.
+
 ## Installation
 
 ```bash
@@ -19,6 +21,3 @@ nix build .#homeConfigurations.x86_64-linux.activationPackage
 # NIXOS
 sudo nixos-rebuild switch --flake .
 ```
-
-## Development
-

@@ -13,7 +13,7 @@
   # format, # A normalized name for the system target (eg. `iso`).
   # virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
   # systems, # An attribute map of your defined hosts.
-  # config,
+  config,
   ...
 }: let
   unstable-pkgs = import inputs.nixpkgs-unstable {
@@ -42,6 +42,7 @@ in {
     plymouth.enable = true;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
+    initrd.kernelModules = ["nvidia" "i915" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
     blacklistedKernelModules = [
       "nvidia"
       "nvidia_uvm"
@@ -95,6 +96,11 @@ in {
     };
   };
 
+  environment.variables = {
+    CUDA_PATH = unstable-pkgs.cudatoolkit;
+    EXTRA_LDFLAGS = "-L/lib -L${pkgs.linuxPackages.nvidia_x11}/lib";
+    EXTRA_CCFLAGS = "-I/usr/include";
+  };
   hardware = {
     graphics = {
       enable = true;
@@ -105,7 +111,13 @@ in {
     };
     nvidia = {
       modesetting.enable = true;
-      open = true;
+      open = false;
+      nvidiaSettings = true;
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      prime = {
+        intelBusId = "PCI:0:2:0";
+        nvidiaBusId = "PCI:1:0:0";
+      };
     };
     bluetooth = {
       enable = true;
@@ -234,6 +246,33 @@ in {
     nvidia-docker
     nvtopPackages.nvidia
     gdb
+    gitRepo
+    gnupg
+    autoconf
+    curl
+    procps
+    gnumake
+    util-linux
+    m4
+    gperf
+    unzip
+    cudatoolkit
+    linuxPackages.nvidia_x11
+    libGLU
+    libGL
+    xorg.libXi
+    xorg.libXmu
+    freeglut
+    xorg.libXext
+    xorg.libX11
+    xorg.libXv
+    xorg.libXrandr
+    zlib
+    ncurses5
+    stdenv.cc
+    binutils
+    espeak-ng
+    espeak
   ];
 
   stylix = {

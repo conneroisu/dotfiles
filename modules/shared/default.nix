@@ -185,7 +185,7 @@ in {
     shellcheck
 
     ## Python
-    basedpyright
+    unstable-pkgs.basedpyright
 
     ## Yaml
     yaml-language-server

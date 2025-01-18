@@ -20,11 +20,8 @@
 
   packages = with pkgs; [
     git
-    pprof
     podman
-    revive
     flyctl
-    air
     wireguard-tools
   ];
 

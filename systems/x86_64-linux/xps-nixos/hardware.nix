@@ -10,6 +10,9 @@
     inputs.nixos-hardware.nixosModules.dell-xps-15-9510
   ];
 
+  # virtualisation.docker.enable = true;
+  # hardware.nvidia-container-toolkit.enable = true;
+
   boot = {
     initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "uas" "sd_mod" "rtsx_pci_sdmmc"];
     initrd.kernelModules = [];
@@ -36,14 +39,14 @@
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking = {
     useDHCP = lib.mkDefault true;
-    interfaces.enp0s13f0u3u1c2 = {
-      useDHCP = true; # If you want to use DHCP
-      # Or for static IP:
-      # ipv4.addresses = [ {
-      #   address = "192.168.1.2";
-      #   prefixLength = 24;
-      # } ];
-    };
+    # interfaces.enp0s13f0u3u1c2 = {
+    #   useDHCP = true; # If you want to use DHCP
+    #   # Or for static IP:
+    #   # ipv4.addresses = [ {
+    #   #   address = "192.168.1.2";
+    #   #   prefixLength = 24;
+    #   # } ];
+    # };
   };
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

@@ -39,7 +39,7 @@ in {
   system.stateVersion = "24.11";
 
   boot = {
-    plymouth.enable = true;
+    # plymouth.enable = true;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     initrd.kernelModules = ["nvidia" "i915" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
@@ -55,26 +55,19 @@ in {
     hostName = "xps-nixos";
     networkmanager.enable = true;
     defaultGateway = {
-      # address = "192.168.1.1";
-      # interface = "wlp0s20f3";
-      address = "192.168.1.19";
-      interface = "enp0s13f0u3u1c2";
+      address = "192.168.1.1";
+      interface = "wlp0s20f3";
+      # address = "192.168.1.19";
+      # interface = "enp0s13f0u3u1c2";
     };
   };
 
-  systemd.network = {
-    enable = true;
-    networks."40-enp0s13f0u3u1c2" = {
-      matchConfig.Name = "enp0s13f0u3u1c2";
-      networkConfig = {
-        DHCP = "ipv4";
-      };
-    };
+  systemd = {
+    targets.network-online.wantedBy = pkgs.lib.mkForce []; # Normally ["multi-user.target"]
+    services.NetworkManager-wait-online.wantedBy = pkgs.lib.mkForce []; # Normally ["network-online.target"]
   };
 
   time.timeZone = "America/Chicago";
-
-  virtualisation.docker.enable = true;
 
   nix.extraOptions = ''
     trusted-users = root connerohnesorge
@@ -137,6 +130,13 @@ in {
   };
 
   services = {
+    journald.extraConfig = ''
+      Storage=volatile RateLimitIntervalSec=30s
+      RateLimitBurst=10000
+      SystemMaxUse=16M
+      RuntimeMaxUse=16M
+    '';
+
     xserver = {
       enable = true;
       videoDrivers = ["nvidia"];

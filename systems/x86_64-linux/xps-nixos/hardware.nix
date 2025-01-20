@@ -10,8 +10,8 @@
     inputs.nixos-hardware.nixosModules.dell-xps-15-9510
   ];
 
-  # virtualisation.docker.enable = true;
-  # hardware.nvidia-container-toolkit.enable = true;
+  virtualisation.docker.enable = true;
+  hardware.nvidia-container-toolkit.enable = true;
   boot = {
     initrd.availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "uas" "sd_mod" "rtsx_pci_sdmmc"];
     initrd.kernelModules = [];

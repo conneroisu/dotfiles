@@ -69,7 +69,7 @@
       snowfall = {
         namespace = "csnow";
         meta = {
-          name = "conneroisu-snow";
+          name = "csnow";
           title = "Conner Ohnesorge's Snowflake";
         };
       };
@@ -81,7 +81,6 @@
       channels-config = {
         allowUnfree = true;
       };
-
       systems.modules = {
         # Add modules to all NixOS systems.
         nixos = with inputs; [

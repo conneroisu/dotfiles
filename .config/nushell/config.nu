@@ -241,7 +241,7 @@ $env.config = {
     buffer_editor: null # command that will be used to edit the current line buffer with ctrl+o, if unset fallback to $env.VISUAL and $env.EDITOR
     use_ansi_coloring: true
     bracketed_paste: true # enable bracketed paste, currently useless on windows
-    edit_mode: emacs # emacs, vi
+    edit_mode: vi # emacs, vi
     shell_integration: {
         # osc2 abbreviates the path if in the home_dir, sets the tab/window title, shows the running command in the tab/window title
         osc2: true
@@ -897,3 +897,12 @@ $env.config = {
         }
     ]
 }
+
+source ~/dotfiles/.config/nushell/zox.nu
+source ~/dotfiles/.config/nushell/plugins/atuin.nu
+source ~/dotfiles/.config/nushell/plugins/starship.nu
+source ~/dotfiles/.config/nushell/plugins/extract.nu
+
+$env.config.hooks.env_change.PWD = (
+    $env.config.hooks.env_change.PWD | append ( source ~/dotfiles/.config/nushell/hooks/direnv.nu)
+)

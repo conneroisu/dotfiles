@@ -11,4 +11,4 @@
 --ignore .mypy_cache/
 --ignore ./.venv
 --ignore venv
---ignore ./hosts/
+--ignore ./nix/

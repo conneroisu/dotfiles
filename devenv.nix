@@ -1,40 +1,45 @@
+{ pkgs, lib, config, inputs, ... }:
+
 {
-  pkgs,
-  # lib,
-  # config,
-  # inputs,
-  ...
-}: {
-  name = "dotfiles";
+  # https://devenv.sh/basics/
+  env.GREET = "devenv";
 
-  languages = {
-    nix.enable = true;
-  };
+  # https://devenv.sh/packages/
+  packages = [ pkgs.git ];
 
-  git-hooks = {
-    hooks = {
-      alejandra.enable = true;
-      deadnix.enable = true;
-    };
-  };
+  # https://devenv.sh/languages/
+  # languages.rust.enable = true;
 
-  packages = with pkgs; [
-    git
-    podman
-  ];
+  # https://devenv.sh/processes/
+  # processes.cargo-watch.exec = "cargo-watch";
 
-  scripts = {
-    latest.exec = ''
-      cd $(git rev-parse --show-toplevel) && git add . && git commit -m "latest" && git push
-    '';
-    dx.exec = ''$EDITOR $(git rev-parse --show-toplevel)/devenv.nix'';
-  };
+  # https://devenv.sh/services/
+  # services.postgres.enable = true;
 
-  enterShell = ''git status'';
+  # https://devenv.sh/scripts/
+  scripts.hello.exec = ''
+    echo hello from $GREET
+  '';
+
+  enterShell = ''
+    hello
+    git --version
+  '';
+
+  # https://devenv.sh/tasks/
+  # tasks = {
+  #   "myproj:setup".exec = "mytool build";
+  #   "devenv:enterShell".after = [ "myproj:setup" ];
+  # };
+
+  # https://devenv.sh/tests/
   enterTest = ''
     echo "Running tests"
     git --version | grep --color=auto "${pkgs.git.version}"
   '';
 
-  cachix.enable = true;
+  # https://devenv.sh/pre-commit-hooks/
+  # pre-commit.hooks.shellcheck.enable = true;
+
+  # See full reference at https://devenv.sh/reference/options/
 }

@@ -1,3 +1,6 @@
 [submodule ".config/nvim"]
 	path = .config/nvim
 	url = https://github.com/conneroisu/nvim.git
+[submodule ".config/nushell/plugins/nu_plugin_clipboard"]
+	path = .config/nushell/plugins/nu_plugin_clipboard
+	url = https://github.com/FMotalleb/nu_plugin_clipboard.git

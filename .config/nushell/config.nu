@@ -2,6 +2,7 @@
 #
 # version = "0.100.0"
 
+
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
@@ -897,6 +898,7 @@ $env.config = {
         }
     ]
 }
+use ~/dotfiles/.config/nushell/plugins/nupm/nupm/
 
 source ~/dotfiles/.config/nushell/zox.nu
 source ~/dotfiles/.config/nushell/plugins/atuin.nu
@@ -906,3 +908,11 @@ source ~/dotfiles/.config/nushell/plugins/extract.nu
 $env.config.hooks.env_change.PWD = (
     $env.config.hooks.env_change.PWD | append ( source ~/dotfiles/.config/nushell/hooks/direnv.nu)
 )
+
+def nvimf [] {
+    nvim (fzf --preview "bat --color=always {}")
+}
+def cf [] {
+    cd (fd --type d --hidden --exclude .git --strip-cwd-prefix --max-depth 99
+        | fzf --reverse --preview "ls --color {}")
+}

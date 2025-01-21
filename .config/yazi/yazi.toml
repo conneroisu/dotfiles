@@ -1,0 +1,2 @@
+# forcing it fallback to Überzug++ or Chafa
+NVIM=1 NVIM_LOG_FILE=1 yazi

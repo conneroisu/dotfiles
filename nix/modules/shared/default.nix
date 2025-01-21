@@ -30,15 +30,20 @@ in {
   };
 
   environment.variables = {
+    NUPM_HOME = "~/dotfiles/.config/nushell/nupm/";
     EDITOR = "nvim";
     SHELL = "zsh";
     GTK_THEME = "adw-gtk3-dark";
   };
 
   environment.systemPackages =
-    (with unstable-pkgs; [
+    [
+      pkgs.home-manager
+    ]
+    ++ (with unstable-pkgs; [
       doppler
       devenv
+      wgnord
       basedpyright
       ollama
     ])
@@ -49,7 +54,7 @@ in {
       gnumake
       cmake
       stow
-      pkgs.home-manager
+      carapace
       age
       # Apps
       obsidian

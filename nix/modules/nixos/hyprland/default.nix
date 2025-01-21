@@ -56,6 +56,7 @@ in {
         rofi
         rofi-rbw
         rofi-obsidian
+        hyprland
         rofi-bluetooth
         rofi-power-menu
         dunst
@@ -63,8 +64,7 @@ in {
         hyprls
       ])
       ++ (with unstable-pkgs; [
-        hyprland
-      ]);
+        ]);
 
     programs = {
       hyprland = {

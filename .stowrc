@@ -12,3 +12,6 @@
 --ignore ./.venv
 --ignore venv
 --ignore ./nix/
+--ignore .envrc
+--ignore .direnv
+--ignore .devenv

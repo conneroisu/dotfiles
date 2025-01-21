@@ -59,7 +59,7 @@ in {
     zsh
     zinit
     starship
-    devenv
+    unstable-pkgs.devenv
     pkgs.direnv
     pkgs.nix-direnv
     bat

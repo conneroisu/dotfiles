@@ -21,8 +21,6 @@
   packages = with pkgs; [
     git
     podman
-    flyctl
-    wireguard-tools
   ];
 
   scripts = {

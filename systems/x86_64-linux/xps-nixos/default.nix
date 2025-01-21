@@ -41,7 +41,7 @@ in
     system.stateVersion = "24.11";
 
     boot = {
-      # plymouth.enable = true;
+      plymouth.enable = true;
       loader.systemd-boot.enable = true;
       loader.efi.canTouchEfiVariables = true;
     };
@@ -96,6 +96,9 @@ in
         nvidia-prime.enable = true;
         bluetooth.enable = true;
       };
+      wm = {
+        hyprland.enable = true;
+      };
     };
 
     services = {
@@ -124,7 +127,6 @@ in
         pulse.enable = true;
       };
       libinput.enable = true;
-      hypridle.enable = true;
       tlp.enable = true;
       power-profiles-daemon.enable = false;
       ollama = {
@@ -149,52 +151,16 @@ in
       ];
     };
     programs = {
-      steam.enable = true;
       zsh.enable = true;
-      hyprland = {
-        enable = true;
-        withUWSM = true;
-        xwayland.enable = true;
-      };
-      hyprlock.enable = true;
     };
 
     environment.systemPackages = with pkgs; [
       nix-ld
       alejandra
       nh
-      google-chrome
-      unstable-pkgs.hyprland
-      hyprcursor
-      hyprkeys
-      hyprpaper
-      hypridle
-      hyprsunset
-      hyprwayland-scanner
-      hyprutils
-      hyprnotify
-      inputs.hyprwm-qtutils.packages.${system}.hyprland-qtutils
-      inputs.ghostty.packages."${system}".default
-      waybar
-      xdg-desktop-portal-hyprland
-      uwsm
-      networkmanager_dmenu
       tlp
-      dunst
       pipewire
-      grimblast
-      grim
-      slurp
-      rofi
-      rofi-rbw
-      rofi-obsidian
-      rofi-bluetooth
-      rofi-power-menu
-      spotify
-      android-studio
       gpu-screen-recorder
-      brightnessctl
-      wl-clipboard
       gtk3
       gtk-layer-shell
       usbutils
@@ -207,8 +173,14 @@ in
       docker
       docker-compose
       docker-compose-language-service
+
       quartus-prime-lite
       beekeeper-studio
+      spotify
+      kicad
+      android-studio
+      google-chrome
+
       ghdl
       nvc
       lshw
@@ -216,7 +188,6 @@ in
       nvidia-docker
       nvtopPackages.nvidia
       gdb
-      kicad
       gitRepo
       gnupg
       autoconf
@@ -243,7 +214,6 @@ in
       stdenv.cc
       binutils
       espeak-ng
-      espeak
     ];
 
     stylix = {

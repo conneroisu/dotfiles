@@ -36,187 +36,187 @@ in {
     GTK_THEME = "adw-gtk3-dark";
   };
 
-  environment.systemPackages = with pkgs; [
-    unstable-pkgs.doppler
-    git
-    git-lfs
-    cloc
-    gnumake
-    cmake
-    stow
-    pkgs.home-manager
-    age
-    # Apps
-    obsidian
-    neovim
-    emacs
-    zed-editor
-    vscode
-    gtkwave
-    inputs.zen-browser.packages."${system}".default
-    nushell
+  environment.systemPackages =
+    (with unstable-pkgs; [
+      doppler
+      devenv
+      basedpyright
+      ollama
+    ])
+    ++ (with pkgs; [
+      git
+      git-lfs
+      cloc
+      gnumake
+      cmake
+      stow
+      pkgs.home-manager
+      age
+      # Apps
+      obsidian
+      neovim
+      emacs
+      zed-editor
+      vscode
+      gtkwave
+      inputs.zen-browser.packages."${system}".default
 
-    # Shell
-    zsh
-    zinit
-    starship
-    unstable-pkgs.devenv
-    pkgs.direnv
-    pkgs.nix-direnv
-    bat
-    fd
-    jq
-    yq
-    delta
-    cachix
-    fzf
-    nerdfonts
-    zellij
-    gh
-    atuin
-    zoxide
-    gum
-    bat
-    eza
-    delta
-    unzip
-    htop
-    nixos-generators
-    tealdeer
-    sleek
-    chafa
-    tree-sitter
+      # Shell
+      nushell
+      zsh
+      zinit
+      starship
+      pkgs.direnv
+      pkgs.nix-direnv
+      bat
+      fd
+      jq
+      yq
+      delta
+      cachix
+      fzf
+      nerdfonts
+      zellij
+      gh
+      atuin
+      zoxide
+      gum
+      bat
+      eza
+      delta
+      unzip
+      htop
+      nixos-generators
+      tealdeer
+      sleek
+      chafa
+      tree-sitter
 
-    wireguard-tools
-    wireguard-ui
+      wireguard-tools
+      wireguard-ui
 
-    nh
-    rippkgs
-    update-nix-fetchgit
+      nh
+      rippkgs
+      update-nix-fetchgit
 
-    dnsutils
+      dnsutils
 
-    sad
-    gcc
-    llvm
-    nodejs
-    stow
-    nvc
-    uv
-    ripgrep
-    meson
-    sqlite
-    sqlite-vec
-    unstable-pkgs.ollama
-    jetbrains.datagrip
-    pkg-config
-    spicetify-cli
+      sad
+      gcc
+      llvm
+      nodejs
+      stow
+      nvc
+      uv
+      ripgrep
+      meson
+      sqlite
+      sqlite-vec
+      jetbrains.datagrip
+      pkg-config
+      spicetify-cli
 
-    # Platforms
-    turso-cli
-    flyctl
+      # Platforms
+      turso-cli
+      flyctl
 
-    # Languages
-    nodejs
-    ruby
-    rustup
-    zig
-    python312
-    (python312.withPackages (
-      ps:
-        with ps; [
-          numpy
-          requests
-          pandas
-          scipy
-          matplotlib
-          scikitlearn
-          torch
-          opencv4
-          torchvision
-          selenium
-          pyarrow
-          psycopg
-          mysqlclient
-          ollama
-          black
-          requests
-          uvicorn
-          flask
-          fastapi
-          django
-          gunicorn
-          pydantic
-          mypy
-          torchdiffeq
-          beautifulsoup4
-          pillow
-          gym
-          pypdf
-          pytest
-          pip
-          sympy
-        ]
-    ))
+      # Languages
+      nodejs
+      ruby
+      rustup
+      zig
+      python312
+      (python312.withPackages (
+        ps:
+          with ps; [
+            numpy
+            requests
+            pandas
+            scipy
+            matplotlib
+            scikitlearn
+            torch
+            opencv4
+            torchvision
+            selenium
+            pyarrow
+            psycopg
+            mysqlclient
+            ollama
+            black
+            requests
+            uvicorn
+            flask
+            fastapi
+            django
+            gunicorn
+            pydantic
+            mypy
+            torchdiffeq
+            beautifulsoup4
+            pillow
+            gym
+            pypdf
+            pytest
+            pip
+            sympy
+          ]
+      ))
 
-    # Language Servers
+      # Language Servers
 
-    ## Nix
-    nixd
-    nil
-    statix
-    nix-index
-    nix-prefetch-git
+      ## Nix
+      nixd
+      nil
+      statix
+      nix-index
+      nix-prefetch-git
 
-    ## Lua
-    lua-language-server
+      ## Lua
+      lua-language-server
 
-    ## JSON
-    jq-lsp
+      ## JSON
+      jq-lsp
 
-    ## HTMX
-    htmx-lsp
-    tailwindcss
+      ## HTMX
+      htmx-lsp
+      tailwindcss
 
-    ## Latex
-    texlab
-    ltex-ls
+      ## Latex
+      texlab
+      ltex-ls
 
-    ## Bash
-    shellcheck
+      ## Bash
+      shellcheck
 
-    ## Python
-    unstable-pkgs.basedpyright
+      ## Python
 
-    ## Yaml
-    yaml-language-server
-    actionlint
+      ## Yaml
+      yaml-language-server
+      actionlint
 
-    ## Hyprland
-    hyprls
+      ## Sql
+      sqls
 
-    ## Sql
-    sqls
+      vscode-langservers-extracted
+      luajitPackages.luarocks
+      wget
+      pfetch-rs
+      matugen
+      # Formatters
+      hclfmt
+      shfmt
+      rustfmt
+      black
+      tree
+      alejandra
+      cbfmt
+      marksman
+      sops
 
-    vscode-langservers-extracted
-    luajitPackages.luarocks
-    wget
-    pfetch-rs
-    matugen
-    # Formatters
-    hclfmt
-    shfmt
-    rustfmt
-    black
-    tree
-    alejandra
-    cbfmt
-    marksman
-    sops
-
-    # Debuggers
-    delve
-  ];
+      # Debuggers
+      delve
+    ]);
 
   # Your configuration.
 }

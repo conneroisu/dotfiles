@@ -54,6 +54,7 @@ in {
     vscode
     gtkwave
     inputs.zen-browser.packages."${system}".default
+    nushell
 
     # Shell
     zsh

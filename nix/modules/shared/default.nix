@@ -24,7 +24,6 @@
   };
 in {
   programs = {
-    zsh.enable = true;
     direnv.enable = true;
     direnv.nix-direnv.enable = true;
   };
@@ -32,7 +31,7 @@ in {
   environment.variables = {
     NUPM_HOME = "~/dotfiles/.config/nushell/nupm/";
     EDITOR = "nvim";
-    SHELL = "zsh";
+    SHELL = "nu";
     GTK_THEME = "adw-gtk3-dark";
   };
 
@@ -42,6 +41,7 @@ in {
     ]
     ++ (with unstable-pkgs; [
       doppler
+      unstable-pkgs.nushell
       devenv
       wgnord
       basedpyright
@@ -49,6 +49,7 @@ in {
     ])
     ++ (with pkgs; [
       git
+      zsh
       git-lfs
       cloc
       gnumake
@@ -64,10 +65,10 @@ in {
       vscode
       gtkwave
       inputs.zen-browser.packages."${system}".default
+      inputs.nufmt.packages."${system}".default
 
       # Shell
-      nushell
-      zsh
+      # zsh
       zinit
       starship
       pkgs.direnv

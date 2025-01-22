@@ -912,7 +912,6 @@ $env.config.hooks.env_change.PWD = (
 def nvimf [] {
     nvim (fzf --preview "bat --color=always {}")
 }
-def cf [] {
-    cd (fd --type d --hidden --exclude .git --strip-cwd-prefix --max-depth 99
-        | fzf --reverse --preview "ls --color {}")
-}
+
+
+alias cf = cd (fd --type d --hidden --exclude .git --strip-cwd-prefix --max-depth 99 | fzf --reverse --preview "ls --color {}")

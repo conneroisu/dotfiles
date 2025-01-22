@@ -34,7 +34,6 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages =
       (with inputs; [
-        hyprwm-qtutils.packages.${system}.hyprland-qtutils
         ghostty.packages."${system}".default
       ])
       ++ (with pkgs; [

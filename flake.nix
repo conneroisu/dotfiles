@@ -13,11 +13,6 @@
 
     stylix.url = "github:danth/stylix";
 
-    hyprwm-qtutils = {
-      url = "github:hyprwm/hyprland-qtutils";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     ghostty.url = "github:ghostty-org/ghostty/main";
 
     sops-nix.url = "github:Mic92/sops-nix";
@@ -57,13 +52,19 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    nufmt = {
+      url = "github:nushell/nufmt";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
   };
 
   outputs = inputs: let
     inherit (inputs) snowfall-lib;
     lib = snowfall-lib.mkLib {
       inherit inputs;
-      inherit (inputs) stylix nix-darwin homebrew-core homebrew-cask homebrew-bundle disko;
       src = ./nix;
 
       snowfall = {

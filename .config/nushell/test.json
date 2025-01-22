@@ -1,0 +1,46 @@
+{
+	"containers": {
+		"type": "unknown"
+	},
+	"devShells": {
+		"aarch64-darwin": {
+			"default": {}
+		},
+		"aarch64-linux": {
+			"default": {}
+		},
+		"x86_64-darwin": {
+			"default": {}
+		},
+		"x86_64-linux": {
+			"default": {
+				"name": "devenv-shell",
+				"type": "derivation"
+			}
+		}
+	},
+	"packages": {
+		"aarch64-darwin": {
+			"devenv-test": {},
+			"devenv-up": {}
+		},
+		"aarch64-linux": {
+			"devenv-test": {},
+			"devenv-up": {}
+		},
+		"x86_64-darwin": {
+			"devenv-test": {},
+			"devenv-up": {}
+		},
+		"x86_64-linux": {
+			"devenv-test": {
+				"name": "devenv-test",
+				"type": "derivation"
+			},
+			"devenv-up": {
+				"name": "no-processes",
+				"type": "derivation"
+			}
+		}
+	}
+}

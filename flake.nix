@@ -5,7 +5,6 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.11";
     nixpkgs-unstable.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-
     nix-ld.url = "github:Mic92/nix-ld";
     nix-ld.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -61,7 +60,7 @@
     };
   };
 
-  outputs = inputs: let
+  outputs = {self, ...} @ inputs: let
     inherit (inputs) snowfall-lib;
     lib = snowfall-lib.mkLib {
       inherit inputs;

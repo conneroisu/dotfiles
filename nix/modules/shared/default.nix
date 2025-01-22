@@ -42,6 +42,7 @@ in {
     ++ (with unstable-pkgs; [
       doppler
       unstable-pkgs.nushell
+      unstable-pkgs.carapace
       devenv
       wgnord
       basedpyright
@@ -55,7 +56,6 @@ in {
       gnumake
       cmake
       stow
-      carapace
       age
       # Apps
       obsidian
@@ -218,6 +218,7 @@ in {
       cbfmt
       marksman
       sops
+      discord
 
       # Debuggers
       delve

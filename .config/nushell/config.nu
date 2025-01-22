@@ -901,6 +901,8 @@ $env.config = {
 use ~/dotfiles/.config/nushell/plugins/nupm/nupm/
 
 source ~/dotfiles/.config/nushell/zox.nu
+source ~/dotfiles/.config/nushell/carapace.nu
+source ~/dotfiles/.config/nushell/nix.nu
 source ~/dotfiles/.config/nushell/plugins/atuin.nu
 source ~/dotfiles/.config/nushell/plugins/starship.nu
 source ~/dotfiles/.config/nushell/plugins/extract.nu
@@ -915,3 +917,27 @@ def nvimf [] {
 
 
 alias cf = cd (fd --type d --hidden --exclude .git --strip-cwd-prefix --max-depth 99 | fzf --reverse --preview "ls --color {}")
+
+module commands {
+    def animals [] {
+        ["cat", "dog", "eel" ]
+    }
+
+    def animal-names [context: string] {
+        match ($context | split words | last) {
+            cat => ["Missy", "Phoebe"]
+            dog => ["Lulu", "Enzo"]
+            eel => ["Eww", "Slippy"]
+        }
+    }
+
+    export def my-command [
+        animal: string@animals
+        name: string@animal-names
+    ] {
+        print $"The ($animal) is named ($name)."
+    }
+}
+use commands
+
+

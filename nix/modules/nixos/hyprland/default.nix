@@ -35,6 +35,7 @@ in {
     environment.systemPackages =
       (with inputs; [
         ghostty.packages."${system}".default
+        ashell.defaultPackage.${system}
       ])
       ++ (with pkgs; [
         hyprcursor

@@ -219,6 +219,7 @@ in {
       marksman
       sops
       discord
+      llama-cpp
 
       # Debuggers
       delve

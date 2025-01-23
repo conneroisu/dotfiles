@@ -58,6 +58,13 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+
+    ashell = {
+      url = "github:MalpenZibo/ashell";
+      inputs = {
+        nixpkgs.follows = "nixpkgs-unstable";
+      };
+    };
   };
 
   outputs = {self, ...} @ inputs: let

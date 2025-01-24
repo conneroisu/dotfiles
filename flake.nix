@@ -26,8 +26,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    darwin.url = "github:LnL7/nix-darwin/master";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
+    darwin.url = "github:LnL7/nix-darwin/nix-darwin-24.11";
+    darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
 
@@ -67,7 +67,10 @@
     };
   };
 
-  outputs = {self, ...} @ inputs: let
+  outputs = {
+    # self,
+    ...
+  } @ inputs: let
     inherit (inputs) snowfall-lib;
     lib = snowfall-lib.mkLib {
       inherit inputs;

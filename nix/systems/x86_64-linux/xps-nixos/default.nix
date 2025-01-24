@@ -202,6 +202,7 @@ in
       cudatoolkit
       linuxPackages.nvidia_x11
       libGLU
+      wgnord
       libGL
       xorg.libXi
       xorg.libXmu

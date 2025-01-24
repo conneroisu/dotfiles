@@ -44,7 +44,6 @@ in {
       unstable-pkgs.nushell
       unstable-pkgs.carapace
       devenv
-      wgnord
       basedpyright
       ollama
     ])

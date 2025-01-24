@@ -32,7 +32,13 @@ def --env --wrapped __zoxide_z [...rest:string] {
 def --env --wrapped __zoxide_zi [...rest:string] {
   cd $'(zoxide query --interactive -- ...$rest | str trim -r -c "\n")'
 }
-
+let zoxide_completer = {|spans|
+    $spans | skip 1 | zoxide query -l ...$in | lines | where {|x| $x != $env.PWD}
+}
 alias cd = __zoxide_z
 alias cdi = __zoxide_zi
+{
+    z => $zoxide_completer
+    zi => $zoxide_completer
+}
 

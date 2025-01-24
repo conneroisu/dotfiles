@@ -30,10 +30,10 @@ position: Top # optional, default Top
 modules:
   # The modules that will be displayed on the left side of the status bar
   left:
-    - Workspaces
+    - WindowTitle
   # The modules that will be displayed in the center of the status bar
   center:
-    - WindowTitle
+    - Workspaces
   # The modules that will be displayed on the right side of the status bar
   right:
     - SystemInfo
@@ -99,7 +99,7 @@ settings:
   vpnMoreCmd: "nm-connection-editor" # optional, default None
   # command used to open the Bluetooth settings
   # without a value the related button will not appear
-  bluetoothMoreCmd: "blueman-manager" # optional, default None
+  bluetoothMoreCmd: "bluetoothctl" # optional, default None
 # Appearance config
 # Each color could be a simple hex color like #228800 or an
 # object that define a base hex color and two optional variant of that color (a strong one and a weak one)

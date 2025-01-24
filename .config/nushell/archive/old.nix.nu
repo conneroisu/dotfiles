@@ -1,3 +1,4 @@
+
 # AUTHOR: Conner Ohnesorge
 # nix flake show --impure --json --quiet | from json
 # Output:
@@ -68,19 +69,18 @@ let targets = [
     "apps",
     "checks",
 ]
-let allCompletions = []
-let transystems = $systems | get "packages" | transpose
-let ess = $transystems | enumerate | 
-    each {
-            |elt| 
-            let subsid = $elt.item | get column1 | transpose | get column0
-            $subsid | each {
-                    |sub| print $sub
-                    $"packages.($elt.item | get column0).($sub)" 
-            }
+
+let allCompletions = $targets
+| each {
+    |target|
+    let intersystems = $systems | get -i $target
+    let transystems = $intersystems | transpose
+    let transystemsLen = $transystems | length
+    if $transystemsLen == 0 {
+        null
     }
     let outie = $transystems | enumerate | each {
-        |elt| $elt.item | get column1 | transpose | get column0 | each { |sub| 
+        |elt| $elt.item | get column1 | transpose | get column0 | each { |sub|
                     {
                         value: $"packages.($elt.item | get column0).($sub)",
                         description: $"packages.($elt.item | get column0).($sub)",
@@ -88,6 +88,29 @@ let ess = $transystems | enumerate |
                     }
         }
     }
+    $outie
+}
+print $allCompletions
+
+let transystems = $systems | get "packages" | transpose
+# let ess = $transystems | enumerate | 
+#     each {
+#             |elt| 
+#             let subsid = $elt.item | get column1 | transpose | get column0
+#             $subsid | each {
+#                     |sub| print $sub
+#                     $"packages.($elt.item | get column0).($sub)" 
+#             }
+#     }
+let outie = $transystems | enumerate | each {
+    |elt| $elt.item | get column1 | transpose | get column0 | each { |sub| 
+                {
+                    value: $"packages.($elt.item | get column0).($sub)",
+                    description: $"packages.($elt.item | get column0).($sub)",
+                    style: green
+                }
+    }
+}
 let completions = $outie | flatten 
 
 module nixb {

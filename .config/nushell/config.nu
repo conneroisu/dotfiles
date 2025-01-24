@@ -902,7 +902,7 @@ use ~/dotfiles/.config/nushell/plugins/nupm/nupm/
 
 source ~/dotfiles/.config/nushell/zox.nu
 source ~/dotfiles/.config/nushell/carapace.nu
-source ~/dotfiles/.config/nushell/nix.nu
+source ~/dotfiles/.config/nushell/base_completions.nu
 source ~/dotfiles/.config/nushell/plugins/atuin.nu
 source ~/dotfiles/.config/nushell/plugins/starship.nu
 source ~/dotfiles/.config/nushell/plugins/extract.nu

@@ -46,6 +46,7 @@ in {
       devenv
       basedpyright
       ollama
+      fish
     ])
     ++ (with pkgs; [
       git
@@ -219,6 +220,7 @@ in {
       sops
       discord
       llama-cpp
+      pandoc
 
       # Debuggers
       delve

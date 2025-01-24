@@ -1,3 +1,9 @@
+def latest [] {
+    git add . 
+    git commit -m "latest" 
+    git push
+}
+
 let carapace_completer = {|spans|
     carapace $spans.0 nushell ...$spans | from json
 }
@@ -27,8 +33,6 @@ let external_completer = {|spans|
         nu => $fish_completer
         # fish completes commits and branch names in a nicer way
         git => $fish_completer
-        # carapace doesn't have completions for asdf
-        asdf => $fish_completer
         # fish has better completions for nix
         nix => $fish_completer
         # fish has better completions for wg-quick
@@ -58,6 +62,7 @@ let external_completer = {|spans|
         _ => $carapace_completer
     } | do $in $spans
 }
+
 $env.config = {
     # ...
     completions: {

@@ -99,6 +99,9 @@ in
       wm = {
         hyprland.enable = true;
       };
+      package-sets = {
+        office.enable = true;
+      };
     };
 
     services = {

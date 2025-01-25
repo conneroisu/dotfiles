@@ -148,29 +148,6 @@ let light_theme = {
 
 const DEVENV_FILE_CACHE = "/tmp/nudevenv.nix"
 
-$env.config = {
-    hooks: {
-        pre_prompt: [{ 
-                let REPO_ROOT = (git rev-parse --show-toplevel)
-                let content = open $"($REPO_ROOT)/devenv.nix"
-                let old_content = open $DEVENV_FILE_CACHE
-                if ($content == $old_content) {
-                    return
-                }
-                $content | save -f $DEVENV_FILE_CACHE
-            print $"reloading devenv"
-                direnv export json | from json | default {} | load-env
-        }] # run before the prompt is shown
-        pre_execution: [{ null }] # run before the repl input is run
-        env_change: {
-            PWD: [{|before, after| null }] # run if the PWD environment is different since the last repl input
-        }
-        display_output: "if (term size).columns >= 100 { table -e } else { table }" # run to display the output of a pipeline
-        command_not_found: { null } # return an error message when a command is not found
-    }
-}
-
-
 # The default config record. This is where much of your global configuration is setup.
 $env.config = {
     show_banner: true # true or false to enable or disable the welcome banner at startup
@@ -229,6 +206,17 @@ $env.config = {
         selected_cell: { bg: light_blue },
     }
 
+    hooks: {
+        pre_prompt: [{ 
+            null
+        }] # run before the prompt is shown
+        pre_execution: [{ null }] # run before the repl input is run
+        env_change: {
+            PWD: [{|before, after| null }] # run if the PWD environment is different since the last repl input
+        }
+        display_output: "if (term size).columns >= 100 { table -e } else { table }" # run to display the output of a pipeline
+        command_not_found: { null } # return an error message when a command is not found
+    }
     history: {
         max_size: 100_000 # Session has to be reloaded for this to take effect
         sync_on_enter: true # Enable to share history between multiple sessions, else you have to close the session to write history to file
@@ -929,27 +917,4 @@ def nvimf [] {
     nvim (fzf --preview "bat --color=always {}")
 }
 
-
 alias cf = cd (fd --type d --hidden --exclude .git --strip-cwd-prefix --max-depth 99 | fzf --reverse --preview "ls --color {}")
-
-module commands {
-    def animals [] {
-        ["cat", "dog", "eel" ]
-    }
-
-    def animal-names [context: string] {
-        match ($context | split words | last) {
-            cat => ["Missy", "Phoebe"]
-            dog => ["Lulu", "Enzo"]
-            eel => ["Eww", "Slippy"]
-        }
-    }
-
-    export def my-command [
-        animal: string@animals
-        name: string@animal-names
-    ] {
-        print $"The ($animal) is named ($name)."
-    }
-}
-use commands

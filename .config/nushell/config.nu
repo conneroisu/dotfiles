@@ -146,6 +146,31 @@ let light_theme = {
 #     carapace $spans.0 nushell ...$spans | from json
 # }
 
+const DEVENV_FILE_CACHE = "/tmp/nudevenv.nix"
+
+$env.config = {
+    hooks: {
+        pre_prompt: [{ 
+                let REPO_ROOT = (git rev-parse --show-toplevel)
+                let content = open $"($REPO_ROOT)/devenv.nix"
+                let old_content = open $DEVENV_FILE_CACHE
+                if ($content == $old_content) {
+                    return
+                }
+                $content | save -f $DEVENV_FILE_CACHE
+            print $"reloading devenv"
+                direnv export json | from json | default {} | load-env
+        }] # run before the prompt is shown
+        pre_execution: [{ null }] # run before the repl input is run
+        env_change: {
+            PWD: [{|before, after| null }] # run if the PWD environment is different since the last repl input
+        }
+        display_output: "if (term size).columns >= 100 { table -e } else { table }" # run to display the output of a pipeline
+        command_not_found: { null } # return an error message when a command is not found
+    }
+}
+
+
 # The default config record. This is where much of your global configuration is setup.
 $env.config = {
     show_banner: true # true or false to enable or disable the welcome banner at startup
@@ -292,17 +317,6 @@ $env.config = {
             # }
         }
     }
-
-    hooks: {
-        pre_prompt: [{ null }] # run before the prompt is shown
-        pre_execution: [{ null }] # run before the repl input is run
-        env_change: {
-            PWD: [{|before, after| null }] # run if the PWD environment is different since the last repl input
-        }
-        display_output: "if (term size).columns >= 100 { table -e } else { table }" # run to display the output of a pipeline
-        command_not_found: { null } # return an error message when a command is not found
-    }
-
     menus: [
         # Configuration for default nushell menus
         # Note the lack of source parameter
@@ -939,5 +953,3 @@ module commands {
     }
 }
 use commands
-
-

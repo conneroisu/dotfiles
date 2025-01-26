@@ -222,9 +222,6 @@ in {
       discord
       llama-cpp
       pandoc
-
-      # Debuggers
-      delve
     ]);
 
   # Your configuration.

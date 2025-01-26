@@ -106,16 +106,6 @@
           {programs.nix-ld.dev.enable = true;}
           sops-nix.nixosModules.default
           experiments
-          # {
-          #   nix.settings.experimental-features = [
-          #     "nix-command"
-          #     "flakes"
-          #   ];
-          # }
-          # {
-          #   home-manager.useGlobalPkgs = true;
-          #   home-manager.useUserPackages = true;
-          # }
           homie
         ];
 
@@ -126,16 +116,6 @@
           home-manager.darwinModules.home-manager
           sops-nix.darwinModules.default
           experiments
-          # {
-          #   nix.settings.experimental-features = [
-          #     "nix-command"
-          #     "flakes"
-          #   ];
-          # }
-          # {
-          #   home-manager.useGlobalPkgs = true;
-          #   home-manager.useUserPackages = true;
-          # }
           homie
         ];
       };

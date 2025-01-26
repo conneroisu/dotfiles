@@ -1,4 +1,5 @@
 {
+  pkgs,
   config,
   lib,
   namespace,
@@ -22,6 +23,7 @@ in {
             ControllerMode = "dual";
             FastConnectable = "true";
             Experimental = "true";
+            Enable = "Source,Sink,Media,Socket";
           };
           Policy = {
             AutoEnable = "true";

@@ -89,6 +89,8 @@
     };
   };
 
+  services.mpris-proxy.enable = true;
+
   qt = {
     enable = true;
     platformTheme.name = "adwaita";

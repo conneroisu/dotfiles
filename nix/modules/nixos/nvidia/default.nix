@@ -33,13 +33,29 @@ in {
   };
 
   config = mkIf cfg.enable {
+    services = {
+      # Load nvidia driver for Xorg and Wayland
+      xserver.videoDrivers = ["nvidia"];
+    };
+
+    environment.variables = {
+      CUDA_PATH = pkgs.cudatoolkit;
+      EXTRA_LDFLAGS = "-L/lib -L${
+        pkgs.lib.makeLibraryPath [
+          pkgs.linuxPackages.nvidia_x11
+        ]
+      }";
+    };
+
     environment.systemPackages = with pkgs; [
+      nvtopPackages.nvidia
+      linuxPackages.nvidia_x11
       nvidia-docker
       nvidia-container-toolkit
+
+      cudatoolkit
       nvtopPackages.full
     ];
-    # Load nvidia driver for Xorg and Wayland
-    services.xserver.videoDrivers = ["nvidia"];
 
     hardware.nvidia = {
       # Modesetting is required.

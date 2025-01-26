@@ -2,8 +2,7 @@
   description = "Conner Ohnesorge's NixOS Config";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nix-ld.url = "github:Mic92/nix-ld";
     nix-ld.inputs.nixpkgs.follows = "nixpkgs";
@@ -27,7 +26,7 @@
     };
 
     darwin.url = "github:LnL7/nix-darwin/nix-darwin-24.11";
-    darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
 
@@ -49,7 +48,7 @@
     disko.inputs.nixpkgs.follows = "nixpkgs";
     nur = {
       url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nufmt = {
@@ -62,15 +61,12 @@
     ashell = {
       url = "github:MalpenZibo/ashell";
       inputs = {
-        nixpkgs.follows = "nixpkgs-unstable";
+        nixpkgs.follows = "nixpkgs";
       };
     };
   };
 
-  outputs = {
-    # self,
-    ...
-  } @ inputs: let
+  outputs = {self, ...} @ inputs: let
     inherit (inputs) snowfall-lib;
     lib = snowfall-lib.mkLib {
       inherit inputs;
@@ -83,6 +79,13 @@
           title = "Conner Ohnesorge's Snowflake";
         };
       };
+    };
+    experiments = {
+      nix.settings.experimental-features = ["nix-command" "flakes"];
+    };
+    homie = {
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
     };
   in
     lib.mkFlake {
@@ -102,16 +105,18 @@
           nur.modules.nixos.default
           {programs.nix-ld.dev.enable = true;}
           sops-nix.nixosModules.default
-          {
-            nix.settings.experimental-features = [
-              "nix-command"
-              "flakes"
-            ];
-          }
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-          }
+          experiments
+          # {
+          #   nix.settings.experimental-features = [
+          #     "nix-command"
+          #     "flakes"
+          #   ];
+          # }
+          # {
+          #   home-manager.useGlobalPkgs = true;
+          #   home-manager.useUserPackages = true;
+          # }
+          homie
         ];
 
         # Add modules to all Darwin systems.
@@ -120,16 +125,18 @@
           nix-homebrew.darwinModules.nix-homebrew
           home-manager.darwinModules.home-manager
           sops-nix.darwinModules.default
-          {
-            nix.settings.experimental-features = [
-              "nix-command"
-              "flakes"
-            ];
-          }
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-          }
+          experiments
+          # {
+          #   nix.settings.experimental-features = [
+          #     "nix-command"
+          #     "flakes"
+          #   ];
+          # }
+          # {
+          #   home-manager.useGlobalPkgs = true;
+          #   home-manager.useUserPackages = true;
+          # }
+          homie
         ];
       };
       outputs-builder = channels: {

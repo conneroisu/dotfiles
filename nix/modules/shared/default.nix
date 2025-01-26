@@ -16,13 +16,7 @@
   # # All other arguments come from the module system.
   # config,
   ...
-}: let
-  unstable-pkgs = import inputs.nixpkgs-unstable {
-    inherit system;
-    config = {
-    };
-  };
-in {
+}: {
   programs = {
     direnv.enable = true;
     direnv.nix-direnv.enable = true;
@@ -35,21 +29,24 @@ in {
     GTK_THEME = "adw-gtk3-dark";
   };
 
+  fonts.packages = with pkgs;
+    [
+      nerd-fonts.code-new-roman
+    ]
+    ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
   environment.systemPackages =
     [
       pkgs.home-manager
     ]
-    ++ (with unstable-pkgs; [
+    ++ (with pkgs; [
       doppler
-      unstable-pkgs.nushell
-      unstable-pkgs.carapace
+      nushell
+      carapace
       devenv
       basedpyright
       ollama
       fish
       tmux
-    ])
-    ++ (with pkgs; [
       git
       zsh
       git-lfs
@@ -81,7 +78,6 @@ in {
       delta
       cachix
       fzf
-      nerdfonts
       zellij
       gh
       atuin
@@ -120,7 +116,10 @@ in {
       sqlite-vec
       jetbrains.datagrip
       pkg-config
+      matugen
+
       spicetify-cli
+      spotify
 
       # Platforms
       turso-cli
@@ -130,7 +129,6 @@ in {
       nodejs
       ruby
       rustup
-      zig
       python312
       (python312.withPackages (
         ps:
@@ -208,7 +206,7 @@ in {
       luajitPackages.luarocks
       wget
       pfetch-rs
-      matugen
+
       # Formatters
       hclfmt
       shfmt

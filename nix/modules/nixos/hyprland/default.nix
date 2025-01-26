@@ -19,13 +19,6 @@
 }:
 with lib; let
   cfg = config.${namespace}.wm.hyprland;
-
-  unstable-pkgs = import inputs.nixpkgs-unstable {
-    inherit system;
-    config = {
-      allowUnfree = true;
-    };
-  };
 in {
   options.${namespace}.wm.hyprland = with types; {
     enable = mkEnableOption "Enable Hyprland";
@@ -62,9 +55,7 @@ in {
         dunst
         brightnessctl
         hyprls
-      ])
-      ++ (with unstable-pkgs; [
-        ]);
+      ]);
 
     programs = {
       hyprland = {

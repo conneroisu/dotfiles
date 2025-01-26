@@ -199,8 +199,6 @@ in
       procps
       gnumake
       util-linux
-      m4
-      gperf
       unzip
       cudatoolkit
       linuxPackages.nvidia_x11

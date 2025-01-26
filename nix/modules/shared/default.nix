@@ -47,6 +47,7 @@ in {
       basedpyright
       ollama
       fish
+      tmux
     ])
     ++ (with pkgs; [
       git

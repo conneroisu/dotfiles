@@ -9,7 +9,7 @@ with lib; let
   cfg = config.${namespace}.hardware.bluetooth;
 in {
   options.${namespace}.hardware.bluetooth = with types; {
-    enable = mkEnableOption "Nvidia support";
+    enable = mkEnableOption "Bluetooth support";
   };
 
   config = mkIf cfg.enable {

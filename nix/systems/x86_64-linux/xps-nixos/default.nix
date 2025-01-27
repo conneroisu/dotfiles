@@ -157,6 +157,7 @@ with lib.${namespace}; {
     docker
     docker-compose
     docker-compose-language-service
+    vdhcoapp
 
     beekeeper-studio
     google-chrome

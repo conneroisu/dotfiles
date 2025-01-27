@@ -1,5 +1,5 @@
 # Ashell log level filter, possible values "DEBUG" | "INFO" | "WARNING" | "ERROR". Needs reload
-logLevel: "WARN" # optional, default "WARN"
+logLevel: "DEBUG" # optional, default "WARN"
 # Possible status bar outputs, values could be: All, Active, or Targets
 # All: the status bar will be displayed on all the available outputs, example: outputs: All
 # Active: the status bar will be displayed on the active output, example: outputs: Active
@@ -50,7 +50,7 @@ clipboardCmd: "cliphist-rofi-img | wl-copy" # optional, default None
 updates: # optional, default None
   # The check command will be used to retrieve the update list.
   # It should return something like `package_name version_from -> version_to\n`
-  checkCmd: "checkupdates; paru -Qua" # required
+  checkCmd: "nix-store -q --references /run/current-system" # required
   # The update command is used to init the OS update process
   updateCmd: 'alacritty -e bash -c "paru; echo Done - Press enter to exit; read" &' # required
 # Maximum number of chars that can be present in the window title
@@ -99,7 +99,7 @@ settings:
   vpnMoreCmd: "nm-connection-editor" # optional, default None
   # command used to open the Bluetooth settings
   # without a value the related button will not appear
-  bluetoothMoreCmd: "bluetoothctl" # optional, default None
+  bluetoothMoreCmd: "blueman-manager" # optional, default None, requires blueman
 # Appearance config
 # Each color could be a simple hex color like #228800 or an
 # object that define a base hex color and two optional variant of that color (a strong one and a weak one)

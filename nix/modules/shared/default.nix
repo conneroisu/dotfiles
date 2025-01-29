@@ -63,7 +63,7 @@
       vscode
       gtkwave
       inputs.zen-browser.packages."${system}".default
-      inputs.nufmt.packages."${system}".default
+      inputs.nh.packages."${system}".default
 
       # Shell
       # zsh
@@ -97,7 +97,6 @@
       wireguard-tools
       wireguard-ui
 
-      nh
       rippkgs
       update-nix-fetchgit
 

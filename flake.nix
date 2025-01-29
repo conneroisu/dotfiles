@@ -52,13 +52,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nufmt = {
-      url = "github:nushell/nufmt";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
-    };
-
     ashell = {
       url = "github:MalpenZibo/ashell";
       inputs = {
@@ -67,17 +60,11 @@
     };
 
     nh = {
-      url = "github:viperML/nh/master";
+      url = "github:viperML/nh/master?tag=v4.0.0-beta.8";
       inputs = {
         nixpkgs.follows = "nixpkgs";
       };
     };
-  };
-  nixConfig = {
-    substituters = ["https://hyprland.cachix.org"];
-    trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
-    extra-trusted-public-keys = "conneroisu.cachix.org-1:PgOlJ8/5i/XBz2HhKZIYBSxNiyzalr1B/63T74lRcU0=";
-    extra-substituters = "https://devenv.cachix.org";
   };
 
   outputs = {self, ...} @ inputs: let

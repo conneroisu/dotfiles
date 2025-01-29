@@ -153,7 +153,6 @@ with lib.${namespace}; {
   };
 
   environment.systemPackages = with pkgs; [
-    inputs.nh.packages."${system}".default
     nix-ld
     alejandra
     nh

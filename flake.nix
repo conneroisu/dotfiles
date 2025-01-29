@@ -65,6 +65,13 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+
+    nh = {
+      url = "github:viperML/nh/master";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
   };
   nixConfig = {
     substituters = ["https://hyprland.cachix.org"];

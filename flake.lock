@@ -572,6 +572,27 @@
         "type": "github"
       }
     },
+    "nh": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1737535280,
+        "narHash": "sha256-gNmu5trAOoWOo1nlSr0i0BOw4AnVmsbI1eG0WjMdvZU=",
+        "owner": "viperML",
+        "repo": "nh",
+        "rev": "245b2a1743a7b7f559d428090630b2b56c25949f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "viperML",
+        "ref": "master",
+        "repo": "nh",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": "nixpkgs"
@@ -842,6 +863,7 @@
         "homebrew-bundle": "homebrew-bundle",
         "homebrew-cask": "homebrew-cask",
         "homebrew-core": "homebrew-core",
+        "nh": "nh",
         "nix-homebrew": "nix-homebrew",
         "nix-ld": "nix-ld",
         "nixos-hardware": "nixos-hardware",

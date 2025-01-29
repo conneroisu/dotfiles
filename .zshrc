@@ -30,6 +30,7 @@ if [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
+    export NIX_PATH=darwin=$HOME/.nix-defexpr/darwin:darwin-config=$HOME/.nixpkgs/darwin-configuration.nix:$NIX_PATH
 fi
 HISTFILE=~/.zsh_history
 HISTSIZE=10000

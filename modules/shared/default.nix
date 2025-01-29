@@ -191,14 +191,8 @@
 
       ## Bash
       shellcheck
-
-      ## Python
-
-      ## Yaml
       yaml-language-server
       actionlint
-
-      ## Sql
       sqls
 
       vscode-langservers-extracted
@@ -219,6 +213,7 @@
       discord
       llama-cpp
       pandoc
+      google-chrome
     ]);
 
   # Your configuration.

@@ -81,6 +81,7 @@ with lib.${namespace}; {
     EXTRA_CCFLAGS = "-I/usr/include";
   };
 
+  programs.ssh.askPassword = lib.mkForce "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
   ${namespace} = {
     hardware = {
       nvidia.enable = true;
@@ -105,10 +106,17 @@ with lib.${namespace}; {
     #   RuntimeMaxUse=16M
     # '';
 
+    desktopManager.plasma6.enable = true;
     xserver = {
       enable = true;
-      displayManager.gdm.enable = true;
-      desktopManager.gnome.enable = true;
+      displayManager = {
+        gdm.enable = true;
+        # sddm.enable = true;
+      };
+      desktopManager = {
+        gnome.enable = true;
+      };
+
       xkb = {
         layout = "us";
         variant = "";
@@ -128,7 +136,8 @@ with lib.${namespace}; {
   security.rtkit.enable = true;
 
   users.users.connerohnesorge = {
-    shell = pkgs.nushell;
+    # shell = pkgs.nushell;
+    shell = pkgs.zsh;
     isNormalUser = true;
     description = "Conner Ohnesorge";
     extraGroups = [

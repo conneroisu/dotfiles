@@ -23,7 +23,7 @@ in {
             ControllerMode = "dual";
             FastConnectable = "true";
             Experimental = "true";
-            Enable = "Source,Sink,Media,Socket";
+            # Enable = "Source,Sink,Media,Socket";
           };
           Policy = {
             AutoEnable = "true";

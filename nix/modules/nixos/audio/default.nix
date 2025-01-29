@@ -18,7 +18,6 @@ in {
       alsa-utils
       alsa-lib
       blueman
-      bluez
 
       sox
     ];

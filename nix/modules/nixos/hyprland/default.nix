@@ -31,6 +31,9 @@ in {
         ashell.defaultPackage.${system}
       ])
       ++ (with pkgs; [
+        (pkgs.hyprland.override {
+          debug = true;
+        })
         hyprcursor
         hyprkeys
         hyprpaper
@@ -49,15 +52,16 @@ in {
         rofi
         rofi-rbw
         rofi-obsidian
-        hyprland
         rofi-bluetooth
         rofi-power-menu
         dunst
         brightnessctl
         hyprls
+        gnome-control-center
       ]);
 
     programs = {
+      dconf.enable = true;
       hyprland = {
         enable = true;
         withUWSM = true;

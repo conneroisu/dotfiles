@@ -66,6 +66,12 @@
       };
     };
   };
+  nixConfig = {
+    substituters = ["https://hyprland.cachix.org"];
+    trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+    extra-trusted-public-keys = "conneroisu.cachix.org-1:PgOlJ8/5i/XBz2HhKZIYBSxNiyzalr1B/63T74lRcU0=";
+    extra-substituters = "https://devenv.cachix.org";
+  };
 
   outputs = {self, ...} @ inputs: let
     inherit (inputs) snowfall-lib;

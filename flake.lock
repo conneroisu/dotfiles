@@ -366,11 +366,11 @@
         "zig": "zig"
       },
       "locked": {
-        "lastModified": 1737779447,
-        "narHash": "sha256-+iVqQXAUJshUYgxOHfke54Ux4f/aggl1yub86KNx2tE=",
+        "lastModified": 1738164497,
+        "narHash": "sha256-b5ThcvXUXijNGUTbII7OnNvgfJRC1BzNgOLEBf/lSYE=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "71e62f96fa4d286eda835048428d5be96e9f87c1",
+        "rev": "76fd4fa8dfc8936d85654c01dd20f13d553afde6",
         "type": "github"
       },
       "original": {
@@ -541,11 +541,11 @@
     "homebrew-core": {
       "flake": false,
       "locked": {
-        "lastModified": 1738166063,
-        "narHash": "sha256-QmAxOaaJUpm5pgdr7uA6a6tA0SU+87wSVY2d9nx7jiI=",
+        "lastModified": 1738170601,
+        "narHash": "sha256-5L4I4z3oNQJGlYTAGo/dKtwqYQHWmdNMZxhD2dBx5yY=",
         "owner": "Homebrew",
         "repo": "homebrew-core",
-        "rev": "5e0b37cbdec2fbffe5d9dc1921e8933970f27a44",
+        "rev": "72838105f29c5497fa4c51f6d3491247d6285037",
         "type": "github"
       },
       "original": {
@@ -1065,11 +1065,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1737917379,
-        "narHash": "sha256-k3SIp07/FlJeSjBAPq4i/bWaJVhu495c7d4FdMmgp30=",
+        "lastModified": 1738170214,
+        "narHash": "sha256-5sqhNwk7TCUrI1AOU/bIVqDxyd4Ny5kze1xxGfHn/iE=",
         "owner": "conneroisu",
         "repo": "zen-browser-flake",
-        "rev": "4e8d7b163ede0bb5e19073d290db267814e2f781",
+        "rev": "b2959d74a07d793dec98b483d459af75e2098215",
         "type": "github"
       },
       "original": {

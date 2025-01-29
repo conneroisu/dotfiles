@@ -16,3 +16,11 @@
 --ignore .direnv
 --ignore .devenv
 --ignore .pre-commit-config.yaml
+--ignore assets/
+--ignore devenv/
+--ignore flake/
+--ignore homes/
+--ignore lib/
+--ignore modules/
+--ignore nix/
+--ignore systems/

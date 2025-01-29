@@ -71,7 +71,7 @@
     inherit (inputs) snowfall-lib;
     lib = snowfall-lib.mkLib {
       inherit inputs;
-      src = ./nix;
+      src = ./.;
 
       snowfall = {
         namespace = "csnow";
@@ -98,7 +98,7 @@
       systems.modules = {
         # Add modules to all NixOS systems.
         nixos = with inputs; [
-          ./nix/modules/shared
+          ./modules/shared
           home-manager.nixosModules.home-manager
           stylix.nixosModules.stylix
           nix-ld.nixosModules.nix-ld
@@ -112,7 +112,7 @@
 
         # Add modules to all Darwin systems.
         darwin = with inputs; [
-          ./nix/modules/shared
+          ./modules/shared
           nix-homebrew.darwinModules.nix-homebrew
           home-manager.darwinModules.home-manager
           sops-nix.darwinModules.default

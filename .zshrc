@@ -41,13 +41,13 @@ setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_sa
 alias cf='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.*" -print | fzf --reverse --preview "ls --color {}")'
 alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 
-# eval "$(goenv init -)" # TODO: Remove this once moved to nixos
 eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
 eval "$(turso completion zsh)"
 eval "$(fly completion zsh)"
+
 export LD_LIBRARY_PATH=/usr/local/lib64/:$LD_LIBRARY_PATH
 export PHP_INI_SCAN_DIR="/home/connerohnesorge/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
 
@@ -73,6 +73,3 @@ bindkey '^n' history-search-forward
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' list-colors "\$\{(s.:.)LS_COLORS\}"
 zstyle ':completion:*' menu no
-
-# bun completions
-[ -s "/home/connerohnesorge/.bun/_bun" ] && source "/home/connerohnesorge/.bun/_bun"

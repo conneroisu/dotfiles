@@ -1,10 +1,10 @@
 eval "$(zellij setup --generate-auto-start zsh)"
+
+autoload -Uz compinit && compinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
-
-autoload -Uz compinit && compinit
 
 export BUN_INSTALL="$HOME/.bun"
 export FLYCTL_INSTALL="/home/connerohnesorge/.fly"
@@ -73,3 +73,4 @@ bindkey '^n' history-search-forward
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' list-colors "\$\{(s.:.)LS_COLORS\}"
 zstyle ':completion:*' menu no
+alias latest='git add . && git commit -m "latest" && git push'

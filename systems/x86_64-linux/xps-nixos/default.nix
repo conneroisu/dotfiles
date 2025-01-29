@@ -23,6 +23,8 @@ with lib.${namespace}; {
     ./hardware.nix
   ];
 
+  home-manager.backupFileExtension = "bak";
+
   snowfallorg.users.connerohnesorge = {
     admin = true;
     create = false;

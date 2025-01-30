@@ -64,6 +64,7 @@
       gtkwave
       inputs.zen-browser.packages."${system}".default
       inputs.nh.packages."${system}".default
+      inputs.snowfall-flake.packages."${system}".default
 
       # Shell
       # zsh

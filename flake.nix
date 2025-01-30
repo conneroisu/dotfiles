@@ -78,6 +78,19 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+
+    snowfall-flake = {
+      url = "github:snowfallorg/flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    pog = {
+      url = "github:jpetrucciani/pog";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
   };
 
   outputs = inputs @ {
@@ -217,6 +230,8 @@
 
             # Add modules to all Darwin systems.
             darwin = with inputs; [
+              {nix.nixPath = ["darwin=/Users/connerohnesorge/.nix-defexpr/darwin"];}
+
               ./modules/shared
               nix-homebrew.darwinModules.nix-homebrew
               home-manager.darwinModules.home-manager

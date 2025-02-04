@@ -98,7 +98,7 @@
     devenv-root,
     ...
   }:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+    flake-parts.lib.mkFlake {inherit inputs;} rec {
       imports = [
         inputs.devenv.flakeModule
       ];
@@ -128,6 +128,7 @@
 
           packages = with pkgs;
             [
+              flake.packages.${pkgs.system}.httptap
               # Nix
               alejandra
               nixd

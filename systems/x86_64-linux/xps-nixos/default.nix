@@ -108,7 +108,7 @@ with lib.${namespace}; {
     #   RuntimeMaxUse=16M
     # '';
 
-    desktopManager.plasma6.enable = true;
+    # desktopManager.plasma6.enable = true;
     xserver = {
       enable = true;
       displayManager = {
@@ -172,6 +172,7 @@ with lib.${namespace}; {
 
     beekeeper-studio
     google-chrome
+    figma-linux
 
     ghdl
     nvc

@@ -14,16 +14,18 @@
 }:
 pkgs.buildGoModule rec {
   pname = "httptap";
-  version = "0.1.0"; # You can adjust this version
+  version = "0.0.8";
 
   src = pkgs.fetchFromGitHub {
     owner = "monasticacademy";
     repo = "httptap";
-    rev = "v${version}"; # You might want to use a specific commit hash here
-    sha256 = "";
+    rev = "v${version}";
+    sha256 = "sha256-1BtV5ao5dAKSINdUdJD/wxTMFXXiP8Vy1A7gQfVIsUQ=";
   };
 
-  vendorHash = "";
+  vendorHash = "sha256-hzNHrh4Vlaytl+RvgFe0xKxc5IA6GPzarjuTM7CU9no=";
+  subPackages = ["."];
+  proxyVendor = true;
 
   ldflags = [
     "-s"
@@ -32,7 +34,7 @@ pkgs.buildGoModule rec {
   ];
 
   meta = with lib; {
-    description = "HTTP proxy for monitoring and manipulating HTTP/HTTPS traffic";
+    description = "HTTP linux cli proxy for monitoring and manipulating HTTP/HTTPS traffic";
     homepage = "https://github.com/monasticacademy/httptap";
     license = licenses.mit;
     maintainers = with maintainers; [

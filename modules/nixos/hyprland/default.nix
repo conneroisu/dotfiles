@@ -19,6 +19,16 @@
 }:
 with lib; let
   cfg = config.${namespace}.wm.hyprland;
+
+  roofi = pkgs.rofi.override {
+    plugins = [
+      pkgs.rofi-rbw
+      pkgs.rofi-obsidian
+      pkgs.rofi-bluetooth
+      pkgs.rofi-power-menu
+      pkgs.rofi-calc
+    ];
+  };
 in {
   options.${namespace}.wm.hyprland = with types; {
     enable = mkEnableOption "Enable Hyprland";
@@ -49,11 +59,7 @@ in {
         grimblast
         grim
         slurp
-        rofi
-        rofi-rbw
-        rofi-obsidian
-        rofi-bluetooth
-        rofi-power-menu
+        roofi
         dunst
         brightnessctl
         hyprls

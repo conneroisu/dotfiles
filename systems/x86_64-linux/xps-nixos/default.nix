@@ -84,6 +84,7 @@ with lib.${namespace}; {
   };
 
   programs.ssh.askPassword = lib.mkForce "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+
   ${namespace} = {
     hardware = {
       nvidia.enable = true;

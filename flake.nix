@@ -3,30 +3,37 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    systems.url = "github:nix-systems/default";
-    flake-utils.url = "github:numtide/flake-utils";
-    flake-utils.inputs.systems.follows = "systems";
-    devenv.url = "github:cachix/devenv";
+
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
+
+    devenv = {
+      url = "github:cachix/devenv";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     devenv-root = {
       url = "file+file:///dev/null";
       flake = false;
     };
-    nix2container.url = "github:nlewo/nix2container";
-    nix2container.inputs.nixpkgs.follows = "nixpkgs";
-    mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nix-ld.url = "github:Mic92/nix-ld";
-    nix-ld.inputs.nixpkgs.follows = "nixpkgs";
+    nix2container = {
+      url = "github:nlewo/nix2container";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
 
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v0.1.0";
-
-    stylix.url = "github:danth/stylix";
-
-    ghostty.url = "github:ghostty-org/ghostty/main";
-
-    sops-nix.url = "github:Mic92/sops-nix";
+    nix-ld = {
+      url = "github:Mic92/nix-ld";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     snowfall-lib = {
       url = "github:snowfallorg/lib";
@@ -38,27 +45,35 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    darwin.url = "github:LnL7/nix-darwin/master";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
+    darwin = {
+      url = "github:LnL7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    homebrew-core = {
+      url = "github:Homebrew/homebrew-core";
+      flake = false;
+    };
 
-    homebrew-core.url = "github:Homebrew/homebrew-core";
-    homebrew-core.flake = false;
+    homebrew-cask = {
+      url = "github:Homebrew/homebrew-cask";
+      flake = false;
+    };
 
-    homebrew-cask.url = "github:Homebrew/homebrew-cask";
-    homebrew-bundle.url = "github:Homebrew/homebrew-bundle";
-
-    homebrew-cask.flake = false;
-    homebrew-bundle.flake = false;
+    homebrew-bundle = {
+      url = "github:Homebrew/homebrew-bundle";
+      flake = false;
+    };
 
     gitignore = {
       url = "github:hercules-ci/gitignore.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nur = {
       url = "github:nix-community/NUR";
@@ -67,9 +82,7 @@
 
     ashell = {
       url = "github:MalpenZibo/ashell?rev=96103fa1b3e936b4bff5e624eca023ddaf9c106f";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+      inputs. nixpkgs.follows = "nixpkgs";
     };
 
     nh = {
@@ -84,13 +97,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    pog = {
-      url = "github:jpetrucciani/pog";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v0.1.0";
+
+    stylix.url = "github:danth/stylix";
+
+    ghostty.url = "github:ghostty-org/ghostty/main";
+
+    sops-nix.url = "github:Mic92/sops-nix";
+
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+
+    systems.url = "github:nix-systems/default";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
   };
 
   outputs = inputs @ {
@@ -176,6 +195,7 @@
 
           scripts = {
             status.exec = ''git status'';
+            dx.exec = ''$EDITOR $REPO_ROOT/flake.nix'';
           };
 
           languages = {

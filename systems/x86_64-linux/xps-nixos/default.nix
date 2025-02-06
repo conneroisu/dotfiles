@@ -170,6 +170,7 @@ with lib.${namespace}; {
     docker-compose
     docker-compose-language-service
     vdhcoapp
+    qemu
 
     beekeeper-studio
     google-chrome

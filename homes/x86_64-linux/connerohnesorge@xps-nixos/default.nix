@@ -22,6 +22,7 @@
     enable = true;
   };
   home.stateVersion = "24.05";
+  nix.enable = false;
 
   programs = {
     zed-editor = {

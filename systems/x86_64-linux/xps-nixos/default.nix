@@ -172,9 +172,6 @@ with lib.${namespace}; {
     vdhcoapp
     qemu
 
-    # Media Production Tools
-    davinci-resolve
-
     beekeeper-studio
     google-chrome
     figma-linux

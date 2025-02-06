@@ -135,11 +135,14 @@
         # module parameters provide easy access to attributes of the same
         # system.
 
-        devenv.shells.default = {
+        devenv.shells.default = let
+          fpkgs = flake.packages.${system};
+          inherit (pkgs) stdenv lib;
+        in {
           devenv.root = let
             devenvRootFileContent = builtins.readFile devenv-root.outPath;
           in
-            pkgs.lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
+            lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
 
           name = "conneroh.com";
 
@@ -157,9 +160,9 @@
               watchexec
               doppler
             ]
-            ++ (pkgs.lib.optionals pkgs.stdenv.isLinux (with pkgs; [
+            ++ (lib.optionals stdenv.isLinux (with pkgs; [
                 ]))
-            ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs; [
+            ++ (lib.optionals stdenv.isDarwin (with pkgs; [
                 ]));
 
           enterShell =
@@ -167,14 +170,14 @@
 
               export REPO_ROOT=$(git rev-parse --show-toplevel)
               export LD_LIBRARY_PATH=${
-                pkgs.lib.makeLibraryPath (
+                lib.makeLibraryPath (
                   (with pkgs; [
                     ])
-                  ++ (pkgs.lib.optionals pkgs.stdenv.isLinux (
+                  ++ (lib.optionals stdenv.isLinux (
                     with pkgs; [
                     ]
                   ))
-                  ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin (
+                  ++ (lib.optionals stdenv.isDarwin (
                     with pkgs; [
                     ]
                   ))
@@ -182,9 +185,9 @@
               }:$LD_LIBRARY_PATH
 
             ''
-            + pkgs.lib.optionalString pkgs.stdenv.isLinux ''
+            + lib.optionalString stdenv.isLinux ''
             ''
-            + pkgs.lib.optionalString pkgs.stdenv.isDarwin ''
+            + lib.optionalString stdenv.isDarwin ''
             '';
 
           git-hooks = {

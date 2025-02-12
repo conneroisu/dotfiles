@@ -55,7 +55,7 @@ updates: # optional, default None
   updateCmd: 'alacritty -e bash -c "paru; echo Done - Press enter to exit; read" &' # required
 # Maximum number of chars that can be present in the window title
 # after that the title will be truncated
-truncateTitleAfterLength: 220 # optional, default 150
+truncateTitleAfterLength: 30 # optional, default 150
 # Workspaces module configuration, optional
 workspaces:
   # The visibility mode of the workspaces, possible values are:

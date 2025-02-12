@@ -66,6 +66,9 @@ in {
         gnome-control-center
       ]);
 
+    xdg.portal.enable = true;
+    xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-hyprland];
+
     programs = {
       dconf.enable = true;
       hyprland = {

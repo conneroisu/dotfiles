@@ -21,3 +21,17 @@ nix build .#homeConfigurations.x86_64-linux.activationPackage
 # NIXOS
 sudo nixos-rebuild switch --flake .
 ```
+
+## Development
+
+Listing all `.desktop` files:
+
+```bash
+ ls -l /run/current-system/sw/share/applications
+```
+
+Config MimeTypes:
+```bash
+# See settings
+/etc/xdg/mimeapps.list
+```

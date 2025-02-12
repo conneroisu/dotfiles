@@ -172,6 +172,10 @@ with lib.${namespace}; {
     vdhcoapp
     qemu
 
+    # Media Production Tools
+    davinci-resolve
+    pkgs.xfce.thunar
+
     beekeeper-studio
     google-chrome
     figma-linux
@@ -204,6 +208,20 @@ with lib.${namespace}; {
     binutils
     espeak-ng
   ];
+
+  xdg.mime = {
+    enable = true;
+
+    defaultApplications = {
+      # PDF
+      "application/pdf" = "org.gnome.Evince.desktop";
+      # PNG, JPG
+      "image/png" = "org.gnome.Loupe.desktop";
+      "image/jpeg" = "org.gnome.Loupe.desktop";
+      # Directories
+      "inode/directory" = "thunar.desktop";
+    };
+  };
 
   stylix = {
     enable = true;

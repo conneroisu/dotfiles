@@ -118,6 +118,7 @@ with lib.${namespace}; {
       };
       desktopManager = {
         gnome.enable = true;
+        xfce.enable = true;
       };
 
       xkb = {
@@ -161,6 +162,7 @@ with lib.${namespace}; {
     nh
     pipewire
     gpu-screen-recorder
+    pkgs.obs-studio
     gtk3
     gtk-layer-shell
     usbutils
@@ -220,6 +222,7 @@ with lib.${namespace}; {
       "image/jpeg" = "org.gnome.Loupe.desktop";
       # Directories
       "inode/directory" = "thunar.desktop";
+      "x-scheme-handler/file" = "thunar.desktop";
     };
   };
 

@@ -64,6 +64,7 @@ in {
         brightnessctl
         hyprls
         gnome-control-center
+        pkgs.ffmpegthumbnailer
       ]);
 
     xdg.portal.enable = true;
@@ -86,6 +87,8 @@ in {
     };
 
     services = {
+      gvfs.enable = true; # Mount, trash, and other functionalities
+      tumbler.enable = true; # Thumbnails
       hypridle.enable = true;
     };
   };

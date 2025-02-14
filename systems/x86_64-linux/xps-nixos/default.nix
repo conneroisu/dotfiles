@@ -204,6 +204,7 @@ with lib.${namespace}; {
     xorg.libXext
     xorg.libX11
     xorg.libXv
+    pkgs."${namespace}".httptap
     xorg.libXrandr
     zlib
     stdenv.cc

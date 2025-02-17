@@ -47,6 +47,7 @@ in {
         hyprcursor
         hyprkeys
         hyprpaper
+        playerctl
         hypridle
         hyprsunset
         hyprwayland-scanner

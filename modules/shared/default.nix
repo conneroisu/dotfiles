@@ -65,6 +65,8 @@
       inputs.zen-browser.packages."${system}".default
       inputs.nh.packages."${system}".default
       inputs.snowfall-flake.packages."${system}".default
+      jetbrains.datagrip
+      telegram-desktop
 
       # Shell
       # zsh
@@ -114,7 +116,6 @@
       meson
       sqlite
       sqlite-vec
-      jetbrains.datagrip
       pkg-config
       matugen
 

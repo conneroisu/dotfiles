@@ -141,6 +141,7 @@
             matplotlib
             scikitlearn
             torch
+            debugpy
             opencv4
             torchvision
             selenium

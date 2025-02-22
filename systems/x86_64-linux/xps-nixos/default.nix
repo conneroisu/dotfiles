@@ -205,6 +205,7 @@ with lib.${namespace}; {
     xorg.libX11
     xorg.libXv
     pkgs."${namespace}".httptap
+    gimp
     xorg.libXrandr
     zlib
     stdenv.cc

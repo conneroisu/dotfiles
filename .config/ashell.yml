@@ -39,9 +39,6 @@ modules:
     - SystemInfo
     # This modules will form a group sharing the same element in the status bar
     - [Clock, Privacy, Settings]
-# App launcher command, it will be used to open the launcher,
-# without a value the related button will not appear
-appLauncherCmd: "~/.config/rofi/launcher.sh" # optional, default None
 # Clipboard command, it will be used to open the clipboard menu,
 # without a value the related button will not appear
 clipboardCmd: "cliphist-rofi-img | wl-copy" # optional, default None

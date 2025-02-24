@@ -81,7 +81,8 @@
     };
 
     ashell = {
-      url = "github:MalpenZibo/ashell?rev=96103fa1b3e936b4bff5e624eca023ddaf9c106f";
+      # url = "github:MalpenZibo/ashell?rev=96103fa1b3e936b4bff5e624eca023ddaf9c106f";
+      url = "github:MalpenZibo/ashell?rev=4a1c9e0c788e0e1c4aac9522d39a44cce7c24ef2";
       inputs. nixpkgs.follows = "nixpkgs";
     };
 

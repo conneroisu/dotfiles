@@ -17,11 +17,9 @@
 .config/obsidian/Service Worker/ScriptCache/
 .config/obsidian/Service Worker/ScriptCache/*
 devenv.local.nix
-.pre-commit-config.yaml
 devenv.local.nix
 .pre-commit-config.yaml
 devenv.local.nix
 .direnv*
 .devenv*
-.pre-commit-config.yaml
 .obsidian/

@@ -2,6 +2,8 @@
 
 ## Introduction
 
+![[Pasted image 20250224165002.png]]
+
 dotfiles for my personal setup
 
 Uses [snowfall](https://github.com/snowfallorg/lib) for configuration management.

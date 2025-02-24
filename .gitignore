@@ -19,31 +19,12 @@
 .vscode-insiders/
 HyprPanel/
 ./.config/ags/
-# Devenv
-.devenv*
 devenv.local.nix
-.devenv
-
-# direnv
-.direnv
-
-# pre-commit
 .pre-commit-config.yaml
-# Devenv
-.devenv*
 devenv.local.nix
-
-# direnv
-.direnv
-
-# pre-commit
 .pre-commit-config.yaml
-# Devenv
-.devenv*
 devenv.local.nix
-
-# direnv
-.direnv
-
-# pre-commit
+.direnv*
+.devenv*
 .pre-commit-config.yaml
+.obsidian/

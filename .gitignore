@@ -16,8 +16,6 @@
 .config/obsidian/Service Worker/CacheStorage/*
 .config/obsidian/Service Worker/ScriptCache/
 .config/obsidian/Service Worker/ScriptCache/*
-HyprPanel/
-./.config/ags/
 devenv.local.nix
 .pre-commit-config.yaml
 devenv.local.nix

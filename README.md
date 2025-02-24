@@ -2,7 +2,7 @@
 
 ## Introduction
 
-![[Pasted image 20250224165002.png]]
+![Pasted image 20250224165002.png](Pasted%20image%2020250224165002.png)
 
 dotfiles for my personal setup
 

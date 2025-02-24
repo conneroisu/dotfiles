@@ -16,7 +16,6 @@
 .config/obsidian/Service Worker/CacheStorage/*
 .config/obsidian/Service Worker/ScriptCache/
 .config/obsidian/Service Worker/ScriptCache/*
-.vscode-insiders/
 HyprPanel/
 ./.config/ags/
 devenv.local.nix

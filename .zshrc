@@ -46,6 +46,8 @@ alias cf='cd $(fd --type d --hidden --exclude .git | fzf --reverse --preview "ls
 
 
 alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
+# nvimfi is find all files ignoring .git
+alias nvimfi='nvim $(find . -type f -path "./.git" -prune -o -type f -not -path "*/\.*" -print | fzf --preview "bat --color=always {}")'
 
 eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"

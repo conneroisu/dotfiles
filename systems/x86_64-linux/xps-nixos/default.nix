@@ -175,10 +175,8 @@ with lib.${namespace}; {
     qemu
 
     # Media Production Tools
-    davinci-resolve
     pkgs.xfce.thunar
 
-    beekeeper-studio
     google-chrome
     figma-linux
 

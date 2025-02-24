@@ -22,7 +22,7 @@
     enable = true;
   };
   home.stateVersion = "24.05";
-  nix.enable = false;
+  nix.enable = pkgs.lib.mkDefault false;
 
   programs = {
     zed-editor = {
@@ -94,8 +94,8 @@
 
   qt = {
     enable = true;
-    platformTheme.name = "adwaita";
-    style.name = "adwaita-dark";
+    platformTheme.name = pkgs.lib.mkDefault "adwaita";
+    style.name = pkgs.lib.mkDefault "adwaita-dark";
     style.package = pkgs.adwaita-qt;
   };
 }

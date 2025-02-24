@@ -41,9 +41,6 @@ in {
         ashell.defaultPackage.${system}
       ])
       ++ (with pkgs; [
-        (pkgs.hyprland.override {
-          debug = true;
-        })
         hyprcursor
         hyprkeys
         hyprpaper
@@ -56,7 +53,6 @@ in {
         hyprnotify
         waybar
         uwsm
-        xdg-desktop-portal-hyprland
         grimblast
         grim
         slurp
@@ -69,11 +65,13 @@ in {
       ]);
 
     xdg.portal.enable = true;
-    xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-hyprland];
+    xdg.portal.extraPortals = [inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland];
 
     programs = {
       dconf.enable = true;
       hyprland = {
+        package = inputs.hyprland.packages."${system}".hyprland;
+        portalPackage = inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland;
         enable = true;
         withUWSM = true;
         xwayland.enable = true;

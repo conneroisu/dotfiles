@@ -102,7 +102,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v0.1.0";
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v0.1.1";
 
     stylix.url = "github:danth/stylix";
 
@@ -115,6 +115,24 @@
     systems.url = "github:nix-systems/default";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
+
+    hyprland.url = "github:hyprwm/hyprland";
+    hyprland.inputs.nixpkgs.follows = "nixpkgs";
+  };
+
+  nixConfig = {
+    extra-substituters = ''
+      https://cache.nixos.org
+      https://nix-community.cachix.org
+      https://devenv.cachix.org
+    '';
+    extra-trusted-public-keys = ''
+      cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+      nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+      devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
+    '';
+    extra-experimental-features = "nix-command flakes";
+    max-jobs = 8;
   };
 
   outputs = inputs @ {
@@ -238,7 +256,7 @@
           nix.settings.experimental-features = ["nix-command" "flakes"];
         };
         homie = {
-          home-manager.useGlobalPkgs = true;
+          # home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
         };
       in

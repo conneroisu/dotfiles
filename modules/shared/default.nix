@@ -42,7 +42,7 @@
       doppler
       nushell
       carapace
-      devenv
+      inputs.devenv.packages."${system}".default
       basedpyright
       ollama
       fish

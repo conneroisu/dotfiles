@@ -185,6 +185,7 @@ with lib.${namespace}; {
     lshw
     pkgconf
     gdb
+    pkgs.netron
     gitRepo
     gnupg
     autoconf

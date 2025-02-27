@@ -133,7 +133,7 @@
       devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
     '';
     extra-experimental-features = "nix-command flakes";
-    max-jobs = 8;
+    # max-jobs = 8;
   };
 
   outputs = inputs @ {
@@ -258,7 +258,7 @@
         };
         homie = {
           # home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
+          # home-manager.useUserPackages = true;
         };
       in
         lib.mkFlake {

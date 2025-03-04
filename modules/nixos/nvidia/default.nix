@@ -53,7 +53,7 @@ in {
       nvidia-docker
       nvidia-container-toolkit
 
-      cudatoolkit
+      cudatoolkit_11
       nvtopPackages.full
     ];
 

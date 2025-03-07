@@ -48,6 +48,7 @@
       cmake
       stow
       age
+      glow
       # Apps
       obsidian
       neovim

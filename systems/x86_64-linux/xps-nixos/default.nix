@@ -221,6 +221,7 @@ with lib.${namespace}; {
       # PNG, JPG
       "image/png" = "org.gnome.Loupe.desktop";
       "image/jpeg" = "org.gnome.Loupe.desktop";
+      "image/ppm" = "org.gnome.Loupe.desktop";
       # Directories
       "inode/directory" = "thunar.desktop";
       "x-scheme-handler/file" = "thunar.desktop";

@@ -61,6 +61,7 @@ in {
         brightnessctl
         hyprls
         gnome-control-center
+        spotify-cli-linux
         pkgs.ffmpegthumbnailer
       ]);
 

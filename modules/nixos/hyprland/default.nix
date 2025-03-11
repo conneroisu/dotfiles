@@ -62,6 +62,7 @@ in {
         hyprls
         gnome-control-center
         spotify-cli-linux
+        hyprpicker
         pkgs.ffmpegthumbnailer
       ]);
 

@@ -41,6 +41,8 @@
         "ocaml"
         "vhdl"
         "verilog"
+        "html"
+        "make"
       ];
       userSettings = {
         ui_font_size = lib.mkForce 16;

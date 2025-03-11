@@ -97,8 +97,9 @@ in {
       #       };
       # };
     };
-    # Enable OpenGL
-    hardware.graphics = {enable = true;};
-    #  hardware.opengl.enable = true;
+    hardware = {
+      # Enable OpenGL
+      graphics = {enable = true;};
+    };
   };
 }

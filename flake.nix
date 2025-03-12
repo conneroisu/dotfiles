@@ -103,7 +103,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v0.1.1";
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v0.1.2";
 
     stylix.url = "github:danth/stylix";
 
@@ -160,84 +160,7 @@
         pkgs,
         system,
         ...
-      }: {
-        # Per-system attributes can be defined here. The self' and inputs'
-        # module parameters provide easy access to attributes of the same
-        # system.
-
-        devenv.shells.default = let
-          fpkgs = flake.packages.${system};
-          inherit (pkgs) stdenv lib;
-        in {
-          devenv.root = let
-            devenvRootFileContent = builtins.readFile devenv-root.outPath;
-          in
-            lib.mkIf (devenvRootFileContent != "") devenvRootFileContent;
-
-          name = "conneroh.com";
-
-          cachix.enable = true;
-
-          packages = with pkgs;
-            [
-              flake.packages.${pkgs.system}.httptap
-              # Nix
-              alejandra
-              nixd
-
-              # Terminal Utilities
-              gum
-              watchexec
-              doppler
-            ]
-            ++ (lib.optionals stdenv.isLinux (with pkgs; [
-                ]))
-            ++ (lib.optionals stdenv.isDarwin (with pkgs; [
-                ]));
-
-          enterShell =
-            ''
-
-              export REPO_ROOT=$(git rev-parse --show-toplevel)
-              export LD_LIBRARY_PATH=${
-                lib.makeLibraryPath (
-                  (with pkgs; [
-                    ])
-                  ++ (lib.optionals stdenv.isLinux (
-                    with pkgs; [
-                    ]
-                  ))
-                  ++ (lib.optionals stdenv.isDarwin (
-                    with pkgs; [
-                    ]
-                  ))
-                )
-              }:$LD_LIBRARY_PATH
-
-            ''
-            + lib.optionalString stdenv.isLinux ''
-            ''
-            + lib.optionalString stdenv.isDarwin ''
-            '';
-
-          git-hooks = {
-            hooks = {
-              alejandra.enable = true;
-            };
-          };
-
-          scripts = {
-            status.exec = ''git status'';
-            dx.exec = ''$EDITOR $REPO_ROOT/flake.nix'';
-          };
-
-          languages = {
-            nix = {
-              enable = true;
-            };
-          };
-        };
-      };
+      }: {};
       flake = let
         inherit (inputs) snowfall-lib;
         lib = snowfall-lib.mkLib {

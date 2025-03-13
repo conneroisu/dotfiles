@@ -27,6 +27,7 @@
       nerd-fonts.code-new-roman
     ]
     ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+
   environment.systemPackages =
     [
       pkgs.home-manager
@@ -92,6 +93,7 @@
       sleek
       chafa
       tree-sitter
+      unixtools.xxd
 
       wireguard-tools
       wireguard-ui

@@ -66,9 +66,6 @@ in {
         pkgs.ffmpegthumbnailer
       ]);
 
-    xdg.portal.enable = true;
-    xdg.portal.extraPortals = [inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland];
-
     programs = {
       dconf.enable = true;
       hyprland = {
@@ -91,6 +88,27 @@ in {
       gvfs.enable = true; # Mount, trash, and other functionalities
       tumbler.enable = true; # Thumbnails
       hypridle.enable = true;
+    };
+
+    xdg = {
+      portal.enable = true;
+      portal.extraPortals = [inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland];
+
+      mime = {
+        enable = true;
+
+        defaultApplications = {
+          # PDF
+          "application/pdf" = "org.gnome.Evince.desktop";
+          # PNG, JPG
+          "image/png" = "org.gnome.Loupe.desktop";
+          "image/jpeg" = "org.gnome.Loupe.desktop";
+          "image/ppm" = "org.gnome.Loupe.desktop";
+          # Directories
+          "inode/directory" = "thunar.desktop";
+          "x-scheme-handler/file" = "thunar.desktop";
+        };
+      };
     };
   };
 }

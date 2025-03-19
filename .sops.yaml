@@ -1,7 +1,8 @@
 keys:
-  - &admin_conner age1ypzvf88u53f2rlzpyvfvex55qug49usrm339qvpve8jq3dtpqefs3kkf66
+  - &admin_conner age1kshcv6p7tj3sclmm02lgg3dtlqnlvcprutt0gkh6lvj5w2paep9sc75vv5
 creation_rules:
-  - path_regex: secrets/secrets.yaml
+  - path_regex: .secrets/secrets.yaml
     key_groups:
     - age:
       - *admin_conner
+        

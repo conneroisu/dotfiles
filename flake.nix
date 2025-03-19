@@ -180,8 +180,8 @@
           nix.settings.experimental-features = ["nix-command" "flakes"];
         };
         homie = {
-          # home-manager.useGlobalPkgs = true;
-          # home-manager.useUserPackages = true;
+          home-manager.useGlobalPkgs = false;
+          home-manager.useUserPackages = true;
         };
       in
         lib.mkFlake {

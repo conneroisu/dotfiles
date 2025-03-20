@@ -24,3 +24,6 @@
 --ignore modules/
 --ignore nix/
 --ignore systems/
+--ignore packages/
+--ignore shells/
+--ignore README.md

@@ -14,16 +14,6 @@
       inputs.systems.follows = "systems";
     };
 
-    devenv = {
-      url = "github:cachix/devenv";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    devenv-root = {
-      url = "file+file:///dev/null";
-      flake = false;
-    };
-
     nix2container = {
       url = "github:nlewo/nix2container";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -136,15 +126,8 @@
     max-jobs = 8;
   };
 
-  outputs = inputs @ {
-    flake-parts,
-    devenv-root,
-    ...
-  }:
-    flake-parts.lib.mkFlake {inherit inputs;} rec {
-      imports = [
-        inputs.devenv.flakeModule
-      ];
+  outputs = inputs @ {flake-parts, ...}:
+    flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
         "x86_64-linux"
         "i686-linux"

@@ -288,6 +288,7 @@ with lib.${namespace}; {
     docker-compose-language-service
     vdhcoapp
     qemu
+    arp-scan
 
     # Apps
     netron

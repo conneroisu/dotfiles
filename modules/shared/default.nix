@@ -51,6 +51,7 @@
       stow
       age
       glow
+
       # Apps
       obsidian
       neovim
@@ -67,7 +68,6 @@
       brave
 
       # Shell
-      # zsh
       zinit
       starship
       pkgs.direnv
@@ -95,6 +95,7 @@
       chafa
       tree-sitter
       unixtools.xxd
+      tailscale
 
       wireguard-tools
       wireguard-ui

@@ -121,6 +121,7 @@ with lib.${namespace}; {
   };
 
   services = {
+    tailscale.enable = true;
     openvpn = {
       servers = {
         us9662 = {

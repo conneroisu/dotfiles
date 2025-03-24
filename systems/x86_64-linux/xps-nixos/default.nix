@@ -296,6 +296,8 @@ with lib.${namespace}; {
     pkgs.xfce.thunar
     vmware-horizon-client
     gimp
+    pkgs.jetbrains.rust-rover
+    pkgs.libnotify
 
     openvpn
     cacert

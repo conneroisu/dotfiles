@@ -27,3 +27,4 @@
 --ignore packages/
 --ignore shells/
 --ignore README.md
+--ignore clean.sh

@@ -56,7 +56,6 @@
       obsidian
       neovim
       emacs
-      zed-editor
       vscode
       gtkwave
       inputs.zen-browser.packages."${system}".default
@@ -96,6 +95,7 @@
       tree-sitter
       unixtools.xxd
       tailscale
+      anki
 
       wireguard-tools
       wireguard-ui

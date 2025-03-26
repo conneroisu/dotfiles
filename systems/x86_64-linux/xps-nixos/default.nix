@@ -272,63 +272,69 @@ with lib.${namespace}; {
     zsh.enable = true;
   };
 
-  environment.systemPackages = with pkgs; [
-    gitRepo
-    nix-ld
-    alejandra
-    nh
-    pipewire
-    gpu-screen-recorder
-    pkgs.obs-studio
-    gtk3
-    gtk-layer-shell
-    usbutils
-    yazi
-    docker
-    docker-compose
-    docker-compose-language-service
-    vdhcoapp
-    qemu
-    arp-scan
+  environment.systemPackages =
+    (with inputs; [
+      ])
+    ++ (with pkgs."${namespace}"; [
+      httptap
+    ])
+    ++ (with pkgs; [
+      gitRepo
+      nix-ld
+      alejandra
+      nh
+      pipewire
+      gpu-screen-recorder
+      gtk3
+      gtk-layer-shell
+      usbutils
+      yazi
+      docker
+      docker-compose
+      docker-compose-language-service
+      vdhcoapp
+      qemu
 
-    # Apps
-    netron
-    pkgs.xfce.thunar
-    vmware-horizon-client
-    gimp
-    pkgs.jetbrains.rust-rover
-    pkgs.libnotify
+      # Networking
+      openvpn
+      cacert
+      arp-scan
 
-    openvpn
-    cacert
+      # Apps
+      netron
+      pkgs.xfce.thunar
+      vmware-horizon-client
+      gimp
+      pkgs.jetbrains.rust-rover
+      pkgs.libnotify
 
-    ghdl
-    nvc
-    lshw
-    pkgconf
-    gdb
-    gnupg
-    autoconf
-    curl
-    procps
-    gnumake
-    util-linux
-    unzip
-    libGLU
-    libGL
-    xorg.libXi
-    xorg.libXmu
-    freeglut
-    xorg.libXext
-    xorg.libX11
-    xorg.libXv
-    pkgs."${namespace}".httptap
-    xorg.libXrandr
-    zlib
-    stdenv.cc
-    binutils
-    espeak-ng
-  ];
+      ghdl
+      nvc
+      lshw
+      pkgconf
+      gdb
+      gnupg
+      autoconf
+      curl
+      procps
+      gnumake
+      util-linux
+      unzip
+      libGLU
+      libGL
+      freeglut
+      xorg.libXi
+      xorg.libXmu
+      xorg.libXext
+      xorg.libX11
+      xorg.libXv
+      xorg.libXrandr
+      zlib
+      stdenv.cc
+      binutils
+      espeak-ng
+      llama-cpp
+    ]);
 
   stylix = {
     enable = true;

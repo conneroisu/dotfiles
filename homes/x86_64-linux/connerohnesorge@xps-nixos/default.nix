@@ -25,37 +25,6 @@
   nix.enable = pkgs.lib.mkDefault false;
 
   programs = {
-    zed-editor = {
-      enable = true;
-      extensions = [
-        "nix"
-        "dockerfile"
-        "toml"
-        "html"
-        "templ"
-        "latex"
-        "svelte"
-        "golangci-lint"
-        "astro"
-        "python-lsp"
-        "ocaml"
-        "vhdl"
-        "verilog"
-        "html"
-        "make"
-      ];
-      userSettings = {
-        ui_font_size = lib.mkForce 16;
-        buffer_font_size = lib.mkForce 16;
-        telemetry.enable = lib.mkForce false;
-        vim_mode = lib.mkForce true;
-        theme = lib.mkForce {
-          mode = "dark";
-          dark = "One Dark";
-          light = "One Light";
-        };
-      };
-    };
     home-manager = {
       enable = true;
     };

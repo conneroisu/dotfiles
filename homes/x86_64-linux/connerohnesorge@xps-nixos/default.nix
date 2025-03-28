@@ -35,6 +35,11 @@
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
     image = ./../../../assets/klaus-desktop.jpeg;
     polarity = "dark";
+    cursor = {
+      name = "rose-pine-hyprcursor";
+      size = 32;
+      package = pkgs.rose-pine-hyprcursor;
+    };
     targets.rofi.enable = true;
     targets.kitty.enable = true;
   };

@@ -36,6 +36,7 @@
     ]
     ++ (with pkgs; [
       doppler
+      bun
       nushell
       carapace
       basedpyright

@@ -318,6 +318,7 @@ with lib.${namespace}; {
       curl
       procps
       gnumake
+      anki
       util-linux
       unzip
       libGLU

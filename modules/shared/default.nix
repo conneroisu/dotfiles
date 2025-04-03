@@ -95,9 +95,7 @@
       tree-sitter
       unixtools.xxd
       tailscale
-      anki
 
-      wireguard-tools
       wireguard-ui
 
       rippkgs

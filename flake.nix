@@ -93,7 +93,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v0.1.2";
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.10.4";
 
     stylix.url = "github:danth/stylix";
 

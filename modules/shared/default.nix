@@ -128,7 +128,6 @@
       nodejs
       ruby
       rustup
-      python312
       (python312.withPackages (
         ps:
           with ps; [

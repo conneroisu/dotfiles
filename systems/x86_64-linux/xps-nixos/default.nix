@@ -294,6 +294,7 @@ with lib.${namespace}; {
       docker-compose-language-service
       vdhcoapp
       qemu
+      pkgs.obs-studio
 
       # Networking
       openvpn

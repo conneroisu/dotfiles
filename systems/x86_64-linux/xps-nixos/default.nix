@@ -295,6 +295,7 @@ with lib.${namespace}; {
       vdhcoapp
       qemu
       pkgs.obs-studio
+      pkgs.davinci-resolve
 
       # Networking
       openvpn

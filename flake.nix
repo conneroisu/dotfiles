@@ -2,8 +2,8 @@
   description = "Conner Ohnesorge's NixOS Config";
 
   inputs = {
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
@@ -178,6 +178,7 @@
             nixos = with inputs; [
               ./modules/shared
               home-manager.nixosModules.home-manager
+              determinate.nixosModules.default
               stylix.nixosModules.stylix
               nix-ld.nixosModules.nix-ld
               disko.nixosModules.disko

@@ -79,7 +79,6 @@
       cachix
       fzf
       zellij
-      gh
       atuin
       zoxide
       gum
@@ -123,6 +122,8 @@
       # Platforms
       turso-cli
       flyctl
+      fh
+      gh
 
       # Languages
       nodejs

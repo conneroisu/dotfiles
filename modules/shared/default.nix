@@ -124,6 +124,7 @@
       flyctl
       fh
       gh
+      minicom
 
       # Languages
       nodejs

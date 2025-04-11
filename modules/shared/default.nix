@@ -221,6 +221,5 @@
       (pkgs.writeShellScriptBin "clean_png" ''
         ${python-venv}/bin/python ${./clean_png.py} $1
       '')
-      #!
     ]);
 }

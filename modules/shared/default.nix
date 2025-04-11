@@ -30,7 +30,45 @@
     ]
     ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
-  environment.systemPackages =
+  environment.systemPackages = let
+    python-venv = pkgs.python312.withPackages (
+      ps:
+        with ps; [
+          numpy
+          requests
+          pandas
+          scipy
+          matplotlib
+          scikitlearn
+          torch
+          debugpy
+          opencv4
+          torchvision
+          selenium
+          pyarrow
+          psycopg
+          mysqlclient
+          ollama
+          black
+          requests
+          uvicorn
+          flask
+          fastapi
+          django
+          gunicorn
+          pydantic
+          mypy
+          torchdiffeq
+          beautifulsoup4
+          pillow
+          gym
+          pypdf
+          pytest
+          pip
+          sympy
+        ]
+    );
+  in
     [
       pkgs.home-manager
     ]
@@ -130,43 +168,7 @@
       nodejs
       ruby
       rustup
-      (python312.withPackages (
-        ps:
-          with ps; [
-            numpy
-            requests
-            pandas
-            scipy
-            matplotlib
-            scikitlearn
-            torch
-            debugpy
-            opencv4
-            torchvision
-            selenium
-            pyarrow
-            psycopg
-            mysqlclient
-            ollama
-            black
-            requests
-            uvicorn
-            flask
-            fastapi
-            django
-            gunicorn
-            pydantic
-            mypy
-            torchdiffeq
-            beautifulsoup4
-            pillow
-            gym
-            pypdf
-            pytest
-            pip
-            sympy
-          ]
-      ))
+      python-venv
 
       # Language Servers
 
@@ -215,7 +217,10 @@
       discord
       llama-cpp
       pandoc
-    ]);
 
-  # Your configuration.
+      (pkgs.writeShellScriptBin "clean_png" ''
+        ${python-venv}/bin/python ${./clean_png.py} $1
+      '')
+      #!
+    ]);
 }

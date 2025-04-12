@@ -23,6 +23,9 @@ in
       # Print available commands
       echo "Available commands:"
       ${lib.concatStringsSep "\n" (lib.mapAttrsToList (name: script: ''echo "  ${name} - ${script.description}"'') scripts)}
+
+      echo "Git Status:"
+      git status
     '';
     packages = with pkgs;
       [

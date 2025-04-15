@@ -28,6 +28,36 @@
     home-manager = {
       enable = true;
     };
+
+    zed-editor = {
+      enable = true;
+      extensions = [
+        "nix"
+        "dockerfile"
+        "toml"
+        "html"
+        "templ"
+        "latex"
+        "svelte"
+        "golangci-lint"
+        "astro"
+        "python-lsp"
+        "ocaml"
+        "vhdl"
+        "verilog"
+      ];
+      userSettings = {
+        ui_font_size = pkgs.lib.mkDefault 16;
+        buffer_font_size = pkgs.lib.mkDefault 16;
+        telemetry.enable = pkgs.lib.mkDefault false;
+        vim_mode = pkgs.lib.mkDefault true;
+        theme = pkgs.lib.mkDefault {
+          mode = "dark";
+          dark = "One Dark";
+          light = "One Light";
+        };
+      };
+    };
   };
 
   stylix = {

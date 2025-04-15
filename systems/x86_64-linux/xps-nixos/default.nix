@@ -284,24 +284,28 @@ with lib.${namespace}; {
       alejandra
       nh
       pipewire
-      gpu-screen-recorder
       gtk3
       gtk-layer-shell
-      usbutils
       yazi
-      docker
-      docker-compose
-      docker-compose-language-service
-      vdhcoapp
-      qemu
-      pkgs.obs-studio
-      pkgs.davinci-resolve
       busybox
 
       # Networking
       openvpn
       cacert
       arp-scan
+      vdhcoapp
+      obs-studio
+      davinci-resolve
+
+      # Hardware
+      usbutils
+
+      # Emulation
+      qemu
+      docker
+      dockerfile-language-server-nodejs
+      docker-compose
+      docker-compose-language-service
 
       # Apps
       netron
@@ -310,6 +314,7 @@ with lib.${namespace}; {
       gimp
       pkgs.jetbrains.rust-rover
       pkgs.libnotify
+      anki
 
       ghdl
       nvc
@@ -321,7 +326,6 @@ with lib.${namespace}; {
       curl
       procps
       gnumake
-      anki
       util-linux
       unzip
       libGLU

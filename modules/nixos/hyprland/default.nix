@@ -51,7 +51,6 @@ in {
         hyprutils
         wl-clipboard
         hyprnotify
-        waybar
         uwsm
         grimblast
         grim
@@ -63,6 +62,7 @@ in {
         gnome-control-center
         spotify-cli-linux
         hyprpicker
+        gpu-screen-recorder
         pkgs.ffmpegthumbnailer
       ]);
 

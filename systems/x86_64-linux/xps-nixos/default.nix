@@ -296,6 +296,7 @@ with lib.${namespace}; {
       qemu
       pkgs.obs-studio
       pkgs.davinci-resolve
+      busybox
 
       # Networking
       openvpn

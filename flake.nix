@@ -159,8 +159,12 @@
           };
         };
 
-        experiments = {
-          nix.settings.experimental-features = ["nix-command" "flakes"];
+        config = {
+          nix.settings = {
+            experimental-features = ["nix-command" "flakes"];
+            trusted-users = ["root" "connerohnesorge" "@wheel"];
+            allowed-users = ["root" "connerohnesorge" "@wheel"];
+          };
         };
         homie = {
           home-manager.useGlobalPkgs = false;
@@ -185,7 +189,7 @@
               nur.modules.nixos.default
               {programs.nix-ld.dev.enable = true;}
               sops-nix.nixosModules.default
-              experiments
+              config
               homie
             ];
 
@@ -197,7 +201,7 @@
               nix-homebrew.darwinModules.nix-homebrew
               home-manager.darwinModules.home-manager
               sops-nix.darwinModules.default
-              experiments
+              config
               homie
             ];
           };

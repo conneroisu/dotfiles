@@ -196,7 +196,6 @@
 
             # Add modules to all Darwin systems.
             darwin = with inputs; [
-              determinate.darwinModules.default
               {nix.nixPath = ["darwin=/Users/connerohnesorge/.nix-defexpr/darwin"];}
               ./modules/shared
               nix-homebrew.darwinModules.nix-homebrew

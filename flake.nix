@@ -181,9 +181,9 @@
           systems.modules = {
             # Add modules to all NixOS systems.
             nixos = with inputs; [
+              determinate.nixosModules.default
               ./modules/shared
               home-manager.nixosModules.home-manager
-              determinate.nixosModules.default
               stylix.nixosModules.stylix
               nix-ld.nixosModules.nix-ld
               disko.nixosModules.disko
@@ -196,8 +196,8 @@
 
             # Add modules to all Darwin systems.
             darwin = with inputs; [
+              determinate.darwinModules.default
               {nix.nixPath = ["darwin=/Users/connerohnesorge/.nix-defexpr/darwin"];}
-
               ./modules/shared
               nix-homebrew.darwinModules.nix-homebrew
               home-manager.darwinModules.home-manager

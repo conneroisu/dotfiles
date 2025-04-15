@@ -16,6 +16,24 @@ with lib.${namespace}; {
   imports = [
     ./hardware.nix
   ];
+
+  nix.settings = {
+    experimental-features = ["nix-command" "flakes"];
+    trusted-users = ["root" "connerohnesorge" "@wheel"];
+    allowed-users = ["root" "connerohnesorge" "@wheel"];
+
+    substituters = [
+      "https://cache.nixos.org"
+      "https://conneroisu.cachix.org"
+      "https://pegwings.cachix.org"
+    ];
+
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "conneroisu.cachix.org-1:PgOlJ8/5i/XBz2HhKZIYBSxNiyzalr1B/63T74lRcU0="
+      "pegwings.cachix.org-1:FYxyFKhWG20aISJjFgWMuohJj3iLNW2hVAS4u48Be00="
+    ];
+  };
   sops = {
     defaultSopsFile = ./../../../.secrets/secrets.yaml;
     age.keyFile = "/home/connerohnesorge/.config/sops/age/keys.txt";

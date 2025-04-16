@@ -224,5 +224,8 @@
       (pkgs.writeShellScriptBin "convert_img" ''
         ${python-venv}/bin/python ${./convert_img.py} $1 $2
       '')
+      (pkgs.writeShellScriptBin "catls" ''
+        ${./catls.sh}
+      '')
     ]);
 }

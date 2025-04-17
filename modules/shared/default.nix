@@ -39,6 +39,7 @@
           pandas
           scipy
           matplotlib
+          huggingface-hub
           scikitlearn
           torch
           debugpy

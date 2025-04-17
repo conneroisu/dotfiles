@@ -217,6 +217,8 @@
       discord
       llama-cpp
       pandoc
+      nix-search-cli
+      ffmpeg
 
       (pkgs.writeShellScriptBin "clean_png" ''
         ${python-venv}/bin/python ${./clean_png.py} $1
@@ -224,8 +226,6 @@
       (pkgs.writeShellScriptBin "convert_img" ''
         ${python-venv}/bin/python ${./convert_img.py} $1 $2
       '')
-      (pkgs.writeShellScriptBin "catls" ''
-        ${./catls.sh}
-      '')
+      (pkgs.writeShellScriptBin "catls" (builtins.readFile ./catls.sh))
     ]);
 }

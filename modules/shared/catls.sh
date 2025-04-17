@@ -56,8 +56,17 @@ guess_filetype() {
     xml)
       echo "xml"
       ;;
-    c|cpp|h|hpp)
+    c)
       echo "c"
+      ;;
+    cpp)
+      echo "cpp"
+      ;;
+    h)
+      echo "c"
+      ;;
+    hpp)
+      echo "cpp"
       ;;
     java)
       echo "java"
@@ -79,6 +88,9 @@ guess_filetype() {
       ;;
     sql)
       echo "sql"
+      ;;
+    templ)
+      echo "templ"
       ;;
     yml|yaml)
       echo "yaml"
@@ -158,7 +170,7 @@ while IFS= read -r file; do
     filetype=$(guess_filetype "$file")
     
     if [ -n "$filetype" ]; then
-      echo '```'"$filetype"
+      echo '```'"$filetype file='$rel_path'"
     else
       echo '```'
     fi

@@ -333,6 +333,7 @@ with lib.${namespace}; {
       pkgs.jetbrains.rust-rover
       pkgs.libnotify
       anki
+      teams-for-linux
 
       ghdl
       nvc

@@ -303,6 +303,7 @@ with lib.${namespace}; {
       nh
       pipewire
       gtk3
+      glibc.dev
       gtk-layer-shell
       yazi
       busybox

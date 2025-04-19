@@ -86,3 +86,7 @@ alias latest='git add . && git commit -m "latest" && git push'
 
 # bun completions
 [ -s "/home/connerohnesorge/.bun/_bun" ] && source "/home/connerohnesorge/.bun/_bun"
+# 
+# Key bindings for word-by-word navigation for auto-completion
+bindkey '^[[1;5C' forward-word      # Ctrl+Right - move forward one word
+bindkey '^[[1;5D' backward-word     # Ctrl+Left - move backward one word

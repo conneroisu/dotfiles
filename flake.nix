@@ -73,7 +73,7 @@
     ashell = {
       # url = "github:MalpenZibo/ashell?rev=96103fa1b3e936b4bff5e624eca023ddaf9c106f";
       url = "github:MalpenZibo/ashell?rev=4a1c9e0c788e0e1c4aac9522d39a44cce7c24ef2";
-      inputs. nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nh = {
@@ -122,7 +122,11 @@
       nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
       devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=
     '';
-    trusted-users = ["root" "@wheel" "connerohnesorge"];
+    trusted-users = [
+      "root"
+      "@wheel"
+      "connerohnesorge"
+    ];
     extra-experimental-features = "nix-command flakes";
     max-jobs = 8;
   };
@@ -162,9 +166,20 @@
 
         config = {
           nix.settings = {
-            experimental-features = ["nix-command" "flakes"];
-            trusted-users = ["root" "connerohnesorge" "@wheel"];
-            allowed-users = ["root" "connerohnesorge" "@wheel"];
+            experimental-features = [
+              "nix-command"
+              "flakes"
+            ];
+            trusted-users = [
+              "root"
+              "connerohnesorge"
+              "@wheel"
+            ];
+            allowed-users = [
+              "root"
+              "connerohnesorge"
+              "@wheel"
+            ];
           };
         };
         homie = {

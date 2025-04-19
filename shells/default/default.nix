@@ -32,6 +32,7 @@ in
         # Nix
         alejandra
         nixd
+        nixfmt-rfc-style
       ]
       # Add the generated script packages
       ++ scriptPackages

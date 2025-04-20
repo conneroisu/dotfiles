@@ -43,6 +43,15 @@
   fileSystems."/mnt/media" = {
     device = "/dev/disk/by-uuid/ce3b09bd-96b8-481d-9b0f-b1e18e08cd51";
     fsType = "ext4";
+
+    options = [
+      "defaults"
+      "nofail"
+      "uid=${toString config.users.users.connerohnesorge.uid}"
+      "gid=${toString config.users.users.connerohnesorge.gid}"
+      "mode=0755"
+      "x-gvfs-show" # Makes it visible in file managers
+    ];
   };
   swapDevices = [ ];
 

@@ -17,7 +17,8 @@
   config,
   ...
 }:
-with lib; let
+with lib;
+let
   cfg = config.${namespace}.wm.hyprland;
 
   roofi = pkgs.rofi.override {
@@ -29,7 +30,8 @@ with lib; let
       pkgs.rofi-calc
     ];
   };
-in {
+in
+{
   options.${namespace}.wm.hyprland = with types; {
     enable = mkEnableOption "Enable Hyprland";
   };
@@ -91,9 +93,18 @@ in {
     };
 
     xdg = {
-      portal.enable = true;
-      portal.extraPortals = [inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland];
+      portal = {
+        enable = true;
+        extraPortals = [ inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland ];
 
+        config.hyprland = {
+          default = [
+            "gtk"
+            "wlr"
+          ];
+          "org.freedesktop.impl.portal.FileChooser" = "gtk";
+        };
+      };
       mime = {
         enable = true;
 

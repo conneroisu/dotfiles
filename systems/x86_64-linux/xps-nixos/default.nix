@@ -282,6 +282,7 @@ with lib.${namespace}; {
       "networkmanager"
       "wheel"
       "docker"
+      "users"
     ];
     packages = with pkgs; [];
   };

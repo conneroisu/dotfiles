@@ -4,8 +4,7 @@
   modulesPath,
   inputs,
   ...
-}:
-{
+}: {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     inputs.nixos-hardware.nixosModules.dell-xps-15-9510
@@ -22,38 +21,28 @@
       "sd_mod"
       "rtsx_pci_sdmmc"
     ];
-    initrd.kernelModules = [ ];
-    kernelModules = [ "kvm-intel" ];
-    extraModulePackages = [ ];
+    initrd.kernelModules = [];
+    kernelModules = ["kvm-intel"];
+    extraModulePackages = [];
   };
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/fd77e04d-21ab-4b5d-a2b0-14d54f734848";
-    fsType = "ext4";
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-uuid/fd77e04d-21ab-4b5d-a2b0-14d54f734848";
+      fsType = "ext4";
+    };
+    "/boot" = {
+      device = "/dev/disk/by-uuid/DBE6-A378";
+      fsType = "vfat";
+      options = ["fmask=0077" "dmask=0077"];
+    };
+    "/mnt/media" = {
+      device = "/dev/disk/by-uuid/ce3b09bd-96b8-481d-9b0f-b1e18e08cd51";
+      fsType = "ext4";
+      options = ["defaults" "nofail" "x-gvfs-show"];
+    };
   };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/DBE6-A378";
-    fsType = "vfat";
-    options = [
-      "fmask=0077"
-      "dmask=0077"
-    ];
-  };
-  fileSystems."/mnt/media" = {
-    device = "/dev/disk/by-uuid/ce3b09bd-96b8-481d-9b0f-b1e18e08cd51";
-    fsType = "ext4";
-
-    options = [
-      "defaults"
-      "nofail"
-      "uid=${toString config.users.users.connerohnesorge.uid}"
-      "gid=${toString config.users.users.connerohnesorge.gid}"
-      "mode=0755"
-      "x-gvfs-show" # Makes it visible in file managers
-    ];
-  };
-  swapDevices = [ ];
+  swapDevices = [];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

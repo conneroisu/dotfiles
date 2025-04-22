@@ -131,8 +131,9 @@
     max-jobs = 8;
   };
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  outputs =
+    inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "i686-linux"
@@ -141,52 +142,55 @@
         "aarch64-darwin"
       ];
 
-      perSystem = {
-        config,
-        self',
-        inputs',
-        pkgs,
-        system,
-        ...
-      }: {};
-      flake = let
-        inherit (inputs) snowfall-lib;
-        lib = snowfall-lib.mkLib {
-          inherit inputs;
-          src = ./.;
+      perSystem =
+        {
+          config,
+          self',
+          inputs',
+          pkgs,
+          system,
+          ...
+        }:
+        { };
+      flake =
+        let
+          inherit (inputs) snowfall-lib;
+          lib = snowfall-lib.mkLib {
+            inherit inputs;
+            src = ./.;
 
-          snowfall = {
-            namespace = "csnow";
-            meta = {
-              name = "csnow";
-              title = "Conner Ohnesorge's Snowflake";
+            snowfall = {
+              namespace = "csnow";
+              meta = {
+                name = "csnow";
+                title = "Conner Ohnesorge's Snowflake";
+              };
             };
           };
-        };
 
-        config = {
-          nix.settings = {
-            experimental-features = [
-              "nix-command"
-              "flakes"
-            ];
-            trusted-users = [
-              "root"
-              "connerohnesorge"
-              "@wheel"
-            ];
-            allowed-users = [
-              "root"
-              "connerohnesorge"
-              "@wheel"
-            ];
+          config = {
+            nix.settings = {
+              experimental-features = [
+                "nix-command"
+                "flakes"
+              ];
+              trusted-users = [
+                "root"
+                "connerohnesorge"
+                "@wheel"
+              ];
+              allowed-users = [
+                "root"
+                "connerohnesorge"
+                "@wheel"
+              ];
+            };
           };
-        };
-        homie = {
-          home-manager.useGlobalPkgs = false;
-          home-manager.useUserPackages = true;
-        };
-      in
+          homie = {
+            home-manager.useGlobalPkgs = false;
+            home-manager.useUserPackages = true;
+          };
+        in
         lib.mkFlake {
           inherit inputs;
           src = ./.;
@@ -203,7 +207,7 @@
               nix-ld.nixosModules.nix-ld
               disko.nixosModules.disko
               nur.modules.nixos.default
-              {programs.nix-ld.dev.enable = true;}
+              { programs.nix-ld.dev.enable = true; }
               sops-nix.nixosModules.default
               config
               homie
@@ -211,7 +215,7 @@
 
             # Add modules to all Darwin systems.
             darwin = with inputs; [
-              {nix.nixPath = ["darwin=/Users/connerohnesorge/.nix-defexpr/darwin"];}
+              { nix.nixPath = [ "darwin=/Users/connerohnesorge/.nix-defexpr/darwin" ]; }
               ./modules/shared
               nix-homebrew.darwinModules.nix-homebrew
               home-manager.darwinModules.home-manager

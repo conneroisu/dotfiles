@@ -44,6 +44,9 @@ guess_filetype() {
     html)
       echo "html"
       ;;
+    nix)
+      echo "nix"
+      ;;
     css)
       echo "css"
       ;;
@@ -64,6 +67,9 @@ guess_filetype() {
       ;;
     h)
       echo "c"
+      ;;
+    toml)
+      echo "toml"
       ;;
     hpp)
       echo "cpp"
@@ -175,8 +181,15 @@ while IFS= read -r file; do
       echo '```'
     fi
     
-    cat "$file"
-    echo '```'
+    # If it has over 1000 lines, just print the first 100
+    if [ "$(wc -l "$file" | cut -d ' ' -f 1)" -gt 1000 ]; then
+      cat "$file" | head -n 100
+      echo "... ($(wc -l "$file" | cut -d ' ' -f 1) - 100 more lines)"
+      echo '```'
+    else
+      cat "$file"
+      echo '```'
+    fi
   fi
   
   echo ""

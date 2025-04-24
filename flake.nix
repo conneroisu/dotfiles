@@ -109,6 +109,9 @@
 
     hyprland.url = "github:hyprwm/hyprland";
     hyprland.inputs.nixpkgs.follows = "nixpkgs";
+
+    clan-core.url = "https://git.clan.lol/clan/clan-core/archive/main.tar.gz";
+    nixpkgs.follows = "clan-core/nixpkgs";
   };
 
   nixConfig = {

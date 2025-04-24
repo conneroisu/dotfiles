@@ -165,6 +165,7 @@
         tree-sitter
         unixtools.xxd
         tailscale
+        inputs.clan-core.packages.${system}.clan-cli
 
         wireguard-ui
 

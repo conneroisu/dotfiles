@@ -13,6 +13,7 @@
   programs = {
     direnv.enable = true;
     direnv.nix-direnv.enable = true;
+    nix-index-database.comma.enable = true;
   };
 
   environment = {
@@ -197,6 +198,8 @@
         fh
         gh
         minicom
+        tea
+        lakectl
 
         # Languages
         nodejs
@@ -253,7 +256,6 @@
         pandoc
         nix-search-cli
         ffmpeg
-        tea
         (pkgs.writeShellScriptBin "clean_png" ''
           ${python-venv}/bin/python ${./clean_png.py} $1
         '')

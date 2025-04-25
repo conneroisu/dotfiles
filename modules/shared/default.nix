@@ -262,7 +262,9 @@
         (pkgs.writeShellScriptBin "convert_img" ''
           ${python-venv}/bin/python ${./convert_img.py} $1 $2
         '')
-        (pkgs.writeShellScriptBin "catls" (builtins.readFile ./catls.sh))
+        (pkgs.writeShellScriptBin "catls" ''
+          ${python-venv}/bin/python ${./catls.py} $@
+        '')
         (pkgs.writeShellScriptBin "clean_media" ''
           ${python-venv}/bin/python ${./clean_media.py} $@
         '')

@@ -255,6 +255,7 @@
         llama-cpp
         pandoc
         nix-search-cli
+        harper
         ffmpeg
         (pkgs.writeShellScriptBin "clean_png" ''
           ${python-venv}/bin/python ${./clean_png.py} $1

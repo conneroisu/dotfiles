@@ -302,6 +302,7 @@ with lib.${namespace}; {
       nix-ld
       alejandra
       nh
+      harper
       pipewire
       gtk3
       glibc.dev

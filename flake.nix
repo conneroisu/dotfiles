@@ -14,10 +14,10 @@
       inputs.systems.follows = "systems";
     };
 
-    nix2container = {
-      url = "github:nlewo/nix2container";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
+    nix2container.url = "github:nlewo/nix2container";
+    nix2container.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
     };
 
     nix-ld = {
@@ -71,7 +71,6 @@
     };
 
     ashell = {
-      # url = "github:MalpenZibo/ashell?rev=96103fa1b3e936b4bff5e624eca023ddaf9c106f";
       url = "github:MalpenZibo/ashell?rev=4a1c9e0c788e0e1c4aac9522d39a44cce7c24ef2";
       inputs.nixpkgs.follows = "nixpkgs";
     };

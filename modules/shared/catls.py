@@ -134,22 +134,17 @@ def should_ignore(
     Returns:
         True if the file should be ignored, False otherwise
     """
+    # Get normalized path components
+    path_parts = os.path.normpath(file_path).split(os.sep)
+    
+    # Check if any component of the path matches an ignored directory
+    for part in path_parts:
+        if part in ignore_dirs:
+            return True
+    
     # Check if file matches any regex pattern
     for pattern in ignore_patterns:
         if re.search(pattern, file_path):
-            return True
-
-    # Check if file is in any ignored directory
-    for ignored_dir in ignore_dirs:
-        # Normalize paths for comparison
-        norm_dir: str = ignored_dir.rstrip("/")
-
-        # Check for exact directory match or if it's a subdirectory
-        if (
-            file_path == norm_dir
-            or file_path.startswith(norm_dir + "/")
-            or re.match(f"^{re.escape(norm_dir)}/?", file_path)
-        ):
             return True
 
     return False
@@ -161,11 +156,40 @@ class Args:
 
     show_all: bool = False
     recursive: bool = False
-    ignore_regex: list[str] = field(default_factory=list)
-    ignore_dir: list[str] = field(default_factory=list)
+    # Default common directories to ignore
+    ignore_regex: list[str] = field(default_factory=lambda: [
+        r"\.git/",
+        r"\.svn/",
+        r"\.hg/",
+        r"__pycache__/",
+        r"\.pytest_cache/",
+        r"\.mypy_cache/",
+        r"\.tox/",
+        r"\.venv/",
+        r"\.coverage",
+        r"\.DS_Store",
+        r"\.idea/",
+        r"\.vscode/",
+    ])
+    # Default common directories to ignore
+    ignore_dir: list[str] = field(default_factory=lambda: [
+        "node_modules",
+        ".direnv",
+        "build",
+        "dist",
+        "target",
+        "venv",
+        "env",
+        ".env",
+        "vendor",
+        ".bundle",
+        "coverage",
+    ])
     include_regex: list[str] = field(default_factory=list)
     directory: str = "."
     files: list[str] = field(default_factory=list)
+    content_pattern: str = ""
+    show_line_numbers: bool = False
 
 
 def parse_args() -> Args:
@@ -215,8 +239,18 @@ def parse_args() -> Args:
         nargs="*",
         help="Files to process (if expanded by shell)",
     )
+    _ = parser.add_argument(
+        "--pattern",
+        default="",
+        help="Only show lines matching glob PATTERN (e.g., '*import*', 'def *')",
+    )
+    _ = parser.add_argument(
+        "-n", "--line-numbers",
+        action="store_true",
+        help="Show line numbers"
+    )
 
-    # Create our type-safe Args container
+    # Create our type-safe Args container with default ignores
     args_container = Args()
 
     # Use custom parsing to handle shell wildcard expansion
@@ -228,11 +262,16 @@ def parse_args() -> Args:
         # Transfer the known arguments to our type-safe container with proper types
         args_container.show_all = args_dict.get("all", False)
         args_container.recursive = args_dict.get("recursive", False)
-        args_container.ignore_regex = args_dict.get("ignore_regex", [])
-        args_container.ignore_dir = args_dict.get("ignore_dir", [])
+        
+        # Merge command-line ignore patterns with defaults
+        args_container.ignore_regex.extend(args_dict.get("ignore_regex", []))
+        args_container.ignore_dir.extend(args_dict.get("ignore_dir", []))
+        
         args_container.include_regex = args_dict.get("regex", [])
         args_container.directory = args_dict.get("directory", ".")
         args_container.files = args_dict.get("files", [])
+        args_container.content_pattern = args_dict.get("pattern", "")
+        args_container.show_line_numbers = args_dict.get("line_numbers", False)
 
         # If we have unknown arguments, they might be shell-expanded wildcards
         if unknown:
@@ -283,6 +322,14 @@ def main() -> None:
         # Skip hidden directories if not showing hidden files
         if not args.show_all:
             dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+            
+        # Skip ignored directories early during the walk
+        # This prevents descending into them unnecessarily
+        dirnames[:] = [d for d in dirnames if not should_ignore(
+            os.path.join(dirpath, d), 
+            args.ignore_regex, 
+            args.ignore_dir
+        )]
 
         # Calculate current depth
         current_depth: int = dirpath.count(os.sep) - directory.count(os.sep)
@@ -341,8 +388,27 @@ def main() -> None:
                 with open(file_path, "r", encoding="utf-8", errors="replace") as f:
                     content: list[str] = f.readlines()
 
-                # Count lines
+                # Count total lines
                 line_count: int = len(content)
+                
+                # Filter content based on pattern if provided
+                filtered_content: list[tuple[int, str]] = []
+                if args.content_pattern:
+                    try:
+                        # Convert glob pattern to regex
+                        regex_pattern = wildcard_to_regex(args.content_pattern)
+                        pattern = re.compile(regex_pattern)
+                        for i, line in enumerate(content, 1):
+                            if pattern.search(line):
+                                filtered_content.append((i, line))
+                    except re.error as e:
+                        print(f"Error in pattern: {e}")
+                        filtered_content = [(i, line) for i, line in enumerate(content, 1)]
+                else:
+                    filtered_content = [(i, line) for i, line in enumerate(content, 1)]
+                
+                # Count filtered lines
+                filtered_count: int = len(filtered_content)
 
                 # Print code block header with file type if available
                 if filetype:
@@ -350,12 +416,30 @@ def main() -> None:
                 else:
                     print("```")
 
-                # If it has over 1000 lines, just print the first 100
-                if line_count > 1000:
-                    print("".join(content[:100]), end="")
-                    print(f"... ({line_count - 100} more lines)")
+                # If pattern is provided, show a summary
+                if args.content_pattern:
+                    print(f"# Showing {filtered_count} matching lines for pattern: '{args.content_pattern}'")
+                
+                # Determine if we should limit displayed lines
+                if filtered_count > 1000 and not args.content_pattern:
+                    # If no pattern and many lines, just show first 100
+                    to_display = filtered_content[:100]
+                    print_trailing_message = True
                 else:
-                    print("".join(content), end="")
+                    # Otherwise show all filtered lines
+                    to_display = filtered_content
+                    print_trailing_message = False
+                
+                # Print the content with optional line numbers
+                for line_num, line in to_display:
+                    if args.show_line_numbers:
+                        print(f"{line_num:4d}| {line}", end="")
+                    else:
+                        print(line, end="")
+                
+                # Print message about omitted lines if needed
+                if print_trailing_message:
+                    print(f"... ({line_count - 100} more lines)")
 
                 print("```")
             except Exception as e:

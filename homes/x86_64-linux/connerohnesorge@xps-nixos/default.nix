@@ -66,8 +66,8 @@
     image = ./../../../assets/klaus-desktop.jpeg;
     polarity = "dark";
     cursor = {
+      size = 20;
       name = "rose-pine-hyprcursor";
-      size = 32;
       package = pkgs.rose-pine-hyprcursor;
     };
     targets.rofi.enable = true;

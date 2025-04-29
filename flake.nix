@@ -114,6 +114,13 @@
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    blink.url = "github:Saghen/blink.cmp";
+    blink.inputs = {
+      # TODO: follow fenix
+      nixpkgs.follows = "nixpkgs";
+      flake-parts.follows = "flake-parts";
+    };
   };
 
   nixConfig = {

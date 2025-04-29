@@ -106,6 +106,14 @@
       [
         pkgs.home-manager
       ]
+      ++ (with inputs; [
+        zen-browser.packages."${system}".default
+        snowfall-flake.packages."${system}".default
+        clan-core.packages.${system}.clan-cli
+        nh.packages."${system}".default
+        blink.packages."${system}".default
+        blink.packages."${system}".blink-fuzzy-lib
+      ])
       ++ (with pkgs; [
         doppler
         bun
@@ -130,9 +138,6 @@
         neovim
         vscode
         gtkwave
-        inputs.zen-browser.packages."${system}".default
-        inputs.nh.packages."${system}".default
-        inputs.snowfall-flake.packages."${system}".default
         jetbrains.datagrip
         telegram-desktop
         google-chrome
@@ -166,7 +171,6 @@
         tree-sitter
         unixtools.xxd
         tailscale
-        inputs.clan-core.packages.${system}.clan-cli
 
         wireguard-ui
 

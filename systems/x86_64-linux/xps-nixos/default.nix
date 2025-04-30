@@ -372,6 +372,12 @@ with lib.${namespace}; {
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
     image = ./../../../assets/klaus-desktop.jpeg;
     polarity = "dark";
+
+    cursor = {
+      size = 12;
+      name = "rose-pine-hyprcursor";
+      package = pkgs.rose-pine-hyprcursor;
+    };
     targets = {
       grub.enable = false;
       plymouth.enable = false;

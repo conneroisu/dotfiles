@@ -66,7 +66,7 @@
     image = ./../../../assets/klaus-desktop.jpeg;
     polarity = "dark";
     cursor = {
-      size = 20;
+      size = 12;
       name = "rose-pine-hyprcursor";
       package = pkgs.rose-pine-hyprcursor;
     };

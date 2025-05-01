@@ -22,4 +22,5 @@ jobs:
       contents: read
     with:
       visibility: public
+      fail-fast: true
     

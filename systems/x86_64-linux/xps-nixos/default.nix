@@ -333,7 +333,6 @@ with lib.${namespace}; {
       docker-compose-language-service
 
       # Apps
-      netron
       pkgs.xfce.thunar
       vmware-horizon-client
       gimp

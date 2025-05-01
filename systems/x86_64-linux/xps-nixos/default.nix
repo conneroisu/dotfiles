@@ -232,18 +232,16 @@ with lib.${namespace}; {
 
         # Emulation
         docker
-        dockerfile-language-server-nodejs
         docker-compose
         docker-compose-language-service
+        dockerfile-language-server-nodejs
 
         # Apps
         xfce.thunar
         vmware-horizon-client
         gimp
-        anki
 
         ghdl
-        nvc
         lshw
         pkgconf
         gdb

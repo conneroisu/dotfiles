@@ -9,6 +9,7 @@
 
     flake-checker.url = "https://flakehub.com/f/DeterminateSystems/flake-checker/0.2.4.tar.gz";
     flake-schemas.url = "https://flakehub.com/f/DeterminateSystems/flake-schemas/0.1.5.tar.gz";
+
     hyprland.url = "https://flakehub.com/f/hyprwm/Hyprland/0.48.1";
     hyprland.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -18,63 +19,60 @@
     flake-utils.url = "https://flakehub.com/f/numtide/flake-utils/0.1.102";
     flake-utils.inputs.systems.follows = "systems";
 
-    nix-ld = {
-      url = "github:Mic92/nix-ld";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nix-ld.url = "github:Mic92/nix-ld";
+    nix-ld.inputs.nixpkgs.follows = "nixpkgs";
 
-    snowfall-lib = {
-      url = "https://flakehub.com/f/snowfallorg/lib/3.0.3";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    snowfall-lib.url = "https://flakehub.com/f/snowfallorg/lib/3.0.3";
+    snowfall-lib.inputs.nixpkgs.follows = "nixpkgs";
 
-    home-manager = {
-      url = "https://flakehub.com/f/nix-community/home-manager/0.2411.*";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    home-manager.url = "https://flakehub.com/f/nix-community/home-manager/0.2411.*";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     darwin.url = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
+
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    nix-homebrew.inputs.nixpkgs.follows = "nixpkgs";
+
     homebrew-core.url = "github:Homebrew/homebrew-core";
     homebrew-core.flake = false;
     homebrew-cask.url = "github:Homebrew/homebrew-cask";
     homebrew-cask.flake = false;
 
-    homebrew-bundle = {
-      url = "github:Homebrew/homebrew-bundle";
-      flake = false;
-    };
-
-    gitignore = {
-      url = "github:hercules-ci/gitignore.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    gitignore.url = "github:hercules-ci/gitignore.nix";
+    gitignore.inputs.nixpkgs.follows = "nixpkgs";
 
     ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.481";
-
-    nh = {
-      url = "github:viperML/nh/master?tag=v4.0.0-beta.8";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+    ashell.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      rust-overlay.follows = "rust-overlay";
     };
 
-    snowfall-flake = {
-      url = "https://flakehub.com/f/snowfallorg/flake/1.4.1.tar.gz";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nh.url = "github:viperML/nh/master?tag=v4.0.0-beta.8";
+    nh.inputs.nixpkgs.follows = "nixpkgs";
 
-    rust-overlay = {
-      url = "https://flakehub.com/f/oxalica/rust-overlay/0.1.1771.tar.gz";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    snowfall-flake.url = "https://flakehub.com/f/snowfallorg/flake/1.4.1.tar.gz";
+    snowfall-flake.inputs.nixpkgs.follows = "nixpkgs";
+
+    rust-overlay.url = "https://flakehub.com/f/oxalica/rust-overlay/0.1.1771.tar.gz";
+    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";
+    zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
     stylix.url = "https://flakehub.com/f/danth/stylix/0.1.776";
+    stylix.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      systems.follows = "systems";
+      home-manager.follows = "home-manager";
+      flake-utils.follows = "flake-utils";
+    };
 
     ghostty.url = "github:ghostty-org/ghostty/main";
+    ghostty.inputs = {
+      nixpkgs-unstable.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
+    };
 
     blink.url = "github:Saghen/blink.cmp";
     blink.inputs = {

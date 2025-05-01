@@ -11,10 +11,6 @@
     platform ? "x86_64-linux",
   }: let
     pkgs = inputs.nixpkgs.legacyPackages.${platform};
-    mod =
-      if pkgs.stdenv.isDarwin
-      then inputs.home-manager.darwinModules.default
-      else inputs.home-manager.nixosModules.default;
   in
     inputs.home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
@@ -29,7 +25,6 @@
           ;
       };
       modules = [
-        mod
         ../.
       ];
     };

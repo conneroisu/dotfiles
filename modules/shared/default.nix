@@ -114,7 +114,6 @@
       ++ (with inputs; [
         zen-browser.packages."${system}".default
         snowfall-flake.packages."${system}".default
-        clan-core.packages.${system}.clan-cli
         nh.packages."${system}".default
         blink.packages."${system}".default
         blink.packages."${system}".blink-fuzzy-lib

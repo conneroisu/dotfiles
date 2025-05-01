@@ -58,7 +58,7 @@
     variables = {
       NUPM_HOME = "~/dotfiles/.config/nushell/nupm/";
       EDITOR = "nvim";
-      SHELL = "nu";
+      SHELL = "zsh";
       GTK_THEME = "adw-gtk3-dark";
     };
 
@@ -246,7 +246,6 @@
         '')
       ]);
   };
-
 
   fonts.packages = with pkgs;
     [

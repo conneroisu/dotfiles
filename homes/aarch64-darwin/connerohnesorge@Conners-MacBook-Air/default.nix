@@ -19,6 +19,7 @@
   home.stateVersion = "24.05";
 
   programs = {
+    zsh.enable = true;
     zed-editor = {
       enable = true;
       extensions = [

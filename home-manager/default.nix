@@ -7,6 +7,9 @@
 }: let
   inherit (pkgs.stdenv) isDarwin isLinux;
 in {
+  home = {
+    inherit stateVersion;
+  };
   inherit stateVersion;
   inherit username;
   homeDirectory =

@@ -82,8 +82,6 @@
 
     ghostty.url = "github:ghostty-org/ghostty/main";
 
-    sops-nix.url = "https://flakehub.com/f/Mic92/sops-nix/0.1.887";
-
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
 
     systems.url = "github:nix-systems/default";
@@ -106,7 +104,6 @@
     self,
     flake-schemas,
     home-manager,
-    flake-checker,
     ...
   }: let
     inherit (self) outputs;
@@ -173,7 +170,6 @@
               nix-ld.nixosModules.nix-ld
               nur.modules.nixos.default
               {programs.nix-ld.dev.enable = true;}
-              sops-nix.nixosModules.default
               config
             ];
 
@@ -182,7 +178,6 @@
               ./modules/shared
               nix-homebrew.darwinModules.nix-homebrew
               home-manager.darwinModules.home-manager
-              sops-nix.darwinModules.default
               config
             ];
           };

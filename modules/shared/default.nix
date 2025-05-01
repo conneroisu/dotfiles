@@ -2,12 +2,7 @@
   lib,
   pkgs,
   inputs,
-  system, # The system architecture for this host (eg. `x86_64-linux`).
-  # target, # The Snowfall Lib target for this system (eg. `x86_64-iso`).
-  # format, # A normalized name for the system target (eg. `iso`).
-  # virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
-  # systems, # An attribute map of your defined hosts.
-  config,
+  system,
   ...
 }: {
   programs = {
@@ -89,17 +84,10 @@
             ollama
             black
             requests
-            uvicorn
-            flask
-            fastapi
-            django
-            gunicorn
-            pydantic
             mypy
             torchdiffeq
             beautifulsoup4
             pillow
-            gym
             pypdf
             pytest
             pip
@@ -140,8 +128,9 @@
         gtkwave
         jetbrains.datagrip
         telegram-desktop
-        google-chrome
         brave
+        spotify
+        discord
 
         # Shell
         zinit
@@ -152,78 +141,67 @@
         fd
         jq
         yq
+        spicetify-cli
         delta
-        cachix
         fzf
         zellij
         atuin
         zoxide
-        gum
         bat
         eza
         delta
         unzip
         htop
-        nixos-generators
         tealdeer
         sleek
         chafa
         tree-sitter
         unixtools.xxd
-        tailscale
-
-        wireguard-ui
-
-        rippkgs
-        update-nix-fetchgit
-
-        dnsutils
-
+        ffmpeg
+        tree
+        uv
+        stow
         sad
+
+        # Communication
+        tailscale
+        dnsutils
+        minicom
+
         gcc
         llvm
         nodejs
-        stow
-        nvc
-        uv
         ripgrep
         meson
         sqlite
         sqlite-vec
         pkg-config
-        matugen
-
-        spicetify-cli
-        spotify
 
         # Platforms
         turso-cli
         flyctl
         fh
         gh
-        minicom
         tea
         lakectl
 
         # Languages
+        ## JS/TS
         nodejs
-        ruby
+        jq-lsp
         rustup
         python-venv
-
-        # Language Servers
-
         ## Nix
         nixd
-        nil
         statix
-        nix-prefetch-git
+        nix-search-cli
+        # nix-prefetch-git
+        # rippkgs
 
         ## Lua
         lua-language-server
 
         ## JSON
-        jq-lsp
 
         ## HTMX
         htmx-lsp
@@ -249,17 +227,11 @@
         shfmt
         rustfmt
         black
-        tree
         alejandra
         cbfmt
         marksman
-        sops
-        discord
-        llama-cpp
         pandoc
-        nix-search-cli
         harper
-        ffmpeg
         (pkgs.writeShellScriptBin "clean_png" ''
           ${python-venv}/bin/python ${./clean_png.py} $1
         '')

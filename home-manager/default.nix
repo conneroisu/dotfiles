@@ -7,6 +7,8 @@
 }: let
   inherit (pkgs.stdenv) isDarwin isLinux;
 in {
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
   home = {
     inherit stateVersion;
     inherit username;

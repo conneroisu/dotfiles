@@ -7,35 +7,36 @@
 }: let
   inherit (pkgs.stdenv) isDarwin isLinux;
 in {
-  home = {
-    inherit stateVersion;
-    inherit username;
-    homeDirectory =
-      if isDarwin
-      then "/Users/${username}"
-      else "/home/${username}";
+  inherit stateVersion;
+  inherit username;
+  homeDirectory =
+    if isDarwin
+    then "/Users/${username}"
+    else "/home/${username}";
 
-    packages = with pkgs;
-      [
-        cpufetch
-        fastfetch
-        ipfetch
-        onefetch
-        micro
-      ]
-      ++ lib.optionals isLinux [
-        ramfetch
-      ]
-      ++ lib.optionals isDarwin [
-        m-cli
-      ];
-    sessionVariables = {
-      EDITOR = "micro";
-      SYSTEMD_EDITOR = "micro";
-      VISUAL = "micro";
-    };
+  packages = with pkgs;
+    [
+      cpufetch
+      fastfetch
+      ipfetch
+      onefetch
+      micro
+    ]
+    ++ lib.optionals isLinux [
+      ramfetch
+    ]
+    ++ lib.optionals isDarwin [
+      m-cli
+    ];
+  sessionVariables = {
+    EDITOR = "nvim";
+    SYSTEMD_EDITOR = "nvim";
+    VISUAL = "nvim";
+  };
 
-    stylix = {
+  stylix =
+    if isLinux
+    then {
       enable = true;
       base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
       image = ./../../../assets/klaus-desktop.jpeg;
@@ -47,39 +48,42 @@ in {
       };
       targets.rofi.enable = true;
       targets.kitty.enable = true;
+    }
+    else {};
+
+  gtk = {
+    enable = true;
+    theme = {
+      name = lib.mkForce "adw-gtk3-dark";
+      package = lib.mkForce pkgs.adw-gtk3;
+    };
+    iconTheme.package = pkgs.papirus-icon-theme;
+    iconTheme.name = "Papirus";
+
+    gtk3.extraConfig = {
+      Settings = ''
+        gtk-application-prefer-dark-theme=1
+      '';
     };
 
-    gtk = {
-      enable = true;
-      theme = {
-        name = lib.mkForce "adw-gtk3-dark";
-        package = lib.mkForce pkgs.adw-gtk3;
-      };
-      iconTheme.package = pkgs.papirus-icon-theme;
-      iconTheme.name = "Papirus";
-
-      gtk3.extraConfig = {
-        Settings = ''
-          gtk-application-prefer-dark-theme=1
-        '';
-      };
-
-      gtk4.extraConfig = {
-        Settings = ''
-          gtk-application-prefer-dark-theme=1
-        '';
-      };
+    gtk4.extraConfig = {
+      Settings = ''
+        gtk-application-prefer-dark-theme=1
+      '';
     };
+  };
 
-    services.mpris-proxy.enable = true;
+  services.mpris-proxy.enable = true;
 
-    qt = {
+  qt =
+    if isLinux
+    then {
       enable = true;
       platformTheme.name = pkgs.lib.mkDefault "adwaita";
       style.name = pkgs.lib.mkDefault "adwaita-dark";
       style.package = pkgs.adwaita-qt;
-    };
-  };
+    }
+    else {};
 
   # Workaround home-manager bug
   # - https://github.com/nix-community/home-manager/issues/2033

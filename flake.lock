@@ -924,7 +924,6 @@
         "owner": "Homebrew",
         "repo": "homebrew-core",
         "rev": "9e4f9032f130442aaba562da4f6230aaf8f932d2",
-
         "type": "github"
       },
       "original": {
@@ -1009,12 +1008,12 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1746098946,
-        "narHash": "sha256-4n0lWff2iEPGE0zg5LTbOV3EwmDYWFUN029nhrTYt5A=",
-        "owner": "hyprwm",
-        "repo": "hyprland",
-        "rev": "b5ef049ea153e476057987ef11ccbdbbfb655c15",
-        "type": "github"
+        "lastModified": 1743178567,
+        "narHash": "sha256-cIseFaSNAdBJvy+Z//YMYfzMMcnfHP7HGJI2SZ/GO5E=",
+        "rev": "29e2e59fdbab8ed2cc23a20e3c6043d5decb5cdc",
+        "revCount": 5937,
+        "type": "tarball",
+        "url": "https://api.flakehub.com/f/pinned/hyprwm/Hyprland/0.48.1/0195dd8f-201e-7fa0-9dc4-eb91891cd2fc/source.tar.gz"
       },
       "original": {
         "type": "tarball",

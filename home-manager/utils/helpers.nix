@@ -25,6 +25,7 @@
           ;
       };
       modules = [
+        inputs.stylix.homeManagerModules.stylix
         ../.
       ];
     };

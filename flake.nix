@@ -2,12 +2,15 @@
   description = "Conner Ohnesorge's NixOS Config";
 
   inputs = {
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    systems.url = "github:nix-systems/default";
+
     flake-checker.url = "https://flakehub.com/f/DeterminateSystems/flake-checker/0.2.4.tar.gz";
     flake-schemas.url = "https://flakehub.com/f/DeterminateSystems/flake-schemas/0.1.5.tar.gz";
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
     hyprland.url = "https://flakehub.com/f/hyprwm/Hyprland/0.48.1";
     hyprland.inputs.nixpkgs.follows = "nixpkgs";
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
     flake-parts.url = "https://flakehub.com/f/hercules-ci/flake-parts/0.1.372";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
@@ -32,16 +35,11 @@
 
     darwin.url = "github:LnL7/nix-darwin/master";
     darwin.inputs.nixpkgs.follows = "nixpkgs";
-
-    homebrew-core = {
-      url = "github:Homebrew/homebrew-core";
-      flake = false;
-    };
-
-    homebrew-cask = {
-      url = "github:Homebrew/homebrew-cask";
-      flake = false;
-    };
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
+    homebrew-core.url = "github:Homebrew/homebrew-core";
+    homebrew-core.flake = false;
+    homebrew-cask.url = "github:Homebrew/homebrew-cask";
+    homebrew-cask.flake = false;
 
     homebrew-bundle = {
       url = "github:Homebrew/homebrew-bundle";
@@ -53,10 +51,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nur = {
-      url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.481";
 
     nh = {
@@ -75,21 +69,14 @@
       url = "https://flakehub.com/f/oxalica/rust-overlay/0.1.1771.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    fenix.url = "https://flakehub.com/f/nix-community/fenix/0.1.2184";
+    fenix.inputs.nixpkgs.follows = "nixpkgs";
 
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.10.4";
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";
 
     stylix.url = "https://flakehub.com/f/danth/stylix/0.1.776";
 
     ghostty.url = "github:ghostty-org/ghostty/main";
-
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-
-    systems.url = "github:nix-systems/default";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
-
-    fenix.url = "https://flakehub.com/f/nix-community/fenix/0.1.2184";
-    fenix.inputs.nixpkgs.follows = "nixpkgs";
 
     blink.url = "github:Saghen/blink.cmp";
     blink.inputs = {
@@ -168,7 +155,6 @@
               home-manager.nixosModules.home-manager
               stylix.nixosModules.stylix
               nix-ld.nixosModules.nix-ld
-              nur.modules.nixos.default
               {programs.nix-ld.dev.enable = true;}
               config
             ];

@@ -109,7 +109,6 @@
     in
       (with inputs; [
         zen-browser.packages."${system}".default
-        snowfall-flake.packages."${system}".default
         nh.packages."${system}".default
         blink.packages."${system}".default
         blink.packages."${system}".blink-fuzzy-lib

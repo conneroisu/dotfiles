@@ -3,6 +3,7 @@
   pkgs,
   inputs,
   system,
+  namespace,
   ...
 }: {
   programs = {
@@ -62,40 +63,12 @@
       GTK_THEME = "adw-gtk3-dark";
     };
 
-    systemPackages = let
-      python-venv = pkgs.python312.withPackages (
-        ps:
-          with ps; [
-            numpy
-            requests
-            pandas
-            scipy
-            matplotlib
-            huggingface-hub
-            scikitlearn
-            torch
-            debugpy
-            opencv4
-            torchvision
-            selenium
-            pyarrow
-            psycopg
-            mysqlclient
-            ollama
-            black
-            requests
-            mypy
-            torchdiffeq
-            beautifulsoup4
-            pillow
-            pypdf
-            pytest
-            pip
-            sympy
-          ]
-      );
-    in
-      (with inputs; [
+    systemPackages =
+      (with pkgs."${namespace}"; [
+        catls
+        convert_img
+      ])
+      ++ (with inputs; [
         zen-browser.packages."${system}".default
         nh.packages."${system}".default
         blink.packages."${system}".default
@@ -201,8 +174,6 @@
         ## Lua
         lua-language-server
 
-        ## JSON
-
         ## HTMX
         htmx-lsp
         tailwindcss
@@ -232,18 +203,6 @@
         marksman
         pandoc
         harper
-        (pkgs.writeShellScriptBin "clean_png" ''
-          ${python-venv}/bin/python ${./clean_png.py} $1
-        '')
-        (pkgs.writeShellScriptBin "convert_img" ''
-          ${python-venv}/bin/python ${./convert_img.py} $1 $2
-        '')
-        (pkgs.writeShellScriptBin "catls" ''
-          ${python-venv}/bin/python ${./catls.py} $@
-        '')
-        (pkgs.writeShellScriptBin "clean_media" ''
-          ${python-venv}/bin/python ${./clean_media.py} $@
-        '')
       ]);
   };
 

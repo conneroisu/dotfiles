@@ -14,6 +14,11 @@
     direnv.enable = true;
     direnv.nix-direnv.enable = true;
     nix-index-database.comma.enable = true;
+    ssh = {
+      extraConfig = ''
+        SetEnv TERM=xterm-256color
+      '';
+    };
   };
 
   environment = {

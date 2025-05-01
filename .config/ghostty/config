@@ -9,3 +9,5 @@ background = #000000
 
 bold-is-bright = true
 
+keybind = global:ctrl+s=write_scrollback_file:open
+keybind = super+r=reload_config

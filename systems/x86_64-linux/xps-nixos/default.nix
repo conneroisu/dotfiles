@@ -120,7 +120,11 @@ with lib.${namespace}; {
     EXTRA_CCFLAGS = "-I/usr/include";
   };
 
-  programs.ssh.askPassword = lib.mkForce "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+  programs = {
+    ssh = {
+      askPassword = lib.mkForce "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+    };
+  };
 
   ${namespace} = {
     hardware = {

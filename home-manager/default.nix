@@ -9,6 +9,7 @@
 in {
   home = {
     inherit stateVersion;
+    inherit username;
     homeDirectory =
       if isDarwin
       then "/Users/${username}"
@@ -134,6 +135,4 @@ in {
     };
     home-manager.enable = true;
   };
-  inherit stateVersion;
-  inherit username;
 }

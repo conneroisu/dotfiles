@@ -5,7 +5,7 @@ on:
       - "main"
 jobs:
   flakehub-publish:
-    runs-on: "macos-latest"
+    runs-on: "ubuntu-latest"
     permissions:
       id-token: "write"
       contents: "read"

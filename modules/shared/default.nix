@@ -13,7 +13,6 @@
   programs = {
     direnv.enable = true;
     direnv.nix-direnv.enable = true;
-    nix-index-database.comma.enable = true;
     ssh = {
       extraConfig = ''
         SetEnv TERM=xterm-256color
@@ -108,13 +107,9 @@
           ]
       );
     in
-      [
-        pkgs.home-manager
-      ]
-      ++ (with inputs; [
+      (with inputs; [
         zen-browser.packages."${system}".default
         snowfall-flake.packages."${system}".default
-        clan-core.packages.${system}.clan-cli
         nh.packages."${system}".default
         blink.packages."${system}".default
         blink.packages."${system}".blink-fuzzy-lib
@@ -222,7 +217,6 @@
         nixd
         nil
         statix
-        nix-index
         nix-prefetch-git
 
         ## Lua

@@ -2,23 +2,16 @@
   description = "Conner Ohnesorge's NixOS Config";
 
   inputs = {
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
+    hyprland.url = "https://flakehub.com/f/hyprwm/Hyprland/0.48.1";
+    hyprland.inputs.nixpkgs.follows = "nixpkgs";
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
-    };
 
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-      inputs.systems.follows = "systems";
-    };
+    flake-parts.url = "https://flakehub.com/f/hercules-ci/flake-parts/0.1.372";
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
 
-    nix2container.url = "github:nlewo/nix2container";
-    nix2container.inputs = {
-      nixpkgs.follows = "nixpkgs";
-      flake-utils.follows = "flake-utils";
-    };
+    flake-utils.url = "https://flakehub.com/f/numtide/flake-utils/0.1.102";
+    flake-utils.inputs.systems.follows = "systems";
 
     nix-ld = {
       url = "github:Mic92/nix-ld";
@@ -26,12 +19,12 @@
     };
 
     snowfall-lib = {
-      url = "github:snowfallorg/lib";
+      url = "https://flakehub.com/f/snowfallorg/lib/3.0.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "https://flakehub.com/f/nix-community/home-manager/0.2411.*";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -61,7 +54,7 @@
     };
 
     disko = {
-      url = "github:nix-community/disko";
+      url = "https://flakehub.com/f/nix-community/disko/1.11.0.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -83,22 +76,22 @@
     };
 
     snowfall-flake = {
-      url = "github:snowfallorg/flake";
+      url = "https://flakehub.com/f/snowfallorg/flake/1.4.1.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+      url = "https://flakehub.com/f/oxalica/rust-overlay/0.1.1771.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.10.4";
 
-    stylix.url = "github:danth/stylix";
+    stylix.url = "https://flakehub.com/f/danth/stylix/0.1.776";
 
     ghostty.url = "github:ghostty-org/ghostty/main";
 
-    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.url = "https://flakehub.com/f/Mic92/sops-nix/0.1.887";
 
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
 
@@ -106,18 +99,12 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     mk-shell-bin.url = "github:rrbutani/nix-mk-shell-bin";
 
-    hyprland.url = "github:hyprwm/hyprland";
-    hyprland.inputs.nixpkgs.follows = "nixpkgs";
-
-    clan-core.url = "https://git.clan.lol/clan/clan-core/archive/main.tar.gz";
-    nixpkgs.follows = "clan-core/nixpkgs";
-
-    nix-index-database.url = "github:nix-community/nix-index-database";
-    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+    fenix.url = "https://flakehub.com/f/nix-community/fenix/0.1.2184";
+    fenix.inputs.nixpkgs.follows = "nixpkgs";
 
     blink.url = "github:Saghen/blink.cmp";
     blink.inputs = {
-      # TODO: follow fenix
+      fenix.follows = "fenix";
       nixpkgs.follows = "nixpkgs";
       flake-parts.follows = "flake-parts";
     };
@@ -143,7 +130,15 @@
     # max-jobs = 8;
   };
 
-  outputs = inputs @ {flake-parts, ...}:
+  outputs = inputs @ {
+    flake-parts,
+    self,
+    ...
+  }: let
+    inherit (self) outputs;
+    stateVersion = "24.11";
+    helper = import ./home-manager/utils {inherit inputs outputs stateVersion;};
+  in
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
         "x86_64-linux"
@@ -187,10 +182,6 @@
             ];
           };
         };
-        homie = {
-          home-manager.useGlobalPkgs = false;
-          home-manager.useUserPackages = true;
-        };
       in
         lib.mkFlake {
           inherit inputs;
@@ -210,9 +201,7 @@
               nur.modules.nixos.default
               {programs.nix-ld.dev.enable = true;}
               sops-nix.nixosModules.default
-              nix-index-database.nixosModules.nix-index
               config
-              homie
             ];
 
             # Add modules to all Darwin systems.
@@ -222,13 +211,23 @@
               nix-homebrew.darwinModules.nix-homebrew
               home-manager.darwinModules.home-manager
               sops-nix.darwinModules.default
-              nix-index-database.darwinModules.nix-index
               config
-              homie
             ];
           };
           outputs-builder = channels: {
             formatter = channels.nixpkgs.alejandra;
+          };
+        }
+        // {
+          homeConfigurations = {
+            "connerohnesorge@Conners-MacBook-Air.local" = helper.mkHome {
+              username = "connerohnesorge";
+              hostname = "Conners-MacBook-Air.local";
+            };
+            "connerohnesorge@xps-nixos" = helper.mkHome {
+              username = "connerohnesorge";
+              hostname = "xps-nixos";
+            };
           };
         };
     };

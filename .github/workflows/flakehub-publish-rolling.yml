@@ -14,6 +14,10 @@ jobs:
       - uses: "DeterminateSystems/nix-installer-action@main"
         with:
           determinate: true
+      - name: Configure Nix for cross-compilation
+        run: |
+          echo "extra-platforms = aarch64-darwin x86_64-linux" | sudo tee -a /etc/nix/nix.conf
+          sudo systemctl restart nix-daemon.service
       - uses: "DeterminateSystems/flakehub-push@main"
         with:
           name: "conneroisu/dotfiles"

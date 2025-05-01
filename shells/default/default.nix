@@ -32,7 +32,6 @@ in
         # Nix
         alejandra
         nixd
-        nixfmt-rfc-style
         # Python
         ruff
         black

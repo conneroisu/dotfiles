@@ -112,6 +112,7 @@
         nh.packages."${system}".default
         blink.packages."${system}".default
         blink.packages."${system}".blink-fuzzy-lib
+        flake-checker.packages."${system}".default
       ])
       ++ (with pkgs; [
         doppler

@@ -65,16 +65,6 @@ in {
     then true
     else false;
 
-  qt =
-    if isLinux
-    then {
-      enable = true;
-      platformTheme.name = pkgs.lib.mkDefault "adwaita";
-      style.name = pkgs.lib.mkDefault "adwaita-dark";
-      style.package = pkgs.adwaita-qt;
-    }
-    else {};
-
   # Workaround home-manager bug
   # - https://github.com/nix-community/home-manager/issues/2033
   news = {

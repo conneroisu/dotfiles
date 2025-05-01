@@ -280,7 +280,11 @@ with lib.${namespace}; {
       package = pkgs.rose-pine-hyprcursor;
     };
     targets = {
+      dunst.enable = true;
+      zellij.enable = true;
+      fzf.enable = true;
       grub.enable = false;
+      qt.enable = true;
       plymouth.enable = false;
       gnome.enable = true;
       gtk.enable = true;

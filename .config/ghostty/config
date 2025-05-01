@@ -1,13 +1,11 @@
+shell-integration = zsh
+command=zsh
+
 font-family = "CodeNewRoman Nerd Font"
 macos-titlebar-style = hidden
-shell-integration = zsh
-scrollback-limit = 10000000
 
 window-decoration = false
 
 background = #000000
 
 bold-is-bright = true
-
-keybind = global:ctrl+s=write_scrollback_file:open
-keybind = super+r=reload_config

@@ -1,5 +1,7 @@
-font-family = "CodeNewRoman Nerd Font"
+shell-integration = zsh
+command=zsh
 
+font-family = "CodeNewRoman Nerd Font"
 macos-titlebar-style = hidden
 
 window-decoration = false
@@ -7,4 +9,3 @@ window-decoration = false
 background = #000000
 
 bold-is-bright = true
-

@@ -120,7 +120,11 @@ with lib.${namespace}; {
     EXTRA_CCFLAGS = "-I/usr/include";
   };
 
-  programs.ssh.askPassword = lib.mkForce "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+  programs = {
+    ssh = {
+      askPassword = lib.mkForce "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+    };
+  };
 
   ${namespace} = {
     hardware = {
@@ -372,6 +376,12 @@ with lib.${namespace}; {
     base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
     image = ./../../../assets/klaus-desktop.jpeg;
     polarity = "dark";
+
+    cursor = {
+      size = 12;
+      name = "rose-pine-hyprcursor";
+      package = pkgs.rose-pine-hyprcursor;
+    };
     targets = {
       grub.enable = false;
       plymouth.enable = false;

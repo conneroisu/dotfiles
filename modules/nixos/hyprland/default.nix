@@ -17,8 +17,7 @@
   config,
   ...
 }:
-with lib;
-let
+with lib; let
   cfg = config.${namespace}.wm.hyprland;
 
   roofi = pkgs.rofi.override {
@@ -30,8 +29,7 @@ let
       pkgs.rofi-calc
     ];
   };
-in
-{
+in {
   options.${namespace}.wm.hyprland = with types; {
     enable = mkEnableOption "Enable Hyprland";
   };
@@ -95,7 +93,7 @@ in
     xdg = {
       portal = {
         enable = true;
-        extraPortals = [ inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland ];
+        extraPortals = [inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland];
 
         config.hyprland = {
           default = [
@@ -118,6 +116,8 @@ in
           # Directories
           "inode/directory" = "thunar.desktop";
           "x-scheme-handler/file" = "thunar.desktop";
+          # .txt
+          "text/plain" = "nvim.desktop";
         };
       };
     };

@@ -124,6 +124,7 @@
         bun
         carapace
         basedpyright
+        nushell
         ollama
         fish
         tmux

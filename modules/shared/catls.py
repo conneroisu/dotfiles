@@ -134,14 +134,12 @@ def should_ignore(
     Returns:
         True if the file should be ignored, False otherwise
     """
-    # Get normalized path components
-    path_parts = os.path.normpath(file_path).split(os.sep)
-    
-    # Check if any component of the path matches an ignored directory
-    for part in path_parts:
-        if part in ignore_dirs:
-            return True
-    
+    # Normalise once: separators → OS style, then lower-case for fast look-ups
+    normalized_parts = os.path.normcase(os.path.normpath(file_path)).split(os.sep)
+    ignore_set = {d.lower() for d in ignore_dirs}  # build once per call
+
+    if any(part in ignore_set for part in normalized_parts):
+        return True
     # Check if file matches any regex pattern
     for pattern in ignore_patterns:
         if re.search(pattern, file_path):

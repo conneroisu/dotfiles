@@ -153,14 +153,7 @@
         "aarch64-darwin"
       ];
 
-      perSystem = {
-        config,
-        self',
-        inputs',
-        pkgs,
-        system,
-        ...
-      }: {};
+      perSystem = _: {};
       flake = let
         inherit (inputs) snowfall-lib;
         lib = snowfall-lib.mkLib {

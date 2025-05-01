@@ -7,7 +7,7 @@
   ...
 }: let
   # Import scripts from scripts.nix
-  scripts = import ./scripts.nix {inherit lib;};
+  scripts = import ./scripts.nix {inherit lib pkgs;};
 
   # Convert scripts to packages
   scriptPackages =
@@ -33,8 +33,13 @@ in
         alejandra
         nixd
         nixfmt-rfc-style
+        # Python
+        ruff
+        black
+        isort
+        # Shell
+        shellcheck
       ]
       # Add the generated script packages
-      ++ scriptPackages
-      ++ [];
+      ++ scriptPackages;
   }

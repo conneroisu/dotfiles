@@ -109,7 +109,8 @@
     flake-parts,
     self,
     flake-schemas,
-    home-manager, flake-checker,
+    home-manager,
+    flake-checker,
     ...
   }: let
     inherit (self) outputs;

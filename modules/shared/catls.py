@@ -261,10 +261,6 @@ def parse_args() -> Args:
         args_container.show_all = args_dict.get("all", False)
         args_container.recursive = args_dict.get("recursive", False)
         
-        # Merge command-line ignore patterns with defaults
-        args_container.ignore_regex.extend(args_dict.get("ignore_regex", []))
-        args_container.ignore_dir.extend(args_dict.get("ignore_dir", []))
-        
         args_container.include_regex = args_dict.get("regex", [])
         args_container.directory = args_dict.get("directory", ".")
         args_container.files = args_dict.get("files", [])

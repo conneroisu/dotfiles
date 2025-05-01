@@ -38,9 +38,6 @@
     homebrew-cask.url = "github:Homebrew/homebrew-cask";
     homebrew-cask.flake = false;
 
-    gitignore.url = "github:hercules-ci/gitignore.nix";
-    gitignore.inputs.nixpkgs.follows = "nixpkgs";
-
     ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.481";
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";

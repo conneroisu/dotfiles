@@ -20,7 +20,6 @@ in {
         fastfetch
         ipfetch
         onefetch
-        micro
       ]
       ++ lib.optionals isLinux [
         ramfetch
@@ -50,8 +49,11 @@ in {
         targets.kitty.enable = true;
       }
       else {};
+  };
 
-    gtk = {
+  gtk =
+    if isLinux
+    then {
       enable = true;
       theme = {
         name = lib.mkForce "adw-gtk3-dark";
@@ -71,79 +73,67 @@ in {
           gtk-application-prefer-dark-theme=1
         '';
       };
-    };
+    }
+    else {};
 
-    services.mpris-proxy.enable = true;
+  services.mpris-proxy.enable =
+    if isLinux
+    then true
+    else false;
 
-    qt =
-      if isLinux
-      then {
-        enable = true;
-        platformTheme.name = pkgs.lib.mkDefault "adwaita";
-        style.name = pkgs.lib.mkDefault "adwaita-dark";
-        style.package = pkgs.adwaita-qt;
-      }
-      else {};
+  qt =
+    if isLinux
+    then {
+      enable = true;
+      platformTheme.name = pkgs.lib.mkDefault "adwaita";
+      style.name = pkgs.lib.mkDefault "adwaita-dark";
+      style.package = pkgs.adwaita-qt;
+    }
+    else {};
 
-    # Workaround home-manager bug
-    # - https://github.com/nix-community/home-manager/issues/2033
-    news = {
-      display = "silent";
-      entries = lib.mkForce [];
-    };
+  # Workaround home-manager bug
+  # - https://github.com/nix-community/home-manager/issues/2033
+  news = {
+    display = "silent";
+    entries = lib.mkForce [];
+  };
 
-    nix = {
-      package = pkgs.nixVersions.latest;
-    };
+  nix = {
+    package = pkgs.nixVersions.latest;
+  };
 
-    programs = {
-      zsh.enable = true;
-      zed-editor = {
-        enable = true;
-        extensions = [
-          "nix"
-          "dockerfile"
-          "toml"
-          "html"
-          "templ"
-          "latex"
-          "svelte"
-          "golangci-lint"
-          "astro"
-          "python-lsp"
-          "ocaml"
-          "vhdl"
-          "verilog"
-        ];
-        userSettings = {
-          ui_font_size = 16;
-          buffer_font_size = 16;
-          telemetry.enable = false;
-          vim_mode = true;
-          theme = {
-            mode = "dark";
-            dark = "One Dark";
-            light = "One Light";
-          };
-        };
-      };
-      home-manager.enable = true;
-      micro = {
-        enable = true;
-        settings = {
-          autosu = true;
-          diffgutter = true;
-          paste = true;
-          rmtrailingws = true;
-          savecursor = true;
-          saveundo = true;
-          scrollbar = true;
-          scrollbarchar = "░";
-          scrollmargin = 4;
-          scrollspeed = 1;
+  programs = {
+    zsh.enable = true;
+    zed-editor = {
+      enable = true;
+      extensions = [
+        "nix"
+        "dockerfile"
+        "toml"
+        "html"
+        "templ"
+        "latex"
+        "svelte"
+        "golangci-lint"
+        "astro"
+        "python-lsp"
+        "ocaml"
+        "vhdl"
+        "verilog"
+      ];
+      userSettings = {
+        ui_font_size = 16;
+        buffer_font_size = 16;
+        telemetry.enable = false;
+        vim_mode = true;
+        theme = {
+          mode = "dark";
+          dark = "One Dark";
+          light = "One Light";
         };
       };
     };
+    home-manager.enable = true;
   };
   inherit stateVersion;
   inherit username;

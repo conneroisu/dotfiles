@@ -67,6 +67,7 @@
       (with pkgs."${namespace}"; [
         catls
         convert_img
+        python-venv
       ])
       ++ (with inputs; [
         zen-browser.packages."${system}".default
@@ -163,7 +164,6 @@
         nodejs
         jq-lsp
         rustup
-        python-venv
         ## Nix
         nixd
         statix

@@ -56,7 +56,7 @@
 
   nix-homebrew = {
     enable = true;
-    enableRosetta = true;
+    enableRosetta = false;
     user = "connerohnesorge";
     taps = {
       "homebrew/homebrew-core" = inputs.homebrew-core;

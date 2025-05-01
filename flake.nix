@@ -57,11 +57,7 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    ashell = {
-      url = "github:MalpenZibo/ashell?rev=4a1c9e0c788e0e1c4aac9522d39a44cce7c24ef2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.481";
 
     nh = {
       url = "github:viperML/nh/master?tag=v4.0.0-beta.8";

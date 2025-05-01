@@ -288,86 +288,124 @@ with lib.${namespace}; {
       "docker"
       "users"
     ];
-    packages = with pkgs; [];
+    packages = [];
   };
 
   programs = {
     zsh.enable = true;
   };
 
-  environment.systemPackages =
-    (with inputs; [
+  environment = {
+    etc."nix/nix.custom.conf".text = let
+      # This function converts an attribute set to Nix configuration lines
+      settingsToConf = settings:
+        lib.concatStringsSep "\n" (
+          lib.mapAttrsToList (
+            name: value: "${name} = ${
+              if builtins.isBool value
+              then lib.boolToString value
+              else if builtins.isInt value
+              then toString value
+              else if builtins.isList value
+              then lib.concatMapStringsSep " " (x: "${toString x}") value
+              else if builtins.isString value
+              then value
+              else throw "Unsupported type for nix.conf setting ${name}"
+            }"
+          )
+          settings
+        );
+    in
+      # Apply the function to your desired settings
+      settingsToConf {
+        # Add your nix settings here, for example:
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        trusted-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+        allowed-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+      };
+    systemPackages =
+      (with pkgs."${namespace}"; [
+        httptap
       ])
-    ++ (with pkgs."${namespace}"; [
-      httptap
-    ])
-    ++ (with pkgs; [
-      gitRepo
-      nix-ld
-      alejandra
-      nh
-      harper
-      pipewire
-      gtk3
-      glibc.dev
-      gtk-layer-shell
-      yazi
-      busybox
+      ++ (with pkgs; [
+        gitRepo
+        nix-ld
+        alejandra
+        nh
+        harper
+        pipewire
+        gtk3
+        glibc.dev
+        gtk-layer-shell
+        yazi
+        busybox
 
-      # Networking
-      openvpn
-      cacert
-      arp-scan
-      vdhcoapp
-      obs-studio
-      davinci-resolve
+        # Networking
+        openvpn
+        cacert
+        arp-scan
+        vdhcoapp
+        obs-studio
+        davinci-resolve
 
-      # Hardware
-      usbutils
+        # Hardware
+        usbutils
 
-      # Emulation
-      qemu
-      docker
-      dockerfile-language-server-nodejs
-      docker-compose
-      docker-compose-language-service
+        # Emulation
+        qemu
+        docker
+        dockerfile-language-server-nodejs
+        docker-compose
+        docker-compose-language-service
 
-      # Apps
-      pkgs.xfce.thunar
-      vmware-horizon-client
-      gimp
-      pkgs.jetbrains.rust-rover
-      pkgs.libnotify
-      anki
-      teams-for-linux
+        # Apps
+        pkgs.xfce.thunar
+        vmware-horizon-client
+        gimp
+        pkgs.jetbrains.rust-rover
+        pkgs.libnotify
+        anki
+        teams-for-linux
 
-      ghdl
-      nvc
-      lshw
-      pkgconf
-      gdb
-      gnupg
-      autoconf
-      curl
-      procps
-      gnumake
-      util-linux
-      unzip
-      libGLU
-      libGL
-      freeglut
-      xorg.libXi
-      xorg.libXmu
-      xorg.libXext
-      xorg.libX11
-      xorg.libXv
-      xorg.libXrandr
-      zlib
-      stdenv.cc
-      binutils
-      espeak-ng
-      llama-cpp
-    ]);
+        ghdl
+        nvc
+        lshw
+        pkgconf
+        gdb
+        gnupg
+        autoconf
+        curl
+        procps
+        gnumake
+        util-linux
+        unzip
+        libGLU
+        libGL
+        freeglut
+        xorg.libXi
+        xorg.libXmu
+        xorg.libXext
+        xorg.libX11
+        xorg.libXv
+        xorg.libXrandr
+        zlib
+        stdenv.cc
+        binutils
+        espeak-ng
+        llama-cpp
+      ]);
+  };
 
   stylix = {
     enable = true;

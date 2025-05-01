@@ -39,6 +39,12 @@ SAVEHIST=10000
 WORDCHARS='*?[]~=&;!#$%^(){}<>,|`'
 setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_save_no_dups hist_ignore_dups hist_reduce_blanks hist_find_no_dups
 
+eval "$(fzf --zsh)"
+eval "$(atuin init zsh)"
+eval "$(zoxide init zsh --cmd cd)"
+eval "$(starship init zsh)"
+eval "$(turso completion zsh)"
+eval "$(fly completion zsh)"
 # cfi is find all ignoring .git
 alias cfi='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.*" -print | fzf --reverse --preview "ls --color {}")'
 # cf is find all
@@ -49,12 +55,6 @@ alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 # nvimfi is find all files ignoring .git
 alias nvimfi='nvim $(find . -type f -path "./.git" -prune -o -type f -not -path "*/\.*" -print | fzf --preview "bat --color=always {}")'
 
-eval "$(fzf --zsh)"
-eval "$(atuin init zsh)"
-eval "$(zoxide init zsh --cmd cd)"
-eval "$(starship init zsh)"
-eval "$(turso completion zsh)"
-eval "$(fly completion zsh)"
 
 export LD_LIBRARY_PATH=/usr/local/lib64/:$LD_LIBRARY_PATH
 export PHP_INI_SCAN_DIR="/home/connerohnesorge/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"

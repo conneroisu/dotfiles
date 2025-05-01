@@ -140,7 +140,7 @@
       "connerohnesorge"
     ];
     extra-experimental-features = "nix-command flakes";
-    max-jobs = 8;
+    # max-jobs = 8;
   };
 
   outputs = inputs @ {flake-parts, ...}:

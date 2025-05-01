@@ -17,6 +17,7 @@
       else inputs.home-manager.nixosModules.default;
   in
     inputs.home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
       extraSpecialArgs = {
         inherit
           inputs

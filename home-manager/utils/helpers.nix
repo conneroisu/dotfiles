@@ -22,7 +22,10 @@
           stateVersion
           ;
       };
-      modules = [../.];
+      modules = [
+        inputs.home-manager.flakeModules.default
+        ../.
+      ];
     };
 
   forAllSystems = inputs.nixpkgs.lib.genAttrs [

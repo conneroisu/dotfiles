@@ -2,6 +2,7 @@
   description = "Conner Ohnesorge's NixOS Config";
 
   inputs = {
+    flake-schemas.url = "https://flakehub.com/f/DeterminateSystems/flake-schemas/0.1.5.tar.gz";
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
     hyprland.url = "https://flakehub.com/f/hyprwm/Hyprland/0.48.1";
     hyprland.inputs.nixpkgs.follows = "nixpkgs";
@@ -48,11 +49,6 @@
 
     gitignore = {
       url = "github:hercules-ci/gitignore.nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    disko = {
-      url = "https://flakehub.com/f/nix-community/disko/1.11.0.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -131,6 +127,8 @@
   outputs = inputs @ {
     flake-parts,
     self,
+    flake-schemas,
+    home-manager,
     ...
   }: let
     inherit (self) outputs;
@@ -195,7 +193,6 @@
               home-manager.nixosModules.home-manager
               stylix.nixosModules.stylix
               nix-ld.nixosModules.nix-ld
-              disko.nixosModules.disko
               nur.modules.nixos.default
               {programs.nix-ld.dev.enable = true;}
               sops-nix.nixosModules.default
@@ -204,7 +201,6 @@
 
             # Add modules to all Darwin systems.
             darwin = with inputs; [
-              {nix.nixPath = ["darwin=/Users/connerohnesorge/.nix-defexpr/darwin"];}
               ./modules/shared
               nix-homebrew.darwinModules.nix-homebrew
               home-manager.darwinModules.home-manager
@@ -221,12 +217,15 @@
             "connerohnesorge@Conners-MacBook-Air.local" = helper.mkHome {
               username = "connerohnesorge";
               hostname = "Conners-MacBook-Air.local";
+              platform = "aarch64-darwin";
             };
             "connerohnesorge@xps-nixos" = helper.mkHome {
               username = "connerohnesorge";
               hostname = "xps-nixos";
+              platform = "x86_64-linux";
             };
           };
         };
-    };
+    }
+    // {inherit (flake-schemas) schemas;};
 }

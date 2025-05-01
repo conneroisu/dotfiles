@@ -69,8 +69,6 @@
       url = "https://flakehub.com/f/oxalica/rust-overlay/0.1.1771.tar.gz";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    fenix.url = "https://flakehub.com/f/nix-community/fenix/0.1.2184";
-    fenix.inputs.nixpkgs.follows = "nixpkgs";
 
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";
 
@@ -80,7 +78,6 @@
 
     blink.url = "github:Saghen/blink.cmp";
     blink.inputs = {
-      fenix.follows = "fenix";
       nixpkgs.follows = "nixpkgs";
       flake-parts.follows = "flake-parts";
     };

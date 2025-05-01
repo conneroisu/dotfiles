@@ -7,8 +7,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     systems.url = "github:nix-systems/default";
 
-    flake-checker.url = "https://flakehub.com/f/DeterminateSystems/flake-checker/0.2.4.tar.gz";
-    flake-schemas.url = "https://flakehub.com/f/DeterminateSystems/flake-schemas/0.1.5.tar.gz";
+    flake-schemas.url = "https://flakehub.com/f/DeterminateSystems/flake-schemas/0.1.5";
 
     hyprland.url = "https://flakehub.com/f/hyprwm/Hyprland/0.48.1";
     hyprland.inputs.nixpkgs.follows = "nixpkgs";
@@ -51,10 +50,10 @@
     nh.url = "github:viperML/nh/master?tag=v4.0.0-beta.8";
     nh.inputs.nixpkgs.follows = "nixpkgs";
 
-    snowfall-flake.url = "https://flakehub.com/f/snowfallorg/flake/1.4.1.tar.gz";
+    snowfall-flake.url = "https://flakehub.com/f/snowfallorg/flake/1.4.1";
     snowfall-flake.inputs.nixpkgs.follows = "nixpkgs";
 
-    rust-overlay.url = "https://flakehub.com/f/oxalica/rust-overlay/0.1.1771.tar.gz";
+    rust-overlay.url = "https://flakehub.com/f/oxalica/rust-overlay/0.1.1771";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
 
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";

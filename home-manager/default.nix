@@ -35,23 +35,6 @@ in {
     };
   };
 
-  stylix = {
-    enable = true;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-    image = ./../../../assets/klaus-desktop.jpeg;
-    polarity = "dark";
-    cursor =
-      if isLinux
-      then {
-        size = 12;
-        name = "rose-pine-hyprcursor";
-        package = pkgs.rose-pine-hyprcursor;
-      }
-      else {};
-    targets.rofi.enable = true;
-    targets.kitty.enable = true;
-  };
-
   gtk =
     if isLinux
     then {

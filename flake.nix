@@ -72,7 +72,6 @@
 
     coder.url = "github:coder/coder/v2.20.3";
     coder.inputs = {
-      nixpkgs.follows = "nixpkgs";
       flake-utils.follows = "flake-utils";
     };
 

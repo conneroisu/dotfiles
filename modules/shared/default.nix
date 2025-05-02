@@ -78,16 +78,12 @@
         doppler
         bun
         carapace
-        basedpyright
         nushell
         ollama
         tmux
         git
         zsh
         git-lfs
-        cloc
-        gnumake
-        cmake
         stow
         age
 
@@ -150,8 +146,6 @@
         nodejs
         rustup
         ## Nix
-        nixd
-        statix
         nix-search-cli
         ## Lua
         lua-language-server

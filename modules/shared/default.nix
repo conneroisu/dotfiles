@@ -99,8 +99,8 @@
         # Shell
         zinit
         starship
-        pkgs.direnv
-        pkgs.nix-direnv
+        direnv
+        nix-direnv
         bat
         wget
         fd

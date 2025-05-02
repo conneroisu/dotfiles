@@ -900,7 +900,7 @@ $env.config = {
         }
     ]
 }
-use ~/dotfiles/.config/nushell/plugins/nupm/nupm/
+# use ~/dotfiles/.config/nushell/plugins/nupm/nupm/
 
 source ~/dotfiles/.config/nushell/carapace.nu
 source ~/dotfiles/.config/nushell/base_completions.nu

@@ -35,27 +35,6 @@ in {
     };
   };
 
-  sharedModules = [
-    {
-      stylix =
-        if isLinux
-        then {
-          enable = true;
-          base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-          image = ./../../../assets/klaus-desktop.jpeg;
-          polarity = "dark";
-          cursor = {
-            size = 12;
-            name = "rose-pine-hyprcursor";
-            package = pkgs.rose-pine-hyprcursor;
-          };
-          targets.rofi.enable = true;
-          targets.kitty.enable = true;
-        }
-        else {};
-    }
-  ];
-
   gtk =
     if isLinux
     then {
@@ -85,16 +64,6 @@ in {
     if isLinux
     then true
     else false;
-
-  qt =
-    if isLinux
-    then {
-      enable = true;
-      platformTheme.name = pkgs.lib.mkDefault "adwaita";
-      style.name = pkgs.lib.mkDefault "adwaita-dark";
-      style.package = pkgs.adwaita-qt;
-    }
-    else {};
 
   # Workaround home-manager bug
   # - https://github.com/nix-community/home-manager/issues/2033

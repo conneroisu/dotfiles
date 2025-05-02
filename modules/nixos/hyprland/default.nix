@@ -23,9 +23,6 @@ with lib; let
   roofi = pkgs.rofi.override {
     plugins = [
       pkgs.rofi-rbw
-      pkgs.rofi-obsidian
-      pkgs.rofi-bluetooth
-      pkgs.rofi-power-menu
       pkgs.rofi-calc
     ];
   };
@@ -38,7 +35,7 @@ in {
     environment.systemPackages =
       (with inputs; [
         ghostty.packages."${system}".default
-        ashell.defaultPackage.${system}
+        ashell.packages.${system}.default
       ])
       ++ (with pkgs; [
         hyprcursor
@@ -60,10 +57,9 @@ in {
         brightnessctl
         hyprls
         gnome-control-center
-        spotify-cli-linux
         hyprpicker
         gpu-screen-recorder
-        pkgs.ffmpegthumbnailer
+        ffmpegthumbnailer
       ]);
 
     programs = {

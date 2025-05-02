@@ -235,14 +235,12 @@ with lib.${namespace}; {
 
         # Apps
         xfce.thunar
-        vmware-horizon-client
-        gimp
 
         lshw
         pkgconf
+        autoconf
         gdb
         gnupg
-        autoconf
         curl
         procps
         gnumake

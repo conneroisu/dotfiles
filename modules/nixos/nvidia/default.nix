@@ -48,18 +48,15 @@ in {
       }";
     };
 
-    environment.systemPackages =
-      (with inputs; [
-        ])
-      ++ (with pkgs; [
-        nvtopPackages.nvidia
-        linuxPackages.nvidia_x11
-        nvidia-docker
-        nvidia-container-toolkit
+    environment.systemPackages = with pkgs; [
+      nvtopPackages.nvidia
+      linuxPackages.nvidia_x11
+      nvidia-docker
+      nvidia-container-toolkit
 
-        cudatoolkit_11
-        nvtopPackages.full
-      ]);
+      cudatoolkit_11
+      nvtopPackages.full
+    ];
 
     hardware.nvidia = {
       # Modesetting is required.

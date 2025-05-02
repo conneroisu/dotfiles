@@ -23,9 +23,6 @@ with lib; let
   roofi = pkgs.rofi.override {
     plugins = [
       pkgs.rofi-rbw
-      pkgs.rofi-obsidian
-      pkgs.rofi-bluetooth
-      pkgs.rofi-power-menu
       pkgs.rofi-calc
     ];
   };
@@ -60,7 +57,6 @@ in {
         brightnessctl
         hyprls
         gnome-control-center
-        spotify-cli-linux
         hyprpicker
         gpu-screen-recorder
         ffmpegthumbnailer

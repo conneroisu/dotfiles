@@ -219,6 +219,7 @@ with lib.${namespace}; {
 
         busybox
         util-linux
+        binutils
 
         # Communication
         openvpn
@@ -235,13 +236,10 @@ with lib.${namespace}; {
         xfce.thunar
 
         lshw
-        pkgconf
-        autoconf
         gdb
         gnupg
         curl
         procps
-        gnumake
         unzip
         libGLU
         libGL
@@ -252,9 +250,6 @@ with lib.${namespace}; {
         xorg.libX11
         xorg.libXv
         xorg.libXrandr
-        zlib
-        stdenv.cc
-        binutils
       ]);
   };
 

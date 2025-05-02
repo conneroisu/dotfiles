@@ -1,5 +1,5 @@
 {
-  description = "Conner Ohnesorge's Dotfiles";
+  description = "Conner Ohnesorge's dotfiles";
 
   inputs = {
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";

@@ -81,7 +81,6 @@
         basedpyright
         nushell
         ollama
-        fish
         tmux
         git
         zsh
@@ -91,12 +90,10 @@
         cmake
         stow
         age
-        glow
 
         # Apps
         obsidian
         neovim
-        vscode
         gtkwave
         brave
         spotify
@@ -147,53 +144,23 @@
         pkg-config
 
         # Platforms
-        turso-cli
         flyctl
         fh
         gh
         tea
-        lakectl
 
         # Languages
         ## JS/TS
         nodejs
-        jq-lsp
         rustup
         ## Nix
         nixd
         statix
         nix-search-cli
-
         ## Lua
         lua-language-server
-
-        ## HTMX
-        htmx-lsp
-        tailwindcss
-
-        ## Latex
-        texlab
         ltex-ls
-
-        ## Bash
-        shellcheck
-        yaml-language-server
-        actionlint
-        sqls
-
-        vscode-langservers-extracted
         luajitPackages.luarocks
-
-        # Formatters
-        hclfmt
-        shfmt
-        rustfmt
-        black
-        alejandra
-        cbfmt
-        marksman
-        pandoc
-        harper
       ]);
   };
 

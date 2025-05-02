@@ -70,11 +70,6 @@
       flake-utils.follows = "flake-utils";
     };
 
-    coder.url = "github:coder/coder/v2.20.3";
-    coder.inputs = {
-      flake-utils.follows = "flake-utils";
-    };
-
     blink.url = "github:Saghen/blink.cmp";
     blink.inputs = {
       nixpkgs.follows = "nixpkgs";

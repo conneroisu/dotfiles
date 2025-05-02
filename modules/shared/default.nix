@@ -147,11 +147,10 @@
       ]);
   };
 
-  fonts.packages = with pkgs;
-    [
-      nerd-fonts.code-new-roman
-      corefonts
-      vistafonts
-    ]
-    ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+  fonts.packages = with pkgs; [
+    nerd-fonts.code-new-roman
+    corefonts
+    vistafonts
+  ];
+  # ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 }

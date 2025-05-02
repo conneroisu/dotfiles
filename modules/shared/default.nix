@@ -132,7 +132,6 @@
         ffmpeg
         tree
         uv
-        stow
         sad
 
         # Communication

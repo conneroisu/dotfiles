@@ -69,6 +69,7 @@
         python-venv
       ])
       ++ (with inputs; [
+        coder.packages."${system}".default
         zen-browser.packages."${system}".default
         nh.packages."${system}".default
         blink.packages."${system}".default

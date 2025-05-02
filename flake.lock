@@ -166,6 +166,34 @@
         "type": "github"
       }
     },
+    "coder": {
+      "inputs": {
+        "drpc": "drpc",
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nixpkgs-pinned": "nixpkgs-pinned",
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "pnpm2nix": "pnpm2nix"
+      },
+      "locked": {
+        "lastModified": 1746207853,
+        "narHash": "sha256-FmYtl19B2fYJHECLs4jmPm3ewOJZPv5G7/6GR3+O4JI=",
+        "owner": "coder",
+        "repo": "coder",
+        "rev": "82fdb6a6ae5af47aa931cc5d29efde5217ccd619",
+        "type": "github"
+      },
+      "original": {
+        "owner": "coder",
+        "ref": "main",
+        "repo": "coder",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1745454774,
@@ -260,6 +288,32 @@
       "original": {
         "type": "file",
         "url": "https://install.determinate.systems/determinate-nixd/tag/v3.4.1/x86_64-linux"
+      }
+    },
+    "drpc": {
+      "inputs": {
+        "flake-utils": [
+          "coder",
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "coder",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1710270657,
+        "narHash": "sha256-hjb+8iB0HTdAYtsOvr6gY2yhwdg2NLUqQRVJi4qMmJI=",
+        "owner": "storj",
+        "repo": "drpc",
+        "rev": "a5d487af8ae33deb7913b0f7c06b2c7ec7cd4dcc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "storj",
+        "ref": "v0.0.34",
+        "repo": "drpc",
+        "type": "github"
       }
     },
     "fenix": {
@@ -1227,6 +1281,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-pinned": {
+      "locked": {
+        "lastModified": 1699526406,
+        "narHash": "sha256-gN+SUmD0WPi3zqYv4QwDFkWH7QQJosJSuhv1DZ6wU84=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5deee6281831847857720668867729617629ef1f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5deee6281831847857720668867729617629ef1f",
+        "type": "github"
+      }
+    },
     "nixpkgs-regression": {
       "locked": {
         "lastModified": 1643052045,
@@ -1255,6 +1325,22 @@
       "original": {
         "owner": "nixos",
         "ref": "release-24.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1741513245,
+        "narHash": "sha256-7rTAMNTY1xoBwz0h7ZMtEcd8LELk9R5TzBPoHuhNSCk=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "e3e32b642a31e6714ec1b712de8c91a3352ce7e1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -1323,6 +1409,31 @@
         "type": "github"
       }
     },
+    "pnpm2nix": {
+      "inputs": {
+        "flake-utils": [
+          "coder",
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "coder",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1737026290,
+        "narHash": "sha256-mETihodsu08H5rGC/UfeyIdqkA9saFNF2w3AzEG218I=",
+        "owner": "ThomasK33",
+        "repo": "pnpm2nix-nzbr",
+        "rev": "c1f0ceeb759af20c5c232a9414036fda29a28a53",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ThomasK33",
+        "repo": "pnpm2nix-nzbr",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -1350,6 +1461,7 @@
       "inputs": {
         "ashell": "ashell",
         "blink": "blink",
+        "coder": "coder",
         "darwin": "darwin",
         "determinate": "determinate",
         "flake-parts": "flake-parts_2",

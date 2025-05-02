@@ -1,0 +1,18 @@
+
+on:
+  workflow_dispatch:
+  schedule:
+    # First day of the month
+    - cron: '0 0 1 * *'
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - id: automerge
+        name: automerge
+        uses: "pascalgn/automerge-action@v0.16.4"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

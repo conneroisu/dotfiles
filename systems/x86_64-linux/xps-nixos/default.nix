@@ -230,8 +230,6 @@ with lib.${namespace}; {
         # Emulation
         docker
         docker-compose
-        docker-compose-language-service
-        dockerfile-language-server-nodejs
 
         # Apps
         xfce.thunar

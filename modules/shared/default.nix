@@ -144,8 +144,6 @@
         ## JS/TS
         nodejs
         lua-language-server
-        ltex-ls
-        luajitPackages.luarocks
       ]);
   };
 

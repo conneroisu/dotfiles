@@ -77,8 +77,6 @@
       ++ (with pkgs; [
         doppler
         bun
-        carapace
-        nushell
         ollama
         tmux
         git
@@ -86,11 +84,12 @@
         git-lfs
         stow
         age
+        nushell
+        # carapace
 
         # Apps
         obsidian
         neovim
-        gtkwave
         brave
         spotify
         discord
@@ -144,10 +143,6 @@
         # Languages
         ## JS/TS
         nodejs
-        rustup
-        ## Nix
-        nix-search-cli
-        ## Lua
         lua-language-server
         ltex-ls
         luajitPackages.luarocks

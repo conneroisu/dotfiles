@@ -63,7 +63,7 @@ in {
         spotify-cli-linux
         hyprpicker
         gpu-screen-recorder
-        pkgs.ffmpegthumbnailer
+        ffmpegthumbnailer
       ]);
 
     programs = {

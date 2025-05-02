@@ -57,7 +57,6 @@
       };
 
     variables = {
-      NUPM_HOME = "~/dotfiles/.config/nushell/nupm/";
       EDITOR = "nvim";
       SHELL = "zsh";
       GTK_THEME = "adw-gtk3-dark";
@@ -74,7 +73,6 @@
         nh.packages."${system}".default
         blink.packages."${system}".default
         blink.packages."${system}".blink-fuzzy-lib
-        flake-checker.packages."${system}".default
       ])
       ++ (with pkgs; [
         doppler
@@ -100,11 +98,11 @@
         neovim
         vscode
         gtkwave
-        jetbrains.datagrip
-        telegram-desktop
         brave
         spotify
         discord
+        telegram-desktop
+        jetbrains.datagrip
 
         # Shell
         zinit
@@ -112,6 +110,7 @@
         pkgs.direnv
         pkgs.nix-direnv
         bat
+        wget
         fd
         jq
         yq
@@ -128,7 +127,6 @@
         htop
         tealdeer
         sleek
-        chafa
         tree-sitter
         unixtools.xxd
         ffmpeg
@@ -168,8 +166,6 @@
         nixd
         statix
         nix-search-cli
-        # nix-prefetch-git
-        # rippkgs
 
         ## Lua
         lua-language-server
@@ -190,8 +186,6 @@
 
         vscode-langservers-extracted
         luajitPackages.luarocks
-        wget
-        pfetch-rs
 
         # Formatters
         hclfmt

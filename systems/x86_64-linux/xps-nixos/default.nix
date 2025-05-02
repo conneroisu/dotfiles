@@ -221,13 +221,11 @@ with lib.${namespace}; {
         busybox
         util-linux
 
-        # Networking
+        # Communication
         openvpn
         cacert
         arp-scan
         vdhcoapp
-
-        # Hardware
         usbutils
 
         # Emulation
@@ -241,7 +239,6 @@ with lib.${namespace}; {
         vmware-horizon-client
         gimp
 
-        ghdl
         lshw
         pkgconf
         gdb

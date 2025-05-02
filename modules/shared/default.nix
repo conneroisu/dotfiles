@@ -128,17 +128,13 @@
         tree
         uv
         sad
+        ripgrep
 
         # Communication
         tailscale
         dnsutils
         minicom
 
-        gcc
-        llvm
-        nodejs
-        ripgrep
-        meson
         sqlite
         sqlite-vec
         pkg-config

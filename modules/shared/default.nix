@@ -115,12 +115,10 @@
         jq
         yq
         spicetify-cli
-        delta
         fzf
         zellij
         atuin
         zoxide
-        bat
         eza
         delta
         unzip

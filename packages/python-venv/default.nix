@@ -7,7 +7,6 @@ pkgs.python312.withPackages (
       pandas
       scipy
       matplotlib
-      huggingface-hub
       scikitlearn
       pyarrow
       black

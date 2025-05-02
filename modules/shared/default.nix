@@ -94,7 +94,6 @@
         spotify
         discord
         telegram-desktop
-        jetbrains.datagrip
 
         # Shell
         zinit

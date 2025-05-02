@@ -1,5 +1,5 @@
 {
-  description = "Conner Ohnesorge's NixOS Config";
+  description = "Conner Ohnesorge's Dotfiles";
 
   inputs = {
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";

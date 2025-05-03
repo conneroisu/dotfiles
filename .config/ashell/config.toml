@@ -135,7 +135,7 @@ bluetoothMoreCmd = "blueman-manager"
 # text = "#ffffff" # optional default base text color
 [appearance]
 # optional, default iced.rs font
-fontName = "Comic Sans MS"
+fontName = "CodeNewRoman Nerd Font"
 # The style of the main bar, possible values are: islands | solid | gradient
 # optional, default islands
 style = "islands"

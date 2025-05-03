@@ -82,12 +82,13 @@
         tmux
         git
         zsh
+        nushell
+        carapace
         git-lfs
         stow
         age
         nushell
         coder
-        # carapace
 
         # Apps
         obsidian

@@ -7,18 +7,10 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 source "${ZINIT_HOME}/zinit.zsh"
 
 export BUN_INSTALL="$HOME/.bun"
-export GOPATH="$HOME/.go"
 export PATH="$HOME/.cargo/bin:$PATH"
 path=(
     $HOME/.cargo/bin
     $BUN_INSTALL/bin
-    $HOME/zig
-    $HOME/.local/bin
-    $HOME/flutter/bin
-    $GOROOT/bin
-    $GOPATH/bin
-    /home/connerohnesorge/.config/herd-lite/bin
-    /user/local/bin/
     $path
 )
 export PATH=$PATH:path
@@ -46,14 +38,9 @@ alias cfi='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.
 # cf is find all
 alias cf='cd $(fd --type d --hidden --exclude .git | fzf --reverse --preview "ls --color {}")'
 
-
 alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 # nvimfi is find all files ignoring .git
 alias nvimfi='nvim $(find . -type f -path "./.git" -prune -o -type f -not -path "*/\.*" -print | fzf --preview "bat --color=always {}")'
-
-
-export LD_LIBRARY_PATH=/usr/local/lib64/:$LD_LIBRARY_PATH
-export PHP_INI_SCAN_DIR="/home/connerohnesorge/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
 
 # Load a few important annexes, without Turbo
 zi light-mode for \
@@ -61,7 +48,6 @@ zi light-mode for \
     zdharma-continuum/zinit-annex-bin-gem-node \
     zdharma-continuum/zinit-annex-patch-dl \
     zdharma-continuum/zinit-annex-rust
-
 
 zi light zsh-users/zsh-autosuggestions
 zi load zsh-users/zsh-completions
@@ -82,7 +68,7 @@ alias latest='git add . && git commit -m "latest" && git push'
 
 # bun completions
 [ -s "/home/connerohnesorge/.bun/_bun" ] && source "/home/connerohnesorge/.bun/_bun"
-# 
+
 # Key bindings for word-by-word navigation for auto-completion
 bindkey '^[[1;5C' forward-word      # Ctrl+Right - move forward one word
 bindkey '^[[1;5D' backward-word     # Ctrl+Left - move backward one word

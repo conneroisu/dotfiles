@@ -2,6 +2,8 @@
 #
 # version = "0.100.0"
 
+$env.config.buffer_editor = "nvim"
+
 
 # For more information on defining custom themes, see
 # https://www.nushell.sh/book/coloring_and_theming.html
@@ -141,13 +143,6 @@ let light_theme = {
     shape_raw_string: light_purple
 }
 
-# External completer example
-# let carapace_completer = {|spans|
-#     carapace $spans.0 nushell ...$spans | from json
-# }
-
-const DEVENV_FILE_CACHE = "/tmp/nudevenv.nix"
-
 # The default config record. This is where much of your global configuration is setup.
 $env.config = {
     show_banner: true # true or false to enable or disable the welcome banner at startup
@@ -207,9 +202,16 @@ $env.config = {
     }
 
     hooks: {
-        pre_prompt: [{ 
-            null
-        }] # run before the prompt is shown
+        pre_prompt: [{ ||
+      if (which direnv | is-empty) {
+        return
+      }
+
+      direnv export json | from json | default {} | load-env
+      if 'ENV_CONVERSIONS' in $env and 'PATH' in $env.ENV_CONVERSIONS {
+        $env.PATH = do $env.ENV_CONVERSIONS.PATH.from_string $env.PATH
+      }
+    }] # run before the prompt is shown
         pre_execution: [{ null }] # run before the repl input is run
         env_change: {
             PWD: [{|before, after| null }] # run if the PWD environment is different since the last repl input
@@ -236,11 +238,6 @@ $env.config = {
             completer: null # check 'carapace_completer' above as an example
         }
         use_ls_colors: true # set this to true to enable file/path/directory completions using LS_COLORS
-    }
-
-    filesize: {
-        metric: false # true => KB, MB, GB (ISO standard), false => KiB, MiB, GiB (Windows standard)
-        format: "auto" # b, kb, kib, mb, mib, gb, gib, tb, tib, pb, pib, eb, eib, auto
     }
 
     cursor_shape: {
@@ -900,7 +897,6 @@ $env.config = {
         }
     ]
 }
-# use ~/dotfiles/.config/nushell/plugins/nupm/nupm/
 
 source ~/dotfiles/.config/nushell/carapace.nu
 source ~/dotfiles/.config/nushell/base_completions.nu
@@ -915,6 +911,9 @@ $env.config.hooks.env_change.PWD = (
 
 def nvimf [] {
     nvim (fzf --preview "bat --color=always {}")
+}
+def nvimfi [] {
+    nvim (fd -type file -path "./.git" -prune -o -type f -not -path "*/.*" -print | fzf --preview "bat --color=always {}")
 }
 
 alias cf = cd (fd --type d --hidden --exclude .git --strip-cwd-prefix --max-depth 99 | fzf --reverse --preview "ls --color {}")

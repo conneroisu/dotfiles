@@ -121,30 +121,48 @@ def should_include(file_path: str, include_patterns: list[str]) -> bool:
     return False
 
 
-def should_ignore(
-    file_path: str, ignore_patterns: list[str], ignore_dirs: list[str]
-) -> bool:
-    """Check if a file matches any ignore pattern or is in an ignored directory.
+def should_ignore(file_path: str, ignore_patterns: list[str]) -> bool:
+    """Check if a file matches any ignore pattern.
 
     Args:
         file_path: Path to the file
-        ignore_patterns: List of regex patterns to match for exclusion
-        ignore_dirs: List of directory paths to exclude
+        ignore_patterns: List of patterns to match for exclusion
 
     Returns:
         True if the file should be ignored, False otherwise
     """
-    # Normalise once: separators → OS style, then lower-case for fast look-ups
-    normalized_parts = os.path.normcase(os.path.normpath(file_path)).split(os.sep)
-    ignore_set = {d.lower() for d in ignore_dirs}  # build once per call
-
-    if any(part in ignore_set for part in normalized_parts):
+    # Normalize the path for consistent matching
+    normalized_path = os.path.normcase(os.path.normpath(file_path))
+    
+    # Get path components for directory matching
+    path_parts = normalized_path.split(os.sep)
+    
+    # Check exact filename match first
+    filename = os.path.basename(normalized_path)
+    if filename in ignore_patterns:
         return True
-    # Check if file matches any regex pattern
-    for pattern in ignore_patterns:
-        if re.search(pattern, file_path):
+    
+    # Check if any path component matches an exact directory name to ignore
+    for part in path_parts:
+        if part in ignore_patterns:
             return True
-
+    
+    # Check regex patterns
+    for pattern in ignore_patterns:
+        if pattern.endswith("/") or pattern.endswith("\\"):
+            # This is a directory pattern, look for it in the path
+            dir_name = pattern.rstrip("/\\")
+            if dir_name in path_parts:
+                return True
+        elif "*" in pattern or "?" in pattern:
+            # This is a wildcard pattern, convert to regex
+            regex_pattern = wildcard_to_regex(pattern)
+            if re.search(regex_pattern, normalized_path):
+                return True
+        elif re.search(pattern, normalized_path):
+            # This is already a regex pattern
+            return True
+    
     return False
 
 
@@ -154,34 +172,41 @@ class Args:
 
     show_all: bool = False
     recursive: bool = False
-    # Default common directories to ignore
-    ignore_regex: list[str] = field(default_factory=lambda: [
-        r"\.git/",
-        r"\.svn/",
-        r"\.hg/",
-        r"__pycache__/",
-        r"\.pytest_cache/",
-        r"\.mypy_cache/",
-        r"\.tox/",
-        r"\.venv/",
-        r"\.coverage",
-        r"\.DS_Store",
-        r"\.idea/",
-        r"\.vscode/",
-    ])
-    # Default common directories to ignore
-    ignore_dir: list[str] = field(default_factory=lambda: [
-        "node_modules",
-        ".direnv",
-        "build",
-        "dist",
-        "target",
-        "venv",
-        "env",
-        ".env",
-        "vendor",
-        ".bundle",
-        "coverage",
+    # Default common files and directories to ignore
+    ignore_patterns: list[str] = field(default_factory=lambda: [
+        # Common version control directories
+        ".git", ".git/", r"\.git/",
+        ".svn", ".svn/", r"\.svn/",
+        ".hg", ".hg/", r"\.hg/",
+        # Common cache directories
+        "__pycache__", "__pycache__/", r"__pycache__/",
+        ".pytest_cache", ".pytest_cache/", r"\.pytest_cache/",
+        ".mypy_cache", ".mypy_cache/", r"\.mypy_cache/",
+        ".tox", ".tox/", r"\.tox/",
+        ".venv", ".venv/", r"\.venv/",
+        # Common system files
+        ".coverage", r"\.coverage",
+        ".DS_Store", r"\.DS_Store",
+        # IDE directories
+        ".idea", ".idea/", r"\.idea/",
+        ".vscode", ".vscode/", r"\.vscode/",
+        # Common package directories
+        "node_modules", "node_modules/",
+        # Nix-specific files/directories
+        ".direnv", ".direnv/",
+        "flake.lock",
+        # Build directories
+        "build", "build/",
+        "dist", "dist/",
+        "target", "target/",
+        # Virtual environments
+        "venv", "venv/",
+        "env", "env/",
+        ".env", ".env/",
+        # Dependencies
+        "vendor", "vendor/",
+        ".bundle", ".bundle/",
+        "coverage", "coverage/",
     ])
     include_regex: list[str] = field(default_factory=list)
     directory: str = "."
@@ -209,16 +234,10 @@ def parse_args() -> Args:
         help="Recursively list files in subdirectories",
     )
     _ = parser.add_argument(
-        "--ignore-regex",
+        "--ignore",
         action="append",
         default=[],
-        help="Ignore files matching PATTERN (can be used multiple times)",
-    )
-    _ = parser.add_argument(
-        "--ignore-dir",
-        action="append",
-        default=[],
-        help="Ignore directory DIR (can be used multiple times)",
+        help="Ignore files or directories matching PATTERN (can be used multiple times)",
     )
     _ = parser.add_argument(
         "--regex",
@@ -261,6 +280,10 @@ def parse_args() -> Args:
         args_container.show_all = args_dict.get("all", False)
         args_container.recursive = args_dict.get("recursive", False)
         
+        # Add any additional ignore patterns from command line
+        if args_dict.get("ignore"):
+            args_container.ignore_patterns.extend(args_dict.get("ignore", []))
+            
         args_container.include_regex = args_dict.get("regex", [])
         args_container.directory = args_dict.get("directory", ".")
         args_container.files = args_dict.get("files", [])
@@ -321,8 +344,7 @@ def main() -> None:
         # This prevents descending into them unnecessarily
         dirnames[:] = [d for d in dirnames if not should_ignore(
             os.path.join(dirpath, d), 
-            args.ignore_regex, 
-            args.ignore_dir
+            args.ignore_patterns
         )]
 
         # Calculate current depth
@@ -366,8 +388,8 @@ def main() -> None:
         if not should_include(rel_path, args.include_regex):
             continue
 
-        # Skip files matching ignore patterns or in ignored directories
-        if should_ignore(rel_path, args.ignore_regex, args.ignore_dir):
+        # Skip files matching ignore patterns
+        if should_ignore(rel_path, args.ignore_patterns):
             continue
 
         print(f"### {rel_path}")

@@ -205,6 +205,9 @@ with lib.${namespace}; {
     systemPackages =
       (with pkgs."${namespace}"; [
         httptap
+        catls
+        convert_img
+        python-venv
       ])
       ++ (with pkgs; [
         gitRepo

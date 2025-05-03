@@ -64,6 +64,7 @@
 
     systemPackages =
       (with pkgs."${namespace}"; [
+        httptap
         catls
         convert_img
         python-venv

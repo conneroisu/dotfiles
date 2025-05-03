@@ -202,58 +202,51 @@ with lib.${namespace}; {
           "connerohnesorge"
         ];
       };
-    systemPackages =
-      (with pkgs."${namespace}"; [
-        httptap
-        catls
-        convert_img
-        python-venv
-      ])
-      ++ (with pkgs; [
-        gitRepo
-        nix-ld
-        alejandra
-        nh
-        pipewire
-        gtk3
-        glibc.dev
-        gtk-layer-shell
-        yazi
+    systemPackages = with pkgs; [
+      gitRepo
+      nix-ld
+      alejandra
+      nh
+      pipewire
+      gtk3
+      glibc.dev
+      gtk-layer-shell
+      yazi
 
-        busybox
-        util-linux
-        binutils
+      busybox
+      util-linux
+      binutils
 
-        # Communication
-        openvpn
-        cacert
-        arp-scan
-        vdhcoapp
-        usbutils
+      # Communication
+      openvpn
+      cacert
+      arp-scan
+      vdhcoapp
+      usbutils
 
-        # Emulation
-        docker
-        docker-compose
+      # Emulation
+      docker
+      docker-compose
 
-        # Apps
-        xfce.thunar
+      # Apps
+      xfce.thunar
 
-        lshw
-        gdb
-        gnupg
-        curl
-        procps
-        unzip
-        libGLU
-        libGL
-        freeglut
-        xorg.libXi
-        xorg.libXmu
-        xorg.libXext
-        xorg.libX11
-        xorg.libXv
-        xorg.libXrandr
-      ]);
+      lshw
+      gdb
+      gnupg
+      curl
+      procps
+      unzip
+      libGLU
+      libGL
+      freeglut
+      xorg.libXi
+      xorg.libXmu
+      xorg.libXext
+      xorg.libX11
+      xorg.libXv
+      xorg.libXrandr
+    ];
   };
 
   stylix = {

@@ -7,7 +7,6 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 source "${ZINIT_HOME}/zinit.zsh"
 
 export BUN_INSTALL="$HOME/.bun"
-export FLYCTL_INSTALL="/home/connerohnesorge/.fly"
 export GOPATH="$HOME/.go"
 export PATH="$HOME/.cargo/bin:$PATH"
 path=(
@@ -18,8 +17,6 @@ path=(
     $HOME/flutter/bin
     $GOROOT/bin
     $GOPATH/bin
-    $FLYCTL_INSTALL/bin
-    /home/connerohnesorge/.turso
     /home/connerohnesorge/.config/herd-lite/bin
     /user/local/bin/
     $path
@@ -43,7 +40,6 @@ eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
-eval "$(turso completion zsh)"
 eval "$(fly completion zsh)"
 # cfi is find all ignoring .git
 alias cfi='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.*" -print | fzf --reverse --preview "ls --color {}")'

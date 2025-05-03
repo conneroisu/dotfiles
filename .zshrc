@@ -32,7 +32,7 @@ eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
-eval "$(fly completion zsh)"
+
 # cfi is find all ignoring .git
 alias cfi='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.*" -print | fzf --reverse --preview "ls --color {}")'
 # cf is find all
@@ -41,6 +41,8 @@ alias cf='cd $(fd --type d --hidden --exclude .git | fzf --reverse --preview "ls
 alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 # nvimfi is find all files ignoring .git
 alias nvimfi='nvim $(find . -type f -path "./.git" -prune -o -type f -not -path "*/\.*" -print | fzf --preview "bat --color=always {}")'
+
+alias latest='git add . && git commit -m "latest" && git push'
 
 # Load a few important annexes, without Turbo
 zi light-mode for \
@@ -64,7 +66,6 @@ bindkey '^n' history-search-forward
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' list-colors "\$\{(s.:.)LS_COLORS\}"
 zstyle ':completion:*' menu no
-alias latest='git add . && git commit -m "latest" && git push'
 
 # bun completions
 [ -s "/home/connerohnesorge/.bun/_bun" ] && source "/home/connerohnesorge/.bun/_bun"

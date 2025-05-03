@@ -89,6 +89,7 @@
         age
         nushell
         coder
+        zed-editor
 
         # Apps
         obsidian

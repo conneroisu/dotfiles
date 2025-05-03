@@ -155,6 +155,7 @@
               ./modules/shared
               nix-homebrew.darwinModules.nix-homebrew
               home-manager.darwinModules.home-manager
+              {nix.enable = false;}
               config
             ];
           };

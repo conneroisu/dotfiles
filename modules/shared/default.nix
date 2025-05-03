@@ -141,7 +141,7 @@
         tea
 
         # Languages
-        ## JS/TS
+        nixd
         nodejs
         lua-language-server
       ]);

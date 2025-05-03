@@ -90,14 +90,17 @@ def guess_filetype(file_path: str) -> str:
 
 
 def should_include(file_path: str, include_patterns: list[str]) -> bool:
-    """Check if a file should be included based on patterns.
-
+    """
+    Determines if a file path matches any of the provided inclusion patterns.
+    
+    If no patterns are specified, all files are included. Patterns may be shell-style wildcards or regular expressions, and matching is performed against both the filename and the full file path.
+    
     Args:
-        file_path: Path to the file
-        include_patterns: List of regex patterns to match for inclusion
-
+        file_path: The path to the file being checked.
+        include_patterns: List of patterns (wildcards or regex) to match for inclusion.
+    
     Returns:
-        True if the file should be included, False otherwise
+        True if the file matches any inclusion pattern; otherwise, False.
     """
     if not include_patterns:
         return True  # Include all files if no patterns specified
@@ -122,14 +125,17 @@ def should_include(file_path: str, include_patterns: list[str]) -> bool:
 
 
 def should_ignore(file_path: str, ignore_patterns: list[str]) -> bool:
-    """Check if a file matches any ignore pattern.
-
+    """
+    Determines if a file or directory should be ignored based on provided patterns.
+    
+    Checks for exact filename or directory matches, as well as wildcard and regex pattern matches against the normalized file path and its components.
+    
     Args:
-        file_path: Path to the file
-        ignore_patterns: List of patterns to match for exclusion
-
+        file_path: The path to the file or directory to check.
+        ignore_patterns: Patterns specifying files or directories to exclude. Patterns may be exact names, directory names (ending with a slash), shell wildcards, or regular expressions.
+    
     Returns:
-        True if the file should be ignored, False otherwise
+        True if the file or directory matches any ignore pattern; False otherwise.
     """
     # Normalize the path for consistent matching
     normalized_path = os.path.normcase(os.path.normpath(file_path))
@@ -216,10 +222,10 @@ class Args:
 
 
 def parse_args() -> Args:
-    """Parse command line arguments in a type-safe way.
-
-    Returns:
-        An Args object with properly typed fields
+    """
+    Parses command-line arguments and returns a populated Args object.
+    
+    Handles options for including hidden files, recursion, ignore patterns, inclusion patterns, directory and file selection, content filtering, and line numbering. Unknown arguments are interpreted as either files or inclusion patterns. Shell-expanded files are converted to exact-match patterns for inclusion.
     """
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
         description="List contents of files in the specified directory with filename headers"
@@ -318,7 +324,11 @@ def parse_args() -> Args:
 
 
 def main() -> None:
-    """Main function to run the catls program."""
+    """
+    Runs the catls command-line utility to list and display file contents in a directory.
+    
+    Parses command-line arguments, walks the specified directory (optionally recursively), applies ignore and inclusion patterns, and prints each file's contents with filename headers. Handles binary files, optional content filtering, line number display, and output truncation for large files. Displays errors and summary messages as appropriate.
+    """
     # Parse command-line arguments in a type-safe way
     args: Args = parse_args()
 

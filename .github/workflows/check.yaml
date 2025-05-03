@@ -10,6 +10,8 @@ on:
       - main
       - '*'
   merge_group:
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 permissions:
   contents: read

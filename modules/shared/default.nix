@@ -85,6 +85,7 @@
         stow
         age
         nushell
+        coder
         # carapace
 
         # Apps

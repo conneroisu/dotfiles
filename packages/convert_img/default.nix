@@ -3,6 +3,6 @@
   namespace,
   ...
 }:
-pkgs.writeShellScriptBin "clean_media" ''
+pkgs.writeShellScriptBin "convert_img" ''
   ${pkgs."${namespace}".python-venv}/bin/python ${./convert_img.py} $@
 ''

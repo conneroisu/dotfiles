@@ -142,6 +142,7 @@
 
         # Languages
         nixd
+        statix
         nodejs
         lua-language-server
       ]);

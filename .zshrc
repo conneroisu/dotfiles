@@ -1,4 +1,3 @@
-
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 eval "$(zellij setup --generate-auto-start zsh)"
 fi

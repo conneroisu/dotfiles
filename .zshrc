@@ -32,6 +32,7 @@ eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
+source <(carapace chmod zsh)
 
 # cfi is find all ignoring .git
 alias cfi='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.*" -print | fzf --reverse --preview "ls --color {}")'

@@ -34,14 +34,14 @@ my @ignore_dir = (
 );
 
 # Command-line options
-my $show_all         = 0;
-my $recursive        = 0;
-my $content_pattern  = "";
-my $show_line_numbers= 0;
-my $debug            = 0;
+my $show_all          = 0;
+my $recursive         = 0;
+my $content_pattern   = "";
+my $show_line_numbers = 0;
+my $debug             = 0;
 
 # User-provided patterns
-my @include_regex;  # strings or qr// for include
+my @include_regex;     # strings or qr// for include
 my @extra_ignore_regex;
 my @extra_ignore_dir;
 
@@ -61,8 +61,8 @@ push @ignore_regex, map { qr/$_/ } @extra_ignore_regex;
 push @ignore_dir,    @extra_ignore_dir;
 
 # Positional args: directory and optional files
-my $directory = shift @ARGV // ".";
-my @forced_files = @ARGV;
+my $directory     = shift @ARGV // ".";
+my @forced_files  = @ARGV;
 
 # If forced files given, add exact-match include patterns
 for my $f (@forced_files) {
@@ -107,17 +107,17 @@ for my $file (@all_files) {
         my $type = xml_escape(guess_filetype($file));
         print "  <type>$type</type>\n";
         if (open my $fh, "<:encoding(UTF-8)", $file) {
-            my @lines = <$fh>;
+            my @lines    = <$fh>;
             close $fh;
             my @filtered = filter_content(\@lines, $content_pattern);
-            my $total = @lines;
-            my $count = @filtered;
-            my $limit = 100;
+            my $total    = @lines;
+            my $count    = @filtered;
+            my $limit    = 100;
             my $need_truncate = (!$content_pattern && $count > 1000);
             @filtered = @filtered[0..$limit-1] if $need_truncate;
             print "  <content>\n";
             for my $pair (@filtered) {
-                my ($ln,$text) = @$pair;
+                my ($ln, $text) = @$pair;
                 if ($show_line_numbers) {
                     printf("%4d| %s", $ln, $text);
                 } else {
@@ -225,9 +225,8 @@ sub should_include {
         if (ref $pat eq 'Regexp') {
             return 1 if $path =~ $pat;
         } else {
-            # shell‑style?
             if ($pat =~ /[\*\?]/) {
-                my $re = qr/^@{[ wildcard_to_regex($pat) ]}$/;
+                my $re = qr/^@{[ wildcard_to_regex($pat) ) ]}$/;
                 return 1 if $base =~ $re or $path =~ $re;
             } else {
                 my $re = qr/$pat/;
@@ -241,19 +240,22 @@ sub should_include {
 sub should_ignore {
     my ($path, $pat_regex, $pat_dirs) = @_;
     my $real = get_real_path($path);
-    # directories by name
-    {
-        my @parts = File::Spec->splitdir($path);
-        for my $d (@$pat_dirs) {
-            if ($d !~ m{/} and grep { $_ eq $d } @parts) {
-                return 1;
-            }
-            if ($d =~ m{/} and index($real, get_real_path($d)) == 0) {
+    # directory-name and path-based ignores
+    my @parts = File::Spec->splitdir($path);
+    for my $d (@$pat_dirs) {
+        # ignore matching directory names
+        if ($d !~ m{/} and grep { $_ eq $d } @parts) {
+            return 1;
+        }
+        # ignore path prefixes
+        if ($d =~ m{/}) {
+            my $ignore_root = get_real_path($d);
+            if (defined $ignore_root and index($real, $ignore_root) == 0) {
                 return 1;
             }
         }
     }
-    # regex patterns
+    # regex-based ignores
     for my $re (@$pat_regex) {
         return 1 if $path =~ $re;
     }
@@ -300,5 +302,5 @@ sub xml_escape {
 
 sub log_debug {
     return unless $debug;
-    warn "Debug: ", @_, "\n";
+    warn "Debug: ", @_;
 }

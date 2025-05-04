@@ -90,6 +90,9 @@
         nushell
         coder
         zed-editor
+        nix-index
+        file
+        jujutsu
 
         # Apps
         obsidian

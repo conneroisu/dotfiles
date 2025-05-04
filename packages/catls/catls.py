@@ -121,6 +121,43 @@ def should_include(file_path: str, include_patterns: list[str]) -> bool:
     return False
 
 
+def get_real_path(path: str) -> str:
+    """Get the real absolute path using shell commands.
+    
+    Args:
+        path: Path to resolve
+        
+    Returns:
+        Resolved absolute path
+    """
+    try:
+        # First try with realpath which is common on most systems
+        result = subprocess.run(
+            ["realpath", path], 
+            capture_output=True, 
+            text=True, 
+            check=False
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+            
+        # If realpath fails, try readlink -f
+        result = subprocess.run(
+            ["readlink", "-f", path], 
+            capture_output=True, 
+            text=True, 
+            check=False
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+    except Exception:
+        # Fall back to Python's implementation if shell commands fail
+        pass
+        
+    # If all shell commands fail, use Python's abspath
+    return os.path.abspath(path)
+
+
 def should_ignore(
     file_path: str, ignore_patterns: list[str], ignore_dirs: list[str]
 ) -> bool:
@@ -134,12 +171,33 @@ def should_ignore(
     Returns:
         True if the file should be ignored, False otherwise
     """
-    # Normalise once: separators → OS style, then lower-case for fast look-ups
-    normalized_parts = os.path.normcase(os.path.normpath(file_path)).split(os.sep)
-    ignore_set = {d.lower() for d in ignore_dirs}  # build once per call
-
-    if any(part in ignore_set for part in normalized_parts):
-        return True
+    # Use shell commands to get real paths for file
+    real_file_path = get_real_path(file_path)
+    
+    # Check if the file matches basic filename checks for ignored dirs
+    for ignore_dir in ignore_dirs:
+        # Simple case: exact directory name match (like 'node_modules')
+        if os.sep not in ignore_dir and ignore_dir in file_path.split(os.sep):
+            return True
+            
+        # Check if the directory portion ends with the ignore_dir
+        if os.path.dirname(file_path).endswith(os.sep + ignore_dir):
+            return True
+            
+        # For path-like ignore directories (like ./pkg/lzma/)
+        if os.sep in ignore_dir:
+            # Use shell command to resolve the ignore_dir path
+            real_ignore_dir = get_real_path(ignore_dir.rstrip('/'))
+            
+            # Check if file_path starts with ignore_dir (bash-like comparison)
+            if real_file_path.startswith(real_ignore_dir):
+                return True
+                
+            # Check if ignore_dir is a suffix of any directory component
+            dir_path = os.path.dirname(file_path)
+            if ignore_dir.rstrip('/') in dir_path:
+                return True
+                
     # Check if file matches any regex pattern
     for pattern in ignore_patterns:
         if re.search(pattern, file_path):
@@ -154,6 +212,7 @@ class Args:
 
     show_all: bool = False
     recursive: bool = False
+    debug: bool = False
     # Default common directories to ignore
     ignore_regex: list[str] = field(default_factory=lambda: [
         r"\.git/",
@@ -168,6 +227,10 @@ class Args:
         r"\.DS_Store",
         r"\.idea/",
         r"\.vscode/",
+        r".*_templ\.go$",  # Added pattern to ignore *_templ.go files
+        r"LICENSE$",       # Ignore LICENSE files
+        r"LICENSE\.md$",   # Ignore LICENSE.md files
+        r"LICENSE\.txt$",  # Ignore LICENSE.txt files
     ])
     # Default common directories to ignore
     ignore_dir: list[str] = field(default_factory=lambda: [
@@ -218,7 +281,7 @@ def parse_args() -> Args:
         "--ignore-dir",
         action="append",
         default=[],
-        help="Ignore directory DIR (can be used multiple times)",
+        help="Ignore directory DIR (can be used multiple times). Can be a directory name or path. Use './path/to/dir' for relative paths.",
     )
     _ = parser.add_argument(
         "--regex",
@@ -247,6 +310,11 @@ def parse_args() -> Args:
         action="store_true",
         help="Show line numbers"
     )
+    _ = parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug output"
+    )
 
     # Create our type-safe Args container with default ignores
     args_container = Args()
@@ -257,15 +325,7 @@ def parse_args() -> Args:
         # Convert Namespace to dictionary and extract values with proper types
         args_dict = vars(args_namespace)
 
-        # Transfer the known arguments to our type-safe container with proper types
-        args_container.show_all = args_dict.get("all", False)
-        args_container.recursive = args_dict.get("recursive", False)
-        
-        args_container.include_regex = args_dict.get("regex", [])
-        args_container.directory = args_dict.get("directory", ".")
-        args_container.files = args_dict.get("files", [])
-        args_container.content_pattern = args_dict.get("pattern", "")
-        args_container.show_line_numbers = args_dict.get("line_numbers", False)
+_numbers = args_dict.get("line_numbers", False)
 
         # If we have unknown arguments, they might be shell-expanded wildcards
         if unknown:
@@ -298,18 +358,42 @@ def main() -> None:
     """Main function to run the catls program."""
     # Parse command-line arguments in a type-safe way
     args: Args = parse_args()
+    
+    # Set up debug mode based on command line argument
+    if args.debug:
+        os.environ["CATLS_DEBUG"] = "1"
 
     # Set up directory and check if it exists
     directory: str = args.directory
     if not os.path.isdir(directory):
         print(f"Error: '{directory}' is not a valid directory.")
         sys.exit(1)
+        
+    # Special handling for --ignore-dir to match shell behavior
+    # If we receive paths with ./ prefix, convert them to use basenames
+    for i, ignore_dir in enumerate(args.ignore_dir):
+        if os.environ.get("CATLS_DEBUG"):
+            print(f"Debug: Processing ignore dir: {ignore_dir}", file=sys.stderr)
+            
+        # Strip trailing slashes for consistency
+        args.ignore_dir[i] = ignore_dir.rstrip('/')
 
     # Find all files in the directory based on options
     files: list[str] = []
 
     # Calculate the proper maxdepth value for os.walk
     maxdepth: float | int = float("inf") if args.recursive else 1
+
+    # Debug output for ignored directories
+    if os.environ.get("CATLS_DEBUG"):
+        print(f"Debug: Ignoring directories: {args.ignore_dir}", file=sys.stderr)
+        
+    # Debug the raw ignore directories first
+    if os.environ.get("CATLS_DEBUG"):
+        print(f"Debug: Raw ignore directories from arguments: {args.ignore_dir}", file=sys.stderr)
+    
+    # We'll keep the ignore_dir list as-is, since we'll use shell utilities
+    # for path comparison directly when needed
 
     # Walk through the directory structure
     for dirpath, dirnames, filenames in os.walk(directory):
@@ -319,15 +403,21 @@ def main() -> None:
             
         # Skip ignored directories early during the walk
         # This prevents descending into them unnecessarily
-        dirnames[:] = [d for d in dirnames if not should_ignore(
-            os.path.join(dirpath, d), 
-            args.ignore_regex, 
-            args.ignore_dir
-        )]
+        dirnames_to_keep = []
+        for d in dirnames:
+            full_dir_path = os.path.join(dirpath, d)
+            
+            # Use shell-like path comparison for directory detection
+            if not should_ignore(full_dir_path, args.ignore_regex, args.ignore_dir):
+                dirnames_to_keep.append(d)
+            elif os.environ.get("CATLS_DEBUG"):
+                print(f"Debug: Ignoring directory: {full_dir_path}", file=sys.stderr)
+                
+        dirnames[:] = dirnames_to_keep
 
         # Calculate current depth
         current_depth: int = dirpath.count(os.sep) - directory.count(os.sep)
-        if current_depth > maxdepth:
+        if current_depth >= maxdepth:
             # Skip deeper directories
             dirnames[:] = []
             continue
@@ -349,7 +439,10 @@ def main() -> None:
         print(f"No files found in directory: {directory}")
         sys.exit(0)
 
-    # For each file, print filename and contents in a code block
+    # Print XML header once
+    print('<files>')
+    
+    # For each file, print filename and contents in XML format
     for file_path in files:
         # Get relative path from the specified directory
         rel_path: str
@@ -368,15 +461,23 @@ def main() -> None:
 
         # Skip files matching ignore patterns or in ignored directories
         if should_ignore(rel_path, args.ignore_regex, args.ignore_dir):
+            if os.environ.get("CATLS_DEBUG"):
+                print(f"Debug: Ignoring file: {rel_path}", file=sys.stderr)
             continue
 
-        print(f"### {rel_path}")
+        # XML escape the path for safety
+        import html
+        safe_path = html.escape(rel_path)
+        
+        print(f'<file path="{safe_path}">')
 
         if is_binary(file_path):
-            print("[Binary file - contents not displayed]")
+            print('  <binary>true</binary>')
+            print('  <content>[Binary file - contents not displayed]</content>')
         else:
             # Get file type hint
             filetype: str = guess_filetype(file_path)
+            print(f'  <type>{html.escape(filetype)}</type>')
 
             try:
                 with open(file_path, "r", encoding="utf-8", errors="replace") as f:
@@ -396,7 +497,7 @@ def main() -> None:
                             if pattern.search(line):
                                 filtered_content.append((i, line))
                     except re.error as e:
-                        print(f"Error in pattern: {e}")
+                        print(f'    <error>Error in pattern: {html.escape(str(e))}</error>')
                         filtered_content = [(i, line) for i, line in enumerate(content, 1)]
                 else:
                     filtered_content = [(i, line) for i, line in enumerate(content, 1)]
@@ -404,16 +505,6 @@ def main() -> None:
                 # Count filtered lines
                 filtered_count: int = len(filtered_content)
 
-                # Print code block header with file type if available
-                if filetype:
-                    print(f"```{filetype} file='{rel_path}'")
-                else:
-                    print("```")
-
-                # If pattern is provided, show a summary
-                if args.content_pattern:
-                    print(f"# Showing {filtered_count} matching lines for pattern: '{args.content_pattern}'")
-                
                 # Determine if we should limit displayed lines
                 if filtered_count > 1000 and not args.content_pattern:
                     # If no pattern and many lines, just show first 100
@@ -424,6 +515,7 @@ def main() -> None:
                     to_display = filtered_content
                     print_trailing_message = False
                 
+                print('  <content>')
                 # Print the content with optional line numbers
                 for line_num, line in to_display:
                     if args.show_line_numbers:
@@ -434,15 +526,15 @@ def main() -> None:
                 # Print message about omitted lines if needed
                 if print_trailing_message:
                     print(f"... ({line_count - 100} more lines)")
-
-                print("```")
+                
+                print('  </content>')
             except Exception as e:
-                print(f"Error reading file: {e}")
-                print("```")
-                print("[Error reading file content]")
-                print("```")
+                print(f'  <error>{html.escape(str(e))}</error>')
 
-        print()  # Empty line after each file
+        print('</file>')
+    
+    # Print XML footer
+    print('</files>')
 
 
 if __name__ == "__main__":

@@ -79,7 +79,6 @@
         doppler
         bun
         ollama
-        tmux
         git
         zsh
         nushell

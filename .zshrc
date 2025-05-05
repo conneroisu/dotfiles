@@ -1,4 +1,7 @@
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 eval "$(zellij setup --generate-auto-start zsh)"
+fi
 
 autoload -Uz compinit && compinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"

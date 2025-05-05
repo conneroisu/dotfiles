@@ -4,7 +4,7 @@ command=zsh
 font-family = "CodeNewRoman Nerd Font"
 macos-titlebar-style = hidden
 
-window-decoration = false
+window-decoration = true
 
 background = #000000
 

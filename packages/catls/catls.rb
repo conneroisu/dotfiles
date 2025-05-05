@@ -44,6 +44,7 @@ class Args
       "vendor",
       ".bundle",
       "coverage",
+      "static",
     ]
     @include_regex = []
     @directory = "."

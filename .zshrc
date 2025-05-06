@@ -46,6 +46,7 @@ alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 alias nvimfi='nvim $(find . -type f -path "./.git" -prune -o -type f -not -path "*/\.*" -print | fzf --preview "bat --color=always {}")'
 
 alias latest='git add . && git commit -m "latest" && git push'
+alias nxi='nix'
 
 # Load a few important annexes, without Turbo
 zi light-mode for \

@@ -63,8 +63,21 @@ with lib.${namespace}; {
   };
 
   systemd = {
+    # Create a separate slice for nix-daemon that is
+    # memory-managed by the userspace systemd-oomd killer
+    slices."nix-daemon".sliceConfig = {
+      ManagedOOMMemoryPressure = "kill";
+      ManagedOOMMemoryPressureLimit = "50%";
+    };
+
+    services = {
+      "nix-daemon".serviceConfig.Slice = "nix-daemon.slice";
+      # If a kernel-level OOM event does occur anyway,
+      # strongly prefer killing nix-daemon child processes
+      "nix-daemon".serviceConfig.OOMScoreAdjust = 1000;
+      NetworkManager-wait-online.wantedBy = pkgs.lib.mkForce []; # Normally ["network-online.target"]
+    };
     targets.network-online.wantedBy = pkgs.lib.mkForce []; # Normally ["multi-user.target"]
-    services.NetworkManager-wait-online.wantedBy = pkgs.lib.mkForce []; # Normally ["network-online.target"]
   };
 
   time.timeZone = "America/Chicago";
@@ -202,55 +215,53 @@ with lib.${namespace}; {
           "connerohnesorge"
         ];
       };
-    systemPackages =
-      (with pkgs."${namespace}"; [
-        httptap
-      ])
-      ++ (with pkgs; [
-        gitRepo
-        nix-ld
-        alejandra
-        nh
-        pipewire
-        gtk3
-        glibc.dev
-        gtk-layer-shell
-        yazi
+    systemPackages = with pkgs; [
+      gitRepo
+      nix-ld
+      alejandra
+      nh
+      pipewire
+      gtk3
+      glibc.dev
+      gtk-layer-shell
+      yazi
 
-        busybox
-        util-linux
-        binutils
+      proton-pass
 
-        # Communication
-        openvpn
-        cacert
-        arp-scan
-        vdhcoapp
-        usbutils
+      busybox
+      util-linux
+      binutils
 
-        # Emulation
-        docker
-        docker-compose
+      # Communication
+      openvpn
+      cacert
+      arp-scan
+      vdhcoapp
+      usbutils
 
-        # Apps
-        xfce.thunar
+      # Emulation
+      docker
+      docker-compose
 
-        lshw
-        gdb
-        gnupg
-        curl
-        procps
-        unzip
-        libGLU
-        libGL
-        freeglut
-        xorg.libXi
-        xorg.libXmu
-        xorg.libXext
-        xorg.libX11
-        xorg.libXv
-        xorg.libXrandr
-      ]);
+      # Apps
+      xfce.thunar
+
+      lshw
+      gdb
+      gnupg
+      curl
+      procps
+      unzip
+      libGLU
+      libGL
+      freeglut
+      xorg.libXi
+      xorg.libXmu
+      xorg.libXext
+      xorg.libX11
+      xorg.libXv
+      xorg.libXrandr
+    ];
   };
 
   stylix = {

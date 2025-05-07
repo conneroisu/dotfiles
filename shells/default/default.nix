@@ -14,6 +14,8 @@
     lib.mapAttrsToList
     (name: script: pkgs.writeShellScriptBin name script.exec)
     scripts;
+
+  buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
 in
   mkShell {
     shellHook = ''
@@ -36,8 +38,24 @@ in
         ruff
         black
         isort
+        basedpyright
         # Shell
         shellcheck
+        go_1_24 # Go Tools
+        air
+        templ
+        golangci-lint
+        (buildWithSpecificGo revive)
+        (buildWithSpecificGo gopls)
+        (buildWithSpecificGo templ)
+        (buildWithSpecificGo golines)
+        (buildWithSpecificGo golangci-lint-langserver)
+        (buildWithSpecificGo gomarkdoc)
+        (buildWithSpecificGo gotests)
+        (buildWithSpecificGo gotools)
+        (buildWithSpecificGo reftools)
+        pprof
+        graphviz
       ]
       # Add the generated script packages
       ++ scriptPackages;

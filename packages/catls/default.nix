@@ -1,8 +1,7 @@
-{
-  pkgs,
-  namespace,
-  ...
-}:
-pkgs.writeShellScriptBin "clean_media" ''
-  ${pkgs."${namespace}".python-venv}/bin/python ${./catls.py} $@
+{pkgs, ...}:
+pkgs.writers.writeRubyBin "catls" {
+  libraries = [
+  ];
+} ''
+  ${builtins.readFile ./catls.rb}
 ''

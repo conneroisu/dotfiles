@@ -59,8 +59,6 @@ let external_completer = {|spans|
         pandoc => $fish_completer
         # fish has better completions for uv
         uv => $fish_completer
-        # fish has better completions for devenv
-        devenv => $fish_completer
         _ => $carapace_completer
     } | do $in $spans
 }

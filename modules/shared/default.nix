@@ -64,6 +64,7 @@
 
     systemPackages =
       (with pkgs."${namespace}"; [
+        httptap
         catls
         convert_img
         python-venv
@@ -78,15 +79,19 @@
         doppler
         bun
         ollama
-        tmux
         git
         zsh
+        nushell
+        carapace
         git-lfs
         stow
         age
         nushell
         coder
-        # carapace
+        zed-editor
+        nix-index
+        file
+        jujutsu
 
         # Apps
         obsidian
@@ -142,6 +147,7 @@
 
         # Languages
         nixd
+        statix
         nodejs
         lua-language-server
       ]);

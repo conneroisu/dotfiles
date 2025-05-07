@@ -11,12 +11,6 @@ if (not ($env | default false __zoxide_hooked | get __zoxide_hooked)) {
   }))
 }
 
-# =============================================================================
-#
-# When using zoxide with --no-cmd, alias these internal functions as desired.
-#
-
-# Jump to a directory using only keywords.
 def --env --wrapped __zoxide_z [...rest:string] {
   let arg0 = ($rest | append '~').0
   let arg0_is_dir = (try {$arg0 | path expand | path type}) == 'dir'

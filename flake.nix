@@ -75,6 +75,10 @@
       nixpkgs.follows = "nixpkgs";
       flake-parts.follows = "flake-parts";
     };
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    _1password-shell-plugins.url = "github:1Password/shell-plugins";
   };
 
   outputs = inputs @ {
@@ -147,6 +151,7 @@
               stylix.nixosModules.stylix
               nix-ld.nixosModules.nix-ld
               {programs.nix-ld.dev.enable = true;}
+              _1password-shell-plugins.nixosModules.default
               config
             ];
 

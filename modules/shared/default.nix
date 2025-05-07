@@ -76,7 +76,6 @@
         blink.packages."${system}".blink-fuzzy-lib
       ])
       ++ (with pkgs; [
-        proton-pass
         doppler
         bun
         ollama

@@ -226,6 +226,8 @@ with lib.${namespace}; {
       gtk-layer-shell
       yazi
 
+      proton-pass
+
       busybox
       util-linux
       binutils

@@ -77,6 +77,7 @@
         codex.packages."${system}".default
       ])
       ++ (with pkgs; [
+        kubectl
         doppler
         pandoc
         bun

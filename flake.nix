@@ -152,7 +152,6 @@
               stylix.nixosModules.stylix
               nix-ld.nixosModules.nix-ld
               {programs.nix-ld.dev.enable = true;}
-              _1password-shell-plugins.nixosModules.default
               config
             ];
 

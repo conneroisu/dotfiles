@@ -74,6 +74,7 @@
         nh.packages."${system}".default
         blink.packages."${system}".default
         blink.packages."${system}".blink-fuzzy-lib
+        codex.packages."${system}".default
       ])
       ++ (with pkgs; [
         doppler

@@ -77,6 +77,7 @@
       ])
       ++ (with pkgs; [
         doppler
+        pandoc
         bun
         ollama
         git

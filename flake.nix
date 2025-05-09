@@ -148,7 +148,6 @@
             allowUnfree = true;
           };
           systems.modules = {
-            # Add modules to all NixOS systems.
             nixos = with inputs; [
               determinate.nixosModules.default
               ./modules/shared

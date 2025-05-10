@@ -228,6 +228,7 @@ with lib.${namespace}; {
 
       proton-pass
 
+      obs-studio
       busybox
       util-linux
       binutils

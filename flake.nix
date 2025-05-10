@@ -3,6 +3,10 @@
 
   inputs = {
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    determinate.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-parts.follows = "flake-parts";
+    };
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     systems.url = "github:nix-systems/default";

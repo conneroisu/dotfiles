@@ -126,6 +126,7 @@ with lib.${namespace}; {
     package-sets = {
       office.enable = true;
     };
+    nixutils.enable = true;
   };
 
   services = {

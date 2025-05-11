@@ -1,7 +1,7 @@
 {
   lib,
   pkgs,
-  namespace, # The namespace used for your flake, defaulting to "internal" if not set.
+  namespace,
   config,
   ...
 }:

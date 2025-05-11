@@ -112,7 +112,7 @@
         lib = snowfall-lib.mkLib {
           inherit inputs;
           src = builtins.path {
-            path = ./.;
+            path = inputs.nixpkgs.lib.cleanSource ./.;
             name = "source";
           };
           snowfall = {

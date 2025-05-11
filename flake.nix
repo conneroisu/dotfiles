@@ -12,7 +12,7 @@
 
     flake-schemas.url = "https://flakehub.com/f/DeterminateSystems/flake-schemas/0.1.5";
 
-    hyprland.url = "https://flakehub.com/f/hyprwm/Hyprland/0.48.1";
+    hyprland.url = "github:hyprwm/hyprland";
     hyprland.inputs.nixpkgs.follows = "nixpkgs";
 
     flake-parts.url = "https://flakehub.com/f/hercules-ci/flake-parts/0.1.372";

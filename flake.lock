@@ -877,16 +877,16 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1743178567,
-        "narHash": "sha256-cIseFaSNAdBJvy+Z//YMYfzMMcnfHP7HGJI2SZ/GO5E=",
-        "rev": "29e2e59fdbab8ed2cc23a20e3c6043d5decb5cdc",
-        "revCount": 5937,
-        "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/hyprwm/Hyprland/0.48.1/0195dd8f-201e-7fa0-9dc4-eb91891cd2fc/source.tar.gz"
+        "lastModified": 1746917585,
+        "owner": "hyprwm",
+        "repo": "hyprland",
+        "rev": "9a87498bb1cb923dec04807fb3fb1f66bd2c2580",
+        "type": "github"
       },
       "original": {
-        "type": "tarball",
-        "url": "https://flakehub.com/f/hyprwm/Hyprland/0.48.1"
+        "owner": "hyprwm",
+        "repo": "hyprland",
+        "type": "github"
       }
     },
     "hyprland-protocols": {

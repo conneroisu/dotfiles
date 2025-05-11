@@ -53,6 +53,9 @@
 
     snowfall-flake.url = "https://flakehub.com/f/snowfallorg/flake/1.4.1";
     snowfall-flake.inputs.nixpkgs.follows = "nixpkgs";
+    
+    zed.url = "github:zed-industries/zed/main"
+    zed.inputs.nixpkgs.follows = "nixpkgs";
 
     rust-overlay.url = "https://flakehub.com/f/oxalica/rust-overlay/0.1.1771";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";

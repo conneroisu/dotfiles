@@ -75,6 +75,7 @@
         blink.packages."${system}".default
         blink.packages."${system}".blink-fuzzy-lib
         codex.packages."${system}".default
+        zed.packages."${system}".default
       ])
       ++ (with pkgs; [
         kubectl
@@ -91,7 +92,6 @@
         age
         nushell
         coder
-        zed-editor
         nix-index
         file
         jujutsu

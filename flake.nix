@@ -50,9 +50,6 @@
     nh.url = "github:viperML/nh/master?tag=v4.0.0-beta.8";
     nh.inputs.nixpkgs.follows = "nixpkgs";
 
-    snowfall-flake.url = "https://flakehub.com/f/snowfallorg/flake/1.4.1";
-    snowfall-flake.inputs.nixpkgs.follows = "nixpkgs";
-
     zed.url = "github:zed-industries/zed/main";
     zed.inputs.nixpkgs.follows = "nixpkgs";
 

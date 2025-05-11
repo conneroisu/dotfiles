@@ -47,9 +47,6 @@
       rust-overlay.follows = "rust-overlay";
     };
 
-    nh.url = "github:viperML/nh/master?tag=v4.0.0-beta.8";
-    nh.inputs.nixpkgs.follows = "nixpkgs";
-
     zed.url = "github:zed-industries/zed/main";
     zed.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -94,6 +91,7 @@
     self,
     flake-schemas,
     home-manager,
+    snowfall-lib,
     ...
   }: let
     inherit (self) outputs;
@@ -111,11 +109,12 @@
 
       perSystem = _: {};
       flake = let
-        inherit (inputs) snowfall-lib;
         lib = snowfall-lib.mkLib {
           inherit inputs;
-          src = ./.;
-
+          src = builtins.path {
+            path = ./.;
+            name = "source";
+          };
           snowfall = {
             namespace = "csnow";
             meta = {
@@ -145,8 +144,6 @@
         };
       in
         lib.mkFlake {
-          inherit inputs;
-          src = ./.;
           channels-config = {
             allowUnfree = true;
           };

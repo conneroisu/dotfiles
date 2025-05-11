@@ -71,7 +71,6 @@
       ])
       ++ (with inputs; [
         zen-browser.packages."${system}".default
-        nh.packages."${system}".default
         blink.packages."${system}".default
         blink.packages."${system}".blink-fuzzy-lib
         codex.packages."${system}".default

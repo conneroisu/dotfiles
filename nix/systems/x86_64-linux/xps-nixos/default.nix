@@ -2,14 +2,17 @@
   lib,
   pkgs,
   namespace,
-  # inputs,
+  inputs,
   ...
 }:
 with lib;
 with lib.${namespace}; {
   imports = [
     ./hardware.nix
+
+    inputs.nix-ld.nixosModules.nix-ld
   ];
+  programs.nix-ld.dev.enable = true;
 
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];

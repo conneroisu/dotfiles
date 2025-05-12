@@ -100,7 +100,7 @@
         lib = snowfall-lib.mkLib {
           inherit inputs;
           src = builtins.path {
-            path = inputs.nixpkgs.lib.cleanSource ./.;
+            path = ./nix/.;
             name = "source";
           };
           snowfall = {
@@ -138,11 +138,9 @@
           systems.modules = {
             nixos = with inputs; [
               determinate.nixosModules.default
-              ./modules/shared
+              ./nix/modules/shared
               home-manager.nixosModules.home-manager
               stylix.nixosModules.stylix
-              nix-ld.nixosModules.nix-ld
-              {programs.nix-ld.dev.enable = true;}
               config
             ];
           };

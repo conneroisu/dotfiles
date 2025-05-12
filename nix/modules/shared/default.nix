@@ -59,7 +59,6 @@
     variables = {
       EDITOR = "nvim";
       SHELL = "zsh";
-      GTK_THEME = "adw-gtk3-dark";
     };
 
     systemPackages =

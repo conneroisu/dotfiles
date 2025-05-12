@@ -34,6 +34,7 @@ in
         # Nix
         alejandra
         nixd
+
         # Python
         ruff
         black
@@ -41,19 +42,8 @@ in
         basedpyright
         # Shell
         shellcheck
-        go_1_24 # Go Tools
         air
         templ
-        golangci-lint
-        (buildWithSpecificGo revive)
-        (buildWithSpecificGo gopls)
-        (buildWithSpecificGo templ)
-        (buildWithSpecificGo golines)
-        (buildWithSpecificGo golangci-lint-langserver)
-        (buildWithSpecificGo gomarkdoc)
-        (buildWithSpecificGo gotests)
-        (buildWithSpecificGo gotools)
-        (buildWithSpecificGo reftools)
         pprof
         graphviz
       ]

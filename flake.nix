@@ -5,10 +5,12 @@
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     determinate.inputs = {
       nixpkgs.follows = "nixpkgs";
+      determinate-nixd-aarch64-darwin.follows = "";
+      determinate-nixd-x86_64-darwin.follows = "";
     };
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    systems.url = "github:nix-systems/default";
+    systems.url = "github:nix-systems/default-linux";
 
     flake-schemas.url = "https://flakehub.com/f/DeterminateSystems/flake-schemas/0.1.5";
 
@@ -29,17 +31,6 @@
 
     home-manager.url = "https://flakehub.com/f/nix-community/home-manager/0.2411.*";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-    darwin.url = "github:LnL7/nix-darwin/master";
-    darwin.inputs.nixpkgs.follows = "nixpkgs";
-
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    nix-homebrew.inputs.nixpkgs.follows = "nixpkgs";
-
-    homebrew-core.url = "github:Homebrew/homebrew-core";
-    homebrew-core.flake = false;
-    homebrew-cask.url = "github:Homebrew/homebrew-cask";
-    homebrew-cask.flake = false;
 
     ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.481";
     ashell.inputs = {
@@ -86,17 +77,14 @@
     };
   };
 
-  outputs = inputs @ {
+  outputs = {
     flake-parts,
-    self,
-    flake-schemas,
-    home-manager,
     snowfall-lib,
+    flake-schemas,
     ...
-  }: let
-    inherit (self) outputs;
+  } @ inputs: let
     stateVersion = "24.11";
-    helper = import ./home-manager/utils {inherit inputs outputs stateVersion;};
+    helper = import ./home-manager/utils {inherit inputs stateVersion;};
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
@@ -157,27 +145,19 @@
               {programs.nix-ld.dev.enable = true;}
               config
             ];
-
-            # Add modules to all Darwin systems.
-            darwin = with inputs; [
-              ./modules/shared
-              nix-homebrew.darwinModules.nix-homebrew
-              home-manager.darwinModules.home-manager
-              {nix.enable = false;}
-              config
-            ];
           };
           outputs-builder = channels: {
             formatter = channels.nixpkgs.alejandra;
           };
+
+          templates = {
+            devshell.description = "A devshell for developing with nix";
+            go-shell.description = "A go shell for developing with nix";
+            rust-shell.description = "A rust shell for developing with nix";
+          };
         }
         // {
           homeConfigurations = {
-            "connerohnesorge@Conners-MacBook-Air.local" = helper.mkHome {
-              username = "connerohnesorge";
-              hostname = "Conners-MacBook-Air.local";
-              platform = "aarch64-darwin";
-            };
             "connerohnesorge@xps-nixos" = helper.mkHome {
               username = "connerohnesorge";
               hostname = "xps-nixos";

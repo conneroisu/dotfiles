@@ -22,35 +22,48 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages =
-      (with inputs; [
-        ghostty.packages."${system}".default
-        ashell.packages.${system}.default
-      ])
-      ++ (with pkgs; [
-        hyprcursor
-        hyprkeys
-        hyprpaper
-        playerctl
-        hypridle
-        hyprsunset
-        hyprwayland-scanner
-        hyprutils
-        wl-clipboard
-        hyprnotify
-        uwsm
-        grimblast
-        grim
-        slurp
-        roofi
-        dunst
-        brightnessctl
-        hyprls
-        gnome-control-center
-        hyprpicker
-        gpu-screen-recorder
-        ffmpegthumbnailer
-      ]);
+    environment = {
+      systemPackages =
+        (with inputs; [
+          ghostty.packages."${system}".default
+          ashell.packages.${system}.default
+        ])
+        ++ (with pkgs; [
+          hyprcursor
+          hyprkeys
+          hyprpaper
+          playerctl
+          hypridle
+          hyprsunset
+          hyprwayland-scanner
+          hyprutils
+          wl-clipboard
+          hyprnotify
+          uwsm
+          grimblast
+          grim
+          slurp
+          roofi
+          dunst
+          brightnessctl
+          hyprls
+          gnome-control-center
+          hyprpicker
+          gpu-screen-recorder
+          ffmpegthumbnailer
+        ]);
+      variables = {
+        XDG_SESSION_TYPE = "wayland";
+        XDG_SESSION_DESKTOP = "Hyprland";
+        XDG_CURRENT_DESKTOP = "Hyprland";
+        GDK_BACKEND = "wayland,x11,*";
+        GTK_THEME = "Adwaita:dark";
+        GBM_BACKEND = "nvidia-drm";
+        SDL_VIDEODRIVER = "wayland";
+        CLUTTER_BACKEND = "wayland";
+        QT_QPA_PLATFORM = "wayland;xcb";
+      };
+    };
 
     programs = {
       dconf.enable = true;

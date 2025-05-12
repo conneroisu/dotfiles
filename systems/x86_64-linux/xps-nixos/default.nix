@@ -222,8 +222,6 @@ with lib.${namespace}; {
       alejandra
       nh
       pipewire
-      gtk3
-      glibc.dev
       gtk-layer-shell
       yazi
 

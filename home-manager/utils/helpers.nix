@@ -1,6 +1,5 @@
 {
   inputs,
-  outputs,
   stateVersion,
   ...
 }: {
@@ -17,7 +16,6 @@
       extraSpecialArgs = {
         inherit
           inputs
-          outputs
           hostname
           platform
           username

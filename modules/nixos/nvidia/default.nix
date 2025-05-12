@@ -3,7 +3,6 @@
   pkgs,
   lib,
   namespace,
-  inputs,
   ...
 }:
 with lib; let
@@ -46,6 +45,8 @@ in {
           pkgs.linuxPackages.nvidia_x11
         ]
       }";
+      LIBVA_DRIVER_NAME = "nvidia";
+      __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     };
 
     environment.systemPackages = with pkgs; [

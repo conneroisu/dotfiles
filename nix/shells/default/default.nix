@@ -32,7 +32,6 @@ in
         # Nix
         alejandra
         nixd
-
         # Python
         ruff
         black
@@ -40,9 +39,6 @@ in
         basedpyright
         # Shell
         shellcheck
-        air
-        templ
-        pprof
         graphviz
       ]
       # Add the generated script packages

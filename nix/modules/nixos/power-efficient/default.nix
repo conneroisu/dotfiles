@@ -13,7 +13,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [];
     hardware = {};
     services = {
       tlp.enable = true;

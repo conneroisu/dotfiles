@@ -21,8 +21,6 @@ in {
 
       sox
     ];
-    hardware = {
-    };
 
     services = {
       pipewire = {

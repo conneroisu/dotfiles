@@ -258,12 +258,6 @@ with lib.${namespace}; {
       libGLU
       libGL
       freeglut
-      xorg.libXi
-      xorg.libXmu
-      xorg.libXext
-      xorg.libX11
-      xorg.libXv
-      xorg.libXrandr
     ];
   };
 

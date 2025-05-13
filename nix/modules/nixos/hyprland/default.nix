@@ -68,8 +68,8 @@ in {
     programs = {
       dconf.enable = true;
       hyprland = {
-        package = inputs.hyprland.packages."${system}".hyprland;
-        portalPackage = inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland;
+        package = pkgs.hyprland;
+        portalPackage = pkgs.xdg-desktop-portal-hyprland;
         enable = true;
         withUWSM = true;
         xwayland.enable = true;
@@ -92,7 +92,7 @@ in {
     xdg = {
       portal = {
         enable = true;
-        extraPortals = [inputs.hyprland.packages."${system}".xdg-desktop-portal-hyprland];
+        extraPortals = [pkgs.xdg-desktop-portal-hyprland];
 
         config.hyprland = {
           default = [

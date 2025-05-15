@@ -24,6 +24,7 @@ delib.host {
     };
     programs = {
       catls.enable = true;
+      convert_img.enable = true;
     };
   };
 

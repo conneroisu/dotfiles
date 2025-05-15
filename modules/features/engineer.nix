@@ -92,8 +92,10 @@ in
             arp-scan
             vdhcoapp
             usbutils
+            obs-studio
             # Platforms
             fh
+            doppler
             gh
             tea
             # Emulation
@@ -142,6 +144,7 @@ in
 
       security.rtkit.enable = true;
       services = {
+        gnome.gnome-keyring.enable = true;
         ollama = {
           enable = true;
           package = pkgs.ollama;

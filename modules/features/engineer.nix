@@ -108,7 +108,6 @@ in
           zen-browser.packages."${pkgs.system}".default
           blink.packages."${pkgs.system}".default
           blink.packages."${pkgs.system}".blink-fuzzy-lib
-          codex.packages."${pkgs.system}".default
           zed.packages."${pkgs.system}".default
         ]);
 

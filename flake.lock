@@ -144,28 +144,6 @@
         "type": "github"
       }
     },
-    "codex": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1746727298,
-        "owner": "conneroisu",
-        "repo": "codex",
-        "rev": "ec3a5775331fa7bac699f40240af0a6f59da14af",
-        "type": "github"
-      },
-      "original": {
-        "owner": "conneroisu",
-        "repo": "codex",
-        "type": "github"
-      }
-    },
     "crane": {
       "locked": {
         "lastModified": 1746291859,
@@ -1226,7 +1204,6 @@
       "inputs": {
         "ashell": "ashell",
         "blink": "blink",
-        "codex": "codex",
         "denix": "denix",
         "determinate": "determinate",
         "flake-utils": "flake-utils_2",

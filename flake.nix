@@ -106,7 +106,9 @@
     };
 
     devShells = forAllSystems (system: let
+      #
       pkgs = import nixpkgs {inherit system;};
+
       scripts = {
         dx = {
           exec = ''$EDITOR $REPO_ROOT/flake.nix'';

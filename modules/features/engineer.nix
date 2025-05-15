@@ -21,95 +21,102 @@ in
         corefonts
         vistafonts
       ];
-      environment.systemPackages =
-        (with pkgs; [
-          kubectl
-          doppler
-          pandoc
-          bun
-          ollama
-          git
-          zsh
-          nushell
-          carapace
-          git-lfs
-          stow
-          age
-          nushell
-          coder
-          nix-index
-          file
-          # Apps
-          obsidian
-          neovim
-          brave
-          spotify
-          discord
-          telegram-desktop
-          xfce.thunar
-          # Shell
-          zinit
-          starship
-          direnv
-          nix-direnv
-          bat
-          wget
-          fd
-          jq
-          yq
-          tree-sitter
-          spicetify-cli
-          fzf
-          zellij
-          atuin
-          zoxide
-          eza
-          delta
-          unzip
-          htop
-          tealdeer
-          sleek
-          unixtools.xxd
-          ffmpeg
-          tree
-          uv
-          sad
-          ripgrep
-          pkg-config
-          lshw
-          gdb
-          gnupg
-          curl
-          procps
-          unzip
-          # Communication
-          tailscale
-          dnsutils
-          minicom
-          openvpn
-          cacert
-          arp-scan
-          vdhcoapp
-          usbutils
-          # Platforms
-          fh
-          gh
-          tea
-          # Emulation
-          docker
-          docker-compose
-          # Languages
-          nixd
-          statix
-          nodejs
-          lua-language-server
-        ])
-        ++ (with inputs; [
-          zen-browser.packages."${pkgs.system}".default
-          blink.packages."${pkgs.system}".default
-          blink.packages."${pkgs.system}".blink-fuzzy-lib
-          zed.packages."${pkgs.system}".default
-        ]);
+      environment = {
+        systemPackages =
+          (with pkgs; [
+            kubectl
+            doppler
+            pandoc
+            bun
+            ollama
+            git
+            zsh
+            nushell
+            carapace
+            git-lfs
+            stow
+            age
+            nushell
+            coder
+            nix-index
+            file
+            # Apps
+            obsidian
+            neovim
+            brave
+            spotify
+            discord
+            telegram-desktop
+            xfce.thunar
+            # Shell
+            zinit
+            starship
+            direnv
+            nix-direnv
+            bat
+            wget
+            fd
+            jq
+            yq
+            tree-sitter
+            spicetify-cli
+            fzf
+            zellij
+            atuin
+            zoxide
+            eza
+            delta
+            unzip
+            htop
+            tealdeer
+            sleek
+            unixtools.xxd
+            ffmpeg
+            tree
+            uv
+            sad
+            ripgrep
+            pkg-config
+            lshw
+            gdb
+            gnupg
+            curl
+            procps
+            unzip
+            # Communication
+            tailscale
+            dnsutils
+            minicom
+            openvpn
+            cacert
+            arp-scan
+            vdhcoapp
+            usbutils
+            # Platforms
+            fh
+            gh
+            tea
+            # Emulation
+            docker
+            docker-compose
+            # Languages
+            nixd
+            statix
+            nodejs
+            lua-language-server
+          ])
+          ++ (with inputs; [
+            zen-browser.packages."${pkgs.system}".default
+            blink.packages."${pkgs.system}".default
+            blink.packages."${pkgs.system}".blink-fuzzy-lib
+            zed.packages."${pkgs.system}".default
+          ]);
+        variables = {
+          EDITOR = "nvim";
+          VISUAL = "nvim";
+          GIT_EDITOR = "nvim";
+        };
+      };
 
       programs = {
         nix-ld.dev.enable = true;

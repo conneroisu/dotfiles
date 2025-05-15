@@ -105,19 +105,37 @@
 
       scripts = {
         dx = {
-          exec = ''$EDITOR $REPO_ROOT/flake.nix'';
+          exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
           description = "Edit the flake.nix";
+          deps = [];
+        };
+        lint = {
+          exec = ''
+            REPO_ROOT="$(git rev-parse --show-toplevel)"
+            golangci-lint run --fix
+            statix check "$REPO_ROOT"/flake.nix
+            deadnix "$REPO_ROOT"/flake.nix
+          '';
+          deps = with pkgs; [git statix deadnix];
+          description = "Run golangci-lint";
         };
       };
 
       scriptPackages =
-        pkgs.lib.mapAttrsToList
-        (name: script: pkgs.writeShellScriptBin name script.exec)
+        pkgs.lib.mapAttrs
+        (
+          name: script:
+            pkgs.writeShellApplication {
+              inherit name;
+              text = script.exec;
+              runtimeInputs = script.deps or [];
+            }
+        )
         scripts;
     in {
       default = pkgs.mkShell {
         shellHook = ''
-          export REPO_ROOT=$(git rev-parse --show-toplevel)
+          export REPO_ROOT="$(git rev-parse --show-toplevel)"
           export CGO_CFLAGS="-O2"
 
           # Print available commands
@@ -136,7 +154,7 @@
             isort
             basedpyright
           ]
-          ++ scriptPackages;
+          ++ builtins.attrValues scriptPackages;
       };
     });
   };

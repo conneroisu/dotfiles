@@ -11,63 +11,72 @@
       "aarch64-darwin"
     ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-
-    pkgs = forAllSystems (system:
-      import nixpkgs {
-        inherit system;
-        overlays = [
-          inputs.nixpkgs.overlays.default
-        ];
-      });
-    scripts = {
-      dx = {
-        exec = ''$EDITOR $REPO_ROOT/flake.nix'';
-        description = "Edit flake.nix";
-      };
-      gx = {
-        exec = "$EDITOR $REPO_ROOT/go.mod";
-        description = "Edit go.mod";
-      };
-    };
-
-    scriptPackages =
-      pkgs.lib.mapAttrsToList
-      (name: script: pkgs.writeShellScriptBin name script.exec)
-      scripts;
   in {
-    devShells.default = pkgs.mkShell {
-      name = "dev";
+    devShells = forAllSystems (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+      };
 
-      # Available packages on https://search.nixos.org/packages
-      packages = with pkgs;
-        [
-          alejandra # Nix
-          nixd
-          statix
-          deadnix
+      scripts = {
+        dx = {
+          exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
+          description = "Edit flake.nix";
+        };
+        gx = {
+          exec = ''$EDITOR "$REPO_ROOT"/go.mod'';
+          description = "Edit go.mod";
+        };
+      };
 
-          go_1_24 # Go Tools
-          air
-          templ
-          golangci-lint
-          (buildWithSpecificGo revive)
-          (buildWithSpecificGo gopls)
-          (buildWithSpecificGo templ)
-          (buildWithSpecificGo golines)
-          (buildWithSpecificGo golangci-lint-langserver)
-          (buildWithSpecificGo gomarkdoc)
-          (buildWithSpecificGo gotests)
-          (buildWithSpecificGo gotools)
-          (buildWithSpecificGo reftools)
-          pprof
-          graphviz
-          goreleaser
-        ]
-        ++ builtins.attrValues scriptPackages;
+      scriptPackages =
+        pkgs.lib.mapAttrs
+        (
+          name: script:
+            pkgs.writeShellApplication {
+              inherit name;
+              text = script.exec;
+              runtimeInputs = script.deps or [];
+            }
+        )
+        scripts;
 
-      shellHook = ''
-        echo "Welcome to the rust devshell!"
-      '';
-    };
+      buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
+    in {
+      default = pkgs.mkShell {
+        name = "dev";
+
+        # Available packages on https://search.nixos.org/packages
+        packages = with pkgs;
+          [
+            alejandra # Nix
+            nixd
+            statix
+            deadnix
+
+            go_1_24 # Go Tools
+            air
+            templ
+            golangci-lint
+            (buildWithSpecificGo revive)
+            (buildWithSpecificGo gopls)
+            (buildWithSpecificGo templ)
+            (buildWithSpecificGo golines)
+            (buildWithSpecificGo golangci-lint-langserver)
+            (buildWithSpecificGo gomarkdoc)
+            (buildWithSpecificGo gotests)
+            (buildWithSpecificGo gotools)
+            (buildWithSpecificGo reftools)
+            pprof
+            graphviz
+            goreleaser
+            cobra-cli
+          ]
+          ++ builtins.attrValues scriptPackages;
+
+        shellHook = ''
+          export REPO_ROOT=$(git rev-parse --show-toplevel)
+        '';
+      };
+    });
   };
 }

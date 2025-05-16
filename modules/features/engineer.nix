@@ -101,6 +101,7 @@ in
             # Emulation
             docker
             docker-compose
+            lazydocker
             # Languages
             nixd
             statix

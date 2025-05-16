@@ -44,16 +44,16 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1747225583,
-        "narHash": "sha256-FZ1N7mKTm20YlXzFFBN63aDPdGO6zalURTlKtKvyyFc=",
-        "rev": "0a13a77db7e411d6c059bf65d340772ed7d50eef",
-        "revCount": 516,
+        "lastModified": 1747433337,
+        "narHash": "sha256-6LEPkYJmycwMuW+KW/J9IS2eZ49QWzrv47zRWMiY3EY=",
+        "rev": "d79d27724a1b0b15681e5f919002355e9f9cf879",
+        "revCount": 527,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/conneroisu/ashell/0.1.516%2Brev-0a13a77db7e411d6c059bf65d340772ed7d50eef/0196ced1-3ee4-7caa-984c-4e8249f2f0ee/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/conneroisu/ashell/0.1.527%2Brev-d79d27724a1b0b15681e5f919002355e9f9cf879/0196db2a-1ce6-711f-8e8a-fd54caabbd5f/source.tar.gz"
       },
       "original": {
         "type": "tarball",
-        "url": "https://flakehub.com/f/conneroisu/ashell/0.1.516"
+        "url": "https://flakehub.com/f/conneroisu/ashell/0.1.527"
       }
     },
     "base16": {

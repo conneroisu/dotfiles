@@ -107,6 +107,8 @@ in
             statix
             nodejs
             lua-language-server
+            # Disks
+            squirreldisk
           ])
           ++ (with inputs; [
             zen-browser.packages."${pkgs.system}".default

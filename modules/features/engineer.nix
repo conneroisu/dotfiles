@@ -25,8 +25,10 @@ in
         systemPackages =
           (with pkgs; [
             kubectl
+            ktailctl
             doppler
             pandoc
+            eog
             bun
             ollama
             git

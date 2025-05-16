@@ -102,6 +102,7 @@ in
             docker
             docker-compose
             lazydocker
+            nixos-shell
             # Languages
             nixd
             statix

@@ -120,9 +120,9 @@
         lint = {
           exec = ''
             REPO_ROOT="$(git rev-parse --show-toplevel)"
-            golangci-lint run --fix
             statix check "$REPO_ROOT"/flake.nix
             deadnix "$REPO_ROOT"/flake.nix
+            nix flake check "$REPO_ROOT"
           '';
           deps = with pkgs; [git statix deadnix];
           description = "Run golangci-lint";

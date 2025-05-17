@@ -97,6 +97,10 @@
         description = "A rust shell for developing with nix";
         path = ./templates/rust-shell;
       };
+      remix-js-shell = {
+        description = "A Remix JS shell for developing with bun";
+        path = ./templates/remix-js-shell;
+      };
     };
 
     devShells = forAllSystems (system: let

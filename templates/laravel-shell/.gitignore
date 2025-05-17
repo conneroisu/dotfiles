@@ -1,2 +1,2 @@
-.direnv
+# Ignore nix build artifacts
 result

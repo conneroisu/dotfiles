@@ -60,6 +60,7 @@
 
         shellHook = ''
           export REPO_ROOT=$(git rev-parse --show-toplevel)
+          echo "Welcome to the laravel devshell!"
         '';
       };
     });

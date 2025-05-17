@@ -97,6 +97,10 @@
         description = "A rust shell for developing with nix";
         path = ./templates/rust-shell;
       };
+      laravel-shell = {
+        description = "A laravel shell for developing with nix";
+        path = ./templates/laravel-shell;
+      };
     };
 
     devShells = forAllSystems (system: let

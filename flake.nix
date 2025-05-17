@@ -97,6 +97,10 @@
         description = "A rust shell for developing with nix";
         path = ./templates/rust-shell;
       };
+      elixir-phoenix-shell = {
+        description = "An Elixir Phoenix Framework shell for developing with nix";
+        path = ./templates/elixir-phoenix-shell;
+      };
     };
 
     devShells = forAllSystems (system: let

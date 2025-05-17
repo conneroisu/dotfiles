@@ -97,6 +97,9 @@
         description = "A rust shell for developing with nix";
         path = ./templates/rust-shell;
       };
+      remix-js-shell = {
+        description = "A Remix JS shell for developing with bun";
+        path = ./templates/remix-js-shell;
       elixir-phoenix-shell = {
         description = "An Elixir Phoenix Framework shell for developing with nix";
         path = ./templates/elixir-phoenix-shell;

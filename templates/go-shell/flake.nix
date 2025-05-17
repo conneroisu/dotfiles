@@ -3,7 +3,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
-  outputs = inputs @ {nixpkgs, ...}: let
+  outputs = {nixpkgs, ...}: let
     supportedSystems = [
       "x86_64-linux"
       "x86_64-darwin"
@@ -77,6 +77,26 @@
           export REPO_ROOT=$(git rev-parse --show-toplevel)
         '';
       };
+    });
+
+    packages = forAllSystems (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+      };
+    in {
+      # default = pkgs.buildGoModule {
+      #   pname = "my-go-project";
+      #   version = "0.0.1";
+      #   src = ./.;
+      #   vendorHash = "";
+      #   doCheck = false;
+      #   meta = with pkgs.lib; {
+      #     description = "My Go project";
+      #     homepage = "https://github.com/conneroisu/my-go-project";
+      #     license = licenses.asl20;
+      #     maintainers = with maintainers; [connerohnesorge];
+      #   };
+      # };
     });
   };
 }

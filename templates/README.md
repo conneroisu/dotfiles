@@ -26,6 +26,15 @@ nix flake init -t github:connsoisu/nix-config#rust-shell
 nix flake init -t github:connsoisu/nix-config#go-shell
 ```
 
+### Laravel dev shell
+
+> WARNING: It only provides the shell commands (php, composer, etc), not a way to build a package.
+> This template is only useful to avoid installing Laravel globally.
+
+```sh
+nix flake init -t github:connsoisu/nix-config#laravel-shell
+```
+
 Adding a package build is as simple as:
 ```nix 
 {

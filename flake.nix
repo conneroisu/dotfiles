@@ -105,6 +105,10 @@
         description = "An Elixir Phoenix Framework shell for developing with nix";
         path = ./templates/elixir-phoenix-shell;
       };
+      laravel-shell = {
+        description = "A Laravel shell for developing with nix";
+        path = ./templates/laravel-shell;
+      };
     };
 
     devShells = forAllSystems (system: let

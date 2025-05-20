@@ -97,6 +97,18 @@
         description = "A rust shell for developing with nix";
         path = ./templates/rust-shell;
       };
+      remix-js-shell = {
+        description = "A Remix JS shell for developing with bun";
+        path = ./templates/remix-js-shell;
+      };
+      elixir-phoenix-shell = {
+        description = "An Elixir Phoenix Framework shell for developing with nix";
+        path = ./templates/elixir-phoenix-shell;
+      };
+      laravel-shell = {
+        description = "A Laravel shell for developing with nix";
+        path = ./templates/laravel-shell;
+      };
     };
 
     devShells = forAllSystems (system: let
@@ -112,9 +124,9 @@
         lint = {
           exec = ''
             REPO_ROOT="$(git rev-parse --show-toplevel)"
-            golangci-lint run --fix
             statix check "$REPO_ROOT"/flake.nix
             deadnix "$REPO_ROOT"/flake.nix
+            nix flake check "$REPO_ROOT"
           '';
           deps = with pkgs; [git statix deadnix];
           description = "Run golangci-lint";

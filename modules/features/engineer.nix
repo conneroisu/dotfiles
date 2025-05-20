@@ -25,8 +25,10 @@ in
         systemPackages =
           (with pkgs; [
             kubectl
+            ktailctl
             doppler
             pandoc
+            eog
             bun
             ollama
             git
@@ -101,11 +103,15 @@ in
             # Emulation
             docker
             docker-compose
+            lazydocker
+            nixos-shell
             # Languages
             nixd
             statix
             nodejs
             lua-language-server
+            # Disks
+            squirreldisk
           ])
           ++ (with inputs; [
             zen-browser.packages."${pkgs.system}".default

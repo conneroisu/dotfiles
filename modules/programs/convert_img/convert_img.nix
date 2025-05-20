@@ -11,9 +11,10 @@ in
     options = singleEnableOption false;
 
     nixos.ifEnabled = {myconfig, ...}: {
-      environment.systemPackages = with pkgs; [
+      environment.systemPackages = [
         (
           pkgs.writers.writePython3Bin "convert_img" {
+            flakeIgnore = ["W291" "W503" "E226"];
             libraries = [
               pkgs.python3Packages.pillow
             ];

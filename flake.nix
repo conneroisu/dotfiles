@@ -41,7 +41,6 @@
       nixpkgs.follows = "nixpkgs";
       systems.follows = "systems";
       home-manager.follows = "home-manager";
-      flake-utils.follows = "flake-utils";
     };
 
     ghostty.url = "github:ghostty-org/ghostty/main";

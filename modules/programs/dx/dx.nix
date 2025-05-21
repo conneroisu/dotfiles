@@ -10,7 +10,7 @@ in
 
     options = singleEnableOption false;
 
-    nixos.ifEnabled = {myconfig, ...}: {
+    nixos.ifEnabled = _: {
       environment.systemPackages = [
         (pkgs.writeShellScriptBin "dx" ''
             $EDITOR $(git rev-parse --show-toplevel)/flake.nix'')

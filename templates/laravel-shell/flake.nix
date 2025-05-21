@@ -5,11 +5,7 @@
     nix-shell.url = "github:loophp/nix-shell";
     systems.url = "github:nix-systems/default";
   };
-  outputs = inputs @ {
-    self,
-    systems,
-    ...
-  }: let
+  outputs = inputs @ {self, ...}: let
     eachSystem = f:
       builtins.listToAttrs (
         map (system: {
@@ -29,7 +25,7 @@
 
         php = pkgs.api.buildPhpFromComposer {
           src = inputs.self;
-          php = pkgs.php81; # Change to php56, php70, ..., php81, php82, php83 etc.
+          php = pkgs.php84; # Change to php56, php70, ..., php81, php82, php83 etc.
         };
       in {
         default = pkgs.mkShellNoCC {
@@ -41,6 +37,9 @@
             php.packages.psalm
             pkgs.phpunit
             self.packages.${system}.satis
+            pkgs.laravel
+            pkgs.go
+            pkgs.bun
           ];
         };
       }
@@ -66,25 +65,30 @@
         satis = php.buildComposerProject {
           pname = "satis";
           version = "3.0.0-dev";
+
           src = pkgs.fetchFromGitHub {
             owner = "composer";
             repo = "satis";
-            rev = "23fdf4c1893567c6e46a2cc7fcc868b913f03b28";
-            hash = "sha256-UMf9/UQl7lK+AG58lBBFkJMpklooWJ4vpAX5ibciFJI=";
+            rev = "547552004cc8526baeda5bc85eb595542acd3536";
+            hash = "sha256-69HUEIUrOOrBhqaFQkHl89EAklKIsuyM47n1MbU3ZgY=";
           };
-          vendorHash = "sha256-YA5UIlGhRVdkz+NFiujGRkb9Zx8Up4IEOmco1rEOkGk=";
+
+          vendorHash = "sha256-SAN77IVrxQQz4yuUexbSw0aXFhGR5DTXFFCj0bANYKw=";
+
           meta.mainProgram = "satis";
         };
         drupal = php.buildComposerProject {
           pname = "drupal";
-          version = "11.0.0-dev";
+          version = "11.1.7-dev";
+
           src = pkgs.fetchFromGitHub {
             owner = "drupal";
             repo = "drupal";
-            rev = "72e7c019993f7d8491de277c66f40354a0967b00";
-            hash = "sha256-nrR+jj8wCTN2RLWxik19emEGyVqzoBiUo6aAfNQZG8Q=";
+            rev = "20238e2d53337f20190f84d4976cf861219ca2f6";
+            hash = "sha256-jf28r44VDP9MzShoJMFD+6xSUcKBRGYJ1/ruQ3nGTRE=";
           };
-          vendorHash = "sha256-39cCLG4x8/C9XZG2sOCpxO1HUsqt3DduCMMIxPCursw=";
+
+          vendorHash = "";
         };
         symfony-demo-image = pkgs.dockerTools.buildLayeredImage {
           name = self.packages.${system}.symfony-demo.pname;
@@ -169,7 +173,7 @@
           php = pkgs.php81;
         };
 
-        lib = pkgs.lib;
+        inherit (pkgs) lib;
       in {
         mezzio-skeleton = {
           type = "app";

@@ -2,7 +2,7 @@
   description = "Modular configuration of Home Manager and NixOS with Denix";
 
   inputs = {
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";
+    zen-browser.url = "https://flakehub.com/f/conneroisu/zen-browser-flake/0.1.61";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
     ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.538";

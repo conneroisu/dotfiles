@@ -1566,17 +1566,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1745828448,
-        "narHash": "sha256-MN2x08I1xh0qFlzmq3QLehc/XPEm8vXLhtMfeIcyZIU=",
-        "owner": "conneroisu",
-        "repo": "zen-browser-flake",
-        "rev": "42d6ad463911c95e69fe638fbb53f9deed119caf",
-        "type": "github"
+        "lastModified": 1747927786,
+        "narHash": "sha256-rjuxWhgcwKCTqleqS1stMNOGayMCGuc14CoUP+zi4No=",
+        "rev": "50e136a6f74d9f3d73bd02e6c139cec00f0ed9bd",
+        "revCount": 61,
+        "type": "tarball",
+        "url": "https://api.flakehub.com/f/pinned/conneroisu/zen-browser-flake/0.1.61%2Brev-50e136a6f74d9f3d73bd02e6c139cec00f0ed9bd/0196f8a4-ec56-7eed-98a4-bf6c64cb8d9f/source.tar.gz"
       },
       "original": {
-        "owner": "conneroisu",
-        "repo": "zen-browser-flake",
-        "type": "github"
+        "type": "tarball",
+        "url": "https://flakehub.com/f/conneroisu/zen-browser-flake/0.1.61"
       }
     },
     "zig": {

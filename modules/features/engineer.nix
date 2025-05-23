@@ -44,6 +44,7 @@ in
             file
             # Apps
             obsidian
+            zathura
             neovim
             brave
             spotify

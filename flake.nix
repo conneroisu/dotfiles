@@ -5,7 +5,7 @@
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
 
-    ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.516";
+    ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.538";
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
@@ -41,7 +41,6 @@
       nixpkgs.follows = "nixpkgs";
       systems.follows = "systems";
       home-manager.follows = "home-manager";
-      flake-utils.follows = "flake-utils";
     };
 
     ghostty.url = "github:ghostty-org/ghostty/main";

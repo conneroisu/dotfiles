@@ -24,7 +24,74 @@ in
 
     nixos = {
       nixpkgs.hostPlatform = "x86_64-linux";
+      system.stateVersion = "24.11";
+      virtualisation.vmware.guest.enable = true;
+      boot = {
+        loader = {
+          systemd-boot.enable = true;
+          efi.canTouchEfiVariables = true;
+        };
+        initrd.availableKernelModules = [
+          "ata_piix"
+          "mptspi"
+          "uhci_hcd"
+          "ehci_pci"
+          "sd_mod"
+          "sr_mod"
+        ];
+        kernelModules = ["vmw_vsock_vmci_transport" "vmw_balloon" "vmw_vmci" "vmw_pvscsi"];
+      };
+      fileSystems."/" = {
+        device = "/dev/disk/by-label/nixos";
+        fsType = "ext4";
+      };
+      fileSystems."/boot" = {
+        device = "/dev/disk/by-label/boot";
+        fsType = "vfat";
+        options = ["fmask=0077" "dmask=0077"];
+      };
+      networking = {
+        hostName = "mac-nix-vm";
+        networkmanager.enable = true;
+        useDHCP = pkgs.lib.mkForce true;
+        interfaces.ens33.useDHCP = true; # VMware default network interface
+      };
+      services.openssh = {
+        enable = true;
+        settings = {
+          PermitRootLogin = "no";
+          PasswordAuthentication = true;
+        };
+      };
+      users.users.connerohnesorge = {
+        isNormalUser = true;
+        extraGroups = ["wheel" "networkmanager"];
+        openssh.authorizedKeys.keys = [
+          # Add your SSH public key here if you have one
+        ];
+      };
+      environment.systemPackages = with pkgs; [
+        vim
+        git
+        wget
+        curl
+        htop
+      ];
+      programs.zsh.enable = true;
+      fileSystems."/mnt/hgfs" = {
+        device = ".host:/";
+        fsType = "fuse./run/current-system/sw/bin/vmhgfs-fuse";
+        options = [
+          "umask=022"
+          "uid=1000"
+          "gid=1000"
+          "allow_other"
+          "auto_unmount"
+          "defaults"
+        ];
+      };
     };
+
     darwin = {
       nixpkgs = {
         hostPlatform = system;

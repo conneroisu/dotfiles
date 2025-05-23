@@ -13,7 +13,14 @@ delib.host {
   home.home.stateVersion = "24.11";
   homeManagerSystem = "aarch64-darwin";
 
-  darwin = {myconfig, ...}: {
+  myconfig = {
+    programs = {
+      catls.enable = true;
+      convert_img.enable = true;
+    };
+  };
+
+  darwin = {
     nixpkgs.hostPlatform = "aarch64-darwin";
     nixpkgs.config.allowUnfree = true;
     nix.enable = false;

@@ -165,6 +165,7 @@ nix-darwin.url = "github:nix-darwin/nix-darwin/master";
             black
             isort
             basedpyright
+            luajitPackages.luacheck
           ]
           ++ builtins.attrValues scriptPackages;
       };

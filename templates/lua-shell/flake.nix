@@ -2,8 +2,10 @@
   description = "A development shell for lua";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = inputs @ {nixpkgs, ...}: let
+  outputs = inputs @ {nixpkgs, treefmt-nix, ...}: let
     supportedSystems = [
       "x86_64-linux"
       "x86_64-darwin"
@@ -22,10 +24,6 @@
           exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
           description = "Edit flake.nix";
         };
-        gx = {
-          exec = ''$EDITOR "$REPO_ROOT"/go.mod'';
-          description = "Edit go.mod";
-        };
       };
 
       scriptPackages =
@@ -39,8 +37,6 @@
             }
         )
         scripts;
-
-      buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
     in {
       default = pkgs.mkShell {
         name = "dev";
@@ -53,23 +49,12 @@
             statix
             deadnix
 
-            go_1_24 # Go Tools
-            air
-            templ
-            golangci-lint
-            (buildWithSpecificGo revive)
-            (buildWithSpecificGo gopls)
-            (buildWithSpecificGo templ)
-            (buildWithSpecificGo golines)
-            (buildWithSpecificGo golangci-lint-langserver)
-            (buildWithSpecificGo gomarkdoc)
-            (buildWithSpecificGo gotests)
-            (buildWithSpecificGo gotools)
-            (buildWithSpecificGo reftools)
-            pprof
-            graphviz
-            goreleaser
-            cobra-cli
+            lua # Lua Tools
+            luajit
+            lua-language-server
+            stylua
+            selene
+            luarocks
           ]
           ++ builtins.attrValues scriptPackages;
 
@@ -78,5 +63,16 @@
         '';
       };
     });
+
+    formatter = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      treefmtModule = {
+        projectRootFile = "flake.nix";
+        programs = {
+          alejandra.enable = true; # Nix formatter
+        };
+      };
+    in
+      treefmt-nix.lib.mkWrapper pkgs treefmtModule);
   };
 }

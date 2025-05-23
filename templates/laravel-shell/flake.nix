@@ -4,6 +4,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nix-shell.url = "github:loophp/nix-shell";
     systems.url = "github:nix-systems/default";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = inputs @ {
     self,
@@ -293,5 +295,18 @@
         };
       }
     );
+
+    formatter = eachSystem (system: let
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+      };
+      treefmtModule = {
+        projectRootFile = "flake.nix";
+        programs = {
+          alejandra.enable = true; # Nix formatter
+        };
+      };
+    in
+      inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule);
   };
 }

@@ -6,12 +6,14 @@
       url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
-    # self,
     nixpkgs,
     fenix,
+    treefmt-nix,
     ...
   }: let
     # Define systems
@@ -23,14 +25,14 @@
 
     # Helper function to generate per-system attributes
     forAllSystems = f: nixpkgs.lib.genAttrs systems f;
-
-    # Define the devShell for each system
-    mkDevShell = system: let
+  in {
+    # Define devShells for all systems
+    devShells = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       fenixPkgs = fenix.packages.${system};
       rustChannel = "stable";
-    in
-      pkgs.mkShell {
+    in {
+      default = pkgs.mkShell {
         name = "dev";
         # Available packages on https://search.nixos.org/packages
         buildInputs = with pkgs; [
@@ -50,14 +52,23 @@
         shellHook = ''
           echo "Welcome to the rust devshell!"
         '';
-        # use a folder per toolchain name to store rust's cache
-        CARGO_HOME = "$HOME/${fenixPkgs.${rustChannel}.toolchain.name}/.cargo";
-        RUSTUP_HOME = "$HOME/${fenixPkgs.${rustChannel}.toolchain.name}/.rustup";
+        env = {
+          # use a folder per toolchain name to store rust's cache
+          CARGO_HOME = "$HOME/${fenixPkgs.${rustChannel}.toolchain.name}/.cargo";
+          RUSTUP_HOME = "$HOME/${fenixPkgs.${rustChannel}.toolchain.name}/.rustup";
+        };
       };
-  in {
-    # Define devShells for all systems
-    devShells = forAllSystems (system: {
-      default = mkDevShell system;
     });
+
+    formatter = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      treefmtModule = {
+        projectRootFile = "flake.nix";
+        programs = {
+          alejandra.enable = true; # Nix formatter
+        };
+      };
+    in
+      treefmt-nix.lib.mkWrapper pkgs treefmtModule);
   };
 }

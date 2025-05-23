@@ -23,7 +23,7 @@ in
     };
 
     nixos = {
-      nixpkgs.hostPlatform = "x86_64-linux";
+      nixpkgs.hostPlatform = "aarch64-linux";
       system.stateVersion = "24.11";
       virtualisation.vmware.guest.enable = true;
       boot = {

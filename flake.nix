@@ -9,7 +9,8 @@
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
-
+nix-darwin.url = "github:nix-darwin/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/master";
@@ -68,10 +69,9 @@
       "aarch64-darwin"
     ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-    mkConfigurations = isHomeManager:
-      denix.lib.configurations {
+    mkConfigurations = moduleSystem: denix.lib.configurations {
         homeManagerUser = "connerohnesorge";
-        inherit isHomeManager;
+        inherit moduleSystem;
 
         paths = [./hosts ./modules ./rices];
 
@@ -82,6 +82,7 @@
   in {
     nixosConfigurations = mkConfigurations false;
     homeConfigurations = mkConfigurations true;
+    darwinConfigurations = mkConfigurations "darwin";
 
     templates = {
       devshell = {

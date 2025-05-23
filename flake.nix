@@ -164,6 +164,7 @@
             black
             isort
             basedpyright
+            luajitPackages.luacheck
           ]
           ++ builtins.attrValues scriptPackages;
       };

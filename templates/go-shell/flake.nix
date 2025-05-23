@@ -2,8 +2,10 @@
   description = "A development shell for go";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = {nixpkgs, ...}: let
+  outputs = {nixpkgs, treefmt-nix, ...}: let
     supportedSystems = [
       "x86_64-linux"
       "x86_64-darwin"
@@ -98,5 +100,16 @@
       #   };
       # };
     });
+
+    formatter = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      treefmtModule = {
+        projectRootFile = "flake.nix";
+        programs = {
+          alejandra.enable = true; # Nix formatter
+        };
+      };
+    in
+      treefmt-nix.lib.mkWrapper pkgs treefmtModule);
   };
 }

@@ -9,7 +9,7 @@
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
-nix-darwin.url = "github:nix-darwin/nix-darwin/master";
+    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
@@ -55,6 +55,9 @@ nix-darwin.url = "github:nix-darwin/nix-darwin/master";
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -69,7 +72,8 @@ nix-darwin.url = "github:nix-darwin/nix-darwin/master";
       "aarch64-darwin"
     ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-    mkConfigurations = moduleSystem: denix.lib.configurations {
+    mkConfigurations = moduleSystem:
+      denix.lib.configurations {
         homeManagerUser = "connerohnesorge";
         inherit moduleSystem;
 
@@ -80,9 +84,20 @@ nix-darwin.url = "github:nix-darwin/nix-darwin/master";
         };
       };
   in {
-    nixosConfigurations = mkConfigurations false;
-    homeConfigurations = mkConfigurations true;
+    nixosConfigurations = mkConfigurations "nixos";
+    homeConfigurations = mkConfigurations "home";
     darwinConfigurations = mkConfigurations "darwin";
+
+    formatter = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      treefmtModule = {
+        projectRootFile = "flake.nix";
+        programs = {
+          alejandra.enable = true; # Nix formatter
+        };
+      };
+    in
+      inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule);
 
     templates = {
       devshell = {

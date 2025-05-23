@@ -34,9 +34,6 @@
     nix-ld.url = "github:Mic92/nix-ld";
     nix-ld.inputs.nixpkgs.follows = "nixpkgs";
 
-    zed.url = "github:zed-industries/zed/main";
-    zed.inputs.nixpkgs.follows = "nixpkgs";
-
     stylix.url = "https://flakehub.com/f/danth/stylix/0.1.776";
     stylix.inputs = {
       nixpkgs.follows = "nixpkgs";

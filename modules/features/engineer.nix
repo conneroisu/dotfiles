@@ -31,7 +31,6 @@ in
             pandoc
             eog
             bun
-            ollama
             git
             zsh
             nushell
@@ -118,7 +117,6 @@ in
             zen-browser.packages."${pkgs.system}".default
             blink.packages."${pkgs.system}".default
             blink.packages."${pkgs.system}".blink-fuzzy-lib
-            zed.packages."${pkgs.system}".default
           ]);
         variables = {
           EDITOR = "nvim";
@@ -152,11 +150,6 @@ in
       security.rtkit.enable = true;
       services = {
         gnome.gnome-keyring.enable = true;
-        ollama = {
-          enable = true;
-          package = pkgs.ollama;
-          acceleration = "cuda";
-        };
       };
     };
   }

@@ -1,29 +1,24 @@
 {
-  delib,
   pkgs,
+  lib,
+  delib,
   ...
 }: let
   inherit (delib) singleEnableOption;
-  program =
-    pkgs.writers.writePython3Bin "convert_img" {
-      flakeIgnore = ["W291" "W503" "E226"];
-      libraries = [
-        pkgs.python3Packages.pillow
-      ];
-    }
-    ./convert_img.py;
+  program = pkgs.buildGoModule {
+    name = "cmbd";
+    src = ./.;
+    vendorHash = null;
+  };
 in
   delib.module {
-    name = "programs.convert_img";
-
+    name = "programs.cmbd";
     options = singleEnableOption false;
-
     nixos.ifEnabled = {
       environment.systemPackages = [
         program
       ];
     };
-
     darwin.ifEnabled = {
       environment.systemPackages = [
         program

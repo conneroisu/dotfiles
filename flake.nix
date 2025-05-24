@@ -156,6 +156,8 @@
             }
         )
         scripts;
+
+      buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
     in {
       default = pkgs.mkShell {
         shellHook = ''
@@ -173,11 +175,27 @@
           [
             alejandra # Nix
             nixd
+
             ruff # Python
             black
             isort
             basedpyright
             luajitPackages.luacheck
+
+            go_1_24 # Go
+            air
+            golangci-lint
+            (buildWithSpecificGo revive)
+            (buildWithSpecificGo gopls)
+            (buildWithSpecificGo templ)
+            (buildWithSpecificGo golines)
+            (buildWithSpecificGo golangci-lint-langserver)
+            (buildWithSpecificGo gomarkdoc)
+            (buildWithSpecificGo gotests)
+            (buildWithSpecificGo gotools)
+            (buildWithSpecificGo reftools)
+            pprof
+            graphviz
           ]
           ++ builtins.attrValues scriptPackages;
       };

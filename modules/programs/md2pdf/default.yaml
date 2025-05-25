@@ -1,0 +1,49 @@
+---
+# Document metadata
+title-meta: "${title}"
+author-meta: "${author}"
+lang: en-US
+
+# PDF generation settings
+pdf-engine: xelatex
+template: eisvogel
+
+# Typography matching Obsidian
+variables:
+  mainfont: "Inter"
+  sansfont: "Inter"  
+  monofont: "JetBrains Mono"
+  fontsize: 11pt
+  linestretch: 1.15
+  geometry: margin=1in
+  
+  # Colors similar to Obsidian
+  linkcolor: "#705dcf"
+  urlcolor: "#705dcf"
+  citecolor: "#705dcf"
+  
+  # Document structure
+  toc: true
+  toc-depth: 3
+  numbersections: true
+  secnumdepth: 3
+  
+  # Code blocks
+  highlight-style: kate
+  code-block-font-size: \small
+  listings: true
+  
+  # Eisvogel template specific
+  titlepage: true
+  titlepage-color: "435488"
+  titlepage-text-color: "FFFFFF"
+  footnotes-pretty: true
+  
+# Filters and processing
+filters:
+  - pandoc-crossref
+  - filters/obsidian-links.lua
+  - filters/obsidian-callouts.lua
+  
+citeproc: true
+---

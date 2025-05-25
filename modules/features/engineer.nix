@@ -51,6 +51,7 @@ in
             discord
             telegram-desktop
             xfce.thunar
+            ethtool
             # Shell
             zinit
             starship

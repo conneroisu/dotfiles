@@ -30,7 +30,7 @@ variables:
   
   # Code blocks
   highlight-style: kate
-  code-block-font-size: \small
+  code-block-font-size: "\\small"
   listings: true
   
   # Eisvogel template specific

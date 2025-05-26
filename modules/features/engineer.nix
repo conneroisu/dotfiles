@@ -16,7 +16,10 @@ in
     options = singleEnableOption false;
 
     nixos.ifEnabled = {myconfig, ...}: {
-      myconfig.programs.dx.enable = true;
+      myconfig.programs = {
+        dx.enable = true;
+        md2pdf.enable = true;
+      };
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman
         corefonts

@@ -52,6 +52,10 @@
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+    sops = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -196,6 +200,9 @@
             (buildWithSpecificGo reftools)
             pprof
             graphviz
+
+            geesefs
+            sops
           ]
           ++ builtins.attrValues scriptPackages;
       };

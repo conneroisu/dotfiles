@@ -21,3 +21,4 @@ devenv.local.nix
 .direnv*
 .devenv*
 .obsidian/
+.env

@@ -10,9 +10,9 @@ template: eisvogel
 
 # Typography matching Obsidian
 variables:
-  mainfont: "Inter"
-  sansfont: "Inter"  
-  monofont: "JetBrains Mono"
+  mainfont: "Times New Roman"
+  sansfont: "Times New Roman"
+  monofont: "CodeNewRoman Nerd Font"
   fontsize: 11pt
   linestretch: 1.15
   geometry: margin=1in
@@ -30,7 +30,7 @@ variables:
   
   # Code blocks
   highlight-style: kate
-  code-block-font-size: \small
+  code-block-font-size: "\\small"
   listings: true
   
   # Eisvogel template specific

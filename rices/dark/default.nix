@@ -7,7 +7,6 @@
 delib.rice {
   name = "dark";
   home = {
-    # imports = [inputs.stylix.homeModules.stylix];
     stylix = {
       enable = true;
       base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
@@ -19,7 +18,6 @@ delib.rice {
     };
   };
   nixos = {
-    imports = [inputs.stylix.nixosModules.stylix];
     stylix = {
       enable = true;
       base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";

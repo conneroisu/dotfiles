@@ -1,4 +1,8 @@
-{delib, ...}:
+{
+  delib,
+  inputs,
+  ...
+}:
 delib.module {
   name = "rices";
 
@@ -12,6 +16,12 @@ delib.module {
   };
 
   home.always = {myconfig, ...}: {
+    # imports = [inputs.stylix.homeModules.stylix];
+    assertions = delib.riceNamesAssertions myconfig.rices;
+  };
+
+  nixos.always = {myconfig, ...}: {
+    imports = [inputs.stylix.nixosModules.stylix];
     assertions = delib.riceNamesAssertions myconfig.rices;
   };
 }

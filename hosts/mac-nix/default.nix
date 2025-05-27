@@ -41,14 +41,28 @@ in
         ];
         kernelModules = ["vmw_vsock_vmci_transport" "vmw_balloon" "vmw_vmci" "vmw_pvscsi"];
       };
-      fileSystems."/" = {
-        device = "/dev/disk/by-label/nixos";
-        fsType = "ext4";
-      };
-      fileSystems."/boot" = {
-        device = "/dev/disk/by-label/boot";
-        fsType = "vfat";
-        options = ["fmask=0077" "dmask=0077"];
+      fileSystems = {
+        "/" = {
+          device = "/dev/disk/by-label/nixos";
+          fsType = "ext4";
+        };
+        "/boot" = {
+          device = "/dev/disk/by-label/boot";
+          fsType = "vfat";
+          options = ["fmask=0077" "dmask=0077"];
+        };
+        "/mnt/hgfs" = {
+          device = ".host:/";
+          fsType = "fuse./run/current-system/sw/bin/vmhgfs-fuse";
+          options = [
+            "umask=022"
+            "uid=1000"
+            "gid=1000"
+            "allow_other"
+            "auto_unmount"
+            "defaults"
+          ];
+        };
       };
       networking = {
         hostName = "mac-nix-vm";
@@ -78,18 +92,6 @@ in
         htop
       ];
       programs.zsh.enable = true;
-      fileSystems."/mnt/hgfs" = {
-        device = ".host:/";
-        fsType = "fuse./run/current-system/sw/bin/vmhgfs-fuse";
-        options = [
-          "umask=022"
-          "uid=1000"
-          "gid=1000"
-          "allow_other"
-          "auto_unmount"
-          "defaults"
-        ];
-      };
     };
 
     darwin = {

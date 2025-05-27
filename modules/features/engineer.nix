@@ -46,7 +46,6 @@ in
             carapace
             stow
             age
-            nushell
             kubectl
             ktailctl
             doppler

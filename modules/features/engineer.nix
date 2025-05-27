@@ -72,7 +72,6 @@ in
             uv
             eza
             delta
-            unzip
             htop
             tealdeer
             sleek

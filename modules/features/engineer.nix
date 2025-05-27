@@ -15,10 +15,13 @@ in
 
     options = singleEnableOption false;
 
-    nixos.ifEnabled = {myconfig, ...}: {
+    nixos.ifEnabled = {
       myconfig.programs = {
         dx.enable = true;
         md2pdf.enable = true;
+        convert_img.enable = true;
+        catls.enable = true;
+        cmbd.enable = true;
       };
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman

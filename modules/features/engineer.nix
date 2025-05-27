@@ -28,49 +28,45 @@ in
       environment = {
         systemPackages =
           (with pkgs; [
-            kubectl
-            ktailctl
-            doppler
-            pandoc
-            eog
-            bun
-            git
+            # Shell
+
+            ## Editor
+            neovim
+            jq
+            yq
+            tree-sitter
+            sad
+
+            ## Env
             zsh
             nushell
             carapace
-            git-lfs
             stow
             age
             nushell
-            coder
-            nix-index
+            kubectl
+            ktailctl
+            doppler
+            bun
             file
-            # Apps
-            obsidian
-            zathura
-            neovim
-            brave
-            spotify
-            discord
-            telegram-desktop
-            xfce.thunar
-            ethtool
-            # Shell
+            nix-index
             zinit
             starship
             direnv
             nix-direnv
             bat
-            wget
             fd
-            jq
-            yq
-            tree-sitter
-            spicetify-cli
             fzf
             zellij
             atuin
             zoxide
+            pkg-config
+            lshw
+            gdb
+            gnupg
+            procps
+            unzip
+            uv
             eza
             delta
             unzip
@@ -80,16 +76,24 @@ in
             unixtools.xxd
             ffmpeg
             tree
-            uv
-            sad
             ripgrep
-            pkg-config
-            lshw
-            gdb
-            gnupg
-            curl
-            procps
-            unzip
+
+            # VCS
+            git
+            git-lfs
+            jujutsu
+
+            # Apps
+            obsidian
+            zathura
+            brave
+            spotify
+            discord
+            telegram-desktop
+            xfce.thunar
+            obs-studio
+            eog
+
             # Communication
             tailscale
             dnsutils
@@ -99,22 +103,28 @@ in
             arp-scan
             vdhcoapp
             usbutils
-            obs-studio
+            ethtool
+            curl
+            wget
+
             # Platforms
             fh
             doppler
             gh
             tea
+
             # Emulation
             docker
             docker-compose
             lazydocker
             nixos-shell
-            # Languages
+
+            # Languages (Base for when shell from project is not available)
             nixd
             statix
             nodejs
             lua-language-server
+
             # Disks
             squirreldisk
           ])

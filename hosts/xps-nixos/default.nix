@@ -22,11 +22,6 @@ delib.host {
       darknet.enable = true;
       secrets.enable = true;
     };
-    programs = {
-      catls.enable = true;
-      convert_img.enable = true;
-      cmbd.enable = true;
-    };
   };
 
   nixos = {

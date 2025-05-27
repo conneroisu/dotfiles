@@ -5,7 +5,11 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = inputs @ {nixpkgs, treefmt-nix, ...}: let
+  outputs = inputs @ {
+    nixpkgs,
+    treefmt-nix,
+    ...
+  }: let
     supportedSystems = [
       "x86_64-linux"
       "x86_64-darwin"

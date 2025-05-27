@@ -6,9 +6,8 @@ in
 
     options = singleEnableOption false;
 
-    nixos.ifEnabled = {myconfig, ...}: {
+    nixos.ifEnabled = {
       services = {
-        ## Power-Efficient
         tlp.enable = true;
         power-profiles-daemon.enable = false;
       };

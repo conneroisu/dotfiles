@@ -11,6 +11,7 @@ delib.module {
   in {
     users = {
       groups.${username} = {};
+      groups.nordvpn = {};
 
       users.${username} = {
         isNormalUser = true;
@@ -19,6 +20,7 @@ delib.module {
           "wheel"
           "docker"
           "users"
+          "nordvpn"
         ];
 
         shell = pkgs.zsh;

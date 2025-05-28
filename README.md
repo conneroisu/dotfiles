@@ -7,8 +7,6 @@
 
 dotfiles for my personal setup
 
-Uses [snowfall](https://github.com/snowfallorg/lib) for configuration management.
-
 ## Installation
 
 ```bash

@@ -104,6 +104,7 @@ in
             arp-scan
             vdhcoapp
             usbutils
+            bluez
             ethtool
             curl
             wget

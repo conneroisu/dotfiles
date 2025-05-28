@@ -22,6 +22,9 @@ delib.host {
       darknet.enable = true;
       secrets.enable = true;
     };
+    programs = {
+      nordvpn.enable = true;
+    };
   };
 
   nixos = {

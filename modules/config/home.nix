@@ -49,6 +49,7 @@ in
         if isLinux
         then true
         else false;
+
       home = {
         inherit username;
         homeDirectory =

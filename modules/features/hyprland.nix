@@ -95,12 +95,19 @@ in
           enable = true;
 
           defaultApplications = {
+            "image/octet-stream" = "zen.desktop";
             # PDF
             "application/pdf" = "org.gnome.Evince.desktop";
             # PNG, JPG
-            "image/png" = "org.gnome.Loupe.desktop";
-            "image/jpeg" = "org.gnome.Loupe.desktop";
-            "image/ppm" = "org.gnome.Loupe.desktop";
+            "image/png" = "org.gnome.eog.desktop";
+            "image/jpeg" = "org.gnome.eog.desktop";
+            "image/jpg" = "org.gnome.eog.desktop";
+            "image/gif" = "org.gnome.eog.desktop";
+            "image/webp" = "org.gnome.eog.desktop";
+            "image/bmp" = "org.gnome.eog.desktop";
+            "image/tiff" = "org.gnome.eog.desktop";
+            "image/svg+xml" = "org.gnome.eog.desktop";
+            "image/ppm" = "org.gnome.eog.desktop";
             # Directories
             "inode/directory" = "thunar.desktop";
             "x-scheme-handler/file" = "thunar.desktop";

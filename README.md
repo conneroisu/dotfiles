@@ -34,7 +34,7 @@ Listing all `.desktop` files:
 Config MimeTypes:
 ```bash
 # See settings
-/etc/xdg/mimeapps.list
+cat /etc/xdg/mimeapps.list
 ```
 
 ## Templates

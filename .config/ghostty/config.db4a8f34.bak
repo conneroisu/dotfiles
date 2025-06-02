@@ -8,4 +8,3 @@ window-decoration = true
 background = #000000
 
 bold-is-bright = true
-keybind = shift+enter=text:\n

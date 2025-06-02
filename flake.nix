@@ -145,7 +145,7 @@
             nix flake check "$REPO_ROOT"
           '';
           deps = with pkgs; [git statix deadnix];
-          description = "Run golangci-lint";
+          description = "Run all linters (statix, deadnix, nix flake check)";
         };
       };
 

@@ -2,17 +2,14 @@
   description = "A development shell for rust";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    fenix = {
-      url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    rust-overlay.url = "github:oxalica/rust-overlay";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
     nixpkgs,
-    fenix,
+    rust-overlay,
     treefmt-nix,
     ...
   }: let
@@ -28,9 +25,10 @@
   in {
     # Define devShells for all systems
     devShells = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      fenixPkgs = fenix.packages.${system};
-      rustChannel = "stable";
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [rust-overlay.overlays.default];
+      };
     in {
       default = pkgs.mkShell {
         name = "dev";
@@ -41,27 +39,24 @@
           statix
           deadnix
           just
-          (fenixPkgs.combine [
-            fenixPkgs.${rustChannel}.toolchain
-            # https://doc.rust-lang.org/rustc/platform-support.html
-            # For more targets add:
-            # fenixPkgs.targets.aarch64-linux-android."${rustChannel}".rust-std
-            # fenixPkgs.targets.x86_64-linux-android."${rustChannel}".rust-std
-          ])
+          rust-bin.stable.latest.default
         ];
         shellHook = ''
           echo "Welcome to the rust devshell!"
         '';
         env = {
           # use a folder per toolchain name to store rust's cache
-          CARGO_HOME = "$HOME/${fenixPkgs.${rustChannel}.toolchain.name}/.cargo";
-          RUSTUP_HOME = "$HOME/${fenixPkgs.${rustChannel}.toolchain.name}/.rustup";
+          CARGO_HOME = "$HOME/.cargo";
+          RUSTUP_HOME = "$HOME/.rustup";
         };
       };
     });
 
     formatter = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [rust-overlay.overlays.default];
+      };
       treefmtModule = {
         projectRootFile = "flake.nix";
         programs = {

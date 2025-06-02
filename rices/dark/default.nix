@@ -2,17 +2,18 @@
   delib,
   inputs,
   pkgs,
+  moduleSystem,
   ...
 }:
 delib.rice {
   name = "dark";
   home = {
+    imports = [inputs.stylix.homeModules.stylix];
     stylix = {
       enable = true;
       base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
       image = ./../../assets/klaus-desktop.jpeg;
       targets = {
-        xfce.enable = true;
         zathura.enable = true;
       };
     };

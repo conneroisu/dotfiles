@@ -53,7 +53,7 @@ nix flake init -t github:conneroisu/nix-config#devshell
 > This template is only useful to avoid installing rust globally.
 
 ```sh
-nix flake init -t github:connsoisu/nix-config#rust-shell
+nix flake init -t github:conneroisu/dotfiles#rust-shell
 ```
 
 ### Go dev shell
@@ -62,7 +62,7 @@ nix flake init -t github:connsoisu/nix-config#rust-shell
 > This template is only useful to avoid installing go globally.
 
 ```sh
-nix flake init -t github:connsoisu/nix-config#go-shell
+nix flake init -t github:conneroisu/dotfiles#go-shell
 ```
 
 ### Remix JS dev shell
@@ -71,7 +71,7 @@ nix flake init -t github:connsoisu/nix-config#go-shell
 > This template is only useful to avoid installing Remix JS globally.
 
 ```sh
-nix flake init -t github:connsoisu/nix-config#remix-js-shell
+nix flake init -t github:conneroisu/dotfiles#remix-js-shell
 ```
 
 ### Laravel dev shell
@@ -80,7 +80,7 @@ nix flake init -t github:connsoisu/nix-config#remix-js-shell
 > This template is only useful to avoid installing Laravel globally.
 
 ```sh
-nix flake init -t github:connsoisu/nix-config#laravel-shell
+nix flake init -t github:connsoisu/dotfiles#laravel-shell
 ```
 
 Adding a package build is as simple as:

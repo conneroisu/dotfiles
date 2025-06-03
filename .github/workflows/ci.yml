@@ -13,12 +13,71 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  DeterminateCI:
-    uses: conneroisu/ci/.github/workflows/workflow.yml@main
-    permissions:
-      id-token: write
-      contents: read
-    with:
-      visibility: public
-      fail-fast: true
+  # DeterminateCI:
+  #   uses: conneroisu/ci/.github/workflows/workflow.yml@main
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   with:
+  #     visibility: public
+  #     fail-fast: true
+  
+  flake-check:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux x86_64
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_64
+            runner: ubuntu-latest
+          
+          # macOS x86_64 (Intel)
+          - os: macos-13
+            platform: macos
+            arch: x86_64
+            runner: macos-13
+          
+          # macOS aarch64 (Apple Silicon M1/M2)
+          - os: macos-14
+            platform: macos
+            arch: aarch64
+            runner: macos-14
+          
+          # Linux aarch64 (uncomment and configure self-hosted runner)
+          # - os: ubuntu-latest
+          #   platform: linux
+          #   arch: aarch64
+          #   runner: [self-hosted, linux, arm64]
+
+    runs-on: ${{ matrix.runner }}
     
+    name: Build (${{ matrix.platform }}-${{ matrix.arch }})
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@v3
+        with:
+          # Enable additional platforms for cross-compilation if needed
+          extra-platforms: ${{ matrix.arch == 'aarch64' && matrix.platform == 'linux' && 'aarch64-linux' || '' }}
+          
+      - name: Run flake check
+        run: nix flake check .
+        
+      - name: Build
+        run: nix build .
+        env:
+          # Set target architecture if cross-compiling
+          NIX_SYSTEM: ${{ matrix.platform == 'linux' && matrix.arch == 'aarch64' && 'aarch64-linux' || matrix.platform == 'macos' && matrix.arch == 'aarch64' && 'aarch64-darwin' || matrix.platform == 'macos' && matrix.arch == 'x86_64' && 'x86_64-darwin' || 'x86_64-linux' }}
+          
+      - name: Show build info
+        run: |
+          echo "Platform: ${{ matrix.platform }}"
+          echo "Architecture: ${{ matrix.arch }}"
+          echo "Runner: ${{ matrix.runner }}"
+          uname -a
+          nix --version

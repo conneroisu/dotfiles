@@ -68,12 +68,6 @@ jobs:
       - name: Run flake check
         run: nix flake check .
         
-      - name: Build
-        run: nix build .
-        env:
-          # Set target architecture if cross-compiling
-          NIX_SYSTEM: ${{ matrix.platform == 'linux' && matrix.arch == 'aarch64' && 'aarch64-linux' || matrix.platform == 'macos' && matrix.arch == 'aarch64' && 'aarch64-darwin' || matrix.platform == 'macos' && matrix.arch == 'x86_64' && 'x86_64-darwin' || 'x86_64-linux' }}
-          
       - name: Show build info
         run: |
           echo "Platform: ${{ matrix.platform }}"

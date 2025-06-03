@@ -43,7 +43,6 @@
 
     ghostty.url = "github:ghostty-org/ghostty/main";
     ghostty.inputs = {
-      nixpkgs-unstable.follows = "nixpkgs";
       flake-utils.follows = "flake-utils";
     };
 

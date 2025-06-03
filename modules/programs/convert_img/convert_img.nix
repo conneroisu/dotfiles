@@ -21,12 +21,14 @@ in
     nixos.ifEnabled = {
       environment.systemPackages = [
         program
+        pkgs.potrace
       ];
     };
 
     darwin.ifEnabled = {
       environment.systemPackages = [
         program
+        pkgs.potrace
       ];
     };
   }

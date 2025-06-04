@@ -64,6 +64,7 @@
             golangci-lint
             (buildWithSpecificGo revive)
             (buildWithSpecificGo gopls)
+            (buildWithSpecificGo templ)
             (buildWithSpecificGo golines)
             (buildWithSpecificGo golangci-lint-langserver)
             (buildWithSpecificGo gomarkdoc)

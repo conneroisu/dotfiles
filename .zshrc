@@ -42,7 +42,11 @@ alias nvimfi='nvim $(find . -type f -path "./.git" -prune -o -type f -not -path 
 
 alias latest='git add . && git commit -m "latest" && git push'
 alias nxi='nix'
+alias wtr='git worktree remove'
+alias wtl='git worktree list'
+alias wta='git worktree add'
 alias wt='git worktree'
+
 
 # Load a few important annexes, without Turbo
 zi light-mode for \

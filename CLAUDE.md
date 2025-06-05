@@ -11,7 +11,6 @@ This is a sophisticated NixOS/Home Manager dotfiles repository using the **Denix
 All commands should be run using `nix develop -c <command>` to ensure the proper shell environment is loaded.
 
 ### Development
-- `nix develop -c dx` - Edit the main flake.nix file
 - `nix develop -c lint` - Run linting tools (statix, deadnix, nix flake check)
 
 ### Installation/Rebuild

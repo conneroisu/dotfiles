@@ -42,6 +42,7 @@ alias nvimfi='nvim $(find . -type f -path "./.git" -prune -o -type f -not -path 
 
 alias latest='git add . && git commit -m "latest" && git push'
 alias nxi='nix'
+alias wt='git worktree'
 
 # Load a few important annexes, without Turbo
 zi light-mode for \
@@ -72,3 +73,4 @@ zstyle ':completion:*' menu no
 # Key bindings for word-by-word navigation for auto-completion
 bindkey '^[[1;5C' forward-word      # Ctrl+Right - move forward one word
 bindkey '^[[1;5D' backward-word     # Ctrl+Left - move backward one word
+

@@ -46,6 +46,7 @@ alias wtr='git worktree remove'
 alias wtl='git worktree list'
 alias wta='git worktree add'
 alias wt='git worktree'
+alias wtd='git worktree remove'
 
 
 # Load a few important annexes, without Turbo

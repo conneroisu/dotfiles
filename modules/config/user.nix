@@ -13,7 +13,6 @@ delib.module {
       groups.${username} = {};
       users.${username} = {
         home = "/Users/${username}";
-        isNormalUser = true;
       };
     };
   };

@@ -34,25 +34,100 @@ Available templates: devshell, rust-shell, go-shell, go-templ-shell, remix-js-sh
 
 ## Architecture
 
-### Module Structure
-- `modules/config/` - Core configuration (user, hosts, rices/themes)
-- `modules/features/` - System-level features (engineer, hyprland, nvidia, audio, etc.)
-- `modules/programs/` - Custom programs with their own source code
-- `hosts/` - Host-specific configurations
-- `rices/` - Theme configurations using Stylix
+### Module System Overview
 
-### Key Patterns
+The repository uses the **Denix framework** for modular configuration management, providing type-safe, composable modules with automatic discovery and loading.
 
-**Host Configuration**: Uses `delib.host` with type (desktop/laptop/server), feature sets, and platform-specific settings.
+### Module Types and Structure
 
-**Feature System**: Modular components enabled per-host:
-- `engineer.enable` - Complete development environment
-- `hyprland.enable` - Wayland desktop with supporting tools
-- `nvidia.enable` - GPU drivers and configuration
+**Configuration Modules** (`modules/config/`):
+- `constants.nix` - Read-only user constants (username, email, etc.)
+- `user.nix` - User account configuration for NixOS and Darwin
+- `hosts.nix` - Host type definitions and feature mapping system
+- `args.nix` - Shared arguments between nixos and home-manager configurations
+- `home.nix` - Home Manager configuration patterns
+- `rices.nix` - Theme system configuration
 
-**Multi-Platform Support**: Conditional logic for Darwin vs Linux with shared configuration where possible.
+**Feature Modules** (`modules/features/`):
+- System-level capabilities that can be enabled per-host
+- Use `delib.module` with `singleEnableOption false` pattern
+- Platform-specific sections: `nixos.ifEnabled`, `darwin.ifEnabled`, `home.ifEnabled`
+- Examples: `engineer.nix`, `hyprland.nix`, `nvidia.nix`, `audio.nix`, `bluetooth.nix`
 
-**Custom Programs**: Self-contained modules in `modules/programs/` with source code, build expressions, and cross-platform support.
+**Custom Program Modules** (`modules/programs/`):
+- Self-contained applications with source code and build expressions
+- Cross-platform deployment support (nixos/darwin)
+- Examples: `catls/` (Ruby), `cmbd/` (Go), `convert_img/` (Python), `dx/` (shell script)
+
+**Host Configurations** (`hosts/`):
+- Use `delib.host` with type classification (desktop/laptop/server)
+- Feature enablement through `myconfig.features.*`
+- Platform-specific configuration sections
+
+**Theme Configurations** (`rices/`):
+- Use `delib.rice` with Stylix integration
+- Consistent theming across applications using Base16 color schemes
+
+### Denix Framework Patterns
+
+**Module Creation**:
+```nix
+delib.module {
+  name = "feature-name";
+  options.myconfig.features.featureName = singleEnableOption false;
+  nixos.ifEnabled = { /* NixOS config */ };
+  darwin.ifEnabled = { /* macOS config */ };
+  home.ifEnabled = { /* Home Manager config */ };
+}
+```
+
+**Host Configuration**:
+```nix
+delib.host {
+  type = "desktop"; # or "laptop", "server"
+  features = { featureName = true; };
+  rice = "dark";
+  nixos = { /* NixOS-specific config */ };
+  darwin = { /* Darwin-specific config */ };
+}
+```
+
+**Custom Program Packaging**:
+```nix
+delib.module {
+  name = "program-name";
+  nixos.ifEnabled.environment.systemPackages = [ pkgs.program-name ];
+  darwin.ifEnabled.environment.systemPackages = [ pkgs.program-name ];
+}
+```
+
+### Module Discovery and Loading
+
+The `flake.nix` uses Denix's auto-discovery system:
+```nix
+denix.lib.configurations {
+  homeManagerUser = "connerohnesorge";
+  paths = [./hosts ./modules ./rices]; # Auto-discovery paths
+}
+```
+
+This automatically creates:
+- `nixosConfigurations`
+- `homeConfigurations` 
+- `darwinConfigurations`
+
+### Feature Dependencies
+
+Features automatically enable required programs:
+- `engineer.enable = true` → enables development tools (`dx`, `md2pdf`, `convert_img`, etc.)
+- `hyprland.enable = true` → enables Wayland desktop with supporting tools
+- Dependencies resolved through the Denix module system
+
+### Multi-Platform Support
+
+**Conditional Configuration**: Separate platform sections in modules
+**Shared Configuration**: Maximize reuse between platforms where possible
+**Platform Detection**: Automatic handling of nixos vs darwin differences
 
 ### Important Files
 - `flake.nix` - Main entry point with system configurations
@@ -62,7 +137,36 @@ Available templates: devshell, rust-shell, go-shell, go-templ-shell, remix-js-sh
 
 ## Development Notes
 
-- Uses Denix framework patterns (`delib.module`, `delib.host`, `delib.rice`)
-- Features automatically enable required programs through dependency management
-- Stylix provides unified theming across applications
-- Templates provide isolated development environments for different languages/frameworks
+### Working with Modules
+
+**Creating New Feature Modules**:
+1. Create a new `.nix` file in `modules/features/`
+2. Use the `delib.module` pattern with `singleEnableOption false`
+3. Define platform-specific configuration in `nixos.ifEnabled`, `darwin.ifEnabled`, `home.ifEnabled` sections
+4. Features are automatically discovered and can be enabled in host configurations
+
+**Creating Custom Program Modules**:
+1. Create a directory in `modules/programs/` with source code and `default.nix`
+2. Define the package derivation with cross-platform support
+3. Export the module using `delib.module` pattern
+4. Programs are automatically available after rebuild
+
+**Modifying Host Configurations**:
+- Edit files in `hosts/` to enable/disable features
+- Use `myconfig.features.featureName = true` to enable features
+- Platform-specific settings go in `nixos` or `darwin` sections
+
+### Best Practices
+
+- **Module Isolation**: Each module should be self-contained with minimal external dependencies
+- **Platform Awareness**: Always consider both nixos and darwin when creating modules
+- **Feature Dependencies**: Let the Denix system handle automatic dependency resolution
+- **Theme Integration**: Use Stylix-compatible configuration for consistent theming
+- **Type Safety**: Leverage Nix's type system through proper option definitions
+
+### Templates and Development
+
+Templates provide isolated development environments for different languages/frameworks:
+- Each template is a complete flake.nix with development dependencies
+- Use for project-specific development without affecting system configuration
+- Available for: Go, Rust, Elixir/Phoenix, Laravel, Remix.js, Lua, and general devshell

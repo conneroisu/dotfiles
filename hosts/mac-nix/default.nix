@@ -16,6 +16,9 @@ in
     homeManagerSystem = system;
 
     myconfig = {
+      features = {
+        engineer.enable = true;
+      };
       programs = {
         catls.enable = true;
         convert_img.enable = true;
@@ -108,50 +111,6 @@ in
           raycast
           xcodes
           # Shared
-          # TODO: Share
-          zinit
-          starship
-          direnv
-          nix-direnv
-          bat
-          wget
-          fd
-          jq
-          yq
-          spicetify-cli
-          fzf
-          zellij
-          atuin
-          zoxide
-          eza
-          delta
-          unzip
-          htop
-          tealdeer
-          sleek
-          tree-sitter
-          unixtools.xxd
-          tree
-          sad
-          ripgrep
-          stow
-          carapace
-          neovim
-          cmake
-          gnumake
-          uv
-          bun
-          git
-          # Platforms
-          flyctl
-          fh
-          gh
-          tea
-
-          # Languages
-          nixd
-          nodejs
-          lua-language-server
         ]
         ++ (with inputs; [
           blink.packages."${system}".default

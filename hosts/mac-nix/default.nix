@@ -85,13 +85,6 @@ in
           PasswordAuthentication = true;
         };
       };
-      users.users.connerohnesorge = {
-        isNormalUser = true;
-        extraGroups = ["wheel" "networkmanager"];
-        openssh.authorizedKeys.keys = [
-          # Add your SSH public key here if you have one
-        ];
-      };
       environment.systemPackages = with pkgs; [
         vim
         git

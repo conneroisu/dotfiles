@@ -33,13 +33,13 @@ in
       };
 
       services = {
+        displayManager = {
+          gdm.enable = true;
+        };
         ## Graphics
         xserver = {
           enable = true;
           videoDrivers = ["nvidia"];
-          displayManager = {
-            gdm.enable = true;
-          };
           xkb = {
             layout = "us";
             variant = "";

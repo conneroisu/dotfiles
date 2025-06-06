@@ -26,7 +26,12 @@ in
     };
 
     nixos = {
+      imports = [
+        inputs.determinate.nixosModules.default
+      ];
       nixpkgs.hostPlatform = "aarch64-linux";
+      nixpkgs.config.allowUnfree = true;
+      myconfig.features.engineer.enable = pkgs.lib.mkForce false;
       system.stateVersion = "24.11";
       virtualisation.vmware.guest.enable = true;
       boot = {
@@ -73,19 +78,15 @@ in
         useDHCP = pkgs.lib.mkForce true;
         interfaces.ens33.useDHCP = true; # VMware default network interface
       };
+      users.users.connerohnesorge = {
+        home = "/home/connerohnesorge";
+      };
       services.openssh = {
         enable = true;
         settings = {
           PermitRootLogin = "no";
           PasswordAuthentication = true;
         };
-      };
-      users.users.connerohnesorge = {
-        isNormalUser = true;
-        extraGroups = ["wheel" "networkmanager"];
-        openssh.authorizedKeys.keys = [
-          # Add your SSH public key here if you have one
-        ];
       };
       environment.systemPackages = with pkgs; [
         vim
@@ -98,6 +99,9 @@ in
     };
 
     darwin = {
+      imports = [
+        inputs.determinate.darwinModules.default
+      ];
       nixpkgs = {
         hostPlatform = system;
         config.allowUnfree = true;

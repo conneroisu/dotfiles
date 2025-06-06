@@ -148,7 +148,10 @@ simultaneously. This is the core functionality of par.`,
 		fmt.Printf("Executing %d jobs with %d workers...\n", len(jobList), jobs)
 
 		// Execute jobs
-		pool := executor.NewPool(jobs, cfg)
+		pool, err := executor.NewPool(jobs, cfg)
+		if err != nil {
+			return err
+		}
 		var jobResults []*executor.JobResult
 
 		if len(jobList) == 1 {

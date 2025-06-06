@@ -22,7 +22,11 @@ type Pool struct {
 }
 
 // NewPool creates a new execution pool
-func NewPool(workers int, config *config.Config) *Pool {
+func NewPool(workers int, config *config.Config) (*Pool, error) {
+	if workers <= 0 {
+		return nil, fmt.Errorf("invalid worker count: %d", workers)
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 
 	return &Pool{
@@ -33,7 +37,7 @@ func NewPool(workers int, config *config.Config) *Pool {
 		resultQueue: make(chan *JobResult, workers*2),
 		ctx:         ctx,
 		cancel:      cancel,
-	}
+	}, nil
 }
 
 // Execute executes a batch of jobs in parallel

@@ -214,7 +214,10 @@ for i, worktree := range validWorktrees {
 
 ```go
 // Create worker pool
-pool := executor.NewPool(config.Jobs)
+pool, err := executor.NewPool(config.Jobs, config)
+if err != nil {
+    log.Fatal(err)
+}
 
 // Execute jobs
 results := pool.Execute(jobs)

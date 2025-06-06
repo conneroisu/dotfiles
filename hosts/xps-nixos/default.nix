@@ -11,22 +11,6 @@ delib.host {
   type = "laptop";
   home.home.stateVersion = "24.11";
 
-  myconfig = {
-    features = {
-      nvidia.enable = true;
-      power-efficient.enable = true;
-      audio.enable = true;
-      bluetooth.enable = true;
-      hyprland.enable = true;
-      engineer.enable = true;
-      darknet.enable = true;
-      secrets.enable = true;
-    };
-    programs = {
-      nordvpn.enable = true;
-    };
-  };
-
   darwin = {
     imports = [
       inputs.determinate.nixosModules.default
@@ -38,6 +22,23 @@ delib.host {
     imports = [
       inputs.determinate.nixosModules.default
     ];
+
+    myconfig = {
+      features = {
+        nvidia.enable = true;
+        power-efficient.enable = true;
+        audio.enable = true;
+        bluetooth.enable = true;
+        hyprland.enable = true;
+        engineer.enable = true;
+        darknet.enable = true;
+        secrets.enable = true;
+      };
+      programs = {
+        nordvpn.enable = true;
+      };
+    };
+
     nixpkgs.config.allowUnfree = true;
     nixpkgs.hostPlatform = "x86_64-linux";
     boot = {

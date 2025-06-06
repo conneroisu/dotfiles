@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
@@ -13,7 +16,7 @@ var listCmd = &cobra.Command{
 	Use:   "list [prompts|worktrees]",
 	Short: "List available prompts and discovered worktrees",
 	Long: `List available prompts in the prompt library and discovered Git worktrees
-in the configured search paths.`,
+in the configured search paths. By default, only shows actual worktrees, not main repositories.`,
 	ValidArgs: []string{"prompts", "worktrees"},
 	Args:      cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -21,6 +24,8 @@ in the configured search paths.`,
 		if len(args) > 0 {
 			listType = args[0]
 		}
+
+		verbose, _ := cmd.Flags().GetBool("verbose")
 
 		// Load configuration
 		cfg, err := config.Load()
@@ -32,13 +37,13 @@ in the configured search paths.`,
 		case "prompts":
 			return listPrompts(cfg)
 		case "worktrees":
-			return listWorktrees(cfg)
+			return listWorktrees(cfg, verbose)
 		default:
 			if err := listPrompts(cfg); err != nil {
 				return err
 			}
 			fmt.Println()
-			return listWorktrees(cfg)
+			return listWorktrees(cfg, verbose)
 		}
 	},
 }
@@ -90,7 +95,7 @@ func listPrompts(cfg *config.Config) error {
 	return nil
 }
 
-func listWorktrees(cfg *config.Config) error {
+func listWorktrees(cfg *config.Config, verbose bool) error {
 	fmt.Println("Discovered worktrees:")
 	fmt.Println("====================")
 	
@@ -108,11 +113,17 @@ func listWorktrees(cfg *config.Config) error {
 		return nil
 	}
 	
+	// Filter worktrees if not verbose
+	filteredWorktrees := worktrees
+	if !verbose {
+		filteredWorktrees = filterActualWorktrees(worktrees)
+	}
+
 	// Validate worktrees
 	validator := worktree.NewValidator(cfg)
 	validCount := 0
 	
-	for _, wt := range worktrees {
+	for _, wt := range filteredWorktrees {
 		validator.ValidateWorktree(wt)
 		
 		fmt.Printf("  %s", wt.Name)
@@ -135,8 +146,55 @@ func listWorktrees(cfg *config.Config) error {
 		fmt.Println()
 	}
 	
-	fmt.Printf("Total: %d worktrees (%d valid, %d invalid)\n", 
-		len(worktrees), validCount, len(worktrees)-validCount)
+	totalShown := len(filteredWorktrees)
+	totalFound := len(worktrees)
+	
+	if verbose {
+		fmt.Printf("Total: %d worktrees (%d valid, %d invalid)\n", 
+			totalFound, validCount, totalShown-validCount)
+	} else {
+		fmt.Printf("Total: %d actual worktrees (%d valid, %d invalid)\n", 
+			totalShown, validCount, totalShown-validCount)
+		if totalFound > totalShown {
+			fmt.Printf("(Use -v/--verbose to show all %d Git repositories including main repos)\n", totalFound)
+		}
+	}
 	
 	return nil
+}
+
+// filterActualWorktrees filters out main Git repositories, keeping only actual worktrees
+func filterActualWorktrees(worktrees []*worktree.Worktree) []*worktree.Worktree {
+	var actualWorktrees []*worktree.Worktree
+	
+	for _, wt := range worktrees {
+		if isActualWorktree(wt) {
+			actualWorktrees = append(actualWorktrees, wt)
+		}
+	}
+	
+	return actualWorktrees
+}
+
+// isActualWorktree determines if a worktree is an actual worktree (not a main repository)
+func isActualWorktree(wt *worktree.Worktree) bool {
+	// Check if .git is a file (worktree) rather than a directory (main repo)
+	gitPath := filepath.Join(wt.Path, ".git")
+	if info, err := os.Stat(gitPath); err == nil {
+		return !info.IsDir() // If .git is a file, it's a worktree
+	}
+	
+	// Additional heuristic: if the parent directory is named ".git" or contains "worktrees"
+	// it's likely part of a worktree structure
+	parentDir := filepath.Dir(wt.Path)
+	if strings.Contains(parentDir, "worktrees") || filepath.Base(parentDir) == ".git" {
+		return true
+	}
+	
+	// If we can't determine, assume it's a main repo
+	return false
+}
+
+func init() {
+	listCmd.Flags().BoolP("verbose", "v", false, "Show all Git repositories including main repos")
 }

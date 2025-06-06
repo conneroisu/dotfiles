@@ -30,6 +30,8 @@ in
         inputs.determinate.nixosModules.default
       ];
       nixpkgs.hostPlatform = "aarch64-linux";
+      nixpkgs.config.allowUnfree = true;
+      myconfig.features.engineer.enable = pkgs.lib.mkForce false;
       system.stateVersion = "24.11";
       virtualisation.vmware.guest.enable = true;
       boot = {

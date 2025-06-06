@@ -60,8 +60,8 @@ go mod tidy                          # Clean up dependencies
 
 **Worktree Discovery (`internal/worktree/`)**:
 - `discovery.go` - Automatic Git worktree detection across search paths
-- `manager.go` - Worktree filtering and pattern matching
-- `validator.go` - Worktree validation and health checks
+- `manager.go` - Worktree filtering, pattern matching, and state management
+- `validator.go` - Comprehensive worktree validation (Git status, Claude CLI, conflicts)
 
 **Configuration (`internal/config/`)**:
 - `config.go` - YAML-based configuration with sensible defaults
@@ -94,6 +94,49 @@ Key configuration areas:
 - **Terminal Integration**: Ghostty window management for job visualization
 - **Execution Tuning**: Default job counts, timeouts, output directories
 
+#### Default Configuration Structure
+
+**Default Search Paths**:
+- `~/projects` (maps to user's project directory)
+- `~/work` (maps to user's work directory)
+
+**Claude CLI Settings**:
+- Binary path: `"claude-code"` (expects CLI in PATH)
+- Default arguments: empty array
+- Validation: Checks `--version` flag and `ANTHROPIC_API_KEY` environment variable
+
+**Worktree Validation**:
+- Path existence and Git repository validation
+- Working directory cleanliness (uncommitted changes detection)
+- Merge conflict detection
+- Claude CLI availability check
+
+#### Configuration Customization Examples
+
+**Custom Search Paths**:
+```yaml
+worktrees:
+  search_paths:
+    - "/home/user/Documents/001Repos"
+    - "/home/user/Documents/002Orgs"
+```
+
+**Custom Claude Binary** (for non-standard installations like bun):
+```yaml
+claude:
+  binary_path: "/home/user/.bun/bin/claude"
+```
+
+**Exclusion Patterns**:
+```yaml
+worktrees:
+  exclude_patterns:
+    - "*/node_modules/*"
+    - "*/.git/*"
+    - "*/target/*"
+    - "*/build/*"
+```
+
 ### Prompt Template System
 
 Supports Go template syntax with variable substitution:
@@ -108,3 +151,72 @@ Supports Go template syntax with variable substitution:
 - **UUID**: Session identification for result tracking
 - **Claude Code CLI**: Must be available in PATH or configured binary path
 - **ANTHROPIC_API_KEY**: Required environment variable for Claude API access
+
+## Troubleshooting
+
+### Common Issues
+
+**Claude CLI Not Found**:
+- Error: `claude-code CLI not available`
+- Solutions:
+  1. Install Claude Code CLI: `npm install -g @anthropic-ai/claude-code` or `bun install -g @anthropic-ai/claude-code`
+  2. Configure custom binary path in `~/.config/par/config.yaml`:
+     ```yaml
+     claude:
+       binary_path: "/path/to/claude-code"
+     ```
+  3. For bun installations, use: `binary_path: "/home/user/.bun/bin/claude"`
+
+**No Worktrees Found**:
+- Error: `No worktrees found in search paths`
+- Solutions:
+  1. Check if search paths exist and contain Git repositories
+  2. Customize search paths in configuration:
+     ```yaml
+     worktrees:
+       search_paths:
+         - "/actual/path/to/repos"
+     ```
+  3. Use explicit directories: `./par run prompt --directories /path/to/repo1,/path/to/repo2`
+
+**Invalid Worktrees**:
+- Common validation failures:
+  - `has uncommitted changes`: Commit or stash changes before running
+  - `not a Git repository`: Ensure directory is a valid Git repository
+  - `has unresolved merge conflicts`: Resolve conflicts before execution
+  - `path does not exist`: Verify search paths are correct
+
+**API Key Issues**:
+- Error: `ANTHROPIC_API_KEY environment variable not set`
+- Solution: Set environment variable: `export ANTHROPIC_API_KEY="your-api-key"`
+
+## Development Notes
+
+### Module Architecture
+
+The validator system is designed with dependency injection:
+- `Validator` requires `*config.Config` to access Claude binary path settings
+- `Manager` creates validators with proper configuration
+- All validation logic respects user configuration overrides
+
+### Build Process
+
+```bash
+# Standard Go build in project directory
+go build -o par .
+
+# Build from outside directory
+go build -C /path/to/par -o par .
+```
+
+### Testing Configuration
+
+Create a minimal test configuration:
+```yaml
+# ~/.config/par/config.yaml
+worktrees:
+  search_paths:
+    - "/path/to/test/repos"
+claude:
+  binary_path: "claude"  # or custom path
+```

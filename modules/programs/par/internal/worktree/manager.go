@@ -5,6 +5,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 )
 
 // Manager handles worktree operations and state management
@@ -13,9 +15,9 @@ type Manager struct {
 }
 
 // NewManager creates a new worktree manager
-func NewManager() *Manager {
+func NewManager(config *config.Config) *Manager {
 	return &Manager{
-		validator: NewValidator(),
+		validator: NewValidator(config),
 	}
 }
 

@@ -6,14 +6,20 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 )
 
 // Validator handles worktree validation
-type Validator struct{}
+type Validator struct{
+	config *config.Config
+}
 
 // NewValidator creates a new worktree validator
-func NewValidator() *Validator {
-	return &Validator{}
+func NewValidator(config *config.Config) *Validator {
+	return &Validator{
+		config: config,
+	}
 }
 
 // ValidateWorktree validates a single worktree for par execution
@@ -125,7 +131,7 @@ func (v *Validator) hasMergeConflicts(path string) bool {
 
 // isClaudeCodeAvailable checks if Claude Code CLI is available
 func (v *Validator) isClaudeCodeAvailable() bool {
-	cmd := exec.Command("claude-code", "--version")
+	cmd := exec.Command(v.config.Claude.BinaryPath, "--version")
 	err := cmd.Run()
 	return err == nil
 }

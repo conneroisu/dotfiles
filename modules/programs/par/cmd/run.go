@@ -99,7 +99,7 @@ simultaneously. This is the core functionality of par.`,
 
 			// Filter by pattern if specified
 			if worktreePattern != "" {
-				manager := worktree.NewManager()
+				manager := worktree.NewManager(cfg)
 				filteredWorktrees, err := manager.FilterByPattern(discoveredWorktrees, worktreePattern)
 				if err != nil {
 					return fmt.Errorf("failed to filter worktrees: %w", err)
@@ -111,7 +111,7 @@ simultaneously. This is the core functionality of par.`,
 		}
 
 		// Validate worktrees
-		validator := worktree.NewValidator()
+		validator := worktree.NewValidator(cfg)
 		validWorktrees := validator.FilterValid(targetWorktrees)
 
 		if len(validWorktrees) == 0 {

@@ -109,7 +109,7 @@ func listWorktrees(cfg *config.Config) error {
 	}
 	
 	// Validate worktrees
-	validator := worktree.NewValidator()
+	validator := worktree.NewValidator(cfg)
 	validCount := 0
 	
 	for _, wt := range worktrees {

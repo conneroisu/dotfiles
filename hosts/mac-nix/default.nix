@@ -26,6 +26,9 @@ in
     };
 
     nixos = {
+      imports = [
+        inputs.determinate.nixosModules.default
+      ];
       nixpkgs.hostPlatform = "aarch64-linux";
       system.stateVersion = "24.11";
       virtualisation.vmware.guest.enable = true;
@@ -98,6 +101,9 @@ in
     };
 
     darwin = {
+      imports = [
+        inputs.determinate.nixosModules.default
+      ];
       nixpkgs = {
         hostPlatform = system;
         config.allowUnfree = true;

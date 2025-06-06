@@ -28,6 +28,9 @@ delib.host {
   };
 
   darwin = {
+    imports = [
+      inputs.determinate.nixosModules.default
+    ];
     nixpkgs.hostPlatform = "aarch64-darwin";
   };
   nixos = {

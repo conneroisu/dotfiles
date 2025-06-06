@@ -88,13 +88,12 @@ func (e *ClaudeExecutor) runCommand(ctx context.Context, cmd *exec.Cmd, prompt s
 	// Set up stdin with the prompt
 	cmd.Stdin = strings.NewReader(prompt)
 	
-	// Capture output
-	output, err := cmd.CombinedOutput()
+	// Use context-aware execution
+	cmdWithContext := exec.CommandContext(ctx, cmd.Path, cmd.Args[1:]...)
+	cmdWithContext.Dir = cmd.Dir
+	cmdWithContext.Stdin = cmd.Stdin
 	
-	// Check for context cancellation
-	if ctx.Err() != nil {
-		return string(output), ctx.Err()
-	}
+	output, err := cmdWithContext.CombinedOutput()
 	
 	return string(output), err
 }

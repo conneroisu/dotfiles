@@ -106,8 +106,13 @@ func (d *Discovery) shouldExclude(path string) bool {
 		}
 		
 		// Also check if any parent directory matches
-		if strings.Contains(path, strings.TrimSuffix(pattern, "/*")) {
-			return true
+		if strings.HasSuffix(pattern, "/*") {
+			parentPattern := strings.TrimSuffix(pattern, "/*")
+			// Check if path starts with the parent pattern followed by a path separator
+			if strings.HasPrefix(path, parentPattern+string(filepath.Separator)) ||
+				path == parentPattern {
+				return true
+			}
 		}
 	}
 	return false

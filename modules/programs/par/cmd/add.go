@@ -19,9 +19,18 @@ var addCmd = &cobra.Command{
 	Long: `Add a new prompt to the prompt library. Prompts can be added from stdin,
 from a file, or interactively. Support for prompt templates with variables.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		name, _ := cmd.Flags().GetString("name")
-		file, _ := cmd.Flags().GetString("file")
-		template, _ := cmd.Flags().GetBool("template")
+		name, err := cmd.Flags().GetString("name")
+		if err != nil {
+			return fmt.Errorf("failed to parse 'name' flag: %w", err)
+		}
+		file, err := cmd.Flags().GetString("file")
+		if err != nil {
+			return fmt.Errorf("failed to parse 'file' flag: %w", err)
+		}
+		template, err := cmd.Flags().GetBool("template")
+		if err != nil {
+			return fmt.Errorf("failed to parse 'template' flag: %w", err)
+		}
 
 		// Load configuration
 		cfg, err := config.Load()
@@ -106,15 +115,30 @@ from a file, or interactively. Support for prompt templates with variables.`,
 				}
 				
 				fmt.Print("Description: ")
-				scanner.Scan()
+				if !scanner.Scan() {
+					if err := scanner.Err(); err != nil {
+						return fmt.Errorf("error reading description: %w", err)
+					}
+					break
+				}
 				description := strings.TrimSpace(scanner.Text())
 				
 				fmt.Print("Default value (optional): ")
-				scanner.Scan()
+				if !scanner.Scan() {
+					if err := scanner.Err(); err != nil {
+						return fmt.Errorf("error reading default value: %w", err)
+					}
+					break
+				}
 				defaultValue := strings.TrimSpace(scanner.Text())
 				
 				fmt.Print("Required? (y/N): ")
-				scanner.Scan()
+				if !scanner.Scan() {
+					if err := scanner.Err(); err != nil {
+						return fmt.Errorf("error reading required flag: %w", err)
+					}
+					break
+				}
 				required := strings.ToLower(strings.TrimSpace(scanner.Text())) == "y"
 				
 				variable := prompts.Variable{

@@ -30,18 +30,20 @@ func NewAggregator() *Aggregator {
 // ProcessResults processes a list of job results and returns a summary
 func (a *Aggregator) ProcessResults(results []*executor.JobResult) *Summary {
 	if len(results) == 0 {
+		now := time.Now()
 		return &Summary{
 			TotalJobs: 0,
-			StartTime: time.Now(),
-			EndTime:   time.Now(),
+			StartTime: now,
+			EndTime:   now,
 		}
 	}
 	
+	now := time.Now()
 	summary := &Summary{
 		TotalJobs: len(results),
 		Results:   results,
-		StartTime: time.Now(),
-		EndTime:   time.Now(),
+		StartTime: now,
+		EndTime:   now,
 	}
 	
 	// Find earliest start time and latest end time

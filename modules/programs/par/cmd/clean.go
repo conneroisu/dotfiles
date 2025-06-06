@@ -15,9 +15,18 @@ var cleanCmd = &cobra.Command{
 	Long: `Clean up temporary files, failed run artifacts, and other cleanup operations.
 Use --all to clean everything, or --failed to clean only failed runs.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		all, _ := cmd.Flags().GetBool("all")
-		failed, _ := cmd.Flags().GetBool("failed")
-		maxAge, _ := cmd.Flags().GetString("max-age")
+		all, err := cmd.Flags().GetBool("all")
+		if err != nil {
+			return fmt.Errorf("failed to parse 'all' flag: %w", err)
+		}
+		failed, err := cmd.Flags().GetBool("failed")
+		if err != nil {
+			return fmt.Errorf("failed to parse 'failed' flag: %w", err)
+		}
+		maxAge, err := cmd.Flags().GetString("max-age")
+		if err != nil {
+			return fmt.Errorf("failed to parse 'max-age' flag: %w", err)
+		}
 
 		// Load configuration
 		cfg, err := config.Load()
@@ -63,10 +72,13 @@ Use --all to clean everything, or --failed to clean only failed runs.`,
 				}
 				
 				if summary.HasFailures() {
-					// This is a simplified approach - in a real implementation,
-					// you'd want to remove the specific files
-					fmt.Printf("Found failed run: %s (%d failures)\n", 
+					fmt.Printf("Cleaning failed run: %s (%d failures)\n", 
 						summaryFile, summary.FailedJobs)
+					
+					if err := storage.DeleteFailedRun(summaryFile); err != nil {
+						fmt.Printf("Warning: failed to delete %s: %v\n", summaryFile, err)
+						continue
+					}
 					cleanedCount++
 				}
 			}
@@ -74,7 +86,7 @@ Use --all to clean everything, or --failed to clean only failed runs.`,
 			if cleanedCount == 0 {
 				fmt.Println("No failed runs found")
 			} else {
-				fmt.Printf("Found %d failed runs\n", cleanedCount)
+				fmt.Printf("Cleaned %d failed runs\n", cleanedCount)
 			}
 			
 		} else {

@@ -23,6 +23,10 @@ func NewManager(config *config.Config) *Manager {
 
 // ExecuteJobInTerminal executes a job in a terminal window
 func (m *Manager) ExecuteJobInTerminal(job *executor.Job) error {
+	if job == nil {
+		return fmt.Errorf("job cannot be nil")
+	}
+	
 	if !m.config.Terminal.UseGhostty {
 		return fmt.Errorf("terminal execution not enabled")
 	}

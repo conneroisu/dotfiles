@@ -53,7 +53,11 @@ type Prompts struct {
 
 // DefaultConfig returns the default configuration
 func DefaultConfig() *Config {
-	homeDir, _ := os.UserHomeDir()
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		// Use a safe fallback if home directory cannot be determined
+		homeDir = "/tmp/par"
+	}
 	
 	return &Config{
 		Defaults: Defaults{
@@ -91,7 +95,10 @@ func DefaultConfig() *Config {
 
 // Load loads configuration from the config file or returns default config
 func Load() (*Config, error) {
-	configPath := getConfigPath()
+	configPath, err := getConfigPath()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get config path: %w", err)
+	}
 	
 	// If config file doesn't exist, return default config
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
@@ -113,7 +120,10 @@ func Load() (*Config, error) {
 
 // Save saves the configuration to the config file
 func (c *Config) Save() error {
-	configPath := getConfigPath()
+	configPath, err := getConfigPath()
+	if err != nil {
+		return fmt.Errorf("failed to get config path: %w", err)
+	}
 	
 	// Ensure config directory exists
 	if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {
@@ -133,9 +143,12 @@ func (c *Config) Save() error {
 }
 
 // getConfigPath returns the path to the configuration file
-func getConfigPath() string {
-	homeDir, _ := os.UserHomeDir()
-	return filepath.Join(homeDir, ".config", "par", "config.yaml")
+func getConfigPath() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("failed to get user home directory: %w", err)
+	}
+	return filepath.Join(homeDir, ".config", "par", "config.yaml"), nil
 }
 
 // EnsureDirectories ensures all necessary directories exist

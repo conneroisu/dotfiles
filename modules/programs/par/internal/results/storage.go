@@ -172,6 +172,32 @@ func (s *Storage) CleanOldResults(maxAge time.Duration) error {
 	return nil
 }
 
+// DeleteFailedRun removes all files associated with a failed run
+func (s *Storage) DeleteFailedRun(summaryFilename string) error {
+	// Extract base name from summary filename
+	baseName := strings.TrimSuffix(summaryFilename, ".json")
+	
+	// List of file extensions to clean up
+	extensions := []string{".json", ".txt", "_detailed.txt", ".csv"}
+	
+	for _, ext := range extensions {
+		filename := baseName + ext
+		filepath := filepath.Join(s.outputDir, filename)
+		if err := os.Remove(filepath); err != nil && !os.IsNotExist(err) {
+			return fmt.Errorf("failed to remove file %s: %w", filename, err)
+		}
+	}
+	
+	// Also try to remove associated outputs directory
+	outputsDir := strings.Replace(baseName, "par_results_", "outputs_", 1)
+	outputsDirPath := filepath.Join(s.outputDir, outputsDir)
+	if err := os.RemoveAll(outputsDirPath); err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("failed to remove outputs directory %s: %w", outputsDir, err)
+	}
+	
+	return nil
+}
+
 // ensureOutputDir ensures the output directory exists
 func (s *Storage) ensureOutputDir() error {
 	return os.MkdirAll(s.outputDir, 0755)

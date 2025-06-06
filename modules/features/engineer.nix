@@ -168,4 +168,59 @@ in
         gnome.gnome-keyring.enable = true;
       };
     };
+
+    darwin.ifEnabled = {
+      environment = {
+        systemPackages = with pkgs; [
+          zinit
+          starship
+          direnv
+          nix-direnv
+          bat
+          wget
+          fd
+          jq
+          yq
+          spicetify-cli
+          fzf
+          zellij
+          atuin
+          zoxide
+          eza
+          delta
+          unzip
+          htop
+          tealdeer
+          sleek
+          tree-sitter
+          unixtools.xxd
+          tree
+          sad
+          ripgrep
+          stow
+          carapace
+          neovim
+          cmake
+          gnumake
+          uv
+          bun
+          git
+          # Platforms
+          flyctl
+          fh
+          gh
+          tea
+
+          # Languages
+          nixd
+          nodejs
+          lua-language-server
+        ];
+        variables = {
+          EDITOR = "nvim";
+          VISUAL = "nvim";
+          GIT_EDITOR = "nvim";
+        };
+      };
+    };
   }

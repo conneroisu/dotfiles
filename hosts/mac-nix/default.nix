@@ -78,6 +78,9 @@ in
         useDHCP = pkgs.lib.mkForce true;
         interfaces.ens33.useDHCP = true; # VMware default network interface
       };
+      users.users.connerohnesorge = {
+        home = "/home/connerohnesorge";
+      };
       services.openssh = {
         enable = true;
         settings = {
@@ -140,6 +143,9 @@ in
       };
 
       environment.shells = [pkgs.zsh];
+      users.users.connerohnesorge = {
+        home = "/Users/connerohnesorge";
+      };
 
       security.pam.services.sudo_local.touchIdAuth = true;
       system.activationScripts.applications.text = let

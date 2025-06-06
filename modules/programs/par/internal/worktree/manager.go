@@ -2,6 +2,7 @@ package worktree
 
 import (
 	"fmt"
+	"log/slog"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -43,6 +44,7 @@ func (m *Manager) CleanupWorktree(worktree *Worktree, restoreChanges bool) error
 		// Restore stashed changes if any
 		if err := m.restoreStash(worktree.Path); err != nil {
 			// Log but don't fail - stash might not exist
+			slog.Debug("Failed to restore stash", "path", worktree.Path, "error", err)
 		}
 	}
 	

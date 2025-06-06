@@ -32,7 +32,7 @@ func (m *Manager) ExecuteJobInTerminal(job *executor.Job) error {
 	}
 	
 	if !m.ghosttyExec.IsGhosttyAvailable() {
-		return fmt.Errorf("Ghostty terminal not available")
+		return fmt.Errorf("ghostty terminal not available")
 	}
 	
 	return m.ghosttyExec.ExecuteJob(job)

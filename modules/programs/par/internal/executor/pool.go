@@ -142,7 +142,8 @@ func (p *Pool) worker(id int) {
 			
 			// Execute the job
 			if err := p.claudeExec.ExecuteJob(p.ctx, job); err != nil {
-				// Error is already recorded in the job
+				// Error is already recorded in the job, no additional action needed
+				slog.Debug("Job execution completed with error", "job_id", job.ID, "error", err)
 			}
 			
 			// Send result

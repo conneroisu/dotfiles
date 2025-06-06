@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 )
 
@@ -52,7 +53,11 @@ func (h *OutputHandler) WriteToFile(filename, content string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			slog.Debug("Failed to close output file", "filename", filename, "error", err)
+		}
+	}()
 	
 	_, err = file.WriteString(content)
 	if err != nil {

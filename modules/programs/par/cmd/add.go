@@ -3,6 +3,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
@@ -190,8 +191,16 @@ func launchEditorForPrompt(promptName string, isTemplate bool) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to create temporary file: %w", err)
 	}
-	defer os.Remove(tempFile.Name())
-	defer tempFile.Close()
+	defer func() {
+		if err := os.Remove(tempFile.Name()); err != nil {
+			slog.Debug("Failed to remove temporary file", "path", tempFile.Name(), "error", err)
+		}
+	}()
+	defer func() {
+		if err := tempFile.Close(); err != nil {
+			slog.Debug("Failed to close temporary file", "error", err)
+		}
+	}()
 
 	// Write markdown template to the file
 	template := generatePromptTemplate(promptName, isTemplate)
@@ -200,7 +209,9 @@ func launchEditorForPrompt(promptName string, isTemplate bool) (string, error) {
 	}
 
 	// Close file so editor can write to it
-	tempFile.Close()
+	if err := tempFile.Close(); err != nil {
+		return "", fmt.Errorf("failed to close temporary file: %w", err)
+	}
 
 	// Launch editor
 	cmd := exec.Command(editor, tempFile.Name())

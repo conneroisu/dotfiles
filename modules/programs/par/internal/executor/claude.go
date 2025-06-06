@@ -92,6 +92,7 @@ func (e *ClaudeExecutor) runCommand(ctx context.Context, cmd *exec.Cmd, prompt s
 	cmdWithContext := exec.CommandContext(ctx, cmd.Path, cmd.Args[1:]...)
 	cmdWithContext.Dir = cmd.Dir
 	cmdWithContext.Stdin = cmd.Stdin
+	cmdWithContext.Env = cmd.Env
 	
 	output, err := cmdWithContext.CombinedOutput()
 	

@@ -3,6 +3,7 @@ package results
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,7 +29,11 @@ func (s *Storage) SaveSummary(summary *Summary, sessionID string) error {
 	}
 	
 	timestamp := time.Now().Format("20060102_150405")
-	baseFilename := fmt.Sprintf("par_results_%s_%s", timestamp, sessionID[:8])
+	sessionIDSuffix := sessionID
+	if len(sessionID) > 8 {
+		sessionIDSuffix = sessionID[:8]
+	}
+	baseFilename := fmt.Sprintf("par_results_%s_%s", timestamp, sessionIDSuffix)
 	
 	reporter := NewReporter()
 	
@@ -70,7 +75,11 @@ func (s *Storage) SaveIndividualResults(summary *Summary, sessionID string) erro
 	}
 	
 	timestamp := time.Now().Format("20060102_150405")
-	outputsDir := filepath.Join(s.outputDir, fmt.Sprintf("outputs_%s_%s", timestamp, sessionID[:8]))
+	sessionIDSuffix := sessionID
+	if len(sessionID) > 8 {
+		sessionIDSuffix = sessionID[:8]
+	}
+	outputsDir := filepath.Join(s.outputDir, fmt.Sprintf("outputs_%s_%s", timestamp, sessionIDSuffix))
 	
 	if err := os.MkdirAll(outputsDir, 0755); err != nil {
 		return fmt.Errorf("failed to create outputs directory: %w", err)
@@ -83,7 +92,7 @@ func (s *Storage) SaveIndividualResults(summary *Summary, sessionID string) erro
 		
 		// Create filename from worktree path
 		filename := s.sanitizeFilename(filepath.Base(result.Worktree)) + ".txt"
-		filepath := filepath.Join(outputsDir, filename)
+		filePath := filepath.Join(outputsDir, filename)
 		
 		content := fmt.Sprintf("Job ID: %s\n", result.JobID)
 		content += fmt.Sprintf("Worktree: %s\n", result.Worktree)
@@ -94,7 +103,7 @@ func (s *Storage) SaveIndividualResults(summary *Summary, sessionID string) erro
 		content += "\n" + strings.Repeat("=", 50) + "\n\n"
 		content += result.Output
 		
-		if err := os.WriteFile(filepath, []byte(content), 0644); err != nil {
+		if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
 			return fmt.Errorf("failed to save output for %s: %w", result.Worktree, err)
 		}
 	}
@@ -104,9 +113,9 @@ func (s *Storage) SaveIndividualResults(summary *Summary, sessionID string) erro
 
 // LoadSummary loads a previously saved summary
 func (s *Storage) LoadSummary(filename string) (*Summary, error) {
-	filepath := filepath.Join(s.outputDir, filename)
+	filePath := filepath.Join(s.outputDir, filename)
 	
-	data, err := os.ReadFile(filepath)
+	data, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read summary file: %w", err)
 	}
@@ -161,10 +170,11 @@ func (s *Storage) CleanOldResults(maxAge time.Duration) error {
 		}
 		
 		if info.ModTime().Before(cutoff) {
-			filepath := filepath.Join(s.outputDir, file.Name())
-			if err := os.Remove(filepath); err != nil {
+			filePath := filepath.Join(s.outputDir, file.Name())
+			if err := os.Remove(filePath); err != nil {
 				// Log but continue
-				fmt.Printf("Warning: failed to remove old file %s: %v\n", filepath, err)
+				slog.Warn("Failed to remove old file", "file_path", filePath, "error", err)
+				fmt.Printf("Warning: failed to remove old file %s: %v\n", filePath, err)
 			}
 		}
 	}
@@ -182,8 +192,8 @@ func (s *Storage) DeleteFailedRun(summaryFilename string) error {
 	
 	for _, ext := range extensions {
 		filename := baseName + ext
-		filepath := filepath.Join(s.outputDir, filename)
-		if err := os.Remove(filepath); err != nil && !os.IsNotExist(err) {
+		filePath := filepath.Join(s.outputDir, filename)
+		if err := os.Remove(filePath); err != nil && !os.IsNotExist(err) {
 			return fmt.Errorf("failed to remove file %s: %w", filename, err)
 		}
 	}
@@ -205,8 +215,8 @@ func (s *Storage) ensureOutputDir() error {
 
 // saveFile saves content to a file in the output directory
 func (s *Storage) saveFile(filename, content string) error {
-	filepath := filepath.Join(s.outputDir, filename)
-	return os.WriteFile(filepath, []byte(content), 0644)
+	filePath := filepath.Join(s.outputDir, filename)
+	return os.WriteFile(filePath, []byte(content), 0644)
 }
 
 // sanitizeFilename removes invalid characters from filenames

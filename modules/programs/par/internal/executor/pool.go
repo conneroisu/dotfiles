@@ -3,6 +3,7 @@ package executor
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"sync"
 
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
@@ -94,7 +95,7 @@ func (p *Pool) ExecuteSequential(jobs []*Job) ([]*JobResult, error) {
 	for _, job := range jobs {
 		if err := p.claudeExec.ExecuteJob(p.ctx, job); err != nil {
 			// Continue with other jobs even if one fails
-			fmt.Printf("Job %s failed: %v\n", job.ID, err)
+			slog.Error("Job execution failed", "job_id", job.ID, "error", err)
 		}
 		
 		results = append(results, job.ToResult())

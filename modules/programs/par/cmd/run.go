@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"runtime"
 	"time"
 
@@ -118,6 +119,9 @@ simultaneously. This is the core functionality of par.`,
 			return fmt.Errorf("no valid worktrees found")
 		}
 
+		slog.Info("Worktree discovery completed",
+			"valid_count", len(validWorktrees),
+			"discovered_count", len(targetWorktrees))
 		fmt.Printf("Found %d valid worktrees (out of %d discovered)\n",
 			len(validWorktrees), len(targetWorktrees))
 
@@ -138,6 +142,9 @@ simultaneously. This is the core functionality of par.`,
 			jobList = append(jobList, job)
 		}
 
+		slog.Info("Starting job execution",
+			"job_count", len(jobList),
+			"worker_count", jobs)
 		fmt.Printf("Executing %d jobs with %d workers...\n", len(jobList), jobs)
 
 		// Execute jobs
@@ -170,14 +177,17 @@ simultaneously. This is the core functionality of par.`,
 		storage := results.NewStorage(cfg.Defaults.OutputDir)
 
 		if err := storage.SaveSummary(summary, sessionID); err != nil {
+			slog.Warn("Failed to save results", "error", err)
 			fmt.Printf("Warning: failed to save results: %v\n", err)
 		} else {
+			slog.Info("Results saved successfully", "output_dir", cfg.Defaults.OutputDir)
 			fmt.Printf("\nResults saved to: %s\n", cfg.Defaults.OutputDir)
 		}
 
 		// Save individual outputs if requested
 		if terminalOutput || ghostty {
 			if err := storage.SaveIndividualResults(summary, sessionID); err != nil {
+				slog.Warn("Failed to save individual outputs", "error", err)
 				fmt.Printf("Warning: failed to save individual outputs: %v\n", err)
 			}
 		}

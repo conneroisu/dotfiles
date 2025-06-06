@@ -106,6 +106,9 @@ syntax highlighting and structure. Supports template prompts with variables.`,
 			for {
 				fmt.Print("Variable name (or empty to finish): ")
 				if !scanner.Scan() {
+					if err := scanner.Err(); err != nil {
+						return fmt.Errorf("error reading variable name: %w", err)
+					}
 					break
 				}
 				varName := strings.TrimSpace(scanner.Text())

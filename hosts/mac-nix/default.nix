@@ -104,7 +104,7 @@ in
 
     darwin = {
       imports = [
-        inputs.determinate.nixosModules.default
+        inputs.determinate.darwinModules.default
       ];
       nixpkgs = {
         hostPlatform = system;

@@ -86,7 +86,11 @@ syntax highlighting and structure. Supports template prompts with variables.`,
 		}
 
 		// Check if prompt already exists
-		if manager.Exists(name) {
+		exists, err := manager.Exists(name)
+		if err != nil {
+			return fmt.Errorf("failed to check if prompt exists: %w", err)
+		}
+		if exists {
 			return fmt.Errorf("prompt '%s' already exists", name)
 		}
 

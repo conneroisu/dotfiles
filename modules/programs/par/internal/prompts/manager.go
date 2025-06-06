@@ -125,12 +125,18 @@ func (m *Manager) Delete(name string) error {
 }
 
 // Exists checks if a prompt exists
-func (m *Manager) Exists(name string) bool {
+func (m *Manager) Exists(name string) (bool, error) {
 	filename := sanitizeFilename(name) + ".yaml"
 	filepath := filepath.Join(m.storageDir, filename)
 
 	_, err := os.Stat(filepath)
-	return !os.IsNotExist(err)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, fmt.Errorf("failed to check prompt existence: %w", err)
 }
 
 // sanitizeFilename removes invalid characters from filenames

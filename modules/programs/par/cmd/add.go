@@ -3,8 +3,8 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -16,8 +16,9 @@ import (
 var addCmd = &cobra.Command{
 	Use:   "add [--name <name>] [--file <file>] [--template]",
 	Short: "Add a new prompt to the library",
-	Long: `Add a new prompt to the prompt library. Prompts can be added from stdin,
-from a file, or interactively. Support for prompt templates with variables.`,
+	Long: `Add a new prompt to the prompt library. When no file is specified, 
+launches your $EDITOR with a markdown template for writing prompts with 
+syntax highlighting and structure. Supports template prompts with variables.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		name, err := cmd.Flags().GetString("name")
 		if err != nil {
@@ -56,13 +57,11 @@ from a file, or interactively. Support for prompt templates with variables.`,
 			}
 			content = string(data)
 		} else {
-			// Read from stdin or interactive input
-			fmt.Println("Enter prompt content (Ctrl+D or Ctrl+Z to finish):")
-			data, err := io.ReadAll(os.Stdin)
+			// Launch editor with markdown template
+			content, err = launchEditorForPrompt(name, template)
 			if err != nil {
-				return fmt.Errorf("failed to read input: %w", err)
+				return fmt.Errorf("failed to get prompt content from editor: %w", err)
 			}
-			content = string(data)
 		}
 		
 		content = strings.TrimSpace(content)
@@ -164,6 +163,165 @@ from a file, or interactively. Support for prompt templates with variables.`,
 		
 		return nil
 	},
+}
+
+// launchEditorForPrompt creates a temporary markdown file and launches the user's editor
+func launchEditorForPrompt(promptName string, isTemplate bool) (string, error) {
+	// Get editor from environment or default to vim
+	editor := os.Getenv("EDITOR")
+	if editor == "" {
+		editor = "vim"
+	}
+
+	// Create temporary file with markdown extension
+	tempDir := os.TempDir()
+	fileName := "par-prompt-*.md"
+	if promptName != "" {
+		// Sanitize prompt name for filename
+		safeName := strings.ReplaceAll(promptName, " ", "-")
+		safeName = strings.ReplaceAll(safeName, "/", "-")
+		fileName = fmt.Sprintf("par-prompt-%s-*.md", safeName)
+	}
+	
+	tempFile, err := os.CreateTemp(tempDir, fileName)
+	if err != nil {
+		return "", fmt.Errorf("failed to create temporary file: %w", err)
+	}
+	defer os.Remove(tempFile.Name())
+	defer tempFile.Close()
+
+	// Write markdown template to the file
+	template := generatePromptTemplate(promptName, isTemplate)
+	if _, err := tempFile.WriteString(template); err != nil {
+		return "", fmt.Errorf("failed to write template to file: %w", err)
+	}
+
+	// Close file so editor can write to it
+	tempFile.Close()
+
+	// Launch editor
+	cmd := exec.Command(editor, tempFile.Name())
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("editor command failed: %w", err)
+	}
+
+	// Read the content back
+	content, err := os.ReadFile(tempFile.Name())
+	if err != nil {
+		return "", fmt.Errorf("failed to read edited content: %w", err)
+	}
+
+	// Extract just the prompt content (everything after the frontmatter if present)
+	return extractPromptContent(string(content)), nil
+}
+
+// generatePromptTemplate creates a markdown template for the prompt
+func generatePromptTemplate(promptName string, isTemplate bool) string {
+	var sb strings.Builder
+	
+	// Add frontmatter-style header
+	sb.WriteString("<!-- Par Prompt Creation -->\n")
+	sb.WriteString("<!-- Delete this comment section before saving -->\n")
+	sb.WriteString("<!-- Write your prompt below this line -->\n")
+	
+	if promptName != "" {
+		sb.WriteString(fmt.Sprintf("<!-- Prompt Name: %s -->\n", promptName))
+	}
+	
+	if isTemplate {
+		sb.WriteString("<!-- Template Mode: Variables can be used with Go template syntax like {{.VariableName}} -->\n")
+		sb.WriteString("<!-- Example: Fix the {{.FunctionName}} function to {{.Requirement}} -->\n")
+	}
+	
+	sb.WriteString("<!-- Available in editor: syntax highlighting, markdown preview, etc. -->\n")
+	sb.WriteString("\n")
+	sb.WriteString("---\n")
+	sb.WriteString("\n")
+	
+	// Add prompt content area
+	sb.WriteString("# Prompt Content\n")
+	sb.WriteString("\n")
+	
+	if isTemplate {
+		sb.WriteString("Write your template prompt here using Go template syntax for variables.\n")
+		sb.WriteString("\n")
+		sb.WriteString("Example:\n")
+		sb.WriteString("```\n")
+		sb.WriteString("Please refactor the {{.FunctionName}} function to improve {{.Aspect}}.\n")
+		sb.WriteString("The function should {{.Requirements}}.\n")
+		sb.WriteString("```\n")
+	} else {
+		sb.WriteString("Write your prompt here. This will be sent to Claude Code CLI for each worktree.\n")
+		sb.WriteString("\n")
+		sb.WriteString("Example:\n")
+		sb.WriteString("```\n")
+		sb.WriteString("Please review this codebase and suggest improvements for:\n")
+		sb.WriteString("1. Code organization\n")
+		sb.WriteString("2. Performance optimizations\n")
+		sb.WriteString("3. Best practices\n")
+		sb.WriteString("```\n")
+	}
+	
+	sb.WriteString("\n")
+	sb.WriteString("## Your Prompt\n")
+	sb.WriteString("\n")
+	sb.WriteString("<!-- Write your actual prompt content below -->\n")
+	sb.WriteString("\n")
+	
+	return sb.String()
+}
+
+// extractPromptContent extracts the actual prompt content from the markdown
+func extractPromptContent(content string) string {
+	lines := strings.Split(content, "\n")
+	var promptLines []string
+	inPromptSection := false
+	
+	for _, line := range lines {
+		// Skip comment lines
+		if strings.HasPrefix(strings.TrimSpace(line), "<!--") {
+			continue
+		}
+		
+		// Start collecting after "Your Prompt" section or after separator
+		if strings.Contains(line, "## Your Prompt") || strings.TrimSpace(line) == "---" {
+			inPromptSection = true
+			continue
+		}
+		
+		if inPromptSection {
+			// Skip empty comment lines
+			trimmed := strings.TrimSpace(line)
+			if trimmed == "" || strings.HasPrefix(trimmed, "<!--") {
+				if trimmed != "" {
+					continue
+				}
+			}
+			promptLines = append(promptLines, line)
+		}
+	}
+	
+	// Clean up the result
+	result := strings.Join(promptLines, "\n")
+	result = strings.TrimSpace(result)
+	
+	// If no content found in the structured section, return the whole content minus comments
+	if result == "" {
+		var cleanLines []string
+		for _, line := range lines {
+			trimmed := strings.TrimSpace(line)
+			if !strings.HasPrefix(trimmed, "<!--") && !strings.HasSuffix(trimmed, "-->") {
+				cleanLines = append(cleanLines, line)
+			}
+		}
+		result = strings.TrimSpace(strings.Join(cleanLines, "\n"))
+	}
+	
+	return result
 }
 
 func init() {

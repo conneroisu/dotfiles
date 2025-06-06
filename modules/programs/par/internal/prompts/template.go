@@ -3,6 +3,7 @@ package prompts
 import (
 	"bytes"
 	"fmt"
+	"log/slog"
 	"strings"
 	"text/template"
 )
@@ -12,30 +13,48 @@ type TemplateVars map[string]string
 
 // ProcessTemplate processes a prompt template with provided variables
 func ProcessTemplate(prompt *Prompt, vars TemplateVars) (string, error) {
+	slog.Debug("Processing template", "prompt_name", prompt.Name, "is_template", prompt.Template, "variables_provided", len(vars))
+	
 	if !prompt.Template {
+		slog.Debug("Prompt is not a template, returning content as-is", "prompt_name", prompt.Name)
 		return prompt.Content, nil
 	}
 	
+	// Log provided variables (without values for security)
+	var varNames []string
+	for name := range vars {
+		varNames = append(varNames, name)
+	}
+	slog.Debug("Template variables provided", "prompt_name", prompt.Name, "variable_names", varNames)
+	
 	// Validate required variables
 	if err := validateVariables(prompt, vars); err != nil {
+		slog.Debug("Template variable validation failed", "prompt_name", prompt.Name, "error", err)
 		return "", err
 	}
 	
 	// Apply defaults for missing variables
 	finalVars := applyDefaults(prompt, vars)
+	slog.Debug("Applied template defaults", "prompt_name", prompt.Name, "final_var_count", len(finalVars))
 	
 	// Process the template
+	slog.Debug("Parsing template", "prompt_name", prompt.Name, "content_length", len(prompt.Content))
 	tmpl, err := template.New(prompt.Name).Parse(prompt.Content)
 	if err != nil {
+		slog.Debug("Failed to parse template", "prompt_name", prompt.Name, "error", err)
 		return "", fmt.Errorf("failed to parse template: %w", err)
 	}
 	
 	var buf bytes.Buffer
+	slog.Debug("Executing template", "prompt_name", prompt.Name)
 	if err := tmpl.Execute(&buf, finalVars); err != nil {
+		slog.Debug("Failed to execute template", "prompt_name", prompt.Name, "error", err)
 		return "", fmt.Errorf("failed to execute template: %w", err)
 	}
 	
-	return buf.String(), nil
+	result := buf.String()
+	slog.Debug("Template processing completed", "prompt_name", prompt.Name, "output_length", len(result))
+	return result, nil
 }
 
 // validateVariables checks that all required variables are provided

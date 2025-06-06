@@ -38,16 +38,22 @@ func NewPool(workers int, config *config.Config) *Pool {
 
 // Execute executes a batch of jobs in parallel
 func (p *Pool) Execute(jobs []*Job) ([]*JobResult, error) {
+	slog.Debug("Starting parallel job execution", "job_count", len(jobs), "worker_count", p.workers)
+	
 	if len(jobs) == 0 {
+		slog.Debug("No jobs to execute")
 		return []*JobResult{}, nil
 	}
 	
 	// Validate Claude Code CLI first
+	slog.Debug("Validating Claude Code CLI")
 	if err := p.claudeExec.ValidateClaudeCode(); err != nil {
+		slog.Debug("Claude Code CLI validation failed", "error", err)
 		return nil, fmt.Errorf("claude code validation failed: %w", err)
 	}
 	
 	// Start workers
+	slog.Debug("Starting worker pool", "worker_count", p.workers)
 	p.startWorkers()
 	
 	// Send jobs to workers

@@ -2,6 +2,7 @@ package prompts
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -42,43 +43,56 @@ func NewManager(storageDir string) *Manager {
 
 // Save stores a prompt to the filesystem
 func (m *Manager) Save(prompt *Prompt) error {
+	slog.Debug("Saving prompt", "name", prompt.Name, "template", prompt.Template, "variables_count", len(prompt.Variables))
+	
 	if err := os.MkdirAll(m.storageDir, 0755); err != nil {
+		slog.Debug("Failed to create storage directory", "dir", m.storageDir, "error", err)
 		return fmt.Errorf("failed to create storage directory: %w", err)
 	}
 	
 	filename := sanitizeFilename(prompt.Name) + ".yaml"
 	filepath := filepath.Join(m.storageDir, filename)
+	slog.Debug("Writing prompt to file", "filename", filename, "path", filepath)
 	
 	data, err := yaml.Marshal(prompt)
 	if err != nil {
+		slog.Debug("Failed to marshal prompt", "name", prompt.Name, "error", err)
 		return fmt.Errorf("failed to marshal prompt: %w", err)
 	}
 	
 	if err := os.WriteFile(filepath, data, 0644); err != nil {
+		slog.Debug("Failed to write prompt file", "path", filepath, "error", err)
 		return fmt.Errorf("failed to write prompt file: %w", err)
 	}
 	
+	slog.Debug("Prompt saved successfully", "name", prompt.Name, "path", filepath)
 	return nil
 }
 
 // Load retrieves a prompt by name
 func (m *Manager) Load(name string) (*Prompt, error) {
+	slog.Debug("Loading prompt", "name", name)
 	filename := sanitizeFilename(name) + ".yaml"
 	filepath := filepath.Join(m.storageDir, filename)
+	slog.Debug("Reading prompt file", "filename", filename, "path", filepath)
 	
 	data, err := os.ReadFile(filepath)
 	if err != nil {
 		if os.IsNotExist(err) {
+			slog.Debug("Prompt file not found", "name", name, "path", filepath)
 			return nil, fmt.Errorf("prompt '%s' not found", name)
 		}
+		slog.Debug("Failed to read prompt file", "path", filepath, "error", err)
 		return nil, fmt.Errorf("failed to read prompt file: %w", err)
 	}
 	
 	var prompt Prompt
 	if err := yaml.Unmarshal(data, &prompt); err != nil {
+		slog.Debug("Failed to parse prompt file", "path", filepath, "error", err)
 		return nil, fmt.Errorf("failed to parse prompt file: %w", err)
 	}
 	
+	slog.Debug("Prompt loaded successfully", "name", name, "template", prompt.Template, "variables_count", len(prompt.Variables))
 	return &prompt, nil
 }
 

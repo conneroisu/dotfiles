@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
@@ -95,26 +96,36 @@ func DefaultConfig() *Config {
 
 // Load loads configuration from the config file or returns default config
 func Load() (*Config, error) {
+	slog.Debug("Loading configuration")
+	
 	configPath, err := getConfigPath()
 	if err != nil {
+		slog.Debug("Failed to get config path", "error", err)
 		return nil, fmt.Errorf("failed to get config path: %w", err)
 	}
 	
+	slog.Debug("Config path resolved", "path", configPath)
+	
 	// If config file doesn't exist, return default config
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		slog.Debug("Config file does not exist, using defaults", "path", configPath)
 		return DefaultConfig(), nil
 	}
 	
+	slog.Debug("Reading config file", "path", configPath)
 	data, err := os.ReadFile(configPath)
 	if err != nil {
+		slog.Debug("Failed to read config file", "path", configPath, "error", err)
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
 	
 	config := DefaultConfig()
 	if err := yaml.Unmarshal(data, config); err != nil {
+		slog.Debug("Failed to parse config file", "path", configPath, "error", err)
 		return nil, fmt.Errorf("failed to parse config file: %w", err)
 	}
 	
+	slog.Debug("Configuration loaded successfully", "path", configPath, "search_paths", len(config.Worktrees.SearchPaths))
 	return config, nil
 }
 

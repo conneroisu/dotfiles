@@ -1,6 +1,7 @@
 package executor
 
 import (
+	"log/slog"
 	"time"
 
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/worktree"
@@ -47,8 +48,15 @@ type JobResult struct {
 
 // NewJob creates a new job instance
 func NewJob(worktree *worktree.Worktree, prompt string, timeout time.Duration) *Job {
+	jobID := uuid.New().String()
+	slog.Debug("Creating new job", 
+		"job_id", jobID, 
+		"worktree_name", worktree.Name, 
+		"worktree_path", worktree.Path,
+		"timeout", timeout)
+	
 	return &Job{
-		ID:       uuid.New().String(),
+		ID:       jobID,
 		Worktree: worktree,
 		Prompt:   prompt,
 		Timeout:  timeout,

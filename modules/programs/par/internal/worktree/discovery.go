@@ -1,6 +1,7 @@
 package worktree
 
 import (
+	"log/slog"
 	"os"
 	"path/filepath"
 	"strings"
@@ -31,35 +32,44 @@ func NewDiscovery(searchPaths, excludePatterns []string) *Discovery {
 
 // FindWorktrees discovers Git worktrees in the configured search paths
 func (d *Discovery) FindWorktrees() ([]*Worktree, error) {
+	slog.Debug("Starting worktree discovery", "search_paths", d.searchPaths, "exclude_patterns", d.excludePatterns)
 	var allWorktrees []*Worktree
 	
 	for _, searchPath := range d.searchPaths {
+		slog.Debug("Searching path for worktrees", "path", searchPath)
 		worktrees, err := d.findInPath(searchPath)
 		if err != nil {
-			// Log error but continue with other paths
+			slog.Debug("Error searching path", "path", searchPath, "error", err)
 			continue
 		}
+		slog.Debug("Found worktrees in path", "path", searchPath, "count", len(worktrees))
 		allWorktrees = append(allWorktrees, worktrees...)
 	}
 	
+	slog.Debug("Worktree discovery completed", "total_found", len(allWorktrees))
 	return allWorktrees, nil
 }
 
 // findInPath finds worktrees in a specific path
 func (d *Discovery) findInPath(searchPath string) ([]*Worktree, error) {
+	originalPath := searchPath
 	// Expand home directory
 	if strings.HasPrefix(searchPath, "~/") {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
+			slog.Debug("Failed to get home directory", "original_path", originalPath, "error", err)
 			return nil, err
 		}
 		searchPath = filepath.Join(homeDir, searchPath[2:])
+		slog.Debug("Expanded home directory", "original_path", originalPath, "expanded_path", searchPath)
 	}
 	
 	// Check if path exists
 	if _, err := os.Stat(searchPath); os.IsNotExist(err) {
+		slog.Debug("Search path does not exist", "path", searchPath)
 		return []*Worktree{}, nil
 	}
+	slog.Debug("Search path exists", "path", searchPath)
 	
 	var worktrees []*Worktree
 	
@@ -75,6 +85,7 @@ func (d *Discovery) findInPath(searchPath string) ([]*Worktree, error) {
 		
 		// Check exclude patterns
 		if d.shouldExclude(path) {
+			slog.Debug("Path excluded by pattern", "path", path)
 			if info.IsDir() {
 				return filepath.SkipDir
 			}
@@ -83,11 +94,15 @@ func (d *Discovery) findInPath(searchPath string) ([]*Worktree, error) {
 		
 		// Check if this is a Git repository
 		if d.isGitRepository(path) {
+			slog.Debug("Found Git repository", "path", path)
 			worktree := d.createWorktree(path)
 			worktrees = append(worktrees, worktree)
 			
 			// Also check for Git worktrees
 			gitWorktrees := d.findGitWorktrees(path)
+			if len(gitWorktrees) > 0 {
+				slog.Debug("Found Git worktrees", "main_repo", path, "worktree_count", len(gitWorktrees))
+			}
 			worktrees = append(worktrees, gitWorktrees...)
 		}
 		
@@ -121,17 +136,21 @@ func (d *Discovery) shouldExclude(path string) bool {
 // isGitRepository checks if a directory is a Git repository
 func (d *Discovery) isGitRepository(path string) bool {
 	gitDir := filepath.Join(path, ".git")
+	slog.Debug("Checking if directory is Git repository", "path", path, "git_dir", gitDir)
 	
 	// Check for .git directory
 	if info, err := os.Stat(gitDir); err == nil && info.IsDir() {
+		slog.Debug("Found .git directory", "path", path)
 		return true
 	}
 	
 	// Check for .git file (worktree case)
 	if info, err := os.Stat(gitDir); err == nil && !info.IsDir() {
+		slog.Debug("Found .git file (worktree)", "path", path)
 		return true
 	}
 	
+	slog.Debug("Not a Git repository", "path", path)
 	return false
 }
 

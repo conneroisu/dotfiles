@@ -2,6 +2,7 @@ package worktree
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -24,27 +25,37 @@ func NewValidator(config *config.Config) *Validator {
 
 // ValidateWorktree validates a single worktree for par execution
 func (v *Validator) ValidateWorktree(worktree *Worktree) {
+	slog.Debug("Starting worktree validation", "path", worktree.Path, "name", worktree.Name)
 	worktree.Errors = []string{}
 	worktree.Valid = true
 	
 	// Check if path exists
 	if !v.pathExists(worktree.Path) {
+		slog.Debug("Path does not exist", "path", worktree.Path)
 		v.addError(worktree, "path does not exist")
 		return
 	}
+	slog.Debug("Path exists", "path", worktree.Path)
 	
 	// Check if it's a Git repository
 	if !v.isGitRepository(worktree.Path) {
+		slog.Debug("Not a Git repository", "path", worktree.Path)
 		v.addError(worktree, "not a Git repository")
+	} else {
+		slog.Debug("Valid Git repository", "path", worktree.Path)
 	}
 	
 	// Check working directory status
 	if err := v.checkWorkingDirectory(worktree); err != nil {
+		slog.Debug("Working directory issue", "path", worktree.Path, "error", err)
 		v.addError(worktree, fmt.Sprintf("working directory issue: %v", err))
+	} else {
+		slog.Debug("Working directory is clean", "path", worktree.Path)
 	}
 	
 	// Check for merge conflicts
 	if v.hasMergeConflicts(worktree.Path) {
+		slog.Debug("Has merge conflicts", "path", worktree.Path)
 		v.addError(worktree, "has unresolved merge conflicts")
 	}
 	

@@ -28,7 +28,6 @@ delib.host {
   };
 
   darwin = {
-    nixpkgs.config.allowUnfree = true;
     nixpkgs.hostPlatform = "aarch64-darwin";
   };
   nixos = {

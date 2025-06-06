@@ -14,11 +14,6 @@ delib.module {
       users.${username} = {
         home = "/Users/${username}";
         isNormalUser = true;
-        extraGroups = [
-          "network"
-          "docker"
-          "wheel"
-        ];
       };
     };
   };

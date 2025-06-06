@@ -140,9 +140,6 @@ in
       };
 
       environment.shells = [pkgs.zsh];
-      users.users.connerohnesorge = {
-        home = "/Users/connerohnesorge";
-      };
 
       security.pam.services.sudo_local.touchIdAuth = true;
       system.activationScripts.applications.text = let

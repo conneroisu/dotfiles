@@ -6,6 +6,23 @@
 delib.module {
   name = "connerohnesorge";
 
+  darwin.always = {myconfig, ...}: let
+    inherit (myconfig.constants) username;
+  in {
+    users = {
+      groups.${username} = {};
+      users.${username} = {
+        home = "/Users/${username}";
+        isNormalUser = true;
+        extraGroups = [
+          "network"
+          "docker"
+          "wheel"
+        ];
+      };
+    };
+  };
+
   nixos.always = {myconfig, ...}: let
     inherit (myconfig.constants) username;
   in {
@@ -14,6 +31,7 @@ delib.module {
       groups.nordvpn = {};
 
       users.${username} = {
+        home = "/home/${username}";
         isNormalUser = true;
         extraGroups = [
           "networkmanager"

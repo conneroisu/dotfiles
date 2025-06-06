@@ -16,6 +16,7 @@ delib.host {
       inputs.determinate.darwinModules.default
     ];
     nixpkgs.hostPlatform = "aarch64-darwin";
+    system.stateVersion = "24.11";
   };
 
   nixos = {

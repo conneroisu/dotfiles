@@ -8,7 +8,7 @@
   program = pkgs.buildGoModule {
     name = "par";
     src = ./.;
-    vendorHash = null;
+    vendorHash = "sha256-gC6FdtjJRyWwexcEdU2enl9LbqF98UIiFCKCwxEE5ZM=";
   };
 in
   delib.module {

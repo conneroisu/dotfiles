@@ -12,7 +12,7 @@
   };
 in
   delib.module {
-    name = "programs.cmbd";
+    name = "programs.par";
     options = singleEnableOption false;
     nixos.ifEnabled = {
       environment.systemPackages = [

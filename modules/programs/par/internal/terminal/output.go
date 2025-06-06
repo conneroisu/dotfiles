@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log/slog"
 	"os"
 )
 
@@ -24,26 +23,26 @@ func NewOutputHandler(showRealTime bool) *OutputHandler {
 func (h *OutputHandler) StreamOutput(reader io.Reader, jobName string) (string, error) {
 	var output string
 	scanner := bufio.NewScanner(reader)
-	
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		output += line + "\n"
-		
+
 		if h.showRealTime {
 			fmt.Printf("[%s] %s\n", jobName, line)
 		}
 	}
-	
+
 	if err := scanner.Err(); err != nil {
 		return output, fmt.Errorf("error reading output: %w", err)
 	}
-	
+
 	return output, nil
 }
 
 // FormatJobOutput formats output for a specific job
 func (h *OutputHandler) FormatJobOutput(jobName, output string) string {
-	return fmt.Sprintf("=== Output for %s ===\n%s\n=== End of %s ===\n", 
+	return fmt.Sprintf("=== Output for %s ===\n%s\n=== End of %s ===\n",
 		jobName, output, jobName)
 }
 
@@ -53,16 +52,12 @@ func (h *OutputHandler) WriteToFile(filename, content string) error {
 	if err != nil {
 		return fmt.Errorf("failed to create output file: %w", err)
 	}
-	defer func() {
-		if err := file.Close(); err != nil {
-			slog.Debug("Failed to close output file", "filename", filename, "error", err)
-		}
-	}()
-	
+	defer file.Close()
+
 	_, err = file.WriteString(content)
 	if err != nil {
 		return fmt.Errorf("failed to write to output file: %w", err)
 	}
-	
+
 	return nil
 }

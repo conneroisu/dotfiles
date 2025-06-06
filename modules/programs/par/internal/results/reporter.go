@@ -20,7 +20,7 @@ func NewReporter() *Reporter {
 // GenerateConsoleReport generates a human-readable console report
 func (r *Reporter) GenerateConsoleReport(summary *Summary) string {
 	var sb strings.Builder
-	
+
 	sb.WriteString("Par Execution Summary\n")
 	sb.WriteString("=====================\n")
 	sb.WriteString(fmt.Sprintf("Total Jobs: %d\n", summary.TotalJobs))
@@ -30,12 +30,12 @@ func (r *Reporter) GenerateConsoleReport(summary *Summary) string {
 	sb.WriteString(fmt.Sprintf("Success Rate: %.1f%%\n", summary.GetSuccessRate()))
 	sb.WriteString(fmt.Sprintf("Total Duration: %s\n", r.formatDuration(summary.TotalDuration)))
 	sb.WriteString(fmt.Sprintf("Average Job Duration: %s\n", r.formatDuration(summary.GetAverageDuration())))
-	
+
 	if summary.HasFailures() {
 		sb.WriteString("\nFailed Jobs:\n")
 		for _, result := range summary.FailedResults {
-			sb.WriteString(fmt.Sprintf("- %s: %s", 
-				result.Worktree, 
+			sb.WriteString(fmt.Sprintf("- %s: %s",
+				result.Worktree,
 				r.getFailureReason(result)))
 			if result.ErrorMessage != "" {
 				sb.WriteString(fmt.Sprintf(" (%s)", result.ErrorMessage))
@@ -43,20 +43,20 @@ func (r *Reporter) GenerateConsoleReport(summary *Summary) string {
 			sb.WriteString("\n")
 		}
 	}
-	
+
 	if len(summary.Results) > 0 {
 		fastest := summary.GetFastestJob()
 		slowest := summary.GetSlowestJob()
-		
+
 		sb.WriteString("\nPerformance:\n")
-		sb.WriteString(fmt.Sprintf("Fastest: %s (%s)\n", 
-			fastest.Worktree, 
+		sb.WriteString(fmt.Sprintf("Fastest: %s (%s)\n",
+			fastest.Worktree,
 			r.formatDuration(fastest.Duration)))
-		sb.WriteString(fmt.Sprintf("Slowest: %s (%s)\n", 
-			slowest.Worktree, 
+		sb.WriteString(fmt.Sprintf("Slowest: %s (%s)\n",
+			slowest.Worktree,
 			r.formatDuration(slowest.Duration)))
 	}
-	
+
 	return sb.String()
 }
 
@@ -66,21 +66,21 @@ func (r *Reporter) GenerateJSONReport(summary *Summary) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal JSON report: %w", err)
 	}
-	
+
 	return string(data), nil
 }
 
 // GenerateDetailedReport generates a detailed report with job outputs
 func (r *Reporter) GenerateDetailedReport(summary *Summary) string {
 	var sb strings.Builder
-	
+
 	// Start with console report
 	sb.WriteString(r.GenerateConsoleReport(summary))
-	
+
 	if len(summary.Results) > 0 {
 		sb.WriteString("\nDetailed Results:\n")
 		sb.WriteString("=================\n")
-		
+
 		for _, result := range summary.Results {
 			sb.WriteString(fmt.Sprintf("\nJob: %s\n", result.JobID))
 			sb.WriteString(fmt.Sprintf("Worktree: %s\n", result.Worktree))
@@ -88,31 +88,31 @@ func (r *Reporter) GenerateDetailedReport(summary *Summary) string {
 			sb.WriteString(fmt.Sprintf("Duration: %s\n", r.formatDuration(result.Duration)))
 			sb.WriteString(fmt.Sprintf("Start Time: %s\n", result.StartTime.Format(time.RFC3339)))
 			sb.WriteString(fmt.Sprintf("End Time: %s\n", result.EndTime.Format(time.RFC3339)))
-			
+
 			if result.ErrorMessage != "" {
 				sb.WriteString(fmt.Sprintf("Error: %s\n", result.ErrorMessage))
 			}
-			
+
 			if result.Output != "" {
 				sb.WriteString("Output:\n")
 				sb.WriteString(r.indentText(result.Output, "  "))
 				sb.WriteString("\n")
 			}
-			
+
 			sb.WriteString(strings.Repeat("-", 50) + "\n")
 		}
 	}
-	
+
 	return sb.String()
 }
 
 // GenerateCSVReport generates a CSV report for data analysis
 func (r *Reporter) GenerateCSVReport(summary *Summary) string {
 	var sb strings.Builder
-	
+
 	// CSV header
 	sb.WriteString("job_id,worktree,status,duration_ms,start_time,end_time,error_message\n")
-	
+
 	for _, result := range summary.Results {
 		sb.WriteString(fmt.Sprintf("%s,%s,%s,%d,%s,%s,%s\n",
 			result.JobID,
@@ -123,7 +123,7 @@ func (r *Reporter) GenerateCSVReport(summary *Summary) string {
 			result.EndTime.Format(time.RFC3339),
 			r.escapeCsvField(result.ErrorMessage)))
 	}
-	
+
 	return sb.String()
 }
 

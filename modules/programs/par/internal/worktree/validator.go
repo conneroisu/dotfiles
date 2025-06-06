@@ -2,7 +2,6 @@ package worktree
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -12,7 +11,7 @@ import (
 )
 
 // Validator handles worktree validation
-type Validator struct{
+type Validator struct {
 	config *config.Config
 }
 
@@ -25,40 +24,30 @@ func NewValidator(config *config.Config) *Validator {
 
 // ValidateWorktree validates a single worktree for par execution
 func (v *Validator) ValidateWorktree(worktree *Worktree) {
-	slog.Debug("Starting worktree validation", "path", worktree.Path, "name", worktree.Name)
 	worktree.Errors = []string{}
 	worktree.Valid = true
-	
+
 	// Check if path exists
 	if !v.pathExists(worktree.Path) {
-		slog.Debug("Path does not exist", "path", worktree.Path)
 		v.addError(worktree, "path does not exist")
 		return
 	}
-	slog.Debug("Path exists", "path", worktree.Path)
-	
+
 	// Check if it's a Git repository
 	if !v.isGitRepository(worktree.Path) {
-		slog.Debug("Not a Git repository", "path", worktree.Path)
 		v.addError(worktree, "not a Git repository")
-	} else {
-		slog.Debug("Valid Git repository", "path", worktree.Path)
 	}
-	
+
 	// Check working directory status
 	if err := v.checkWorkingDirectory(worktree); err != nil {
-		slog.Debug("Working directory issue", "path", worktree.Path, "error", err)
 		v.addError(worktree, fmt.Sprintf("working directory issue: %v", err))
-	} else {
-		slog.Debug("Working directory is clean", "path", worktree.Path)
 	}
-	
+
 	// Check for merge conflicts
 	if v.hasMergeConflicts(worktree.Path) {
-		slog.Debug("Has merge conflicts", "path", worktree.Path)
 		v.addError(worktree, "has unresolved merge conflicts")
 	}
-	
+
 	// Check if Claude Code CLI is accessible
 	if !v.isClaudeCodeAvailable() {
 		v.addError(worktree, "claude-code CLI not available")
@@ -68,14 +57,14 @@ func (v *Validator) ValidateWorktree(worktree *Worktree) {
 // FilterValid filters a list of worktrees to only include valid ones
 func (v *Validator) FilterValid(worktrees []*Worktree) []*Worktree {
 	var validWorktrees []*Worktree
-	
+
 	for _, worktree := range worktrees {
 		v.ValidateWorktree(worktree)
 		if worktree.Valid {
 			validWorktrees = append(validWorktrees, worktree)
 		}
 	}
-	
+
 	return validWorktrees
 }
 
@@ -88,7 +77,7 @@ func (v *Validator) pathExists(path string) bool {
 // isGitRepository checks if a directory is a Git repository
 func (v *Validator) isGitRepository(path string) bool {
 	gitDir := filepath.Join(path, ".git")
-	
+
 	// Check for .git directory or file
 	_, err := os.Stat(gitDir)
 	return err == nil
@@ -98,17 +87,17 @@ func (v *Validator) isGitRepository(path string) bool {
 func (v *Validator) checkWorkingDirectory(worktree *Worktree) error {
 	cmd := exec.Command("git", "status", "--porcelain")
 	cmd.Dir = worktree.Path
-	
+
 	output, err := cmd.Output()
 	if err != nil {
 		return fmt.Errorf("failed to check git status: %w", err)
 	}
-	
+
 	// If there's output, there are uncommitted changes
 	if len(strings.TrimSpace(string(output))) > 0 {
 		return fmt.Errorf("has uncommitted changes")
 	}
-	
+
 	return nil
 }
 
@@ -119,24 +108,24 @@ func (v *Validator) hasMergeConflicts(path string) bool {
 	if _, err := os.Stat(mergeHeadFile); err == nil {
 		return true
 	}
-	
+
 	// Check for conflict markers in git status
 	cmd := exec.Command("git", "status", "--porcelain")
 	cmd.Dir = path
-	
+
 	output, err := cmd.Output()
 	if err != nil {
 		return false
 	}
-	
+
 	lines := strings.Split(string(output), "\n")
 	for _, line := range lines {
-		if len(line) >= 2 && (line[0] == 'U' || line[1] == 'U' || 
+		if len(line) >= 2 && (line[0] == 'U' || line[1] == 'U' ||
 			strings.HasPrefix(line, "AA") || strings.HasPrefix(line, "DD")) {
 			return true
 		}
 	}
-	
+
 	return false
 }
 

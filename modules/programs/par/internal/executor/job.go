@@ -21,16 +21,16 @@ const (
 
 // Job represents a single execution job
 type Job struct {
-	ID        string              `json:"id"`
-	Worktree  *worktree.Worktree  `json:"worktree"`
-	Prompt    string              `json:"prompt"`
-	Timeout   time.Duration       `json:"timeout"`
-	Status    Status              `json:"status"`
-	StartTime time.Time           `json:"start_time"`
-	EndTime   time.Time           `json:"end_time"`
-	Output    string              `json:"output"`
-	Error     string              `json:"error,omitempty"`
-	ExitCode  int                 `json:"exit_code"`
+	ID        string             `json:"id"`
+	Worktree  *worktree.Worktree `json:"worktree"`
+	Prompt    string             `json:"prompt"`
+	Timeout   time.Duration      `json:"timeout"`
+	Status    Status             `json:"status"`
+	StartTime time.Time          `json:"start_time"`
+	EndTime   time.Time          `json:"end_time"`
+	Output    string             `json:"output"`
+	Error     string             `json:"error,omitempty"`
+	ExitCode  int                `json:"exit_code"`
 }
 
 // JobResult represents the result of a job execution
@@ -49,12 +49,12 @@ type JobResult struct {
 // NewJob creates a new job instance
 func NewJob(worktree *worktree.Worktree, prompt string, timeout time.Duration) *Job {
 	jobID := uuid.New().String()
-	slog.Debug("Creating new job", 
-		"job_id", jobID, 
-		"worktree_name", worktree.Name, 
+	slog.Debug("Creating new job",
+		"job_id", jobID,
+		"worktree_name", worktree.Name,
 		"worktree_path", worktree.Path,
 		"timeout", timeout)
-	
+
 	return &Job{
 		ID:       jobID,
 		Worktree: worktree,
@@ -69,12 +69,12 @@ func (j *Job) Duration() time.Duration {
 	if j.StartTime.IsZero() {
 		return 0
 	}
-	
+
 	endTime := j.EndTime
 	if endTime.IsZero() {
 		endTime = time.Now()
 	}
-	
+
 	return endTime.Sub(j.StartTime)
 }
 

@@ -9,8 +9,8 @@ import (
 
 // Manager handles terminal session management
 type Manager struct {
-	config        *config.Config
-	ghosttyExec   *GhosttyExecutor
+	config      *config.Config
+	ghosttyExec *GhosttyExecutor
 }
 
 // NewManager creates a new terminal manager
@@ -26,15 +26,15 @@ func (m *Manager) ExecuteJobInTerminal(job *executor.Job) error {
 	if job == nil {
 		return fmt.Errorf("job cannot be nil")
 	}
-	
+
 	if !m.config.Terminal.UseGhostty {
 		return fmt.Errorf("terminal execution not enabled")
 	}
-	
+
 	if !m.ghosttyExec.IsGhosttyAvailable() {
 		return fmt.Errorf("ghostty terminal not available")
 	}
-	
+
 	return m.ghosttyExec.ExecuteJob(job)
 }
 

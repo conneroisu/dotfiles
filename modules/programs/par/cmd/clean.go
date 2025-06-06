@@ -2,12 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
 	"time"
 
-	"github.com/spf13/cobra"
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/results"
+	"github.com/spf13/cobra"
 )
 
 var cleanCmd = &cobra.Command{
@@ -38,8 +37,8 @@ Use --all to clean everything, or --failed to clean only failed runs.`,
 		storage := results.NewStorage(cfg.Defaults.OutputDir)
 
 		if all {
-			slog.Info("Cleaning all result files")
-			
+			fmt.Println("Cleaning all result files...")
+
 			// Parse max age
 			age := 7 * 24 * time.Hour // Default to 7 days
 			if maxAge != "" {
@@ -49,59 +48,56 @@ Use --all to clean everything, or --failed to clean only failed runs.`,
 					return fmt.Errorf("invalid max-age duration: %w", err)
 				}
 			}
-			
+
 			if err := storage.CleanOldResults(age); err != nil {
 				return fmt.Errorf("failed to clean results: %w", err)
 			}
-			
-			slog.Info("Cleaned result files", "max_age", age)
-			
+
+			fmt.Printf("Cleaned result files older than %v\n", age)
+
 		} else if failed {
-			slog.Info("Cleaning failed run artifacts")
-			
+			fmt.Println("Cleaning failed run artifacts...")
+
 			// List summaries and find failed ones
 			summaries, err := storage.ListSummaries()
 			if err != nil {
 				return fmt.Errorf("failed to list summaries: %w", err)
 			}
-			
+
 			cleanedCount := 0
 			for _, summaryFile := range summaries {
 				summary, err := storage.LoadSummary(summaryFile)
 				if err != nil {
 					continue // Skip invalid files
 				}
-				
+
 				if summary.HasFailures() {
-					slog.Info("Cleaning failed run", 
-						"file", summaryFile, 
-						"failures", summary.FailedJobs)
-					
+					fmt.Printf("Cleaning failed run: %s (%d failures)\n",
+						summaryFile, summary.FailedJobs)
+
 					if err := storage.DeleteFailedRun(summaryFile); err != nil {
-						slog.Warn("Failed to delete failed run", 
-						"file", summaryFile, 
-						"error", err)
+						fmt.Printf("Warning: failed to delete %s: %v\n", summaryFile, err)
 						continue
 					}
 					cleanedCount++
 				}
 			}
-			
+
 			if cleanedCount == 0 {
-				slog.Info("No failed runs found")
+				fmt.Println("No failed runs found")
 			} else {
-				slog.Info("Cleaned failed runs", "count", cleanedCount)
+				fmt.Printf("Cleaned %d failed runs\n", cleanedCount)
 			}
-			
+
 		} else {
-			slog.Info("Cleaning default temporary files", "max_age", "30 days")
-			
+			fmt.Println("Cleaning default temporary files (older than 30 days)...")
+
 			age := 30 * 24 * time.Hour // Default to 30 days
 			if err := storage.CleanOldResults(age); err != nil {
 				return fmt.Errorf("failed to clean results: %w", err)
 			}
-			
-			slog.Info("Cleaned result files", "max_age", age)
+
+			fmt.Printf("Cleaned result files older than %v\n", age)
 		}
 
 		return nil

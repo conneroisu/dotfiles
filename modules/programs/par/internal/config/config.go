@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
@@ -34,9 +33,9 @@ type Claude struct {
 
 // Terminal contains terminal integration settings
 type Terminal struct {
-	UseGhostty        bool `yaml:"use_ghostty"`
-	WaitAfterCommand  bool `yaml:"wait_after_command"`
-	NewWindowPerJob   bool `yaml:"new_window_per_job"`
+	UseGhostty         bool `yaml:"use_ghostty"`
+	WaitAfterCommand   bool `yaml:"wait_after_command"`
+	NewWindowPerJob    bool `yaml:"new_window_per_job"`
 	ShowRealTimeOutput bool `yaml:"show_real_time_output"`
 }
 
@@ -59,7 +58,7 @@ func DefaultConfig() *Config {
 		// Use a safe fallback if home directory cannot be determined
 		homeDir = "/tmp/par"
 	}
-	
+
 	return &Config{
 		Defaults: Defaults{
 			Jobs:      4,
@@ -96,36 +95,34 @@ func DefaultConfig() *Config {
 
 // Load loads configuration from the config file or returns default config
 func Load() (*Config, error) {
-	slog.Debug("Loading configuration")
-	
 	configPath, err := getConfigPath()
 	if err != nil {
-		slog.Debug("Failed to get config path", "error", err)
 		return nil, fmt.Errorf("failed to get config path: %w", err)
 	}
-	
-	slog.Debug("Config path resolved", "path", configPath)
-	
+
 	// If config file doesn't exist, return default config
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		slog.Debug("Config file does not exist, using defaults", "path", configPath)
-		return DefaultConfig(), nil
+		config := DefaultConfig()
+		if err := config.Validate(); err != nil {
+			return nil, fmt.Errorf("default config validation failed: %w", err)
+		}
+		return config, nil
 	}
-	
-	slog.Debug("Reading config file", "path", configPath)
+
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		slog.Debug("Failed to read config file", "path", configPath, "error", err)
 		return nil, fmt.Errorf("failed to read config file: %w", err)
 	}
-	
+
 	config := DefaultConfig()
 	if err := yaml.Unmarshal(data, config); err != nil {
-		slog.Debug("Failed to parse config file", "path", configPath, "error", err)
 		return nil, fmt.Errorf("failed to parse config file: %w", err)
 	}
-	
-	slog.Debug("Configuration loaded successfully", "path", configPath, "search_paths", len(config.Worktrees.SearchPaths))
+
+	if err := config.Validate(); err != nil {
+		return nil, fmt.Errorf("config validation failed: %w", err)
+	}
+
 	return config, nil
 }
 
@@ -135,21 +132,21 @@ func (c *Config) Save() error {
 	if err != nil {
 		return fmt.Errorf("failed to get config path: %w", err)
 	}
-	
+
 	// Ensure config directory exists
 	if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {
 		return fmt.Errorf("failed to create config directory: %w", err)
 	}
-	
+
 	data, err := yaml.Marshal(c)
 	if err != nil {
 		return fmt.Errorf("failed to marshal config: %w", err)
 	}
-	
+
 	if err := os.WriteFile(configPath, data, 0644); err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -162,18 +159,41 @@ func getConfigPath() (string, error) {
 	return filepath.Join(homeDir, ".config", "par", "config.yaml"), nil
 }
 
+// Validate validates the configuration settings
+func (c *Config) Validate() error {
+	if c.Defaults.Jobs <= 0 {
+		return fmt.Errorf("jobs must be greater than 0, got %d", c.Defaults.Jobs)
+	}
+	if c.Defaults.Jobs > 100 {
+		return fmt.Errorf("jobs must be less than or equal to 100, got %d", c.Defaults.Jobs)
+	}
+	if c.Defaults.Timeout <= 0 {
+		return fmt.Errorf("timeout must be greater than 0, got %v", c.Defaults.Timeout)
+	}
+	if c.Claude.BinaryPath == "" {
+		return fmt.Errorf("claude binary path cannot be empty")
+	}
+	if c.Defaults.OutputDir == "" {
+		return fmt.Errorf("output directory cannot be empty")
+	}
+	if c.Prompts.StorageDir == "" {
+		return fmt.Errorf("prompts storage directory cannot be empty")
+	}
+	return nil
+}
+
 // EnsureDirectories ensures all necessary directories exist
 func (c *Config) EnsureDirectories() error {
 	dirs := []string{
 		c.Defaults.OutputDir,
 		c.Prompts.StorageDir,
 	}
-	
+
 	for _, dir := range dirs {
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return fmt.Errorf("failed to create directory %s: %w", dir, err)
 		}
 	}
-	
+
 	return nil
 }

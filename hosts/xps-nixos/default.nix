@@ -31,6 +31,7 @@ delib.host {
     imports = [
       inputs.determinate.nixosModules.default
     ];
+    nixpkgs.config.allowUnfree = true;
     nixpkgs.hostPlatform = "aarch64-darwin";
   };
   nixos = {

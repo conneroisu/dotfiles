@@ -38,23 +38,20 @@
     #     strictDeps = true;
     #   };
     # });
-    
+
     # Define devShells for all systems
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs {
         inherit system;
         overlays = [rust-overlay.overlays.default];
       };
-      
       # Optional: Initialize crane for building packages
       # craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
-      
       # Optional: Example crane package build (uncomment to use)
       # my-crate = craneLib.buildPackage {
       #   src = craneLib.cleanCargoSource ./.;
       #   strictDeps = true;
       # };
-
     in {
       default = pkgs.mkShell {
         name = "dev";

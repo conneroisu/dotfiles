@@ -9,6 +9,9 @@
 - **Multi-branch Development**: Apply the different code changes or improvements across multiple feature branches with the same goal/(initial prompt)
 - **Planned Development**: Plan prior to changes conditionally with the `--plan` flag (occurs in parallel with worktree agents *higher cost*)
 - **Smart Branching**: Use the (-b/--branch) flag to branch from a specific base branch (default: main (found in .git/config))
+- **Optional Terminal Integration**: Use the `--terms` flag to open each job in a separate terminal window (`$TERM` must be set)
+- **Thrifty Usage**: By default, the agent should now commit any changes made to the worktrees as a fresh agent will do that for that agent.
+- **Subdir Organization**: Will automatically prepend `feat/<feature>/try-<generated-uuid>` to the worktree name to clearly identify the feature branch and parallel executed work.
 
 ## Architecture
 
@@ -91,10 +94,8 @@ par clean [--all] [--failed]
 ### Options for `par run`
 
 ```bash
--j, --jobs <n>              # Number of parallel jobs (default: CPU cores)
--w, --worktrees <pattern>   # Filter worktrees by pattern
--d, --directories <paths>   # Specify custom directories
--t, --timeout <duration>    # Timeout per job (default: 30m)
+-j, --jobs <n>              # Number of parallel jobs (default: 3)
+-t, --timeout <duration>    # Timeout per job work stage (default: 60min)
 -o, --output <dir>          # Output directory for results
 --dry-run                   # Show what would be executed
 --continue-on-failure       # Continue even if some jobs fail

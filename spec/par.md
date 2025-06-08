@@ -17,18 +17,18 @@
 
 ### Core Components
 
-1. **Prompt Manager** (`prompts/`)
-   - Store and manage reusable prompts
-   - Support for prompt templates with variables
-   - Prompt versioning and history
-
-2. **Worktree Manager** (`worktree/`)
+1. **Worktree Manager** (`worktree/`)
    - Discover and validate Git worktrees
-   - Create temporary worktrees for isolated operations
+   - Create temporary worktrees for agent isolation
    - Cleanup and management of worktree state
+   - Ensure Remote Backups of Worktrees
 
-3. **Job Executor** (`executor/`)
+2. **Job Executor** (`executor/`)
    - Parallel execution of Claude Code CLI sessions
+        - Plan Stage (optional)
+        - Execution Stage
+        - Validation Stage (can reengage execution stage)
+        - Post-Execution Stage (Commits)
    - Job queuing and scheduling
    - Resource management and throttling
 
@@ -83,7 +83,7 @@ par run <prompt-name> [options]
 par list [prompts|worktrees]
 
 # Clean up temporary files and failed runs
-par clean [--all] [--failed]
+par clean [--all] [--failed] [-I]
 ```
 
 ### Options for `par run`
@@ -103,9 +103,8 @@ par clean [--all] [--failed]
 ```yaml
 # Default settings
 defaults:
-  jobs: 4
-  timeout: "30m"
-  output_dir: "~/.local/share/par/results"
+  jobs: 3
+  timeout: "60m"
   
 # Claude Code CLI settings
 claude:
@@ -121,47 +120,7 @@ worktrees:
     - "*/node_modules/*"
     - "*/.git/*"
     - "*/target/*"
-    
-# Prompt storage
-prompts:
-  storage_dir: "~/.local/share/par/prompts"
-  template_engine: "go-template"  # or "simple"
 ```
-
-## Prompt Management
-
-### Prompt Storage Format
-
-```yaml
-# ~/.local/share/par/prompts/refactor-error-handling.yaml
-name: "refactor-error-handling"
-description: "Refactor error handling to use structured errors"
-created: "2025-06-06T10:00:00Z"
-template: true
-variables:
-  - name: "error_type"
-    description: "Type of error handling to implement"
-    default: "structured"
-  - name: "package_name"
-    description: "Target package name"
-    required: true
-
-prompt: |
-  Please refactor the error handling in the {{.package_name}} package to use {{.error_type}} errors.
-  
-  Requirements:
-  - Create custom error types
-  - Wrap errors with context
-  - Ensure all errors include stack traces
-  - Update tests accordingly
-```
-
-### Template System
-
-- Support Go template syntax for variable substitution
-- Built-in functions for common operations
-- Validation of required variables
-- Default value handling
 
 ## Execution Flow
 
@@ -205,16 +164,6 @@ if err != nil {
 
 // Execute jobs
 results := pool.Execute(jobs)
-```
-
-### 4. Result Aggregation
-
-```go
-// Collect and analyze results
-summary := aggregator.ProcessResults(results)
-
-// Generate reports
-reporter.GenerateReport(summary, config.OutputDir)
 ```
 
 ## Error Handling
@@ -409,9 +358,3 @@ func (g *GhosttyExecutor) ExecuteJob(job *Job) error {
     return exec.Command(cmd[0], cmd[1:]...).Run()
 }
 ```
-
-#### Benefits
-- **Visual Separation**: Each worktree operation is clearly separated
-- **Parallel Monitoring**: Users can monitor multiple operations simultaneously
-- **Interactive Debugging**: Ability to interact with Claude Code sessions if needed
-- **Result Persistence**: Terminal windows can remain open for result review

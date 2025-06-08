@@ -1,85 +1,110 @@
 {
-  description = "A development shell for rust";
+  description = "A development shell for go";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    crane.url = "github:ipetkov/crane";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
-
   outputs = {
     nixpkgs,
-    rust-overlay,
-    crane,
     treefmt-nix,
     ...
   }: let
-    # Define systems
-    systems = [
+    supportedSystems = [
       "x86_64-linux"
-      "aarch64-darwin"
       "x86_64-darwin"
+      "aarch64-linux"
+      "aarch64-darwin"
     ];
-
-    # Helper function to generate per-system attributes
-    forAllSystems = f: nixpkgs.lib.genAttrs systems f;
+    forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
   in {
-    # Optional: Define packages if using crane to build (uncomment to use)
-    # packages = forAllSystems (system: let
-    #   pkgs = import nixpkgs {
-    #     inherit system;
-    #     overlays = [rust-overlay.overlays.default];
-    #   };
-    #   craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
-    # in {
-    #   default = craneLib.buildPackage {
-    #     src = craneLib.cleanCargoSource ./.;
-    #     strictDeps = true;
-    #   };
-    # });
-
-    # Define devShells for all systems
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [rust-overlay.overlays.default];
       };
-      # Optional: Initialize crane for building packages
-      # craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
-      # Optional: Example crane package build (uncomment to use)
-      # my-crate = craneLib.buildPackage {
-      #   src = craneLib.cleanCargoSource ./.;
-      #   strictDeps = true;
-      # };
+
+      scripts = {
+        dx = {
+          exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
+          description = "Edit flake.nix";
+        };
+        gx = {
+          exec = ''$EDITOR "$REPO_ROOT"/go.mod'';
+          description = "Edit go.mod";
+        };
+      };
+
+      scriptPackages =
+        pkgs.lib.mapAttrs
+        (
+          name: script:
+            pkgs.writeShellApplication {
+              inherit name;
+              text = script.exec;
+              runtimeInputs = script.deps or [];
+            }
+        )
+        scripts;
+
+      buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
     in {
       default = pkgs.mkShell {
         name = "dev";
+
         # Available packages on https://search.nixos.org/packages
-        buildInputs = with pkgs; [
-          alejandra # Nix
-          nixd
-          statix
-          deadnix
-          just
-          rust-bin.stable.latest.default
-        ];
+        packages = with pkgs;
+          [
+            alejandra # Nix
+            nixd
+            statix
+            deadnix
+
+            go_1_24 # Go Tools
+            air
+            golangci-lint
+            gopls
+            (buildWithSpecificGo revive)
+            (buildWithSpecificGo golines)
+            (buildWithSpecificGo golangci-lint-langserver)
+            (buildWithSpecificGo gomarkdoc)
+            (buildWithSpecificGo gotests)
+            (buildWithSpecificGo gotools)
+            (buildWithSpecificGo reftools)
+            pprof
+            graphviz
+            goreleaser
+            cobra-cli
+          ]
+          ++ builtins.attrValues scriptPackages;
+
         shellHook = ''
-          echo "Welcome to the rust devshell!"
+          export REPO_ROOT=$(git rev-parse --show-toplevel)
         '';
-        env = {
-          # use a folder per toolchain name to store rust's cache
-          CARGO_HOME = "$HOME/.cargo";
-          RUSTUP_HOME = "$HOME/.rustup";
-        };
       };
     });
 
-    formatter = forAllSystems (system: let
+    packages = forAllSystems (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [rust-overlay.overlays.default];
       };
+    in {
+      # default = pkgs.buildGoModule {
+      #   pname = "my-go-project";
+      #   version = "0.0.1";
+      #   src = ./.;
+      #   vendorHash = "";
+      #   doCheck = false;
+      #   meta = with pkgs.lib; {
+      #     description = "My Go project";
+      #     homepage = "https://github.com/conneroisu/my-go-project";
+      #     license = licenses.asl20;
+      #     maintainers = with maintainers; [connerohnesorge];
+      #   };
+      # };
+    });
+
+    formatter = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
       treefmtModule = {
         projectRootFile = "flake.nix";
         programs = {

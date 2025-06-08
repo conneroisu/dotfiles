@@ -5,10 +5,21 @@
   ...
 }: let
   inherit (delib) singleEnableOption;
-  program = pkgs.buildGoModule {
-    name = "par";
+  program = pkgs.buildGoModule rec {
+    pname = "par";
+    version = "0.1.0";
+    
     src = ./.;
-    vendorHash = "sha256-gC6FdtjJRyWwexcEdU2enl9LbqF98UIiFCKCwxEE5ZM=";
+    
+    vendorHash = null; # Will need to be updated after go mod tidy
+    
+    meta = with lib; {
+      description = "Parallel Claude Code Runner - Run Claude Code CLI across multiple Git worktrees simultaneously";
+      homepage = "https://github.com/conneroisu/dotfiles";
+      license = licenses.mit;
+      maintainers = [ "Conner Ohnesorge <connerohnesorge@outlook.com>" ];
+      mainProgram = "par";
+    };
   };
 in
   delib.module {
@@ -21,6 +32,11 @@ in
     };
     darwin.ifEnabled = {
       environment.systemPackages = [
+        program
+      ];
+    };
+    home.ifEnabled = {
+      home.packages = [
         program
       ];
     };

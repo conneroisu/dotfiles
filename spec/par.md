@@ -32,11 +32,6 @@
    - Job queuing and scheduling
    - Resource management and throttling
 
-4. **Result Aggregator** (`results/`)
-   - Collect and consolidate outputs from all sessions
-   - Generate summary reports
-   - Handle success/failure tracking
-
 ### Directory Structure
 
 ```
@@ -96,11 +91,8 @@ par clean [--all] [--failed]
 ```bash
 -j, --jobs <n>              # Number of parallel jobs (default: 3)
 -t, --timeout <duration>    # Timeout per job work stage (default: 60min)
--o, --output <dir>          # Output directory for results
 --dry-run                   # Show what would be executed
---continue-on-failure       # Continue even if some jobs fail
---template-vars <key=val>   # Template variable substitution
---ghostty                   # Open each job in separate Ghostty window
+--term                      # Open each job in separate terminal window (default: true ($TERM must be set))
 --terminal-output           # Show real-time terminal output
 ```
 
@@ -118,15 +110,8 @@ defaults:
 # Claude Code CLI settings
 claude:
   binary_path: "claude-code"  # or full path
-  default_args: []
+  default_args: ["--dangerously-skip-permissions"]
 
-# Terminal settings  
-terminal:
-  use_ghostty: true
-  wait_after_command: true    # Keep terminal open after command exits
-  new_window_per_job: true    # Open separate window for each job
-  show_real_time_output: false # Show output in real-time vs buffered
-  
 # Worktree discovery
 worktrees:
   search_paths:

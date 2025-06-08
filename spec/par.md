@@ -7,10 +7,8 @@
 ## Use Cases
 
 - **Multi-branch Development**: Apply the different code changes or improvements across multiple feature branches with the same goal/(initial prompt)
-- **Planned Development**: Plan prior to changes conditionally with the `--plan` flag
-- **Monorepo Operations**: Run identical operations across multiple projects in a monorepo
-- **Batch Code Maintenance**: Apply consistent refactoring, linting fixes, or updates across multiple repositories
-- **Experimentation**: Test the same prompt across different codebases to compare results
+- **Planned Development**: Plan prior to changes conditionally with the `--plan` flag (occurs in parallel with worktree agents *higher cost*)
+- **Smart Branching**: Use the (-b/--branch) flag to branch from a specific base branch (default: main (found in .git/config))
 
 ## Architecture
 

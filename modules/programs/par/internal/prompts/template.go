@@ -17,7 +17,8 @@ func ProcessTemplate(prompt *Prompt, vars TemplateVars) (string, error) {
 	}
 
 	// Validate required variables
-	if err := validateVariables(prompt, vars); err != nil {
+	err := validateVariables(prompt, vars)
+	if err != nil {
 		return "", err
 	}
 
@@ -31,7 +32,8 @@ func ProcessTemplate(prompt *Prompt, vars TemplateVars) (string, error) {
 	}
 
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, finalVars); err != nil {
+	err = tmpl.Execute(&buf, finalVars)
+	if err != nil {
 		return "", fmt.Errorf("failed to execute template: %w", err)
 	}
 

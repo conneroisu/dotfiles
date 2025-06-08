@@ -4,11 +4,13 @@
   inputs = {
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
-
     ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.538";
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
+    parcl.url = "github:conneroisu/parcl";
+    parcl.inputs.nixpkgs.follows = "nixpkgs";
+
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -71,7 +73,9 @@
       "aarch64-linux"
       "aarch64-darwin"
     ];
+
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+
     mkConfigurations = moduleSystem:
       denix.lib.configurations {
         homeManagerUser = "connerohnesorge";

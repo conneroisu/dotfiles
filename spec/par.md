@@ -2,6 +2,11 @@
 
 ## Overview
 
+
+# Par - Parallel Claude Code Runner
+
+## Overview
+
 `par` is a Go program that runs the Claude Code CLI across multiple Git worktree branches/directories simultaneously, applying the same initial prompt to achieve consistent goals across different codebases or branches.
 
 ## Use Cases
@@ -11,7 +16,7 @@
 - **Smart Branching**: Use the (-b/--branch) flag to branch from a specific base branch (default: main (found in .git/config))
 - **Optional Terminal Integration**: Use the `--terms` flag to open each job in a separate terminal window (`$TERM` must be set)
 - **Thrifty Usage**: By default, the agent should now commit any changes made to the worktrees as a fresh agent will do that for that agent.
-- **Subdir Organization**: Will automatically prepend `feat/<feature>/try-<generated-uuid>` to the worktree name to clearly identify the feature branch and parallel executed work.
+- **Subdir Organization**: Will automatically prepend `feat/<feature>/try-<generated-animal-name>` to the worktree name to clearly identify the feature branch and parallel executed work.
 
 ## Architecture
 
@@ -38,16 +43,12 @@
 par/
 ├── main.go                 # CLI entry point
 ├── cmd/
-│   ├── add.go             # Add new prompts
 │   ├── run.go             # Execute parallel runs
-│   ├── list.go            # List prompts and worktrees
+│   ├── list.go            # List managed worktrees
 │   └── clean.go           # Cleanup operations
 ├── internal/
 │   ├── config/
 │   │   └── config.go      # Configuration management
-│   ├── prompts/
-│   │   ├── manager.go     # Prompt storage and retrieval
-│   │   └── template.go    # Template processing
 │   ├── worktree/
 │   │   ├── discovery.go   # Find Git worktrees
 │   │   ├── manager.go     # Worktree operations
@@ -79,10 +80,10 @@ par add [--name <name>] [--file <file>] [--template]
 # Run a prompt across multiple worktrees
 par run <prompt-name> [options]
 
-# List available prompts and discovered worktrees
-par list [prompts|worktrees]
+# List available managed worktrees
+par list worktrees
 
-# Clean up temporary files and failed runs
+# Clean up temporary files and failed runs and worktrees accessible by group id
 par clean [--all] [--failed] [-I]
 ```
 
@@ -93,7 +94,6 @@ par clean [--all] [--failed] [-I]
 -t, --timeout <duration>    # Timeout per job work stage (default: 60min)
 --dry-run                   # Show what would be executed
 --term                      # Open each job in separate terminal window (default: true ($TERM must be set))
---terminal-output           # Show real-time terminal output
 ```
 
 ## Configuration
@@ -120,6 +120,11 @@ worktrees:
     - "*/node_modules/*"
     - "*/.git/*"
     - "*/target/*"
+    - "*/.vscode/*"
+    - "*/.idea/*"
+    - "*/.venv/*"
+    - "*/.direnv/*"
+    - "*/result/*"
 ```
 
 ## Execution Flow
@@ -132,38 +137,6 @@ worktrees := discovery.FindWorktrees(config.SearchPaths, config.ExcludePatterns)
 
 // Validate each worktree
 validWorktrees := validator.FilterValid(worktrees)
-```
-
-### 2. Job Planning
-
-```go
-// Load prompt and process templates
-prompt := prompts.Load(promptName)
-processedPrompt := template.Process(prompt, templateVars)
-
-// Create jobs for each target
-jobs := make([]Job, len(validWorktrees))
-for i, worktree := range validWorktrees {
-    jobs[i] = Job{
-        ID: uuid.New(),
-        Worktree: worktree,
-        Prompt: processedPrompt,
-        Timeout: config.Timeout,
-    }
-}
-```
-
-### 3. Parallel Execution
-
-```go
-// Create worker pool
-pool, err := executor.NewPool(config.Jobs, config)
-if err != nil {
-    log.Fatal(err)
-}
-
-// Execute jobs
-results := pool.Execute(jobs)
 ```
 
 ## Error Handling
@@ -193,41 +166,6 @@ results := pool.Execute(jobs)
 - Detailed logging for debugging
 
 ## Output and Reporting
-
-### Result Structure
-
-```go
-type JobResult struct {
-    JobID        string    `json:"job_id"`
-    Worktree     string    `json:"worktree"`
-    Status       Status    `json:"status"`  // Success, Failed, Timeout
-    StartTime    time.Time `json:"start_time"`
-    EndTime      time.Time `json:"end_time"`
-    Duration     time.Duration `json:"duration"`
-    Output       string    `json:"output"`
-    ErrorMessage string    `json:"error_message,omitempty"`
-    ExitCode     int       `json:"exit_code"`
-}
-```
-
-### Report Formats
-
-1. **Console Summary**
-   ```
-   Par Execution Summary
-   =====================
-   Total Jobs: 12
-   Successful: 10
-   Failed: 2
-   Total Duration: 5m 23s
-   
-   Failed Jobs:
-   - feature/auth-refactor: timeout after 30m
-   - hotfix/security-patch: git working directory dirty
-   ```
-
-2. **JSON Report** (for automation)
-3. **HTML Report** (for detailed analysis)
 
 ## Integration
 

@@ -1,149 +1,197 @@
-// Package executor handles parallel job execution
 package executor
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/prompts"
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/worktree"
-	"github.com/google/uuid"
 )
 
-// Job represents a single execution job
-type Job struct {
-	ID           string                `json:"id"`
-	Worktree     *worktree.Worktree    `json:"worktree"`
-	Prompt       *prompts.Prompt       `json:"prompt"`
-	TemplateVars prompts.TemplateVars  `json:"template_vars"`
-	Options      *ExecuteOptions       `json:"options"`
-	Context      context.Context       `json:"-"`
-	Cancel       context.CancelFunc    `json:"-"`
-	StartTime    time.Time             `json:"start_time"`
-	EndTime      time.Time             `json:"end_time"`
-	Status       JobStatus             `json:"status"`
-	Result       *JobResult            `json:"result,omitempty"`
+type JobExecutor struct {
+	claudeExecutor *ClaudeExecutor
 }
 
-// JobStatus represents the status of a job
-type JobStatus string
-
-const (
-	JobStatusPending   JobStatus = "pending"
-	JobStatusRunning   JobStatus = "running"
-	JobStatusCompleted JobStatus = "completed"
-	JobStatusFailed    JobStatus = "failed"
-	JobStatusCancelled JobStatus = "cancelled"
-	JobStatusTimeout   JobStatus = "timeout"
-)
-
-// JobResult contains the result of job execution
-type JobResult struct {
-	JobID        string        `json:"job_id"`
-	Worktree     string        `json:"worktree"`
-	Status       string        `json:"status"`
-	StartTime    time.Time     `json:"start_time"`
-	EndTime      time.Time     `json:"end_time"`
-	Duration     time.Duration `json:"duration"`
-	Output       string        `json:"output"`
-	ErrorMessage string        `json:"error_message,omitempty"`
-	ExitCode     int           `json:"exit_code"`
-	CommitHash   string        `json:"commit_hash,omitempty"`
-	FilesChanged []string      `json:"files_changed,omitempty"`
+func NewJobExecutor() *JobExecutor {
+	return &JobExecutor{
+		claudeExecutor: NewClaudeExecutor(),
+	}
 }
 
-// ExecuteOptions contains options for job execution
-type ExecuteOptions struct {
-	Jobs           int           `json:"jobs"`
-	Timeout        time.Duration `json:"timeout"`
-	UseTerm        bool          `json:"use_term"`
-	TerminalOutput bool          `json:"terminal_output"`
-	BaseBranch     string        `json:"base_branch"`
-	Plan           bool          `json:"plan"`
-	Verbose        bool          `json:"verbose"`
-	DryRun         bool          `json:"dry_run"`
-}
-
-// NewJob creates a new job
-func NewJob(wt *worktree.Worktree, prompt *prompts.Prompt, opts *ExecuteOptions) *Job {
-	ctx, cancel := context.WithTimeout(context.Background(), opts.Timeout)
+func (je *JobExecutor) ExecuteJob(ctx context.Context, job *worktree.Job, useTerm bool) *worktree.JobResult {
+	job.Start()
 	
-	// Create template variables
-	templateVars := prompts.TemplateVars{
-		ProjectName:    wt.Name,
-		BranchName:     wt.Branch,
-		WorktreePath:   wt.Path,
-		TaskName:       prompt.Name,
-		Description:    prompt.Description,
-		Instructions:   prompt.Content,
-		ExpectedOutcome: "Successful execution of prompt across worktree",
-		Custom:         make(map[string]interface{}),
+	result := &worktree.JobResult{
+		JobID:     job.ID,
+		Worktree:  job.Worktree.GetDisplayName(),
+		StartTime: *job.StartedAt,
 	}
+	
+	// Prepare Claude execution
+	execution := &ClaudeExecution{
+		JobID:       job.ID,
+		Worktree:    job.Worktree,
+		Prompt:      job.Prompt,
+		Timeout:     job.Timeout,
+		UseTerminal: useTerm,
+	}
+	
+	var claudeResult *ClaudeResult
+	var err error
+	
+	// Execute with or without terminal
+	if useTerm {
+		claudeResult, err = je.claudeExecutor.ExecuteWithTerminal(ctx, execution)
+	} else {
+		claudeResult, err = je.claudeExecutor.Execute(ctx, execution)
+	}
+	
+	job.Complete()
+	result.EndTime = *job.CompletedAt
+	result.Duration = job.GetDuration()
+	
+	if err != nil {
+		result.Status = worktree.JobStatusFailed
+		result.ErrorMessage = fmt.Sprintf("Execution error: %v", err)
+		result.ExitCode = -1
+		return result
+	}
+	
+	// Process Claude result
+	result.Output = claudeResult.Output
+	result.ExitCode = claudeResult.ExitCode
+	
+	if claudeResult.TimedOut {
+		result.Status = worktree.JobStatusTimeout
+		result.ErrorMessage = fmt.Sprintf("Job timed out after %s", job.Timeout)
+	} else if claudeResult.Error != nil {
+		result.Status = worktree.JobStatusFailed
+		result.ErrorMessage = claudeResult.ErrorOutput
+	} else if claudeResult.ExitCode != 0 {
+		result.Status = worktree.JobStatusFailed
+		result.ErrorMessage = fmt.Sprintf("Claude Code CLI exited with code %d", claudeResult.ExitCode)
+	} else {
+		result.Status = worktree.JobStatusCompleted
+	}
+	
+	return result
+}
 
-	return &Job{
-		ID:           uuid.New().String(),
-		Worktree:     wt,
-		Prompt:       prompt,
-		TemplateVars: templateVars,
-		Options:      opts,
-		Context:      ctx,
-		Cancel:       cancel,
-		Status:       JobStatusPending,
+func (je *JobExecutor) ValidateEnvironment() error {
+	// Validate that Claude CLI is available
+	if err := je.claudeExecutor.ValidateClaudeCLI(); err != nil {
+		return fmt.Errorf("Claude Code CLI validation failed: %w", err)
+	}
+	
+	return nil
+}
+
+func (je *JobExecutor) GetClaudeExecutor() *ClaudeExecutor {
+	return je.claudeExecutor
+}
+
+type JobMonitor struct {
+	jobs     map[string]*worktree.Job
+	results  map[string]*worktree.JobResult
+	progress chan JobProgress
+}
+
+type JobProgress struct {
+	JobID    string
+	Status   worktree.JobStatus
+	Message  string
+	Progress float64 // 0.0 to 1.0
+}
+
+func NewJobMonitor() *JobMonitor {
+	return &JobMonitor{
+		jobs:     make(map[string]*worktree.Job),
+		results:  make(map[string]*worktree.JobResult),
+		progress: make(chan JobProgress, 100),
 	}
 }
 
-// Start marks the job as started
-func (j *Job) Start() {
-	j.Status = JobStatusRunning
-	j.StartTime = time.Now()
+func (jm *JobMonitor) AddJob(job *worktree.Job) {
+	jm.jobs[job.ID] = job
+	jm.sendProgress(job.ID, worktree.JobStatusPending, "Job queued", 0.0)
 }
 
-// Complete marks the job as completed with result
-func (j *Job) Complete(result *JobResult) {
-	j.Status = JobStatusCompleted
-	j.EndTime = time.Now()
-	j.Result = result
-	j.Cancel() // Clean up context
-}
-
-// Fail marks the job as failed
-func (j *Job) Fail(err error) {
-	j.Status = JobStatusFailed
-	j.EndTime = time.Now()
-	j.Result = &JobResult{
-		JobID:        j.ID,
-		Worktree:     j.Worktree.Name,
-		Status:       "failed",
-		StartTime:    j.StartTime,
-		EndTime:      j.EndTime,
-		Duration:     j.EndTime.Sub(j.StartTime),
-		ErrorMessage: err.Error(),
-		ExitCode:     1,
+func (jm *JobMonitor) StartJob(jobID string) {
+	if job, exists := jm.jobs[jobID]; exists {
+		job.Start()
+		jm.sendProgress(jobID, worktree.JobStatusRunning, "Job started", 0.1)
 	}
-	j.Cancel() // Clean up context
 }
 
-// Cancel cancels the job
-func (j *Job) Cancel() {
-	if j.Status == JobStatusRunning {
-		j.Status = JobStatusCancelled
-		j.EndTime = time.Now()
+func (jm *JobMonitor) CompleteJob(jobID string, result *worktree.JobResult) {
+	if job, exists := jm.jobs[jobID]; exists {
+		job.Complete()
+		jm.results[jobID] = result
+		jm.sendProgress(jobID, result.Status, "Job completed", 1.0)
 	}
-	j.Cancel()
 }
 
-// IsFinished returns true if the job has finished (completed, failed, cancelled, or timed out)
-func (j *Job) IsFinished() bool {
-	return j.Status == JobStatusCompleted || j.Status == JobStatusFailed || j.Status == JobStatusCancelled || j.Status == JobStatusTimeout
+func (jm *JobMonitor) GetProgress() <-chan JobProgress {
+	return jm.progress
 }
 
-// GetDuration returns the duration of the job
-func (j *Job) GetDuration() time.Duration {
-	if j.StartTime.IsZero() {
-		return 0
+func (jm *JobMonitor) GetResults() map[string]*worktree.JobResult {
+	return jm.results
+}
+
+func (jm *JobMonitor) GetSummary() *worktree.ExecutionSummary {
+	summary := &worktree.ExecutionSummary{
+		TotalJobs: len(jm.jobs),
 	}
-	if j.EndTime.IsZero() {
-		return time.Since(j.StartTime)
+	
+	var results []*worktree.JobResult
+	var minStart, maxEnd time.Time
+	
+	for _, result := range jm.results {
+		results = append(results, result)
+		
+		if minStart.IsZero() || result.StartTime.Before(minStart) {
+			minStart = result.StartTime
+		}
+		if maxEnd.IsZero() || result.EndTime.After(maxEnd) {
+			maxEnd = result.EndTime
+		}
+		
+		switch result.Status {
+		case worktree.JobStatusCompleted:
+			summary.Successful++
+		case worktree.JobStatusFailed:
+			summary.Failed++
+		case worktree.JobStatusTimeout:
+			summary.Timeout++
+		case worktree.JobStatusCancelled:
+			summary.Cancelled++
+		}
 	}
-	return j.EndTime.Sub(j.StartTime)
+	
+	summary.Results = results
+	if !minStart.IsZero() && !maxEnd.IsZero() {
+		summary.StartTime = minStart
+		summary.EndTime = maxEnd
+		summary.Duration = maxEnd.Sub(minStart)
+	}
+	
+	return summary
+}
+
+func (jm *JobMonitor) sendProgress(jobID string, status worktree.JobStatus, message string, progress float64) {
+	select {
+	case jm.progress <- JobProgress{
+		JobID:    jobID,
+		Status:   status,
+		Message:  message,
+		Progress: progress,
+	}:
+	default:
+		// Channel is full, skip this progress update
+	}
+}
+
+func (jm *JobMonitor) Close() {
+	close(jm.progress)
 }

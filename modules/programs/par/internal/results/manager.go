@@ -1,4 +1,3 @@
-// Package results handles result aggregation and reporting
 package results
 
 import (
@@ -6,169 +5,227 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"text/tabwriter"
 	"time"
 
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
+	"github.com/conneroisu/dotfiles/modules/programs/par/internal/worktree"
 )
 
-// Manager handles result operations
 type Manager struct {
-	config    *config.Config
 	outputDir string
 }
 
-// NewManager creates a new results manager
-func NewManager(cfg *config.Config) (*Manager, error) {
-	outputDir := cfg.GetOutputDir()
+type ExecutionReport struct {
+	ID           string                      `json:"id"`
+	PromptName   string                      `json:"prompt_name"`
+	StartTime    time.Time                   `json:"start_time"`
+	EndTime      time.Time                   `json:"end_time"`
+	Duration     time.Duration               `json:"duration"`
+	Summary      *worktree.ExecutionSummary  `json:"summary"`
+	Results      []*worktree.JobResult       `json:"results"`
+	Config       *ExecutionConfig            `json:"config"`
+}
+
+type ExecutionConfig struct {
+	MaxWorkers int           `json:"max_workers"`
+	Timeout    time.Duration `json:"timeout"`
+	DryRun     bool          `json:"dry_run"`
+	UseTerm    bool          `json:"use_term"`
+}
+
+func NewManager() (*Manager, error) {
+	cfg := config.Get()
+	outputDir := config.ExpandPath(cfg.Defaults.OutputDir)
 	
-	// Ensure output directory exists
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		return nil, fmt.Errorf("failed to create output directory: %w", err)
 	}
-
+	
 	return &Manager{
-		config:    cfg,
 		outputDir: outputDir,
 	}, nil
 }
 
-// SaveResults saves job results to storage
-func (m *Manager) SaveResults(sessionID string, results []interface{}) error {
-	// Create session directory
-	sessionDir := filepath.Join(m.outputDir, sessionID)
-	if err := os.MkdirAll(sessionDir, 0755); err != nil {
-		return fmt.Errorf("failed to create session directory: %w", err)
-	}
-
-	// Save results as JSON
-	resultsFile := filepath.Join(sessionDir, "results.json")
-	data, err := json.MarshalIndent(results, "", "  ")
+func (m *Manager) SaveReport(report *ExecutionReport) error {
+	filename := fmt.Sprintf("execution-%s-%s.json", 
+		report.PromptName, 
+		report.StartTime.Format("20060102-150405"))
+	
+	filepath := filepath.Join(m.outputDir, filename)
+	
+	data, err := json.MarshalIndent(report, "", "  ")
 	if err != nil {
-		return fmt.Errorf("failed to marshal results: %w", err)
+		return fmt.Errorf("failed to marshal report: %w", err)
 	}
-
-	if err := os.WriteFile(resultsFile, data, 0644); err != nil {
-		return fmt.Errorf("failed to write results file: %w", err)
+	
+	if err := os.WriteFile(filepath, data, 0644); err != nil {
+		return fmt.Errorf("failed to write report: %w", err)
 	}
-
-	// Save summary
-	summary := m.generateSummary(results)
-	summaryFile := filepath.Join(sessionDir, "summary.txt")
-	if err := os.WriteFile(summaryFile, []byte(summary), 0644); err != nil {
-		return fmt.Errorf("failed to write summary file: %w", err)
-	}
-
+	
 	return nil
 }
 
-// FindFailedArtifacts finds artifacts from failed job runs
-func (m *Manager) FindFailedArtifacts() ([]string, error) {
-	var artifacts []string
-
-	// Walk through output directory
-	err := filepath.Walk(m.outputDir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return nil // Skip errors, continue walking
-		}
-
-		// Look for result files that indicate failures
-		if info.Name() == "results.json" {
-			data, err := os.ReadFile(path)
-			if err != nil {
-				return nil
-			}
-
-			var results []map[string]interface{}
-			if err := json.Unmarshal(data, &results); err != nil {
-				return nil
-			}
-
-			// Check if any results failed
-			for _, result := range results {
-				if status, ok := result["status"].(string); ok && status == "failed" {
-					artifacts = append(artifacts, filepath.Dir(path))
-					break
-				}
-			}
-		}
-
-		return nil
-	})
-
-	return artifacts, err
+func (m *Manager) LoadReport(filename string) (*ExecutionReport, error) {
+	filepath := filepath.Join(m.outputDir, filename)
+	
+	data, err := os.ReadFile(filepath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read report: %w", err)
+	}
+	
+	var report ExecutionReport
+	if err := json.Unmarshal(data, &report); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal report: %w", err)
+	}
+	
+	return &report, nil
 }
 
-// generateSummary generates a text summary of results
-func (m *Manager) generateSummary(results []interface{}) string {
-	summary := fmt.Sprintf("Par Execution Summary - %s\n", time.Now().Format("2006-01-02 15:04:05"))
-	summary += "========================================\n\n"
+func (m *Manager) ListReports() ([]string, error) {
+	files, err := filepath.Glob(filepath.Join(m.outputDir, "execution-*.json"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to glob reports: %w", err)
+	}
+	
+	var reports []string
+	for _, file := range files {
+		reports = append(reports, filepath.Base(file))
+	}
+	
+	return reports, nil
+}
 
-	total := len(results)
-	successful := 0
-	failed := 0
+func (m *Manager) CreateReport(plan *worktree.ExecutionPlan, summary *worktree.ExecutionSummary, results []*worktree.JobResult) *ExecutionReport {
+	return &ExecutionReport{
+		ID:         plan.ID,
+		PromptName: plan.PromptName,
+		StartTime:  summary.StartTime,
+		EndTime:    summary.EndTime,
+		Duration:   summary.Duration,
+		Summary:    summary,
+		Results:    results,
+		Config: &ExecutionConfig{
+			MaxWorkers: plan.MaxWorkers,
+			Timeout:    plan.Timeout,
+			DryRun:     plan.DryRun,
+			UseTerm:    plan.UseTerm,
+		},
+	}
+}
 
+func (m *Manager) PrintSummary(summary *worktree.ExecutionSummary) {
+	fmt.Println("\nPar Execution Summary")
+	fmt.Println("=====================")
+	fmt.Printf("Total Jobs: %d\n", summary.TotalJobs)
+	fmt.Printf("Successful: %d\n", summary.Successful)
+	fmt.Printf("Failed: %d\n", summary.Failed)
+	
+	if summary.Timeout > 0 {
+		fmt.Printf("Timeout: %d\n", summary.Timeout)
+	}
+	if summary.Cancelled > 0 {
+		fmt.Printf("Cancelled: %d\n", summary.Cancelled)
+	}
+	
+	fmt.Printf("Total Duration: %s\n", formatDuration(summary.Duration))
+	
+	if summary.Failed > 0 || summary.Timeout > 0 || summary.Cancelled > 0 {
+		fmt.Println("\nFailed/Problematic Jobs:")
+		for _, result := range summary.Results {
+			if result.Status != worktree.JobStatusCompleted {
+				status := string(result.Status)
+				if result.Status == worktree.JobStatusFailed && result.ErrorMessage != "" {
+					status = fmt.Sprintf("%s: %s", status, result.ErrorMessage)
+				}
+				fmt.Printf("- %s: %s\n", result.Worktree, status)
+			}
+		}
+	}
+}
+
+func (m *Manager) PrintDetailedResults(results []*worktree.JobResult) {
+	if len(results) == 0 {
+		fmt.Println("No results to display.")
+		return
+	}
+	
+	fmt.Println("\nDetailed Results")
+	fmt.Println("================")
+	
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "WORKTREE\tSTATUS\tDURATION\tERROR")
+	
 	for _, result := range results {
-		if resultMap, ok := result.(map[string]interface{}); ok {
-			if status, ok := resultMap["status"].(string); ok {
-				if status == "success" {
-					successful++
-				} else {
-					failed++
-				}
-			}
+		status := string(result.Status)
+		duration := formatDuration(result.Duration)
+		errorMsg := result.ErrorMessage
+		if errorMsg == "" {
+			errorMsg = "-"
+		} else if len(errorMsg) > 50 {
+			errorMsg = errorMsg[:47] + "..."
 		}
+		
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
+			result.Worktree, status, duration, errorMsg)
 	}
-
-	summary += fmt.Sprintf("Total Jobs: %d\n", total)
-	summary += fmt.Sprintf("Successful: %d\n", successful)
-	summary += fmt.Sprintf("Failed: %d\n", failed)
-
-	if failed > 0 {
-		summary += "\nFailed Jobs:\n"
-		for _, result := range results {
-			if resultMap, ok := result.(map[string]interface{}); ok {
-				if status, ok := resultMap["status"].(string); ok && status != "success" {
-					worktree := "unknown"
-					errorMsg := "unknown error"
-					
-					if w, ok := resultMap["worktree"].(string); ok {
-						worktree = w
-					}
-					if e, ok := resultMap["error_message"].(string); ok {
-						errorMsg = e
-					}
-					
-					summary += fmt.Sprintf("- %s: %s\n", worktree, errorMsg)
-				}
-			}
-		}
-	}
-
-	return summary
+	
+	w.Flush()
 }
 
-// GetResultsDirectory returns the results directory path
-func (m *Manager) GetResultsDirectory() string {
+func (m *Manager) PrintJSONSummary(summary *worktree.ExecutionSummary) error {
+	data, err := json.MarshalIndent(summary, "", "  ")
+	if err != nil {
+		return fmt.Errorf("failed to marshal summary: %w", err)
+	}
+	
+	fmt.Println(string(data))
+	return nil
+}
+
+func (m *Manager) SaveJobOutput(jobID, worktreeName, output string) error {
+	// Create a subdirectory for job outputs
+	jobDir := filepath.Join(m.outputDir, "jobs")
+	if err := os.MkdirAll(jobDir, 0755); err != nil {
+		return fmt.Errorf("failed to create job output directory: %w", err)
+	}
+	
+	filename := fmt.Sprintf("%s-%s.log", jobID, worktreeName)
+	filepath := filepath.Join(jobDir, filename)
+	
+	if err := os.WriteFile(filepath, []byte(output), 0644); err != nil {
+		return fmt.Errorf("failed to write job output: %w", err)
+	}
+	
+	return nil
+}
+
+func (m *Manager) SaveJobError(jobID, worktreeName, errorMsg string) error {
+	jobDir := filepath.Join(m.outputDir, "jobs")
+	if err := os.MkdirAll(jobDir, 0755); err != nil {
+		return fmt.Errorf("failed to create job output directory: %w", err)
+	}
+	
+	filename := fmt.Sprintf("%s-%s.error", jobID, worktreeName)
+	filepath := filepath.Join(jobDir, filename)
+	
+	if err := os.WriteFile(filepath, []byte(errorMsg), 0644); err != nil {
+		return fmt.Errorf("failed to write job error: %w", err)
+	}
+	
+	return nil
+}
+
+func (m *Manager) GetOutputDir() string {
 	return m.outputDir
 }
 
-// CleanOldResults removes result files older than the specified duration
-func (m *Manager) CleanOldResults(maxAge time.Duration) error {
-	cutoff := time.Now().Add(-maxAge)
-
-	return filepath.Walk(m.outputDir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return nil // Skip errors
-		}
-
-		if info.IsDir() && info.ModTime().Before(cutoff) {
-			// Check if this is a session directory (contains results.json)
-			resultsPath := filepath.Join(path, "results.json")
-			if _, err := os.Stat(resultsPath); err == nil {
-				return os.RemoveAll(path)
-			}
-		}
-
-		return nil
-	})
+func formatDuration(d time.Duration) string {
+	if d < time.Minute {
+		return fmt.Sprintf("%.1fs", d.Seconds())
+	} else if d < time.Hour {
+		return fmt.Sprintf("%.1fm", d.Minutes())
+	} else {
+		return fmt.Sprintf("%.1fh", d.Hours())
+	}
 }

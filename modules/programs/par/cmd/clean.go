@@ -1,212 +1,325 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/results"
 	"github.com/spf13/cobra"
+	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 )
 
 var (
 	cleanAll    bool
 	cleanFailed bool
 	cleanForce  bool
+	cleanOld    string
 )
 
-// cleanCmd represents the clean command
 var cleanCmd = &cobra.Command{
-	Use:   "clean [--all] [--failed] [-f]",
+	Use:   "clean",
 	Short: "Clean up temporary files and failed runs",
-	Long: `Clean up temporary files and failed runs.
-
-By default, only cleans up temporary worktrees and result files older than 7 days.
-Use --all to clean everything, or --failed to clean only failed job artifacts.
+	Long: `Clean up temporary files, logs, and failed runs created by par.
+This command helps maintain a clean workspace by removing old execution artifacts.
 
 Examples:
-  par clean          # Clean old temporary files
-  par clean --all    # Clean all temporary files
-  par clean --failed # Clean only failed job artifacts
-  par clean --all -f # Force clean all without confirmation`,
+  par clean                    # Clean up old temporary files (interactive)
+  par clean --all              # Clean up all temporary files
+  par clean --failed           # Clean up only failed runs
+  par clean --force            # Skip confirmation prompts
+  par clean --old=7d           # Clean files older than 7 days`,
 	RunE: runClean,
 }
 
 func init() {
-	rootCmd.AddCommand(cleanCmd)
-
-	cleanCmd.Flags().BoolVar(&cleanAll, "all", false, "clean all temporary files")
-	cleanCmd.Flags().BoolVar(&cleanFailed, "failed", false, "clean only failed job artifacts")
-	cleanCmd.Flags().BoolVarP(&cleanForce, "force", "f", false, "force clean without confirmation")
+	cleanCmd.Flags().BoolVar(&cleanAll, "all", false, "Clean up all temporary files and logs")
+	cleanCmd.Flags().BoolVar(&cleanFailed, "failed", false, "Clean up only failed runs")
+	cleanCmd.Flags().BoolVarP(&cleanForce, "force", "f", false, "Force cleanup without confirmation")
+	cleanCmd.Flags().StringVar(&cleanOld, "old", "30d", "Clean files older than specified duration (e.g., 7d, 24h)")
 }
 
 func runClean(cmd *cobra.Command, args []string) error {
-	cfg, err := config.Load()
+	cfg := config.Get()
+	
+	// Parse the old duration
+	cutoffDuration, err := time.ParseDuration(cleanOld)
 	if err != nil {
-		return fmt.Errorf("failed to load config: %w", err)
+		return fmt.Errorf("invalid duration format: %s", cleanOld)
 	}
-
-	resultsManager, err := results.NewManager(cfg)
-	if err != nil {
-		return fmt.Errorf("failed to initialize results manager: %w", err)
+	cutoffTime := time.Now().Add(-cutoffDuration)
+	
+	// Get directories to clean
+	outputDir := config.ExpandPath(cfg.Defaults.OutputDir)
+	tempDir := filepath.Join(os.TempDir(), "par")
+	
+	var totalFiles int
+	var totalSize int64
+	
+	fmt.Println("Par Cleanup Tool")
+	fmt.Println("================")
+	
+	// Analyze what would be cleaned
+	if cleanAll || !cleanFailed {
+		files, size, err := analyzeDirectory(outputDir, cutoffTime, cleanAll)
+		if err != nil {
+			fmt.Printf("Warning: failed to analyze output directory: %v\n", err)
+		} else {
+			totalFiles += files
+			totalSize += size
+			if files > 0 {
+				fmt.Printf("Output directory (%s): %d files, %s\n", 
+					outputDir, files, formatBytes(size))
+			}
+		}
 	}
-
-	var itemsToClean []string
-	var cleanType string
-
+	
 	if cleanAll {
-		cleanType = "all temporary files"
-		items, err := findAllTempFiles(cfg)
+		files, size, err := analyzeDirectory(tempDir, cutoffTime, true)
 		if err != nil {
-			return fmt.Errorf("failed to find temporary files: %w", err)
+			fmt.Printf("Warning: failed to analyze temp directory: %v\n", err)
+		} else {
+			totalFiles += files
+			totalSize += size
+			if files > 0 {
+				fmt.Printf("Temp directory (%s): %d files, %s\n", 
+					tempDir, files, formatBytes(size))
+			}
 		}
-		itemsToClean = items
-	} else if cleanFailed {
-		cleanType = "failed job artifacts"
-		items, err := resultsManager.FindFailedArtifacts()
-		if err != nil {
-			return fmt.Errorf("failed to find failed artifacts: %w", err)
-		}
-		itemsToClean = items
-	} else {
-		cleanType = "old temporary files (>7 days)"
-		items, err := findOldTempFiles(cfg)
-		if err != nil {
-			return fmt.Errorf("failed to find old temporary files: %w", err)
-		}
-		itemsToClean = items
 	}
-
-	if len(itemsToClean) == 0 {
-		fmt.Printf("✓ No %s found to clean\n", cleanType)
+	
+	if cleanFailed {
+		files, size, err := analyzeFailedRuns(outputDir, cutoffTime)
+		if err != nil {
+			fmt.Printf("Warning: failed to analyze failed runs: %v\n", err)
+		} else {
+			totalFiles += files
+			totalSize += size
+			if files > 0 {
+				fmt.Printf("Failed runs: %d files, %s\n", files, formatBytes(size))
+			}
+		}
+	}
+	
+	if totalFiles == 0 {
+		fmt.Println("No files to clean up.")
 		return nil
 	}
-
-	fmt.Printf("🗑️  Found %d items to clean (%s):\n", len(itemsToClean), cleanType)
-	for _, item := range itemsToClean {
-		fmt.Printf("  - %s\n", item)
-	}
-
-	// Confirmation
+	
+	fmt.Printf("\nTotal: %d files, %s\n", totalFiles, formatBytes(totalSize))
+	
+	// Confirm deletion unless forced
 	if !cleanForce {
-		fmt.Printf("\nAre you sure you want to delete these %d items? [y/N]: ", len(itemsToClean))
-		var response string
-		fmt.Scanln(&response)
-		if response != "y" && response != "Y" && response != "yes" {
-			fmt.Println("Cleanup cancelled")
+		if !confirmCleanup() {
+			fmt.Println("Cleanup cancelled.")
 			return nil
 		}
 	}
-
+	
 	// Perform cleanup
-	successCount := 0
-	errorCount := 0
-
-	for _, item := range itemsToClean {
-		if err := os.RemoveAll(item); err != nil {
-			fmt.Printf("❌ Failed to remove %s: %v\n", item, err)
-			errorCount++
+	var cleanedFiles int
+	var cleanedSize int64
+	
+	if cleanAll || !cleanFailed {
+		files, size, err := cleanDirectory(outputDir, cutoffTime, cleanAll)
+		if err != nil {
+			fmt.Printf("Warning: failed to clean output directory: %v\n", err)
 		} else {
-			successCount++
+			cleanedFiles += files
+			cleanedSize += size
 		}
 	}
-
-	fmt.Printf("\n✓ Cleanup complete: %d items removed", successCount)
-	if errorCount > 0 {
-		fmt.Printf(", %d errors", errorCount)
+	
+	if cleanAll {
+		files, size, err := cleanDirectory(tempDir, cutoffTime, true)
+		if err != nil {
+			fmt.Printf("Warning: failed to clean temp directory: %v\n", err)
+		} else {
+			cleanedFiles += files
+			cleanedSize += size
+		}
 	}
-	fmt.Println()
-
+	
+	if cleanFailed {
+		files, size, err := cleanFailedRuns(outputDir, cutoffTime)
+		if err != nil {
+			fmt.Printf("Warning: failed to clean failed runs: %v\n", err)
+		} else {
+			cleanedFiles += files
+			cleanedSize += size
+		}
+	}
+	
+	fmt.Printf("\nCleanup complete: removed %d files, freed %s\n", 
+		cleanedFiles, formatBytes(cleanedSize))
+	
 	return nil
 }
 
-func findAllTempFiles(cfg *config.Config) ([]string, error) {
-	var items []string
-
-	// Results directory
-	if cfg.Defaults.OutputDir != "" {
-		if _, err := os.Stat(cfg.Defaults.OutputDir); err == nil {
-			dir, err := os.ReadDir(cfg.Defaults.OutputDir)
-			if err != nil {
-				return nil, err
-			}
-			for _, entry := range dir {
-				items = append(items, filepath.Join(cfg.Defaults.OutputDir, entry.Name()))
-			}
-		}
+func analyzeDirectory(dir string, cutoffTime time.Time, includeAll bool) (int, int64, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return 0, 0, nil
 	}
-
-	// Temporary worktrees (look for feat/<feature>/try-* pattern)
-	for _, searchPath := range cfg.Worktrees.SearchPaths {
-		expandedPath := expandPath(searchPath)
-		tempWorktrees, err := findTempWorktrees(expandedPath)
+	
+	var fileCount int
+	var totalSize int64
+	
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			continue // Skip if path doesn't exist or can't be read
+			return nil // Skip files we can't access
 		}
-		items = append(items, tempWorktrees...)
+		
+		if info.IsDir() {
+			return nil
+		}
+		
+		if includeAll || info.ModTime().Before(cutoffTime) {
+			fileCount++
+			totalSize += info.Size()
+		}
+		
+		return nil
+	})
+	
+	return fileCount, totalSize, err
+}
+
+func analyzeFailedRuns(dir string, cutoffTime time.Time) (int, int64, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return 0, 0, nil
 	}
-
-	return items, nil
+	
+	var fileCount int
+	var totalSize int64
+	
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		
+		if info.IsDir() {
+			return nil
+		}
+		
+		// Look for failed run indicators (files with "failed" in name or .error extension)
+		if (strings.Contains(strings.ToLower(info.Name()), "failed") ||
+			strings.HasSuffix(strings.ToLower(info.Name()), ".error") ||
+			strings.HasSuffix(strings.ToLower(info.Name()), ".err")) &&
+			info.ModTime().Before(cutoffTime) {
+			
+			fileCount++
+			totalSize += info.Size()
+		}
+		
+		return nil
+	})
+	
+	return fileCount, totalSize, err
 }
 
-func findOldTempFiles(cfg *config.Config) ([]string, error) {
-	// For now, return empty slice - implement based on file modification times
-	// This would check modification times and only return files older than 7 days
-	return []string{}, nil
+func cleanDirectory(dir string, cutoffTime time.Time, includeAll bool) (int, int64, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return 0, 0, nil
+	}
+	
+	var fileCount int
+	var totalSize int64
+	
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		
+		if info.IsDir() {
+			// Try to remove empty directories
+			if includeAll {
+				if isEmpty, _ := isDirEmpty(path); isEmpty && path != dir {
+					os.Remove(path)
+				}
+			}
+			return nil
+		}
+		
+		if includeAll || info.ModTime().Before(cutoffTime) {
+			if err := os.Remove(path); err == nil {
+				fileCount++
+				totalSize += info.Size()
+			}
+		}
+		
+		return nil
+	})
+	
+	return fileCount, totalSize, err
 }
 
-func findTempWorktrees(basePath string) ([]string, error) {
-	var worktrees []string
+func cleanFailedRuns(dir string, cutoffTime time.Time) (int, int64, error) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return 0, 0, nil
+	}
+	
+	var fileCount int
+	var totalSize int64
+	
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		
+		if info.IsDir() {
+			return nil
+		}
+		
+		if (strings.Contains(strings.ToLower(info.Name()), "failed") ||
+			strings.HasSuffix(strings.ToLower(info.Name()), ".error") ||
+			strings.HasSuffix(strings.ToLower(info.Name()), ".err")) &&
+			info.ModTime().Before(cutoffTime) {
+			
+			if err := os.Remove(path); err == nil {
+				fileCount++
+				totalSize += info.Size()
+			}
+		}
+		
+		return nil
+	})
+	
+	return fileCount, totalSize, err
+}
 
-	dir, err := os.ReadDir(basePath)
+func confirmCleanup() bool {
+	fmt.Print("\nProceed with cleanup? (y/N): ")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	response := strings.ToLower(strings.TrimSpace(scanner.Text()))
+	return response == "y" || response == "yes"
+}
+
+func formatBytes(bytes int64) string {
+	const unit = 1024
+	if bytes < unit {
+		return fmt.Sprintf("%d B", bytes)
+	}
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
+}
+
+func isDirEmpty(name string) (bool, error) {
+	f, err := os.Open(name)
 	if err != nil {
-		return nil, err
+		return false, err
 	}
-
-	for _, entry := range dir {
-		if !entry.IsDir() {
-			continue
-		}
-
-		// Look for feat/<feature>/try-* pattern
-		if entry.Name() == "feat" {
-			featPath := filepath.Join(basePath, "feat")
-			featDirs, err := os.ReadDir(featPath)
-			if err != nil {
-				continue
-			}
-
-			for _, featDir := range featDirs {
-				if !featDir.IsDir() {
-					continue
-				}
-
-				featurePath := filepath.Join(featPath, featDir.Name())
-				tryDirs, err := os.ReadDir(featurePath)
-				if err != nil {
-					continue
-				}
-
-				for _, tryDir := range tryDirs {
-					if tryDir.IsDir() && len(tryDir.Name()) > 4 && tryDir.Name()[:4] == "try-" {
-						worktrees = append(worktrees, filepath.Join(featurePath, tryDir.Name()))
-					}
-				}
-			}
-		}
+	defer f.Close()
+	
+	_, err = f.Readdirnames(1)
+	if err == nil {
+		return false, nil
 	}
-
-	return worktrees, nil
-}
-
-func expandPath(path string) string {
-	if len(path) > 0 && path[0] == '~' {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return path
-		}
-		return filepath.Join(home, path[1:])
-	}
-	return path
+	return true, nil
 }

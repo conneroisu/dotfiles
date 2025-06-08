@@ -1,4 +1,3 @@
-// Package worktree handles Git worktree discovery and management
 package worktree
 
 import (
@@ -7,189 +6,206 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 	"github.com/go-git/go-git/v5"
+	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 )
 
-// Discovery handles worktree discovery
-type Discovery struct {
-	config *config.Config
+type DiscoveryOptions struct {
+	SearchPaths     []string
+	ExcludePatterns []string
+	MaxDepth        int
 }
 
-// NewDiscovery creates a new worktree discovery instance
-func NewDiscovery(cfg *config.Config) *Discovery {
-	return &Discovery{
-		config: cfg,
+type Discoverer struct {
+	options DiscoveryOptions
+}
+
+func NewDiscoverer() *Discoverer {
+	cfg := config.Get()
+	
+	var searchPaths []string
+	for _, path := range cfg.Worktrees.SearchPaths {
+		searchPaths = append(searchPaths, config.ExpandPath(path))
+	}
+	
+	return &Discoverer{
+		options: DiscoveryOptions{
+			SearchPaths:     searchPaths,
+			ExcludePatterns: cfg.Worktrees.ExcludePatterns,
+			MaxDepth:        5, // Reasonable default to avoid infinite recursion
+		},
 	}
 }
 
-// FindWorktrees discovers all valid Git worktrees in search paths
-func (d *Discovery) FindWorktrees() ([]*Worktree, error) {
-	var worktrees []*Worktree
-
-	for _, searchPath := range d.config.Worktrees.SearchPaths {
-		expandedPath := expandPath(searchPath)
-		
-		// Check if path exists
-		if _, err := os.Stat(expandedPath); os.IsNotExist(err) {
-			continue
-		}
-
-		found, err := d.scanDirectory(expandedPath)
+func (d *Discoverer) FindWorktrees() ([]*Worktree, error) {
+	var allWorktrees []*Worktree
+	
+	for _, searchPath := range d.options.SearchPaths {
+		worktrees, err := d.findWorktreesInPath(searchPath, 0)
 		if err != nil {
 			// Log error but continue with other paths
+			fmt.Printf("Warning: failed to search path %s: %v\n", searchPath, err)
 			continue
 		}
-
-		worktrees = append(worktrees, found...)
+		allWorktrees = append(allWorktrees, worktrees...)
 	}
-
-	// Filter out excluded patterns
-	filtered := d.filterExcluded(worktrees)
-
-	return filtered, nil
+	
+	return d.filterWorktrees(allWorktrees), nil
 }
 
-// scanDirectory recursively scans a directory for Git repositories
-func (d *Discovery) scanDirectory(path string) ([]*Worktree, error) {
+func (d *Discoverer) findWorktreesInPath(searchPath string, depth int) ([]*Worktree, error) {
+	if depth > d.options.MaxDepth {
+		return nil, nil
+	}
+	
 	var worktrees []*Worktree
-
-	// Check if this directory is a Git repository
-	if d.isGitRepository(path) {
-		wt, err := d.analyzeRepository(path)
-		if err == nil {
-			worktrees = append(worktrees, wt)
-		}
-		// Don't scan subdirectories of Git repos
-		return worktrees, nil
+	
+	// Check if this path itself is a git repository
+	if worktree := d.checkGitRepository(searchPath); worktree != nil {
+		worktrees = append(worktrees, worktree)
 	}
-
-	// Scan subdirectories
-	entries, err := os.ReadDir(path)
+	
+	// Recursively search subdirectories
+	entries, err := os.ReadDir(searchPath)
 	if err != nil {
-		return nil, err
+		return worktrees, nil // Return what we found so far
 	}
-
+	
 	for _, entry := range entries {
 		if !entry.IsDir() {
 			continue
 		}
-
-		// Skip hidden directories and common non-project directories
-		if strings.HasPrefix(entry.Name(), ".") {
+		
+		subPath := filepath.Join(searchPath, entry.Name())
+		
+		// Skip if matches exclude patterns
+		if d.shouldExclude(subPath) {
 			continue
 		}
-
-		subPath := filepath.Join(path, entry.Name())
-		found, err := d.scanDirectory(subPath)
+		
+		// Skip .git directories but not nested repos
+		if entry.Name() == ".git" {
+			continue
+		}
+		
+		subWorktrees, err := d.findWorktreesInPath(subPath, depth+1)
 		if err != nil {
-			// Continue with other directories
-			continue
+			continue // Skip directories we can't read
 		}
-
-		worktrees = append(worktrees, found...)
+		
+		worktrees = append(worktrees, subWorktrees...)
 	}
-
+	
 	return worktrees, nil
 }
 
-// isGitRepository checks if a directory contains a Git repository
-func (d *Discovery) isGitRepository(path string) bool {
-	gitPath := filepath.Join(path, ".git")
-	_, err := os.Stat(gitPath)
-	return err == nil
-}
-
-// analyzeRepository analyzes a Git repository and creates a Worktree
-func (d *Discovery) analyzeRepository(path string) (*Worktree, error) {
+func (d *Discoverer) checkGitRepository(path string) *Worktree {
+	// Try to open as git repository
 	repo, err := git.PlainOpen(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open repository: %w", err)
+		return nil
 	}
-
-	// Get current branch
+	
+	// Get current HEAD reference
 	head, err := repo.Head()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get HEAD: %w", err)
+		return nil
 	}
-
-	branchName := "detached"
-	if head.Name().IsBranch() {
-		branchName = head.Name().Short()
-	}
-
-	// Check working tree status
+	
+	// Get working tree
 	workTree, err := repo.Worktree()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get worktree: %w", err)
+		return nil
 	}
-
+	
+	// Check if working tree is dirty
 	status, err := workTree.Status()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get status: %w", err)
-	}
-
-	// Determine project name from directory name
-	projectName := filepath.Base(path)
-
-	// Get remote URL if available
-	remoteURL := ""
+	isDirty := err == nil && !status.IsClean()
+	
+	// Get remote URL (if any)
 	remotes, err := repo.Remotes()
+	var remoteURL string
 	if err == nil && len(remotes) > 0 {
-		for _, remote := range remotes {
-			if remote.Config().Name == "origin" {
-				if len(remote.Config().URLs) > 0 {
-					remoteURL = remote.Config().URLs[0]
-				}
-				break
-			}
+		config := remotes[0].Config()
+		if len(config.URLs) > 0 {
+			remoteURL = config.URLs[0]
 		}
 	}
-
-	return &Worktree{
-		Name:      projectName,
-		Path:      path,
-		Branch:    branchName,
-		IsDirty:   !status.IsClean(),
-		RemoteURL: remoteURL,
-	}, nil
+	
+	// Extract project name from path or remote URL
+	projectName := d.extractProjectName(path, remoteURL)
+	
+	worktree := &Worktree{
+		ID:          generateID(path),
+		Name:        filepath.Base(path),
+		Path:        path,
+		Branch:      head.Name().Short(),
+		RemoteURL:   remoteURL,
+		LastCommit:  head.Hash().String(),
+		IsDirty:     isDirty,
+		IsValid:     true, // Will be validated later
+		ProjectName: projectName,
+	}
+	
+	return worktree
 }
 
-// filterExcluded filters out worktrees matching exclude patterns
-func (d *Discovery) filterExcluded(worktrees []*Worktree) []*Worktree {
-	var filtered []*Worktree
-
-	for _, wt := range worktrees {
-		excluded := false
-		for _, pattern := range d.config.Worktrees.ExcludePatterns {
-			if d.matchesPattern(wt.Path, pattern) {
-				excluded = true
-				break
-			}
+func (d *Discoverer) shouldExclude(path string) bool {
+	for _, pattern := range d.options.ExcludePatterns {
+		matched, err := filepath.Match(pattern, path)
+		if err == nil && matched {
+			return true
 		}
+		
+		// Also check if any parent directory matches
+		if strings.Contains(path, strings.Replace(pattern, "*", "", -1)) {
+			return true
+		}
+	}
+	return false
+}
 
-		if !excluded {
+func (d *Discoverer) filterWorktrees(worktrees []*Worktree) []*Worktree {
+	// Remove duplicates based on path
+	seen := make(map[string]bool)
+	var filtered []*Worktree
+	
+	for _, wt := range worktrees {
+		if !seen[wt.Path] {
+			seen[wt.Path] = true
 			filtered = append(filtered, wt)
 		}
 	}
-
+	
 	return filtered
 }
 
-// matchesPattern checks if a path matches a glob-like pattern
-func (d *Discovery) matchesPattern(path, pattern string) bool {
-	// Simple glob matching - could be enhanced with filepath.Match
-	return strings.Contains(path, strings.ReplaceAll(pattern, "*", ""))
+func (d *Discoverer) extractProjectName(path, remoteURL string) string {
+	// Try to extract from remote URL first
+	if remoteURL != "" {
+		parts := strings.Split(remoteURL, "/")
+		if len(parts) > 0 {
+			name := parts[len(parts)-1]
+			// Remove .git suffix if present
+			if strings.HasSuffix(name, ".git") {
+				name = name[:len(name)-4]
+			}
+			return name
+		}
+	}
+	
+	// Fall back to directory name
+	return filepath.Base(path)
 }
 
-// expandPath expands ~ to home directory
-func expandPath(path string) string {
-	if len(path) > 0 && path[0] == '~' {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return path
-		}
-		return filepath.Join(home, path[1:])
+func generateID(path string) string {
+	// Simple hash-like ID generation based on path
+	hash := 0
+	for _, char := range path {
+		hash = hash*31 + int(char)
 	}
-	return path
+	if hash < 0 {
+		hash = -hash
+	}
+	return fmt.Sprintf("wt-%d", hash)
 }

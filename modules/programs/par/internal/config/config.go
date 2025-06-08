@@ -1,4 +1,3 @@
-// Package config handles configuration management for par
 package config
 
 import (
@@ -8,183 +7,181 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v3"
 )
 
-// Config represents the application configuration
 type Config struct {
-	Defaults  DefaultsConfig  `yaml:"defaults" mapstructure:"defaults"`
-	Claude    ClaudeConfig    `yaml:"claude" mapstructure:"claude"`
-	Terminal  TerminalConfig  `yaml:"terminal" mapstructure:"terminal"`
-	Worktrees WorktreesConfig `yaml:"worktrees" mapstructure:"worktrees"`
-	Prompts   PromptsConfig   `yaml:"prompts" mapstructure:"prompts"`
+	Defaults  DefaultsConfig  `mapstructure:"defaults"`
+	Claude    ClaudeConfig    `mapstructure:"claude"`
+	Terminal  TerminalConfig  `mapstructure:"terminal"`
+	Worktrees WorktreesConfig `mapstructure:"worktrees"`
+	Prompts   PromptsConfig   `mapstructure:"prompts"`
 }
 
-// DefaultsConfig contains default settings
 type DefaultsConfig struct {
-	Jobs      int    `yaml:"jobs" mapstructure:"jobs"`
-	Timeout   string `yaml:"timeout" mapstructure:"timeout"`
-	OutputDir string `yaml:"output_dir" mapstructure:"output_dir"`
+	Jobs      int    `mapstructure:"jobs"`
+	Timeout   string `mapstructure:"timeout"`
+	OutputDir string `mapstructure:"output_dir"`
 }
 
-// ClaudeConfig contains Claude Code CLI settings
 type ClaudeConfig struct {
-	BinaryPath  string   `yaml:"binary_path" mapstructure:"binary_path"`
-	DefaultArgs []string `yaml:"default_args" mapstructure:"default_args"`
+	BinaryPath   string   `mapstructure:"binary_path"`
+	DefaultArgs  []string `mapstructure:"default_args"`
 }
 
-// TerminalConfig contains terminal integration settings
 type TerminalConfig struct {
-	UseGhostty        bool `yaml:"use_ghostty" mapstructure:"use_ghostty"`
-	WaitAfterCommand  bool `yaml:"wait_after_command" mapstructure:"wait_after_command"`
-	NewWindowPerJob   bool `yaml:"new_window_per_job" mapstructure:"new_window_per_job"`
-	ShowRealTimeOutput bool `yaml:"show_real_time_output" mapstructure:"show_real_time_output"`
+	UseGhostty         bool `mapstructure:"use_ghostty"`
+	WaitAfterCommand   bool `mapstructure:"wait_after_command"`
+	NewWindowPerJob    bool `mapstructure:"new_window_per_job"`
+	ShowRealTimeOutput bool `mapstructure:"show_real_time_output"`
 }
 
-// WorktreesConfig contains worktree discovery settings
 type WorktreesConfig struct {
-	SearchPaths     []string `yaml:"search_paths" mapstructure:"search_paths"`
-	ExcludePatterns []string `yaml:"exclude_patterns" mapstructure:"exclude_patterns"`
+	SearchPaths     []string `mapstructure:"search_paths"`
+	ExcludePatterns []string `mapstructure:"exclude_patterns"`
 }
 
-// PromptsConfig contains prompt storage settings
 type PromptsConfig struct {
-	StorageDir     string `yaml:"storage_dir" mapstructure:"storage_dir"`
-	TemplateEngine string `yaml:"template_engine" mapstructure:"template_engine"`
+	StorageDir     string `mapstructure:"storage_dir"`
+	TemplateEngine string `mapstructure:"template_engine"`
 }
 
-// Load loads the configuration from file and environment
-func Load() (*Config, error) {
-	// Set defaults
+var globalConfig *Config
+
+func Init() error {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	
+	configDir, err := getConfigDir()
+	if err != nil {
+		return fmt.Errorf("failed to get config directory: %w", err)
+	}
+	
+	viper.AddConfigPath(configDir)
+	
+	setDefaults()
+	
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			if err := createDefaultConfig(configDir); err != nil {
+				return fmt.Errorf("failed to create default config: %w", err)
+			}
+		} else {
+			return fmt.Errorf("failed to read config: %w", err)
+		}
+	}
+	
+	config := &Config{}
+	if err := viper.Unmarshal(config); err != nil {
+		return fmt.Errorf("failed to unmarshal config: %w", err)
+	}
+	
+	globalConfig = config
+	return nil
+}
+
+func Get() *Config {
+	if globalConfig == nil {
+		panic("config not initialized - call config.Init() first")
+	}
+	return globalConfig
+}
+
+func GetTimeoutDuration() (time.Duration, error) {
+	if globalConfig == nil {
+		return 0, fmt.Errorf("config not initialized")
+	}
+	return time.ParseDuration(globalConfig.Defaults.Timeout)
+}
+
+func setDefaults() {
+	homeDir, _ := os.UserHomeDir()
+	
 	viper.SetDefault("defaults.jobs", 3)
 	viper.SetDefault("defaults.timeout", "60m")
-	viper.SetDefault("defaults.output_dir", "~/.local/share/par/results")
-
+	viper.SetDefault("defaults.output_dir", filepath.Join(homeDir, ".local", "share", "par", "results"))
+	
 	viper.SetDefault("claude.binary_path", "claude-code")
 	viper.SetDefault("claude.default_args", []string{"--dangerously-skip-permissions"})
-
+	
 	viper.SetDefault("terminal.use_ghostty", true)
 	viper.SetDefault("terminal.wait_after_command", true)
 	viper.SetDefault("terminal.new_window_per_job", true)
 	viper.SetDefault("terminal.show_real_time_output", false)
-
-	viper.SetDefault("worktrees.search_paths", []string{"~/projects", "~/work"})
+	
+	viper.SetDefault("worktrees.search_paths", []string{
+		filepath.Join(homeDir, "projects"),
+		filepath.Join(homeDir, "work"),
+	})
 	viper.SetDefault("worktrees.exclude_patterns", []string{
 		"*/node_modules/*",
 		"*/.git/*",
 		"*/target/*",
 	})
-
-	viper.SetDefault("prompts.storage_dir", "~/.local/share/par/prompts")
+	
+	viper.SetDefault("prompts.storage_dir", filepath.Join(homeDir, ".local", "share", "par", "prompts"))
 	viper.SetDefault("prompts.template_engine", "go")
+}
 
-	var cfg Config
-	err := viper.Unmarshal(&cfg)
+func getConfigDir() (string, error) {
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
+		return "", err
 	}
-
-	// Expand paths
-	cfg.Defaults.OutputDir = expandPath(cfg.Defaults.OutputDir)
-	cfg.Prompts.StorageDir = expandPath(cfg.Prompts.StorageDir)
-
-	for i, path := range cfg.Worktrees.SearchPaths {
-		cfg.Worktrees.SearchPaths[i] = expandPath(path)
+	
+	configDir := filepath.Join(homeDir, ".config", "par")
+	if err := os.MkdirAll(configDir, 0755); err != nil {
+		return "", err
 	}
-
-	// Validate configuration
-	if err := cfg.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid configuration: %w", err)
-	}
-
-	return &cfg, nil
+	
+	return configDir, nil
 }
 
-// Validate validates the configuration
-func (c *Config) Validate() error {
-	if c.Defaults.Jobs <= 0 {
-		return fmt.Errorf("defaults.jobs must be greater than 0")
-	}
+func createDefaultConfig(configDir string) error {
+	configFile := filepath.Join(configDir, "config.yaml")
+	
+	defaultConfigContent := `# Par Configuration
 
-	if _, err := time.ParseDuration(c.Defaults.Timeout); err != nil {
-		return fmt.Errorf("invalid defaults.timeout: %w", err)
-	}
+# Default settings
+defaults:
+  jobs: 3
+  timeout: "60m"
+  output_dir: "~/.local/share/par/results"
 
-	if c.Claude.BinaryPath == "" {
-		return fmt.Errorf("claude.binary_path cannot be empty")
-	}
+# Claude Code CLI settings
+claude:
+  binary_path: "claude-code"
+  default_args: ["--dangerously-skip-permissions"]
 
-	if len(c.Worktrees.SearchPaths) == 0 {
-		return fmt.Errorf("worktrees.search_paths cannot be empty")
-	}
+# Terminal integration settings
+terminal:
+  use_ghostty: true
+  wait_after_command: true
+  new_window_per_job: true
+  show_real_time_output: false
 
-	return nil
+# Worktree discovery settings
+worktrees:
+  search_paths:
+    - "~/projects"
+    - "~/work"
+  exclude_patterns:
+    - "*/node_modules/*"
+    - "*/.git/*"
+    - "*/target/*"
+
+# Prompt storage settings
+prompts:
+  storage_dir: "~/.local/share/par/prompts"
+  template_engine: "go"
+`
+	
+	return os.WriteFile(configFile, []byte(defaultConfigContent), 0644)
 }
 
-// Save saves the configuration to file
-func (c *Config) Save(path string) error {
-	// Ensure directory exists
-	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return fmt.Errorf("failed to create config directory: %w", err)
-	}
-
-	data, err := yaml.Marshal(c)
-	if err != nil {
-		return fmt.Errorf("failed to marshal config: %w", err)
-	}
-
-	err = os.WriteFile(path, data, 0644)
-	if err != nil {
-		return fmt.Errorf("failed to write config file: %w", err)
-	}
-
-	return nil
-}
-
-// GetTimeout returns the timeout duration
-func (c *Config) GetTimeout() time.Duration {
-	duration, err := time.ParseDuration(c.Defaults.Timeout)
-	if err != nil {
-		return 60 * time.Minute // fallback
-	}
-	return duration
-}
-
-// GetOutputDir returns the expanded output directory path
-func (c *Config) GetOutputDir() string {
-	return expandPath(c.Defaults.OutputDir)
-}
-
-// GetPromptsDir returns the expanded prompts directory path
-func (c *Config) GetPromptsDir() string {
-	return expandPath(c.Prompts.StorageDir)
-}
-
-// expandPath expands ~ to home directory
-func expandPath(path string) string {
-	if len(path) > 0 && path[0] == '~' {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return path
-		}
-		return filepath.Join(home, path[1:])
+func ExpandPath(path string) string {
+	if path[:2] == "~/" {
+		homeDir, _ := os.UserHomeDir()
+		return filepath.Join(homeDir, path[2:])
 	}
 	return path
-}
-
-// EnsureDirectories creates necessary directories
-func (c *Config) EnsureDirectories() error {
-	dirs := []string{
-		c.GetOutputDir(),
-		c.GetPromptsDir(),
-	}
-
-	for _, dir := range dirs {
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			return fmt.Errorf("failed to create directory %s: %w", dir, err)
-		}
-	}
-
-	return nil
 }

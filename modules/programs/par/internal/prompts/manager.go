@@ -1,148 +1,194 @@
-// Package prompts handles prompt storage and retrieval
 package prompts
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
-	"strings"
 	"time"
 
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 	"gopkg.in/yaml.v3"
+	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 )
 
-// Manager handles prompt operations
+type Prompt struct {
+	Name        string                 `yaml:"name" json:"name"`
+	Description string                 `yaml:"description" json:"description"`
+	Content     string                 `yaml:"content" json:"content"`
+	IsTemplate  bool                   `yaml:"is_template" json:"is_template"`
+	Variables   map[string]interface{} `yaml:"variables,omitempty" json:"variables,omitempty"`
+	CreatedAt   time.Time             `yaml:"created_at" json:"created_at"`
+	UpdatedAt   time.Time             `yaml:"updated_at" json:"updated_at"`
+	Tags        []string              `yaml:"tags,omitempty" json:"tags,omitempty"`
+}
+
 type Manager struct {
 	storageDir string
-	config     *config.Config
 }
 
-// Prompt represents a stored prompt
-type Prompt struct {
-	Name        string            `yaml:"name"`
-	Description string            `yaml:"description"`
-	Content     string            `yaml:"content"`
-	IsTemplate  bool              `yaml:"is_template"`
-	Variables   map[string]string `yaml:"variables,omitempty"`
-	CreatedAt   time.Time         `yaml:"created_at"`
-	ModifiedAt  time.Time         `yaml:"modified_at"`
-}
-
-// NewManager creates a new prompt manager
 func NewManager() (*Manager, error) {
-	cfg, err := config.Load()
-	if err != nil {
-		return nil, fmt.Errorf("failed to load config: %w", err)
-	}
-
-	storageDir := cfg.GetPromptsDir()
+	cfg := config.Get()
+	storageDir := config.ExpandPath(cfg.Prompts.StorageDir)
 	
-	// Ensure storage directory exists
 	if err := os.MkdirAll(storageDir, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create prompts directory: %w", err)
+		return nil, fmt.Errorf("failed to create prompts storage directory: %w", err)
 	}
-
+	
 	return &Manager{
 		storageDir: storageDir,
-		config:     cfg,
 	}, nil
 }
 
-// Save saves a prompt to storage
 func (m *Manager) Save(prompt *Prompt) error {
 	if prompt.Name == "" {
 		return fmt.Errorf("prompt name cannot be empty")
 	}
-
-	// Set timestamps
-	now := time.Now()
+	
+	prompt.UpdatedAt = time.Now()
 	if prompt.CreatedAt.IsZero() {
-		prompt.CreatedAt = now
+		prompt.CreatedAt = time.Now()
 	}
-	prompt.ModifiedAt = now
-
-	// Save to file
-	filePath := filepath.Join(m.storageDir, prompt.Name+".yaml")
+	
+	promptFile := filepath.Join(m.storageDir, prompt.Name+".yaml")
+	
 	data, err := yaml.Marshal(prompt)
 	if err != nil {
 		return fmt.Errorf("failed to marshal prompt: %w", err)
 	}
-
-	err = os.WriteFile(filePath, data, 0644)
-	if err != nil {
+	
+	if err := os.WriteFile(promptFile, data, 0644); err != nil {
 		return fmt.Errorf("failed to write prompt file: %w", err)
 	}
-
+	
 	return nil
 }
 
-// Load loads a prompt by name
 func (m *Manager) Load(name string) (*Prompt, error) {
-	filePath := filepath.Join(m.storageDir, name+".yaml")
-	data, err := os.ReadFile(filePath)
+	promptFile := filepath.Join(m.storageDir, name+".yaml")
+	
+	data, err := os.ReadFile(promptFile)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, fmt.Errorf("prompt '%s' not found", name)
+		}
 		return nil, fmt.Errorf("failed to read prompt file: %w", err)
 	}
-
+	
 	var prompt Prompt
-	err = yaml.Unmarshal(data, &prompt)
-	if err != nil {
+	if err := yaml.Unmarshal(data, &prompt); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal prompt: %w", err)
 	}
-
+	
 	return &prompt, nil
 }
 
-// List returns all available prompts
 func (m *Manager) List() ([]*Prompt, error) {
-	entries, err := os.ReadDir(m.storageDir)
+	files, err := filepath.Glob(filepath.Join(m.storageDir, "*.yaml"))
 	if err != nil {
-		return nil, fmt.Errorf("failed to read prompts directory: %w", err)
+		return nil, fmt.Errorf("failed to glob prompt files: %w", err)
 	}
-
+	
 	var prompts []*Prompt
-	for _, entry := range entries {
-		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".yaml") {
-			continue
-		}
-
-		name := strings.TrimSuffix(entry.Name(), ".yaml")
+	for _, file := range files {
+		name := filepath.Base(file)
+		name = name[:len(name)-len(filepath.Ext(name))] // remove .yaml extension
+		
 		prompt, err := m.Load(name)
 		if err != nil {
-			// Skip invalid prompts
-			continue
+			continue // skip invalid prompts
 		}
+		
 		prompts = append(prompts, prompt)
 	}
-
-	// Sort by modified time (newest first)
-	sort.Slice(prompts, func(i, j int) bool {
-		return prompts[i].ModifiedAt.After(prompts[j].ModifiedAt)
-	})
-
+	
 	return prompts, nil
 }
 
-// Delete deletes a prompt by name
 func (m *Manager) Delete(name string) error {
-	filePath := filepath.Join(m.storageDir, name+".yaml")
-	err := os.Remove(filePath)
-	if err != nil {
+	promptFile := filepath.Join(m.storageDir, name+".yaml")
+	
+	if err := os.Remove(promptFile); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("prompt '%s' not found", name)
+		}
 		return fmt.Errorf("failed to delete prompt: %w", err)
 	}
+	
 	return nil
 }
 
-// Exists checks if a prompt exists
 func (m *Manager) Exists(name string) bool {
-	filePath := filepath.Join(m.storageDir, name+".yaml")
-	_, err := os.Stat(filePath)
+	promptFile := filepath.Join(m.storageDir, name+".yaml")
+	_, err := os.Stat(promptFile)
 	return err == nil
 }
 
-// GetStorageDir returns the storage directory path
 func (m *Manager) GetStorageDir() string {
 	return m.storageDir
+}
+
+func (m *Manager) ValidateName(name string) error {
+	if name == "" {
+		return fmt.Errorf("prompt name cannot be empty")
+	}
+	
+	if len(name) > 50 {
+		return fmt.Errorf("prompt name too long (max 50 characters)")
+	}
+	
+	// Check for invalid characters
+	for _, char := range name {
+		if !((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || 
+			 (char >= '0' && char <= '9') || char == '-' || char == '_') {
+			return fmt.Errorf("prompt name contains invalid character: %c", char)
+		}
+	}
+	
+	return nil
+}
+
+func CreateDefaultPrompt(name, description string) *Prompt {
+	return &Prompt{
+		Name:        name,
+		Description: description,
+		Content:     "",
+		IsTemplate:  false,
+		Variables:   make(map[string]interface{}),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		Tags:        []string{},
+	}
+}
+
+func CreateTemplatePrompt(name, description string) *Prompt {
+	content := `# {{.ProjectName}} - {{.TaskName}}
+
+## Task Description
+{{.Description}}
+
+## Context
+Project: {{.ProjectName}}
+Branch: {{.BranchName}}
+Worktree: {{.WorktreePath}}
+
+## Instructions
+{{.Instructions}}
+
+## Expected Outcome
+{{.ExpectedOutcome}}`
+
+	return &Prompt{
+		Name:        name,
+		Description: description,
+		Content:     content,
+		IsTemplate:  true,
+		Variables: map[string]interface{}{
+			"TaskName":        "",
+			"Description":     "",
+			"Instructions":    "",
+			"ExpectedOutcome": "",
+		},
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Tags:      []string{"template"},
+	}
 }

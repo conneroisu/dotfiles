@@ -1,140 +1,183 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/prompts"
 	"github.com/spf13/cobra"
+	"github.com/conneroisu/dotfiles/modules/programs/par/internal/prompts"
 )
 
 var (
 	addName        string
+	addDescription string
 	addFile        string
 	addTemplate    bool
-	addDescription string
+	addTags        []string
 )
 
-// addCmd represents the add command
 var addCmd = &cobra.Command{
-	Use:   "add [--name <name>] [--file <file>] [--template]",
+	Use:   "add",
 	Short: "Add a new prompt to the library",
-	Long: `Add a new prompt to the library for use with par run.
+	Long: `Add a new prompt to the library. You can add prompts interactively,
+from a file, or create a template prompt.
 
-You can either:
-- Provide prompt content interactively
-- Read prompt from a file with --file
-- Create a template prompt with --template`,
+Examples:
+  par add --name "refactor-errors" --description "Refactor error handling patterns"
+  par add --name "optimize-performance" --file ./prompts/optimize.txt
+  par add --name "add-feature" --template --description "Add new feature template"`,
 	RunE: runAdd,
 }
 
 func init() {
-	rootCmd.AddCommand(addCmd)
-
-	addCmd.Flags().StringVarP(&addName, "name", "n", "", "name for the prompt")
-	addCmd.Flags().StringVarP(&addFile, "file", "f", "", "read prompt from file")
-	addCmd.Flags().BoolVar(&addTemplate, "template", false, "create a template prompt")
-	addCmd.Flags().StringVarP(&addDescription, "description", "d", "", "description for the prompt")
+	addCmd.Flags().StringVarP(&addName, "name", "n", "", "Name for the prompt (required)")
+	addCmd.Flags().StringVarP(&addDescription, "description", "d", "", "Description of the prompt")
+	addCmd.Flags().StringVarP(&addFile, "file", "f", "", "File containing the prompt content")
+	addCmd.Flags().BoolVarP(&addTemplate, "template", "t", false, "Create a template prompt")
+	addCmd.Flags().StringSliceVar(&addTags, "tags", []string{}, "Tags for the prompt (comma-separated)")
 }
 
 func runAdd(cmd *cobra.Command, args []string) error {
 	manager, err := prompts.NewManager()
 	if err != nil {
-		return fmt.Errorf("failed to initialize prompt manager: %w", err)
+		return fmt.Errorf("failed to initialize prompts manager: %w", err)
 	}
 
-	var promptName string
-	var promptContent string
-
-	// Get prompt name
-	if addName != "" {
-		promptName = addName
-	} else {
-		fmt.Print("Enter prompt name: ")
-		fmt.Scanln(&promptName)
+	// Interactive mode if no name provided
+	if addName == "" {
+		return runInteractiveAdd(manager)
 	}
 
-	if promptName == "" {
-		return fmt.Errorf("prompt name is required")
+	// Validate the name
+	if err := manager.ValidateName(addName); err != nil {
+		return fmt.Errorf("invalid prompt name: %w", err)
 	}
 
-	// Validate prompt name
-	if strings.ContainsAny(promptName, "/\\<>:\"|?*") {
-		return fmt.Errorf("prompt name contains invalid characters")
+	// Check if prompt already exists
+	if manager.Exists(addName) {
+		return fmt.Errorf("prompt '%s' already exists", addName)
 	}
 
-	// Get prompt content
-	if addFile != "" {
-		// Read from file
-		content, err := os.ReadFile(addFile)
-		if err != nil {
-			return fmt.Errorf("failed to read file %s: %w", addFile, err)
+	var prompt *prompts.Prompt
+
+	// Create template prompt
+	if addTemplate {
+		prompt = prompts.CreateTemplatePrompt(addName, addDescription)
+		if len(addTags) > 0 {
+			prompt.Tags = addTags
 		}
-		promptContent = string(content)
-	} else if addTemplate {
-		// Create template prompt
-		promptContent = `# {{.ProjectName}} - {{.TaskName}}
-
-## Task Description
-{{.Description}}
-
-## Context
-Project: {{.ProjectName}}
-Branch: {{.BranchName}}
-Worktree: {{.WorktreePath}}
-
-## Instructions
-{{.Instructions}}
-
-## Expected Outcome
-{{.ExpectedOutcome}}`
 	} else {
-		// Interactive input
-		fmt.Println("Enter prompt content (end with Ctrl+D on empty line):")
-		var lines []string
-		for {
-			var line string
-			_, err := fmt.Scanln(&line)
+		// Create regular prompt
+		prompt = prompts.CreateDefaultPrompt(addName, addDescription)
+		if len(addTags) > 0 {
+			prompt.Tags = addTags
+		}
+
+		// Load content from file or interactive input
+		if addFile != "" {
+			content, err := os.ReadFile(addFile)
 			if err != nil {
-				break
+				return fmt.Errorf("failed to read file '%s': %w", addFile, err)
 			}
-			lines = append(lines, line)
+			prompt.Content = string(content)
+		} else {
+			content, err := getPromptContentInteractive()
+			if err != nil {
+				return fmt.Errorf("failed to get prompt content: %w", err)
+			}
+			prompt.Content = content
 		}
-		promptContent = strings.Join(lines, "\n")
 	}
 
-	if promptContent == "" {
-		return fmt.Errorf("prompt content is required")
-	}
-
-	// Create prompt
-	prompt := &prompts.Prompt{
-		Name:        promptName,
-		Description: addDescription,
-		Content:     promptContent,
-		IsTemplate:  addTemplate,
-	}
-
-	err = manager.Save(prompt)
-	if err != nil {
+	// Save the prompt
+	if err := manager.Save(prompt); err != nil {
 		return fmt.Errorf("failed to save prompt: %w", err)
 	}
 
-	promptPath := filepath.Join(manager.GetStorageDir(), promptName+".yaml")
-	fmt.Printf("✓ Prompt '%s' saved to %s\n", promptName, promptPath)
-
+	fmt.Printf("Successfully added prompt '%s'\n", addName)
 	if addTemplate {
-		fmt.Println("\n📝 Template variables available:")
-		fmt.Println("  - {{.ProjectName}}    # Name of the project")
-		fmt.Println("  - {{.TaskName}}       # Name of the task")
-		fmt.Println("  - {{.Description}}    # Task description")
-		fmt.Println("  - {{.BranchName}}     # Git branch name")
-		fmt.Println("  - {{.WorktreePath}}   # Path to worktree")
-		fmt.Println("  - {{.Instructions}}   # Specific instructions")
-		fmt.Println("  - {{.ExpectedOutcome}} # Expected outcome")
+		fmt.Printf("Template prompt created. You can edit the variables and content as needed.\n")
+	}
+	fmt.Printf("Storage location: %s\n", manager.GetStorageDir())
+
+	return nil
+}
+
+func runInteractiveAdd(manager *prompts.Manager) error {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print("Enter prompt name: ")
+	scanner.Scan()
+	name := strings.TrimSpace(scanner.Text())
+
+	if err := manager.ValidateName(name); err != nil {
+		return fmt.Errorf("invalid prompt name: %w", err)
+	}
+
+	if manager.Exists(name) {
+		return fmt.Errorf("prompt '%s' already exists", name)
+	}
+
+	fmt.Print("Enter description: ")
+	scanner.Scan()
+	description := strings.TrimSpace(scanner.Text())
+
+	fmt.Print("Create as template? (y/N): ")
+	scanner.Scan()
+	isTemplate := strings.ToLower(strings.TrimSpace(scanner.Text())) == "y"
+
+	fmt.Print("Enter tags (comma-separated, optional): ")
+	scanner.Scan()
+	tagsInput := strings.TrimSpace(scanner.Text())
+	var tags []string
+	if tagsInput != "" {
+		for _, tag := range strings.Split(tagsInput, ",") {
+			tags = append(tags, strings.TrimSpace(tag))
+		}
+	}
+
+	var prompt *prompts.Prompt
+
+	if isTemplate {
+		prompt = prompts.CreateTemplatePrompt(name, description)
+		prompt.Tags = tags
+	} else {
+		prompt = prompts.CreateDefaultPrompt(name, description)
+		prompt.Tags = tags
+
+		fmt.Println("\nEnter prompt content (end with Ctrl+D on Unix or Ctrl+Z on Windows):")
+		content, err := getPromptContentInteractive()
+		if err != nil {
+			return fmt.Errorf("failed to get prompt content: %w", err)
+		}
+		prompt.Content = content
+	}
+
+	if err := manager.Save(prompt); err != nil {
+		return fmt.Errorf("failed to save prompt: %w", err)
+	}
+
+	fmt.Printf("\nSuccessfully added prompt '%s'\n", name)
+	if isTemplate {
+		fmt.Printf("Template prompt created. You can edit the variables and content as needed.\n")
 	}
 
 	return nil
+}
+
+func getPromptContentInteractive() (string, error) {
+	var lines []string
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", fmt.Errorf("error reading input: %w", err)
+	}
+
+	return strings.Join(lines, "\n"), nil
 }

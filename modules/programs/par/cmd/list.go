@@ -3,149 +3,276 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	"strings"
 	"text/tabwriter"
 	"time"
 
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
+	"github.com/spf13/cobra"
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/prompts"
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/worktree"
-	"github.com/spf13/cobra"
 )
 
-// listCmd represents the list command
+var (
+	listJSON   bool
+	listFilter string
+)
+
 var listCmd = &cobra.Command{
 	Use:   "list [prompts|worktrees]",
 	Short: "List available prompts and discovered worktrees",
-	Long: `List available prompts and discovered worktrees.
+	Long: `List available prompts and discovered worktrees. You can list all items,
+or filter by type (prompts or worktrees).
 
 Examples:
-  par list          # List both prompts and worktrees
-  par list prompts  # List only prompts
-  par list worktrees # List only worktrees`,
+  par list                # List both prompts and worktrees
+  par list prompts        # List only prompts
+  par list worktrees      # List only worktrees
+  par list --json         # Output in JSON format
+  par list --filter="template"  # Filter items containing "template"`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runList,
 }
 
 func init() {
-	rootCmd.AddCommand(listCmd)
+	listCmd.Flags().BoolVar(&listJSON, "json", false, "Output in JSON format")
+	listCmd.Flags().StringVar(&listFilter, "filter", "", "Filter items by name or description")
 }
 
 func runList(cmd *cobra.Command, args []string) error {
-	listType := "all"
+	var listType string
 	if len(args) > 0 {
 		listType = args[0]
+		if listType != "prompts" && listType != "worktrees" {
+			return fmt.Errorf("invalid list type: %s (use 'prompts' or 'worktrees')", listType)
+		}
 	}
 
-	switch listType {
-	case "prompts":
-		return listPrompts()
-	case "worktrees":
-		return listWorktrees()
-	case "all":
+	if listType == "" || listType == "prompts" {
 		if err := listPrompts(); err != nil {
-			return err
+			return fmt.Errorf("failed to list prompts: %w", err)
 		}
-		fmt.Println()
-		return listWorktrees()
-	default:
-		return fmt.Errorf("invalid list type: %s (must be 'prompts', 'worktrees', or omitted for all)", listType)
 	}
+
+	if listType == "" || listType == "worktrees" {
+		if listType == "" {
+			fmt.Println() // Add separator when listing both
+		}
+		if err := listWorktrees(); err != nil {
+			return fmt.Errorf("failed to list worktrees: %w", err)
+		}
+	}
+
+	return nil
 }
 
 func listPrompts() error {
 	manager, err := prompts.NewManager()
 	if err != nil {
-		return fmt.Errorf("failed to initialize prompt manager: %w", err)
+		return fmt.Errorf("failed to initialize prompts manager: %w", err)
 	}
 
 	promptList, err := manager.List()
 	if err != nil {
-		return fmt.Errorf("failed to list prompts: %w", err)
+		return fmt.Errorf("failed to get prompts: %w", err)
 	}
 
-	fmt.Printf("📝 Available Prompts (%d)\n", len(promptList))
-	fmt.Println("=======================")
-
-	if len(promptList) == 0 {
-		fmt.Println("No prompts found. Use 'par add' to create a new prompt.")
-		return nil
+	if listJSON {
+		return printPromptsJSON(promptList)
 	}
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintln(w, "NAME\tTYPE\tDESCRIPTION\tMODIFIED")
-	fmt.Fprintln(w, "----\t----\t-----------\t--------")
-
-	for _, prompt := range promptList {
-		promptType := "text"
-		if prompt.IsTemplate {
-			promptType = "template"
-		}
-
-		description := prompt.Description
-		if description == "" {
-			description = "(no description)"
-		}
-		if len(description) > 50 {
-			description = description[:47] + "..."
-		}
-
-		modified := prompt.ModifiedAt.Format("2006-01-02 15:04")
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", prompt.Name, promptType, description, modified)
-	}
-
-	w.Flush()
-	return nil
+	return printPromptsTable(promptList)
 }
 
 func listWorktrees() error {
-	cfg, err := config.Load()
-	if err != nil {
-		return fmt.Errorf("failed to load config: %w", err)
-	}
-
-	manager, err := worktree.NewManager(cfg)
-	if err != nil {
-		return fmt.Errorf("failed to initialize worktree manager: %w", err)
-	}
-
-	worktrees, err := manager.Discover()
+	discoverer := worktree.NewDiscoverer()
+	worktrees, err := discoverer.FindWorktrees()
 	if err != nil {
 		return fmt.Errorf("failed to discover worktrees: %w", err)
 	}
 
-	fmt.Printf("🌳 Discovered Worktrees (%d)\n", len(worktrees))
-	fmt.Println("=========================")
+	if listJSON {
+		return printWorktreesJSON(worktrees)
+	}
 
-	if len(worktrees) == 0 {
-		fmt.Println("No valid worktrees found.")
-		fmt.Println("\nSearch paths:")
-		for _, path := range cfg.Worktrees.SearchPaths {
-			fmt.Printf("  - %s\n", path)
-		}
+	return printWorktreesTable(worktrees)
+}
+
+func printPromptsTable(promptList []*prompts.Prompt) error {
+	if len(promptList) == 0 {
+		fmt.Println("No prompts found.")
 		return nil
 	}
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 8, 2, ' ', 0)
-	fmt.Fprintln(w, "NAME\tBRANCH\tSTATUS\tPATH")
-	fmt.Fprintln(w, "----\t------\t------\t----")
+	fmt.Println("PROMPTS:")
+	fmt.Println("========")
 
-	for _, wt := range worktrees {
-		status := "✓ clean"
-		if wt.IsDirty {
-			status = "⚠️ dirty"
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "NAME\tTYPE\tDESCRIPTION\tTAGS\tCREATED")
+
+	for _, prompt := range promptList {
+		if listFilter != "" && !matchesFilter(prompt, listFilter) {
+			continue
 		}
 
-		path := wt.Path
-		if home, err := os.UserHomeDir(); err == nil {
-			if rel, err := filepath.Rel(home, wt.Path); err == nil && !filepath.IsAbs(rel) {
-				path = "~/" + rel
-			}
+		promptType := "prompt"
+		if prompt.IsTemplate {
+			promptType = "template"
 		}
 
-		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", wt.Name, wt.Branch, status, path)
+		tags := strings.Join(prompt.Tags, ",")
+		if tags == "" {
+			tags = "-"
+		}
+
+		created := prompt.CreatedAt.Format("2006-01-02")
+
+		description := prompt.Description
+		if len(description) > 50 {
+			description = description[:47] + "..."
+		}
+
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
+			prompt.Name, promptType, description, tags, created)
 	}
 
-	w.Flush()
+	return w.Flush()
+}
+
+func printWorktreesTable(worktrees []*worktree.Worktree) error {
+	if len(worktrees) == 0 {
+		fmt.Println("No worktrees found.")
+		return nil
+	}
+
+	fmt.Println("WORKTREES:")
+	fmt.Println("==========")
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "PROJECT\tBRANCH\tSTATUS\tPATH")
+
+	for _, wt := range worktrees {
+		if listFilter != "" && !matchesWorktreeFilter(wt, listFilter) {
+			continue
+		}
+
+		status := "clean"
+		if wt.IsDirty {
+			status = "dirty"
+		}
+		if !wt.IsValid {
+			status = "invalid"
+		}
+
+		projectName := wt.GetDisplayName()
+		path := wt.Path
+
+		// Shorten long paths
+		if len(path) > 60 {
+			path = "..." + path[len(path)-57:]
+		}
+
+		fmt.Fprintf(w, "%s\t%s\t%s\t%s\n",
+			projectName, wt.Branch, status, path)
+	}
+
+	return w.Flush()
+}
+
+func printPromptsJSON(promptList []*prompts.Prompt) error {
+	// For simplicity, print a basic JSON representation
+	fmt.Println("[")
+	for i, prompt := range promptList {
+		if listFilter != "" && !matchesFilter(prompt, listFilter) {
+			continue
+		}
+
+		if i > 0 {
+			fmt.Println(",")
+		}
+
+		fmt.Printf(`  {
+    "name": "%s",
+    "description": "%s",
+    "is_template": %t,
+    "tags": [%s],
+    "created_at": "%s"
+  }`, prompt.Name, 
+			escapeJSON(prompt.Description),
+			prompt.IsTemplate,
+			formatJSONTags(prompt.Tags),
+			prompt.CreatedAt.Format(time.RFC3339))
+	}
+	fmt.Println("\n]")
 	return nil
+}
+
+func printWorktreesJSON(worktrees []*worktree.Worktree) error {
+	fmt.Println("[")
+	for i, wt := range worktrees {
+		if listFilter != "" && !matchesWorktreeFilter(wt, listFilter) {
+			continue
+		}
+
+		if i > 0 {
+			fmt.Println(",")
+		}
+
+		fmt.Printf(`  {
+    "id": "%s",
+    "name": "%s",
+    "project_name": "%s",
+    "path": "%s",
+    "branch": "%s",
+    "remote_url": "%s",
+    "is_dirty": %t,
+    "is_valid": %t
+  }`, wt.ID, wt.Name, wt.ProjectName, wt.Path, wt.Branch, wt.RemoteURL, wt.IsDirty, wt.IsValid)
+	}
+	fmt.Println("\n]")
+	return nil
+}
+
+func matchesFilter(prompt *prompts.Prompt, filter string) bool {
+	filter = strings.ToLower(filter)
+	return strings.Contains(strings.ToLower(prompt.Name), filter) ||
+		strings.Contains(strings.ToLower(prompt.Description), filter) ||
+		containsTag(prompt.Tags, filter)
+}
+
+func matchesWorktreeFilter(wt *worktree.Worktree, filter string) bool {
+	filter = strings.ToLower(filter)
+	return strings.Contains(strings.ToLower(wt.Name), filter) ||
+		strings.Contains(strings.ToLower(wt.ProjectName), filter) ||
+		strings.Contains(strings.ToLower(wt.Branch), filter) ||
+		strings.Contains(strings.ToLower(wt.Path), filter)
+}
+
+func containsTag(tags []string, filter string) bool {
+	for _, tag := range tags {
+		if strings.Contains(strings.ToLower(tag), filter) {
+			return true
+		}
+	}
+	return false
+}
+
+func escapeJSON(s string) string {
+	// Basic JSON escaping
+	s = strings.ReplaceAll(s, "\"", "\\\"")
+	s = strings.ReplaceAll(s, "\n", "\\n")
+	s = strings.ReplaceAll(s, "\r", "\\r")
+	s = strings.ReplaceAll(s, "\t", "\\t")
+	return s
+}
+
+func formatJSONTags(tags []string) string {
+	if len(tags) == 0 {
+		return ""
+	}
+
+	var quotedTags []string
+	for _, tag := range tags {
+		quotedTags = append(quotedTags, fmt.Sprintf(`"%s"`, escapeJSON(tag)))
+	}
+	return strings.Join(quotedTags, ", ")
 }

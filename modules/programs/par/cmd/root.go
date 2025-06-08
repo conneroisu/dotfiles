@@ -1,68 +1,52 @@
-// Package cmd implements the CLI commands for par
 package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
 )
 
-var cfgFile string
+var (
+	cfgFile string
+	verbose bool
+)
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "par",
 	Short: "Parallel Claude Code Runner",
-	Long: `Par is a CLI tool that runs Claude Code across multiple Git worktrees simultaneously,
-applying the same initial prompt to achieve consistent goals across different codebases or branches.
+	Long: `Par is a CLI tool that runs the Claude Code CLI across multiple Git worktree 
+branches/directories simultaneously, applying the same initial prompt to achieve 
+consistent goals across different codebases or branches.
 
 Use cases:
-- Multi-branch development: Apply code changes across multiple feature branches
-- Planned development: Plan prior to changes with the --plan flag
-- Smart branching: Use the -b/--branch flag to branch from a specific base
-- Terminal integration: Use --terms to open each job in separate terminal windows`,
-	Version: "0.1.0",
+- Multi-branch Development: Apply different code changes across multiple feature branches
+- Planned Development: Plan prior to changes conditionally with the --plan flag
+- Smart Branching: Use the -b/--branch flag to branch from a specific base branch
+- Terminal Integration: Use the --terms flag to open each job in separate terminal windows`,
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		return config.Init()
+	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() error {
 	return rootCmd.Execute()
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Global flags
+	
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.config/par/config.yaml)")
-	rootCmd.PersistentFlags().Bool("debug", false, "enable debug logging")
-	rootCmd.PersistentFlags().Bool("verbose", false, "enable verbose output")
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	
+	rootCmd.AddCommand(addCmd)
+	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(cleanCmd)
 }
 
-// initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home/.config/par directory with name "config" (without extension).
-		viper.AddConfigPath(home + "/.config/par")
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("config")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		if viper.GetBool("verbose") {
-			fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-		}
+		fmt.Printf("Custom config file specified: %s\n", cfgFile)
 	}
 }

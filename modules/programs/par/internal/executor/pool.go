@@ -1,124 +1,261 @@
 package executor
 
 import (
+	"context"
 	"fmt"
 	"sync"
+	"time"
 
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/config"
-	"github.com/conneroisu/dotfiles/modules/programs/par/internal/prompts"
 	"github.com/conneroisu/dotfiles/modules/programs/par/internal/worktree"
 )
 
-// Pool manages parallel job execution
-type Pool struct {
-	config   *config.Config
-	workers  int
-	claude   *ClaudeExecutor
-	terminal *TerminalManager
+type WorkerPool struct {
+	numWorkers   int
+	jobs         chan *worktree.Job
+	results      chan *worktree.JobResult
+	done         chan struct{}
+	ctx          context.Context
+	cancel       context.CancelFunc
+	wg           sync.WaitGroup
+	executor     *JobExecutor
+	monitor      *JobMonitor
+	useTerm      bool
 }
 
-// NewPool creates a new execution pool
-func NewPool(cfg *config.Config) (*Pool, error) {
-	claude, err := NewClaudeExecutor(cfg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize claude executor: %w", err)
-	}
-
-	terminal, err := NewTerminalManager(cfg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize terminal manager: %w", err)
-	}
-
-	return &Pool{
-		config:   cfg,
-		workers:  cfg.Defaults.Jobs,
-		claude:   claude,
-		terminal: terminal,
-	}, nil
+type PoolOptions struct {
+	NumWorkers int
+	UseTerm    bool
+	Timeout    time.Duration
 }
 
-// Execute executes jobs across multiple worktrees
-func (p *Pool) Execute(prompt *prompts.Prompt, worktrees []*worktree.Worktree, opts *ExecuteOptions) ([]*JobResult, error) {
-	// Create jobs
-	jobs := make([]*Job, len(worktrees))
-	for i, wt := range worktrees {
-		jobs[i] = NewJob(wt, prompt, opts)
+func NewWorkerPool(options PoolOptions) *WorkerPool {
+	ctx, cancel := context.WithCancel(context.Background())
+	
+	return &WorkerPool{
+		numWorkers: options.NumWorkers,
+		jobs:       make(chan *worktree.Job, options.NumWorkers*2),
+		results:    make(chan *worktree.JobResult, options.NumWorkers*2),
+		done:       make(chan struct{}),
+		ctx:        ctx,
+		cancel:     cancel,
+		executor:   NewJobExecutor(),
+		monitor:    NewJobMonitor(),
+		useTerm:    options.UseTerm,
 	}
+}
 
-	// Create channels for job management
-	jobChan := make(chan *Job, len(jobs))
-	resultChan := make(chan *JobResult, len(jobs))
-
-	// Start workers
-	var wg sync.WaitGroup
-	for i := 0; i < p.workers; i++ {
-		wg.Add(1)
-		go p.worker(jobChan, resultChan, &wg)
+func (wp *WorkerPool) Start() {
+	for i := 0; i < wp.numWorkers; i++ {
+		wp.wg.Add(1)
+		go wp.worker(i)
 	}
+	
+	// Start result collector
+	go wp.resultCollector()
+}
 
-	// Send jobs to workers
+func (wp *WorkerPool) worker(id int) {
+	defer wp.wg.Done()
+	
+	for {
+		select {
+		case job := <-wp.jobs:
+			if job == nil {
+				return
+			}
+			
+			wp.monitor.StartJob(job.ID)
+			
+			// Execute the job
+			result := wp.executor.ExecuteJob(wp.ctx, job, wp.useTerm)
+			
+			wp.monitor.CompleteJob(job.ID, result)
+			
+			// Send result
+			select {
+			case wp.results <- result:
+			case <-wp.ctx.Done():
+				return
+			}
+			
+		case <-wp.ctx.Done():
+			return
+		}
+	}
+}
+
+func (wp *WorkerPool) resultCollector() {
+	for {
+		select {
+		case result := <-wp.results:
+			if result == nil {
+				return
+			}
+			// Results are automatically collected by the monitor
+			
+		case <-wp.ctx.Done():
+			return
+		}
+	}
+}
+
+func (wp *WorkerPool) SubmitJob(job *worktree.Job) error {
+	wp.monitor.AddJob(job)
+	
+	select {
+	case wp.jobs <- job:
+		return nil
+	case <-wp.ctx.Done():
+		return fmt.Errorf("worker pool is shutting down")
+	default:
+		return fmt.Errorf("job queue is full")
+	}
+}
+
+func (wp *WorkerPool) SubmitJobs(jobs []*worktree.Job) error {
 	for _, job := range jobs {
-		jobChan <- job
+		if err := wp.SubmitJob(job); err != nil {
+			return fmt.Errorf("failed to submit job %s: %w", job.ID, err)
+		}
 	}
-	close(jobChan)
-
-	// Wait for all workers to finish
-	go func() {
-		wg.Wait()
-		close(resultChan)
-	}()
-
-	// Collect results
-	var results []*JobResult
-	for result := range resultChan {
-		results = append(results, result)
-	}
-
-	return results, nil
-}
-
-// worker processes jobs from the job channel
-func (p *Pool) worker(jobChan <-chan *Job, resultChan chan<- *JobResult, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	for job := range jobChan {
-		result := p.executeJob(job)
-		resultChan <- result
-	}
-}
-
-// executeJob executes a single job
-func (p *Pool) executeJob(job *Job) *JobResult {
-	job.Start()
-
-	// Process template if needed
-	processor := prompts.NewProcessor()
-	processedContent, err := processor.ProcessPrompt(job.Prompt, job.TemplateVars)
-	if err != nil {
-		job.Fail(fmt.Errorf("failed to process prompt template: %w", err))
-		return job.Result
-	}
-
-	// Execute based on options
-	var result *JobResult
-	if job.Options.UseTerm {
-		result, err = p.terminal.Execute(job, processedContent)
-	} else {
-		result, err = p.claude.Execute(job, processedContent)
-	}
-
-	if err != nil {
-		job.Fail(err)
-		return job.Result
-	}
-
-	job.Complete(result)
-	return result
-}
-
-// Shutdown gracefully shuts down the pool
-func (p *Pool) Shutdown() error {
-	// Cancel any running jobs
-	// Clean up resources
 	return nil
+}
+
+func (wp *WorkerPool) Wait() *worktree.ExecutionSummary {
+	// Close the jobs channel to signal no more jobs
+	close(wp.jobs)
+	
+	// Wait for all workers to finish
+	wp.wg.Wait()
+	
+	// Close results channel
+	close(wp.results)
+	
+	// Get final summary
+	summary := wp.monitor.GetSummary()
+	
+	return summary
+}
+
+func (wp *WorkerPool) Stop() {
+	wp.cancel()
+	wp.Wait()
+}
+
+func (wp *WorkerPool) GetProgress() <-chan JobProgress {
+	return wp.monitor.GetProgress()
+}
+
+func (wp *WorkerPool) GetResults() map[string]*worktree.JobResult {
+	return wp.monitor.GetResults()
+}
+
+func (wp *WorkerPool) ValidateEnvironment() error {
+	return wp.executor.ValidateEnvironment()
+}
+
+type ExecutionManager struct {
+	pool    *WorkerPool
+	options PoolOptions
+}
+
+func NewExecutionManager(options PoolOptions) *ExecutionManager {
+	return &ExecutionManager{
+		options: options,
+	}
+}
+
+func (em *ExecutionManager) Execute(plan *worktree.ExecutionPlan) (*worktree.ExecutionSummary, error) {
+	// Create worker pool
+	em.pool = NewWorkerPool(em.options)
+	
+	// Validate environment
+	if err := em.pool.ValidateEnvironment(); err != nil {
+		return nil, fmt.Errorf("environment validation failed: %w", err)
+	}
+	
+	// Start the pool
+	em.pool.Start()
+	
+	fmt.Printf("Starting execution with %d workers...\n", em.options.NumWorkers)
+	fmt.Printf("Jobs to execute: %d\n", len(plan.Jobs))
+	fmt.Printf("Terminal mode: %t\n", em.options.UseTerm)
+	
+	if plan.DryRun {
+		return em.executeDryRun(plan)
+	}
+	
+	// Start progress monitoring
+	go em.monitorProgress()
+	
+	// Submit all jobs
+	if err := em.pool.SubmitJobs(plan.Jobs); err != nil {
+		em.pool.Stop()
+		return nil, fmt.Errorf("failed to submit jobs: %w", err)
+	}
+	
+	// Wait for completion
+	summary := em.pool.Wait()
+	summary.PlanID = plan.ID
+	
+	return summary, nil
+}
+
+func (em *ExecutionManager) executeDryRun(plan *worktree.ExecutionPlan) (*worktree.ExecutionSummary, error) {
+	fmt.Println("\nDRY RUN - No actual execution")
+	fmt.Println("==============================")
+	
+	for i, job := range plan.Jobs {
+		fmt.Printf("[%d/%d] Would execute on %s (%s)\n", 
+			i+1, len(plan.Jobs), 
+			job.Worktree.GetDisplayName(), 
+			job.Worktree.Branch)
+		fmt.Printf("  Path: %s\n", job.Worktree.Path)
+		fmt.Printf("  Prompt: %s\n", job.PromptName)
+		if len(job.Prompt) > 100 {
+			fmt.Printf("  Content: %s...\n", job.Prompt[:97])
+		} else {
+			fmt.Printf("  Content: %s\n", job.Prompt)
+		}
+		fmt.Println()
+	}
+	
+	// Create a dummy summary for dry run
+	summary := &worktree.ExecutionSummary{
+		PlanID:      plan.ID,
+		TotalJobs:   len(plan.Jobs),
+		Successful:  len(plan.Jobs), // All would succeed in dry run
+		Failed:      0,
+		Timeout:     0,
+		Cancelled:   0,
+		Duration:    0,
+		Results:     []*worktree.JobResult{},
+		StartTime:   time.Now(),
+		EndTime:     time.Now(),
+	}
+	
+	return summary, nil
+}
+
+func (em *ExecutionManager) monitorProgress() {
+	progress := em.pool.GetProgress()
+	
+	for update := range progress {
+		switch update.Status {
+		case worktree.JobStatusRunning:
+			fmt.Printf("▶ Started: %s\n", update.JobID[:8])
+		case worktree.JobStatusCompleted:
+			fmt.Printf("✓ Completed: %s\n", update.JobID[:8])
+		case worktree.JobStatusFailed:
+			fmt.Printf("✗ Failed: %s\n", update.JobID[:8])
+		case worktree.JobStatusTimeout:
+			fmt.Printf("⏰ Timeout: %s\n", update.JobID[:8])
+		}
+	}
+}
+
+func (em *ExecutionManager) Stop() {
+	if em.pool != nil {
+		em.pool.Stop()
+	}
 }

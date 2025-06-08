@@ -64,19 +64,19 @@ func (c *RealCommand) Run() error {
 }
 
 func (c *RealCommand) SetStdin(stdin io.Reader) {
-	c.Cmd.Stdin = stdin
+	c.Stdin = stdin
 }
 
 func (c *RealCommand) SetStdout(stdout io.Writer) {
-	c.Cmd.Stdout = stdout
+	c.Stdout = stdout
 }
 
 func (c *RealCommand) SetStderr(stderr io.Writer) {
-	c.Cmd.Stderr = stderr
+	c.Stderr = stderr
 }
 
 func (c *RealCommand) SetDir(dir string) {
-	c.Cmd.Dir = dir
+	c.Dir = dir
 }
 
 // RealEnvironment implements Environment using real OS calls

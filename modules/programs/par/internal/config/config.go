@@ -101,9 +101,11 @@ func Load() (*Config, error) {
 	}
 
 	// If config file doesn't exist, return default config
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+	_, err = os.Stat(configPath)
+	if os.IsNotExist(err) {
 		config := DefaultConfig()
-		if err := config.Validate(); err != nil {
+		err = config.Validate()
+		if err != nil {
 			return nil, fmt.Errorf("default config validation failed: %w", err)
 		}
 		return config, nil

@@ -11,7 +11,7 @@ in
     options = singleEnableOption false;
     nixos.ifEnabled = {
       environment.systemPackages = [
-        inputs.claude-desktop.packages.${pkgs.system}.claude-desktop
+        inputs.claude-desktop.packages.${pkgs.system}.claude-desktop-with-fhs
       ];
     };
   }

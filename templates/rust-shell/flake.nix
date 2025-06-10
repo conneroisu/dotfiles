@@ -67,11 +67,6 @@
         shellHook = ''
           echo "Welcome to the rust devshell!"
         '';
-        env = {
-          # use a folder per toolchain name to store rust's cache
-          CARGO_HOME = "$HOME/.cargo";
-          RUSTUP_HOME = "$HOME/.rustup";
-        };
       };
     });
 

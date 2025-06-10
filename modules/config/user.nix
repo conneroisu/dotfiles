@@ -63,6 +63,7 @@ delib.module {
         # Apply the function to your desired settings
         settingsToConf {
           # Add your nix settings here, for example:
+          max-jobs = 8;
           experimental-features = [
             "nix-command"
             "flakes"

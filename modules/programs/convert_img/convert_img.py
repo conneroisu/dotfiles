@@ -22,9 +22,7 @@ def parse_args() -> argparse.Namespace:
             "Can embed raster data or create "
             "traced vector graphics."
         ),
-        formatter_class=(
-            argparse.RawDescriptionHelpFormatter
-        ),
+        formatter_class=(argparse.RawDescriptionHelpFormatter),
     )
 
     parser.add_argument(
@@ -68,38 +66,26 @@ def parse_args() -> argparse.Namespace:
         "--quality",
         type=int,
         default=90,
-        help=(
-            "Quality for lossy formats "
-            "(1-100, default: 90)"
-        ),
+        help=("Quality for lossy formats " "(1-100, default: 90)"),
     )
 
     parser.add_argument(
         "-w",
         "--width",
         type=int,
-        help=(
-            "Override SVG width "
-            "(maintains aspect ratio)"
-        ),
+        help=("Override SVG width " "(maintains aspect ratio)"),
     )
 
     parser.add_argument(
         "--height",
         type=int,
-        help=(
-            "Override SVG height "
-            "(maintains aspect ratio)"
-        ),
+        help=("Override SVG height " "(maintains aspect ratio)"),
     )
 
     parser.add_argument(
         "--max-size",
         type=int,
-        help=(
-            "Maximum width or height "
-            "(resizes proportionally)"
-        ),
+        help=("Maximum width or height " "(resizes proportionally)"),
     )
 
     parser.add_argument(
@@ -142,17 +128,11 @@ def parse_args() -> argparse.Namespace:
 def validate_input(input_path: Path) -> None:
     """Validate the input file."""
     if not input_path.exists():
-        print(
-            f"Error: Input file does not exist: "
-            f"{input_path}"
-        )
+        print(f"Error: Input file does not exist: " f"{input_path}")
         sys.exit(1)
 
     if not input_path.is_file():
-        print(
-            f"Error: Input path is not a file: "
-            f"{input_path}"
-        )
+        print(f"Error: Input path is not a file: " f"{input_path}")
         sys.exit(1)
 
     # Check if it's a valid image
@@ -167,15 +147,9 @@ def validate_input(input_path: Path) -> None:
                 "TIFF",
             ]
             if img.format not in allowed_formats:
-                print(
-                    f"Warning: Input format "
-                    f"'{img.format}' may not be supported"
-                )
+                print(f"Warning: Input format " f"'{img.format}' may not be supported")
     except UnidentifiedImageError:
-        print(
-            f"Error: Cannot identify image file: "
-            f"{input_path}"
-        )
+        print(f"Error: Cannot identify image file: " f"{input_path}")
         sys.exit(1)
 
 
@@ -225,9 +199,7 @@ def resize_image(
     return img
 
 
-def image_to_base64(
-    img: Image.Image, fmt: str, quality: int = 90
-) -> str:
+def image_to_base64(img: Image.Image, fmt: str, quality: int = 90) -> str:
     """Convert PIL Image to base64 encoded string."""
     buffer = io.BytesIO()
 
@@ -237,17 +209,11 @@ def image_to_base64(
     if fmt.upper() == "JPEG":
         # Convert RGBA to RGB for JPEG
         if img.mode in ("RGBA", "LA"):
-            bg = Image.new(
-                "RGB", img.size, (255, 255, 255)
-            )
+            bg = Image.new("RGB", img.size, (255, 255, 255))
             if img.mode == "RGBA":
-                bg.paste(
-                    img, mask=img.getchannel("A")
-                )
+                bg.paste(img, mask=img.getchannel("A"))
             else:
-                bg.paste(
-                    img, mask=img.getchannel("A")
-                )
+                bg.paste(img, mask=img.getchannel("A"))
             img = bg
         save_kwargs["quality"] = quality
         save_kwargs["optimize"] = True
@@ -259,9 +225,7 @@ def image_to_base64(
 
     img.save(buffer, **save_kwargs)
     img_data = buffer.getvalue()
-    return base64.b64encode(img_data).decode(
-        "utf-8"
-    )
+    return base64.b64encode(img_data).decode("utf-8")
 
 
 def create_embedded_svg(
@@ -283,9 +247,7 @@ def create_embedded_svg(
         "jpeg": "image/jpeg",
         "webp": "image/webp",
     }
-    mime = mime_types.get(
-        fmt.lower(), "image/png"
-    )
+    mime = mime_types.get(fmt.lower(), "image/png")
 
     # Create SVG content
     svg = (
@@ -299,10 +261,7 @@ def create_embedded_svg(
 
     # Add background if specified
     if bg and bg.lower() != "transparent":
-        svg += (
-            f'\n  <rect width="100%" height="100%" '
-            f'fill="{bg}"/>'
-        )
+        svg += f'\n  <rect width="100%" height="100%" ' f'fill="{bg}"/>'
 
     # Add the embedded image
     svg += (
@@ -337,26 +296,16 @@ def create_traced_svg(
             subprocess.CalledProcessError,
             FileNotFoundError,
         ):
-            print(
-                "Error: potrace is not installed or not in PATH"
-            )
-            print(
-                "Install potrace to use vector tracing:"
-            )
-            print(
-                "  Ubuntu/Debian: sudo apt-get install potrace"
-            )
+            print("Error: potrace is not installed or not in PATH")
+            print("Install potrace to use vector tracing:")
+            print("  Ubuntu/Debian: sudo apt-get install potrace")
             print("  macOS: brew install potrace")
-            print(
-                "  Windows: Download from http://potrace.sourceforge.net/"
-            )
+            print("  Windows: Download from http://potrace.sourceforge.net/")
             return False
 
         # Convert input to bitmap format
         # that potrace can handle
-        with tempfile.NamedTemporaryFile(
-            suffix=".pbm", delete=False
-        ) as temp_pbm:
+        with tempfile.NamedTemporaryFile(suffix=".pbm", delete=False) as temp_pbm:
             temp_pbm_path = Path(temp_pbm.name)
 
         try:
@@ -364,13 +313,9 @@ def create_traced_svg(
             with Image.open(input_path) as img:
                 # Convert to 1-bit black and white
                 if img.mode != "1":
-                    img = img.convert(
-                        "L"
-                    )  # Grayscale first
+                    img = img.convert("L")  # Grayscale first
                     img = img.point(
-                        lambda x: (
-                            0 if x < 128 else 255
-                        ),
+                        lambda x: (0 if x < 128 else 255),
                         "1",
                     )
 
@@ -401,14 +346,10 @@ def create_traced_svg(
             )
 
             if result.returncode != 0:
-                print(
-                    f"Error running potrace: {result.stderr}"
-                )
+                print(f"Error running potrace: {result.stderr}")
                 return False
 
-            print(
-                f"Successfully traced to SVG: {output_path}"
-            )
+            print(f"Successfully traced to SVG: {output_path}")
             return True
 
         finally:
@@ -417,40 +358,27 @@ def create_traced_svg(
                 temp_pbm_path.unlink()
 
     except ImportError:
-        print(
-            "Error: subprocess module not available"
-        )
+        print("Error: subprocess module not available")
         return False
     except Exception as e:
         print(f"Error during tracing: {e}")
         return False
 
 
-def get_file_size_info(
-    input_path: Path, output_path: Path
-) -> None:
+def get_file_size_info(input_path: Path, output_path: Path) -> None:
     """Print file size comparison."""
-    if (
-        input_path.exists()
-        and output_path.exists()
-    ):
+    if input_path.exists() and output_path.exists():
         in_size = input_path.stat().st_size
         out_size = output_path.stat().st_size
         ratio = out_size / in_size
 
         print(f"Input size:  {in_size:,} bytes")
         print(f"Output size: {out_size:,} bytes")
-        print(
-            f"Size ratio:  {ratio:.2f}x", end=""
-        )
+        print(f"Size ratio:  {ratio:.2f}x", end="")
         if ratio > 1:
-            print(
-                f" ({(ratio-1)*100:.1f}% larger)"
-            )
+            print(f" ({(ratio-1)*100:.1f}% larger)")
         else:
-            print(
-                f" ({(1-ratio)*100:.1f}% smaller)"
-            )
+            print(f" ({(1-ratio)*100:.1f}% smaller)")
 
 
 def main() -> None:
@@ -458,9 +386,7 @@ def main() -> None:
 
     # Validate arguments
     if args.quality < 1 or args.quality > 100:
-        print(
-            "Error: quality must be between 1 and 100"
-        )
+        print("Error: quality must be between 1 and 100")
         sys.exit(1)
 
     # Validate input
@@ -469,21 +395,12 @@ def main() -> None:
     # Create output directory if needed
     output_dir = args.output_path.parent
     if not output_dir.exists():
-        output_dir.mkdir(
-            parents=True, exist_ok=True
-        )
-        print(
-            f"Created output directory: {output_dir}"
-        )
+        output_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Created output directory: {output_dir}")
 
     # Check if input and output are the same
-    if (
-        args.input_path.resolve()
-        == args.output_path.resolve()
-    ):
-        print(
-            "Error: Input and output paths cannot be the same"
-        )
+    if args.input_path.resolve() == args.output_path.resolve():
+        print("Error: Input and output paths cannot be the same")
         sys.exit(1)
 
     try:
@@ -495,15 +412,10 @@ def main() -> None:
                 args.trace_options,
             )
             if not success:
-                print(
-                    "Falling back to embed method..."
-                )
+                print("Falling back to embed method...")
                 args.method = "embed"
             else:
-                print(
-                    f"Converted {args.input_path.name} → "
-                    f"{args.output_path.name}"
-                )
+                print(f"Converted {args.input_path.name} → " f"{args.output_path.name}")
                 print("Method: Vector tracing")
                 get_file_size_info(
                     args.input_path,
@@ -513,29 +425,21 @@ def main() -> None:
 
         if args.method == "embed":
             # Load and process the image
-            with Image.open(
-                args.input_path
-            ) as img:
+            with Image.open(args.input_path) as img:
                 print(
                     f"Original: {img.width}x{img.height}, "
                     f"Mode: {img.mode}, Format: {img.format}"
                 )
 
                 # Resize if requested
-                if (
-                    args.width
-                    or args.height
-                    or args.max_size
-                ):
+                if args.width or args.height or args.max_size:
                     img = resize_image(
                         img,
                         args.width,
                         args.height,
                         args.max_size,
                     )
-                    print(
-                        f"Resized to: {img.width}x{img.height}"
-                    )
+                    print(f"Resized to: {img.width}x{img.height}")
 
                 # Create SVG with embedded image
                 svg_content = create_embedded_svg(
@@ -554,16 +458,9 @@ def main() -> None:
                 ) as f:
                     f.write(svg_content)
 
-                print(
-                    f"Converted {args.input_path.name} → "
-                    f"{args.output_path.name}"
-                )
-                print(
-                    f"Method: Embedded {args.format.upper()}"
-                )
-                print(
-                    f"SVG size: {img.width}x{img.height}"
-                )
+                print(f"Converted {args.input_path.name} → " f"{args.output_path.name}")
+                print(f"Method: Embedded {args.format.upper()}")
+                print(f"SVG size: {img.width}x{img.height}")
                 get_file_size_info(
                     args.input_path,
                     args.output_path,

@@ -8,8 +8,14 @@
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
+
     # parcl.url = "github:conneroisu/parcl";
     # parcl.inputs.nixpkgs.follows = "nixpkgs";
+    claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
+    claude-desktop.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
+    };
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";

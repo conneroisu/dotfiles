@@ -15,6 +15,29 @@ delib.module {
         home = "/Users/${username}";
       };
     };
+  };
+
+  nixos.always = {myconfig, ...}: let
+    inherit (myconfig.constants) username;
+  in {
+    users = {
+      groups.${username} = {};
+      groups.nordvpn = {};
+
+      users.${username} = {
+        home = "/home/${username}";
+        isNormalUser = true;
+        extraGroups = [
+          "networkmanager"
+          "wheel"
+          "docker"
+          "users"
+          "nordvpn"
+        ];
+
+        shell = pkgs.zsh;
+      };
+    };
 
     environment = {
       etc."nix/nix.custom.conf".text = let
@@ -55,29 +78,6 @@ delib.module {
             "connerohnesorge"
           ];
         };
-    };
-  };
-
-  nixos.always = {myconfig, ...}: let
-    inherit (myconfig.constants) username;
-  in {
-    users = {
-      groups.${username} = {};
-      groups.nordvpn = {};
-
-      users.${username} = {
-        home = "/home/${username}";
-        isNormalUser = true;
-        extraGroups = [
-          "networkmanager"
-          "wheel"
-          "docker"
-          "users"
-          "nordvpn"
-        ];
-
-        shell = pkgs.zsh;
-      };
     };
   };
 }

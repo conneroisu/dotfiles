@@ -84,6 +84,7 @@
         projectRootFile = "flake.nix";
         programs = {
           alejandra.enable = true; # Nix formatter
+          rustfmt.enable = true; # Rust formatter
         };
       };
     in

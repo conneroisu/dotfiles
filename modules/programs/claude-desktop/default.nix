@@ -7,7 +7,7 @@
   inherit (delib) singleEnableOption;
 in
   delib.module {
-    name = "programs.cmbd";
+    name = "programs.claude-desktop";
     options = singleEnableOption false;
     nixos.ifEnabled = {
       environment.systemPackages = [

@@ -22,6 +22,7 @@ in
         convert_img.enable = true;
         catls.enable = true;
         cmbd.enable = true;
+        claude-desktop.enable = true;
       };
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman

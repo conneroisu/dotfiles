@@ -37,6 +37,7 @@ delib.host {
       };
       programs = {
         nordvpn.enable = true;
+        proton-x.enable = true;
       };
     };
 

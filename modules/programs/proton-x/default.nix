@@ -2,23 +2,25 @@
   delib,
   # inputs,
   # system,
+  pkgs,
   ...
 }: let
   inherit (delib) singleEnableOption;
 in
   delib.module {
-    name = "programs.parcl";
+    name = "programs.proton-x";
 
     options = singleEnableOption false;
 
     nixos.ifEnabled = {
       environment.systemPackages = [
-        # inputs.parcl.packages.${system}.default
+        pkgs.protonmail-desktop
+        pkgs.proton-pass
       ];
     };
     darwin.ifEnabled = {
-      environment.systemPackages = [
-        # inputs.parcl.packages.${system}.default
-      ];
+      # TODO: maybe use homebrew
+      # environment.systemPackages = [
+      # ];
     };
   }

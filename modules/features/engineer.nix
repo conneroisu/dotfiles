@@ -22,7 +22,6 @@ in
         convert_img.enable = true;
         catls.enable = true;
         cmbd.enable = true;
-        par.enable = true;
       };
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman

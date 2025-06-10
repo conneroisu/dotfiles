@@ -8,8 +8,8 @@
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
-    parcl.url = "github:conneroisu/parcl";
-    parcl.inputs.nixpkgs.follows = "nixpkgs";
+    # parcl.url = "github:conneroisu/parcl";
+    # parcl.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";

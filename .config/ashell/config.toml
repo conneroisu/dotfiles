@@ -19,7 +19,7 @@ clipboard_cmd = "cliphist-rofi-img | wl-copy"
 # Maximum number of chars that can be present in the window title
 # after that the title will be truncated
 # optional, default 150
-truncate_title_after_length = 150
+truncate_title_after_length = 20
 
 # Declare which modules should be used and in which position in the status bar.
 # This is the list of all possible modules
@@ -44,7 +44,7 @@ left = [ "WindowTitle" ]
 center = [ "Workspaces" ]
 # The modules that will be displayed on the right side of the status bar
 # The nested modules array will form a group sharing the same element in the status bar
-right = [ "SystemInfo", [ "Clock", "Privacy", "Settings", "Battery" ] ]
+right = [ "SystemInfo", [ "Clock", "Privacy", "Settings"] ]
 
 # Update module configuration.
 # Without a value the related button will not appear.
@@ -77,7 +77,6 @@ enable_workspace_filling = false
 # If using Hyprland the names can be found in `hyprctl devices | grep "active keymap"`
 [keyboard_layout.labels]
 "English (US)" = "🇺🇸"
-"Russian" = "🇷🇺"
 
 # The system module configuration
 # optional

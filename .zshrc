@@ -10,6 +10,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$HOME/.cargo/bin:$PATH"
+export CLAUDE_CODE_ENABLE_TELEMETRY="0"
 path=(
     $HOME/.cargo/bin
     $BUN_INSTALL/bin

@@ -34,6 +34,7 @@ delib.host {
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;
+        student.enable = true;
       };
       programs = {
         nordvpn.enable = true;

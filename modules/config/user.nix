@@ -44,6 +44,7 @@ delib.module {
       experimental-features = [
         "nix-command"
         "flakes"
+        "cgroups"
       ];
       trusted-users = [
         "root"
@@ -55,6 +56,7 @@ delib.module {
         "@wheel"
         "connerohnesorge"
       ];
+      # use-cgroups = true;
     };
     # environment = {
     #   etc."nix/nix.custom.conf".text = let

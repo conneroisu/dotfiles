@@ -20,6 +20,7 @@ in
         engineer.enable = true;
       };
       programs = {
+        dx.enable = true;
         catls.enable = true;
         convert_img.enable = true;
       };

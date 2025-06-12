@@ -56,7 +56,7 @@ delib.module {
         "@wheel"
         "connerohnesorge"
       ];
-      # use-cgroups = true;
+      use-cgroups = true;
     };
     # environment = {
     #   etc."nix/nix.custom.conf".text = let

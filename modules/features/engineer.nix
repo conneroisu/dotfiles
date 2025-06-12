@@ -68,6 +68,8 @@ in
             gnupg
             procps
             unzip
+            sqlite
+            duckdb
             uv
             eza
             delta
@@ -113,6 +115,7 @@ in
             doppler
             gh
             tea
+            coder
 
             # Emulation
             docker
@@ -128,6 +131,7 @@ in
 
             # Disks
             squirreldisk
+            pkgs.jetbrains.phpstorm
           ])
           ++ (with inputs; [
             zen-browser.packages."${pkgs.system}".default
@@ -158,7 +162,7 @@ in
           enable = true;
           package = pkgs.nh;
           clean.enable = true;
-          clean.extraArgs = "--keep-since 4d --keep 3";
+          clean.extraArgs = "--keep-since 4d --keep 3 --extra-experimental-features nix-command --extra-experimental-features flakes";
           flake = "/home/connerohnesorge/dotfiles";
         };
       };

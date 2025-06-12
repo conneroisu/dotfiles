@@ -81,26 +81,6 @@
       };
     });
 
-    packages = forAllSystems (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-      };
-    in {
-      # default = pkgs.buildGoModule {
-      #   pname = "my-go-project";
-      #   version = "0.0.1";
-      #   src = ./.;
-      #   vendorHash = "";
-      #   doCheck = false;
-      #   meta = with pkgs.lib; {
-      #     description = "My Go project";
-      #     homepage = "https://github.com/conneroisu/my-go-project";
-      #     license = licenses.asl20;
-      #     maintainers = with maintainers; [connerohnesorge];
-      #   };
-      # };
-    });
-
     formatter = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       treefmtModule = {

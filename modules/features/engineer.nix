@@ -185,8 +185,8 @@ in
           # If a kernel-level OOM event does occur anyway,
           # strongly prefer killing nix-daemon child processes
           OOMScoreAdjust = 1000;
-          MemoryHigh = "5G";
-          MemoryMax = "6G";
+          MemoryHigh = "9G";
+          MemoryMax = "10G";
         };
       };
     };

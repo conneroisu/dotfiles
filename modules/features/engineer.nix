@@ -22,6 +22,7 @@ in
         convert_img.enable = true;
         catls.enable = true;
         cmbd.enable = true;
+        duckdb.enable = true;
       };
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman
@@ -69,7 +70,6 @@ in
             procps
             unzip
             sqlite
-            duckdb
             uv
             eza
             delta

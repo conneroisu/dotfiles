@@ -57,6 +57,7 @@ delib.module {
         "connerohnesorge"
       ];
       use-cgroups = true;
+      cores = 4;
     };
     # environment = {
     #   etc."nix/nix.custom.conf".text = let

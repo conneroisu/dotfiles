@@ -58,11 +58,17 @@
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     denix,
     nixpkgs,
+    nixos-generators,
     ...
   } @ inputs: let
     supportedSystems = [
@@ -87,6 +93,39 @@
     nixosConfigurations = mkConfigurations "nixos";
     homeConfigurations = mkConfigurations "home";
     darwinConfigurations = mkConfigurations "darwin";
+
+    packages = forAllSystems (system: let
+      nixosConfigs = mkConfigurations "nixos";
+      # Filter nixos configurations that match this system
+      systemConfigs = builtins.filter (name: 
+        nixosConfigs.${name}.pkgs.system == system
+      ) (builtins.attrNames nixosConfigs);
+      
+      # Generate packages for each matching nixos configuration
+      generatePackagesForConfig = configName: let
+        formats = ["vmware" "virtualbox" "iso" "qcow"];
+      in builtins.listToAttrs (builtins.map (format: {
+        name = "generate-${configName}-${format}";
+        value = nixos-generators.nixosGenerate {
+          inherit system;
+          modules = [ 
+            ./modules/nixos-generator-wrapper.nix
+            {
+              networking.hostName = "${configName}-${format}";
+            }
+          ];
+          inherit format;
+          specialArgs = { inherit inputs; };
+        };
+      }) formats);
+      
+      # Merge all generate packages for this system
+      allGeneratePackages = builtins.foldl' (acc: configName:
+        acc // (generatePackagesForConfig configName)
+      ) {} systemConfigs;
+    in
+      allGeneratePackages
+    );
 
     formatter = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};

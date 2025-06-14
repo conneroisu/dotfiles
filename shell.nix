@@ -58,7 +58,7 @@ in
         air
         golangci-lint
         (buildWithSpecificGo revive)
-        (buildWithSpecificGo gopls)
+        gopls
         (buildWithSpecificGo templ)
         (buildWithSpecificGo golines)
         (buildWithSpecificGo golangci-lint-langserver)

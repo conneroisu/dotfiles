@@ -27,6 +27,8 @@ delib.module {
       users.${username} = {
         home = "/home/${username}";
         isNormalUser = true;
+        initialPassword = "password";
+
         extraGroups = [
           "networkmanager"
           "wheel"

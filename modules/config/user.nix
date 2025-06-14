@@ -40,7 +40,9 @@ delib.module {
     };
 
     nix.settings = {
+      use-cgroups = true;
       max-jobs = 8;
+      cores = 4;
       experimental-features = [
         "nix-command"
         "flakes"
@@ -56,8 +58,6 @@ delib.module {
         "@wheel"
         "connerohnesorge"
       ];
-      use-cgroups = true;
-      cores = 4;
     };
     # environment = {
     #   etc."nix/nix.custom.conf".text = let

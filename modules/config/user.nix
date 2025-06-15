@@ -9,7 +9,7 @@ delib.module {
   darwin.always = {myconfig, ...}: let
     inherit (myconfig.constants) username;
   in {
-    nix = {
+    nix = pkgs.lib.mkForce {
       settings = {
         experimental-features = [
           "nix-command"
@@ -38,7 +38,7 @@ delib.module {
   nixos.always = {myconfig, ...}: let
     inherit (myconfig.constants) username;
   in {
-    nix = {
+    nix = pkgs.lib.mkForce {
       settings = {
         experimental-features = [
           "nix-command"

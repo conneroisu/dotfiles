@@ -9,6 +9,24 @@ delib.module {
   darwin.always = {myconfig, ...}: let
     inherit (myconfig.constants) username;
   in {
+    nix = {
+      settings = {
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        trusted-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+        allowed-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+      };
+    };
     users = {
       groups.${username} = {};
       users.${username} = {
@@ -20,6 +38,24 @@ delib.module {
   nixos.always = {myconfig, ...}: let
     inherit (myconfig.constants) username;
   in {
+    nix = {
+      settings = {
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        trusted-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+        allowed-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+      };
+    };
     users = {
       groups.${username} = {};
       groups.nordvpn = {};

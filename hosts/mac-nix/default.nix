@@ -101,7 +101,7 @@ in
 
     darwin = {
       imports = [
-        inputs.determinate.darwinModules.default
+        # inputs.determinate.darwinModules.default
       ];
       nixpkgs = {
         hostPlatform = system;
@@ -144,6 +144,12 @@ in
       };
 
       environment.shells = [pkgs.zsh];
+
+      environment.pathsToLink = ["/share/qemu"];
+      environment.etc."containers/containers.conf.d/99-gvproxy-path.conf".text = ''
+        [engine]
+        helper_binaries_dir = ["${pkgs.gvproxy}/bin"]
+      '';
       users.users.connerohnesorge = {
         home = "/Users/connerohnesorge";
       };

@@ -4,11 +4,19 @@
   inputs = {
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
-
     ashell.url = "https://flakehub.com/f/conneroisu/ashell/0.1.538";
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
+
+    # parcl.url = "github:conneroisu/parcl";
+    # parcl.inputs.nixpkgs.follows = "nixpkgs";
+    claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
+    claude-desktop.inputs = {
+      nixpkgs.follows = "nixpkgs";
+      flake-utils.follows = "flake-utils";
+    };
+
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -71,7 +79,9 @@
       "aarch64-linux"
       "aarch64-darwin"
     ];
+
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+
     mkConfigurations = moduleSystem:
       denix.lib.configurations {
         homeManagerUser = "connerohnesorge";
@@ -88,12 +98,93 @@
     homeConfigurations = mkConfigurations "home";
     darwinConfigurations = mkConfigurations "darwin";
 
+    devShells = forAllSystems (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+      scripts = {
+        dx = {
+          exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
+          description = "Edit the flake.nix";
+          deps = [];
+        };
+        lint = {
+          exec = ''
+            REPO_ROOT="$(git rev-parse --show-toplevel)"
+            statix check "$REPO_ROOT"/flake.nix
+            deadnix "$REPO_ROOT"/flake.nix
+            nix flake check "$REPO_ROOT"
+          '';
+          deps = with pkgs; [git statix deadnix];
+          description = "Run golangci-lint";
+        };
+      };
+
+      scriptPackages =
+        pkgs.lib.mapAttrs
+        (
+          name: script:
+            pkgs.writeShellApplication {
+              inherit name;
+              text = script.exec;
+              runtimeInputs = script.deps or [];
+            }
+        )
+        scripts;
+
+      buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
+    in {
+      default = pkgs.mkShell {
+        shellHook = ''
+          export REPO_ROOT="$(git rev-parse --show-toplevel)"
+          export CGO_CFLAGS="-O2"
+
+          # Print available commands
+          echo "Available commands:"
+          ${pkgs.lib.concatStringsSep "\n" (pkgs.lib.mapAttrsToList (name: script: ''echo "  ${name} - ${script.description}"'') scripts)}
+
+          echo "Git Status:"
+          git status
+        '';
+        packages = with pkgs;
+          [
+            alejandra # Nix
+            nixd
+
+            ruff # Python
+            black
+            isort
+            basedpyright
+            luajitPackages.luacheck
+
+            go_1_24 # Go
+            air
+            golangci-lint
+            gopls
+            (buildWithSpecificGo revive)
+            (buildWithSpecificGo templ)
+            (buildWithSpecificGo golines)
+            (buildWithSpecificGo golangci-lint-langserver)
+            (buildWithSpecificGo gomarkdoc)
+            (buildWithSpecificGo gotests)
+            (buildWithSpecificGo gotools)
+            (buildWithSpecificGo reftools)
+            pprof
+            graphviz
+
+            geesefs
+            sops
+          ]
+          ++ builtins.attrValues scriptPackages;
+      };
+    });
+
     formatter = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
       treefmtModule = {
         projectRootFile = "flake.nix";
         programs = {
           alejandra.enable = true; # Nix formatter
+          rustfmt.enable = true; # Rust formatter
+          black.enable = true; # Python formatter
         };
       };
     in

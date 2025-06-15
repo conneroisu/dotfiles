@@ -1,6 +1,6 @@
 {
   description = "A development shell for Remix JS with bun";
-  
+
   # Uncomment to enable bun2nix binary cache
   # nixConfig = {
   #   extra-substituters = [
@@ -12,7 +12,7 @@
   #     "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
   #   ];
   # };
-  
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
@@ -110,7 +110,6 @@
       treefmt-nix.lib.mkWrapper pkgs treefmtModule);
   };
 }
-
 # To use bun2nix:
 # 1. Uncomment the bun2nix input and binary cache configuration
 # 2. Uncomment the bun2nix package in devShells.default.packages
@@ -121,3 +120,4 @@
 # 4. Run 'bun install' to generate bun.nix
 # 5. Uncomment and configure the packages section to build your app
 # 6. Modify default.nix for your specific build requirements
+

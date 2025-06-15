@@ -62,8 +62,8 @@
             go_1_24 # Go Tools
             air
             golangci-lint
+            gopls
             (buildWithSpecificGo revive)
-            (buildWithSpecificGo gopls)
             (buildWithSpecificGo golines)
             (buildWithSpecificGo golangci-lint-langserver)
             (buildWithSpecificGo gomarkdoc)

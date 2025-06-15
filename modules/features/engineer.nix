@@ -31,7 +31,9 @@ in
       ];
       environment = {
         systemPackages =
-          (with pkgs; [
+          (with inputs; [
+            ])
+          ++ (with pkgs; [
             # Shell
 
             ## Editor

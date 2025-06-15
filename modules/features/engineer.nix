@@ -170,6 +170,9 @@ in
     };
 
     darwin.ifEnabled = {
+      myconfig.programs = {
+        dx.enable = true;
+      };
       environment = {
         systemPackages = with pkgs; [
           zinit
@@ -205,6 +208,7 @@ in
           uv
           bun
           git
+          podman
           # Platforms
           flyctl
           fh

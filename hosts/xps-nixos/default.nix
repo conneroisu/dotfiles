@@ -85,24 +85,5 @@ delib.host {
         LC_TIME = "en_US.UTF-8";
       };
     };
-
-    nix = {
-      settings = {
-        experimental-features = [
-          "nix-command"
-          "flakes"
-        ];
-        trusted-users = [
-          "root"
-          "@wheel"
-          "connerohnesorge"
-        ];
-        allowed-users = [
-          "root"
-          "@wheel"
-          "connerohnesorge"
-        ];
-      };
-    };
   };
 }

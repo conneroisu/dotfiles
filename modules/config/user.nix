@@ -9,6 +9,30 @@ delib.module {
   darwin.always = {myconfig, ...}: let
     inherit (myconfig.constants) username;
   in {
+    nix = {
+      settings = {
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        trusted-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+        allowed-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+        substituters = [
+          "https://cache.nixos.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        ];
+      };
+    };
     users = {
       groups.${username} = {};
       users.${username} = {
@@ -20,6 +44,31 @@ delib.module {
   nixos.always = {myconfig, ...}: let
     inherit (myconfig.constants) username;
   in {
+    nix = pkgs.lib.mkForce {
+      settings = {
+        max-jobs = 8;
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+        trusted-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+        allowed-users = [
+          "root"
+          "@wheel"
+          "connerohnesorge"
+        ];
+        substituters = [
+          "https://cache.nixos.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        ];
+      };
+    };
     users = {
       groups.${username} = {};
       groups.nordvpn = {};
@@ -37,24 +86,6 @@ delib.module {
 
         shell = pkgs.zsh;
       };
-    };
-
-    nix.settings = {
-      max-jobs = 8;
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      trusted-users = [
-        "root"
-        "@wheel"
-        "connerohnesorge"
-      ];
-      allowed-users = [
-        "root"
-        "@wheel"
-        "connerohnesorge"
-      ];
     };
     # environment = {
     #   etc."nix/nix.custom.conf".text = let

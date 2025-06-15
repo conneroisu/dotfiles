@@ -25,6 +25,12 @@ delib.module {
           "@wheel"
           "connerohnesorge"
         ];
+        substituters = [
+          "https://cache.nixos.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        ];
       };
     };
     users = {
@@ -40,6 +46,7 @@ delib.module {
   in {
     nix = pkgs.lib.mkForce {
       settings = {
+        max-jobs = 8;
         experimental-features = [
           "nix-command"
           "flakes"
@@ -53,6 +60,12 @@ delib.module {
           "root"
           "@wheel"
           "connerohnesorge"
+        ];
+        substituters = [
+          "https://cache.nixos.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
         ];
       };
     };
@@ -73,24 +86,6 @@ delib.module {
 
         shell = pkgs.zsh;
       };
-    };
-
-    nix.settings = {
-      max-jobs = 8;
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
-      trusted-users = [
-        "root"
-        "@wheel"
-        "connerohnesorge"
-      ];
-      allowed-users = [
-        "root"
-        "@wheel"
-        "connerohnesorge"
-      ];
     };
     # environment = {
     #   etc."nix/nix.custom.conf".text = let

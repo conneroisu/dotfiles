@@ -2,7 +2,7 @@
 
 let
   # Import the spec file under test
-  specFile = ./.spec.nix;
+  specFile = ./spec.nix;
 
   # Test utilities for consistent testing patterns
   testAssert = condition: message:
@@ -47,7 +47,7 @@ pkgs.stdenv.mkDerivation {
   doCheck = true;
 
   buildPhase = ''
-    echo "=== Running Comprehensive Tests for .spec.nix ==="
+    echo "=== Running Comprehensive Tests for spec.nix ==="
     echo "Testing framework: Nix built-in testing with derivations and assertions"
     echo ""
   '';
@@ -59,16 +59,16 @@ pkgs.stdenv.mkDerivation {
     echo "Phase 1: Basic Evaluation Tests"
     echo "==============================="
     if [ ! -f "${specFile}" ]; then
-      echo "✗ FAIL: .spec.nix file does not exist"
+      echo "✗ FAIL: spec.nix file does not exist"
       exit 1
     fi
-    echo "✓ PASS: .spec.nix file exists and is readable"
+    echo "✓ PASS: spec.nix file exists and is readable"
 
     if ! ${pkgs.nix}/bin/nix-instantiate --parse "${specFile}" > /dev/null 2>&1; then
-      echo "✗ FAIL: .spec.nix has invalid Nix syntax"
+      echo "✗ FAIL: spec.nix has invalid Nix syntax"
       exit 1
     fi
-    echo "✓ PASS: .spec.nix has valid Nix syntax"
+    echo "✓ PASS: spec.nix has valid Nix syntax"
 
     #
     # Phase 2: Evaluation and Type Validation Tests
@@ -78,7 +78,7 @@ pkgs.stdenv.mkDerivation {
     echo "=============================================="
     echo "Testing evaluation with standard pkgs..."
     if ${pkgs.nix}/bin/nix-instantiate --eval --strict -E '
-      let pkgs = import <nixpkgs> {}; in builtins.typeOf (import ${specFile} { inherit pkgs; })
+      let pkgs = import <nixpkgs> {}; in builtins.typeOf (import '"${specFile}"' { inherit pkgs; })
     ' > /dev/null 2>&1; then
       echo "✓ PASS: Evaluates successfully with standard pkgs"
     else
@@ -87,7 +87,7 @@ pkgs.stdenv.mkDerivation {
 
     echo "Testing evaluation with minimal pkgs..."
     EVAL_RESULT=$(${pkgs.nix}/bin/nix-instantiate --eval --strict -E '
-      let pkgs = {}; in try (builtins.typeOf (import ${specFile} { inherit pkgs; })) catch "error"
+      let pkgs = {}; in try (builtins.typeOf (import '"${specFile}"' { inherit pkgs; })) catch "error"
     ' 2>/dev/null || echo "error")
     if [ "$EVAL_RESULT" != "error" ]; then
       echo "✓ PASS: Handles minimal pkgs gracefully"
@@ -97,7 +97,7 @@ pkgs.stdenv.mkDerivation {
 
     echo "Testing error handling with null inputs..."
     if ! ${pkgs.nix}/bin/nix-instantiate --eval --strict -E '
-      import ${specFile} { pkgs = null; }
+      import '"${specFile}"' { pkgs = null; }
     ' > /dev/null 2>&1; then
       echo "✓ PASS: Properly handles null inputs with error"
     else
@@ -106,10 +106,10 @@ pkgs.stdenv.mkDerivation {
 
     echo "Testing evaluation reproducibility..."
     RESULT1=$(${pkgs.nix}/bin/nix-instantiate --eval --json -E '
-      import ${specFile} { pkgs = import <nixpkgs> {}; }
+      import '"${specFile}"' { pkgs = import <nixpkgs> {}; }
     ' 2>/dev/null || echo "null")
     RESULT2=$(${pkgs.nix}/bin/nix-instantiate --eval --json -E '
-      import ${specFile} { pkgs = import <nixpkgs> {}; }
+      import '"${specFile}"' { pkgs = import <nixpkgs> {}; }
     ' 2>/dev/null || echo "null")
     if [ "$RESULT1" = "$RESULT2" ]; then
       echo "✓ PASS: Evaluation is reproducible"
@@ -127,7 +127,7 @@ pkgs.stdenv.mkDerivation {
     OUTPUT_TYPE=$(${pkgs.nix}/bin/nix-instantiate --eval --strict -E '
       let
         pkgs   = import <nixpkgs> {};
-        result = import ${specFile} { inherit pkgs; };
+        result = import '"${specFile}"' { inherit pkgs; };
       in builtins.typeOf result
     ' 2>/dev/null || echo "error")
     case "$OUTPUT_TYPE" in
@@ -146,7 +146,7 @@ pkgs.stdenv.mkDerivation {
         if ${pkgs.nix}/bin/nix-instantiate --eval -E '
           let
             pkgs   = import <nixpkgs> {};
-            result = import ${specFile} { inherit pkgs; };
+            result = import '"${specFile}"' { inherit pkgs; };
           in builtins.hasAttr "'$attr'" result
         ' 2>/dev/null | grep -q true; then
           echo "✓ PASS: Has '$attr' attribute"
@@ -160,7 +160,7 @@ pkgs.stdenv.mkDerivation {
     ${pkgs.nix}/bin/nix-instantiate --eval --strict -E '
       let
         pkgs   = import <nixpkgs> {};
-        result = import ${specFile} { inherit pkgs; };
+        result = import '"${specFile}"' { inherit pkgs; };
         validateTypes = attrs:
           builtins.all (attr:
             let value = attrs.${attr}; in
@@ -183,7 +183,7 @@ pkgs.stdenv.mkDerivation {
     if ${pkgs.nix}/bin/nix-instantiate --eval -E '
       let
         pkgs   = import <nixpkgs> { overlays = []; };
-        result = import ${specFile} { inherit pkgs; };
+        result = import '"${specFile}"' { inherit pkgs; };
       in true
     ' > /dev/null 2>&1; then
       echo "✓ PASS: Works with empty overlays"
@@ -307,7 +307,7 @@ pkgs.stdenv.mkDerivation {
     cat > $out/run-tests.sh << 'EOF'
 #!/usr/bin/env bash
 set -e
-echo "🧪 Running .spec.nix test suite..."
+echo "🧪 Running spec.nix test suite..."
 echo "Using Nix built-in testing framework"
 nix-build test_spec.nix -o result-spec-tests
 if [ -f "result-spec-tests/test-results.txt" ]; then
@@ -327,9 +327,9 @@ EOF
   '';
 
   meta = {
-    description = "Comprehensive test suite for .spec.nix using Nix built-in testing capabilities";
+    description = "Comprehensive test suite for spec.nix using Nix built-in testing capabilities";
     longDescription = ''
-      This test suite validates .spec.nix files using Nix's native testing approach with derivations,
+      This test suite validates spec.nix files using Nix's native testing approach with derivations,
       assertions, and nix-instantiate. It covers evaluation tests, structural validation, edge cases,
       error handling, code quality checks, and integration testing.
     '';

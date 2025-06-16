@@ -32,7 +32,8 @@ in
       environment = {
         systemPackages =
           (with inputs; [
-            ])
+            opencode.packages.${pkgs.system}.default
+          ])
           ++ (with pkgs; [
             # Shell
 

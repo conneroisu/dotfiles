@@ -20,6 +20,7 @@ in
         dx.enable = true;
         md2pdf.enable = true;
         convert_img.enable = true;
+        convert_media.enable = true;
         catls.enable = true;
         cmbd.enable = true;
         duckdb.enable = true;
@@ -94,15 +95,14 @@ in
             obsidian
             zathura
             vlc
-            nemo
+            nemo-with-extensions
             nemo-preview
             nemo-fileroller
+
             brave
             spotify
             discord
             telegram-desktop
-            xfce.thunar
-            xfce.xfce4-terminal
             obs-studio
             eog
 

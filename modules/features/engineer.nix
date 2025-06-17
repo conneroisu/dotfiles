@@ -93,11 +93,13 @@ in
             # Apps
             obsidian
             zathura
+            vlc
             brave
             spotify
             discord
             telegram-desktop
             xfce.thunar
+            xfce.xfce4-terminal
             obs-studio
             eog
 

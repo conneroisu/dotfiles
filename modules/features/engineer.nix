@@ -38,6 +38,9 @@ in
           ])
           ++ (with pkgs; [
             # Shell
+            devenv
+            libxml2
+            gcc
 
             ## Editor
             neovim

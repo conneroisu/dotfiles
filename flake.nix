@@ -154,6 +154,7 @@
             black
             isort
             basedpyright
+            pkg-config
             luajitPackages.luacheck
 
             go_1_24 # Go

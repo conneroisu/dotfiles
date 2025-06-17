@@ -10,8 +10,8 @@
     };
 
     opencode.url = "github:conneroisu/opencode?ref=8ffcddb75dd2b4e6783428aaa728aff0bfe98f44";
-    # parcl.url = "github:conneroisu/parcl";
-    # parcl.inputs.nixpkgs.follows = "nixpkgs";
+    parcl.url = "github:conneroisu/parcl/dev";
+    parcl.inputs.nixpkgs.follows = "nixpkgs";
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
     claude-desktop.inputs = {
       nixpkgs.follows = "nixpkgs";

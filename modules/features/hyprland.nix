@@ -10,6 +10,16 @@ in
     name = "features.hyprland";
 
     options = singleEnableOption false;
+    home.ifEnabled = {myconfig, ...}: {
+      dconf = {
+        settings = {
+          "org/cinnamon/desktop/applications/terminal" = {
+            exec = "ghostty";
+            # exec-arg = ""; # argument
+          };
+        };
+      };
+    };
 
     nixos.ifEnabled = {myconfig, ...}: {
       environment = {
@@ -102,10 +112,11 @@ in
             "image/jpeg" = "org.gnome.Loupe.desktop";
             "image/ppm" = "org.gnome.Loupe.desktop";
             # Directories
-            "inode/directory" = "thunar.desktop";
             "x-scheme-handler/file" = "thunar.desktop";
             # .txt
             "text/plain" = "nvim.desktop";
+            "inode/directory" = ["nemo.desktop"];
+            "application/x-gnome-saved-search" = ["nemo.desktop"];
           };
         };
       };

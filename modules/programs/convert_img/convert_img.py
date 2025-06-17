@@ -27,19 +27,19 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "input_path",
         type=Path,
         help="Path to the input WebP file",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "output_path",
         type=Path,
         help="Path to save the SVG file",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-m",
         "--method",
         choices=["embed", "trace"],
@@ -52,7 +52,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-f",
         "--format",
         choices=["png", "jpeg", "webp"],
@@ -63,7 +63,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-q",
         "--quality",
         type=int,
@@ -74,7 +74,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-w",
         "--width",
         type=int,
@@ -84,7 +84,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--height",
         type=int,
         help=(
@@ -93,7 +93,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--max-size",
         type=int,
         help=(
@@ -102,7 +102,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--background",
         default="transparent",
         help=(
@@ -113,20 +113,20 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--optimize",
         action="store_true",
         help="Optimize the SVG output",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--preserve-aspect",
         action="store_true",
         default=True,
         help="Preserve aspect ratio (default: True)",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--trace-options",
         default="",
         help=(

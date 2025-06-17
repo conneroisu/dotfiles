@@ -1,13 +1,10 @@
 """Tests for convert_img.py"""
 
-import argparse
 import base64
-import io
-import os
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock, mock_open
+from unittest.mock import Mock, patch
 
 from PIL import Image
 

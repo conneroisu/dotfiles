@@ -431,11 +431,11 @@ def get_file_size_info(
     ):
         in_size = input_path.stat().st_size
         out_size = output_path.stat().st_size
-        
+
         if in_size == 0:
             print("Warning: Input file is empty")
             return
-            
+
         ratio = out_size / in_size
 
         print(f"Input size:  {in_size:,} bytes")
@@ -485,7 +485,7 @@ def main() -> None:
             "Error: Input and output paths cannot be the same"
         )
         sys.exit(1)
-    
+
     # Warn if output file exists
     if args.output_path.exists():
         print(

@@ -94,6 +94,9 @@ in
             obsidian
             zathura
             vlc
+            nemo
+            nemo-preview
+            nemo-fileroller
             brave
             spotify
             discord

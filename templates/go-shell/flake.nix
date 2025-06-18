@@ -32,6 +32,12 @@
           exec = ''$EDITOR "$REPO_ROOT"/go.mod'';
           description = "Edit go.mod";
         };
+        lint = {
+          exec = ''
+            golangci-lint run
+          '';
+            description = "Run golangci-lint";
+          };
       };
 
       scriptPackages =

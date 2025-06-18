@@ -181,6 +181,7 @@ in
 
       security.rtkit.enable = true;
       services = {
+        envfs.enable = true;
         gnome.gnome-keyring.enable = true;
       };
 

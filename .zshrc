@@ -79,3 +79,4 @@ zstyle ':completion:*' menu no
 # Key bindings for word-by-word navigation for auto-completion
 bindkey '^[[1;5C' forward-word      # Ctrl+Right - move forward one word
 bindkey '^[[1;5D' backward-word     # Ctrl+Left - move backward one word
+alias claude="/home/connerohnesorge/.claude/local/claude"

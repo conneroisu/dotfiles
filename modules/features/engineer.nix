@@ -31,16 +31,20 @@ in
         vistafonts
       ];
       environment = {
-        systemPackages =
+        systemPackages = let
+          stablePkgs = inputs.stable-nixpkgs.legacyPackages.${pkgs.system};
+        in
           (with inputs; [
             opencode.packages.${pkgs.system}.default
-            parcl.packages.${pkgs.system}.default
+            # parcl.packages.${pkgs.system}.default
+            stablePkgs.brave
           ])
           ++ (with pkgs; [
             # Shell
             devenv
             libxml2
             gcc
+            zerotierone
 
             ## Editor
             neovim
@@ -102,7 +106,6 @@ in
             nemo-preview
             nemo-fileroller
 
-            brave
             spotify
             discord
             telegram-desktop

@@ -45,6 +45,7 @@ in
             libxml2
             gcc
             zerotierone
+            minikube
 
             ## Editor
             neovim

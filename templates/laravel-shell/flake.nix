@@ -40,7 +40,6 @@
             php
             php.packages.composer
             php.packages.phpstan
-            php.packages.psalm
             pkgs.phpunit
             self.packages.${system}.satis
           ];
@@ -171,7 +170,7 @@
           php = pkgs.php81;
         };
 
-        lib = pkgs.lib;
+        inherit (pkgs) lib;
       in {
         mezzio-skeleton = {
           type = "app";
@@ -277,22 +276,6 @@
             }
           );
         };
-        # nix run .#psalm -- --version
-        psalm = {
-          type = "app";
-          program = lib.getExe (
-            pkgs.writeShellApplication {
-              name = "psalm";
-              runtimeInputs = [
-                php
-                php.packages.psalm
-              ];
-              text = ''
-                ${lib.getExe php.packages.psalm} "$@"
-              '';
-            }
-          );
-        };
       }
     );
 
@@ -304,6 +287,7 @@
         projectRootFile = "flake.nix";
         programs = {
           alejandra.enable = true; # Nix formatter
+          php-cs-fixer.enable = true;
         };
       };
     in

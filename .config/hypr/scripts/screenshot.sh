@@ -1,76 +1,52 @@
-#!/bin/bash
-# Script to take a screenshot and save it to the clipboard.
-# It should also add the image to the recently used.
-
+#!/usr/bin/env bash
 set -euo pipefail
 
-###############################################################################
-# 1. Hard-coded variables  ────────────────────────────────────────────────────
-###############################################################################
-xbel_file="$HOME/.local/share/recently-used.xbel"
-ppath="$HOME/Pictures/Screenshots/Screenshot-$(date +%F_%T).png"
-target="$ppath"
-###############################################################################
+### ---------- configurable “constants” ----------
+SCREENSHOT_DIR="$HOME/Pictures/Screenshots"
+FILE_PREFIX="Screenshot"
+XBEL_FILE="$HOME/.local/share/recently-used.xbel"
+APP_NAME="Eye of GNOME"
+APP_EXEC="'eog %u'"
+### ---------------------------------------------
 
-###############################################################################
-# 2. Screenshot + user notifications  ────────────────────────────────────────
-###############################################################################
-grim -g "$(slurp)" - | wl-copy && wl-paste > "$ppath"
-dunstify "Screenshot of the region taken at $(date +%F_%T)" -t 1000
+mkdir -p "$SCREENSHOT_DIR"
 
-NOTE="Screenshot @ $ppath"
-dunstify "$NOTE" -t 10000 -A "copy, Copy to clipboard" --action="copy:wl-copy $ppath"
-###############################################################################
+# Path that will hold the new image
+timestamp="$(date +%F_%T)"
+ppath="$SCREENSHOT_DIR/${FILE_PREFIX}-${timestamp}.png"
 
-###############################################################################
-# 3. Ensure the XBEL file exists (create a minimal skeleton if missing) ░░░░░░
-###############################################################################
-if [[ ! -f $xbel_file ]]; then
-  cat >"$xbel_file" <<'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<xbel version="1.0"
-      xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
-      xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info">
-</xbel>
-EOF
-fi
-###############################################################################
+# 1. Take the shot
+grim -g "$(slurp)" - > "$ppath"
 
-###############################################################################
-# 4. Build the bookmark (with applications block) and insert it  ─────────────
-###############################################################################
-ts_utc=$(date -u +%Y-%m-%dT%H:%M:%S.%6NZ)
+# 2. User feedback
+dunstify -t 1000 "Screenshot captured → $ppath"
+#
+# 3. Register the file in GTK recent-files (recently-used.xbel)
+iso_ts="$(date --iso-8601=seconds)"
+file_uri="file://$ppath"
 
-read -r -d '' bookmark <<EOF
-  <bookmark href="file://$target" added="$ts_utc" modified="$ts_utc" visited="$ts_utc">
+bookmark=$(cat <<EOF
+  <bookmark href="$file_uri" added="$iso_ts" modified="$iso_ts">
     <info>
       <metadata owner="http://freedesktop.org">
-        <mime:mime-type type="application/octet-stream"/>
+        <mime:mime-type type="image/png"/>
         <bookmark:applications>
-          <bookmark:application name="Eye of GNOME"
-                                exec="&apos;eog %u&apos;"
-                                modified="$ts_utc"
-                                count="1"/>
+          <bookmark:application name="$APP_NAME" exec="$APP_EXEC" modified="$iso_ts" count="1"/>
         </bookmark:applications>
       </metadata>
     </info>
   </bookmark>
 EOF
+)
 
-tmp=$(mktemp)
+# Inject before the closing </xbel>, using a temp file to avoid corruption.
+tmp="$(mktemp)"
+# Copy everything *except* the closing tag
+head -n -1 "$XBEL_FILE" > "$tmp"
+# Append the new bookmark + the closing tag
+printf '%s\n</xbel>\n' "$bookmark" >> "$tmp"
+# Atomically replace
+mv "$tmp" "$XBEL_FILE"
 
-awk -v b="$bookmark" '
-  !done && />[[:space:]]*$/ { print; print b; done=1; next }
-  { print }
-' "$xbel_file" > "$tmp"
-
-mv -- "$tmp" "$xbel_file"
-###############################################################################
-
-###############################################################################
-# 5. Final desktop notification  ─────────────────────────────────────────────
-###############################################################################
-dunstify "✔ Screenshot saved and bookmarked" \
-         "File: $ppath\nBookmark file: $xbel_file" \
-         -t 3000
-###############################################################################
+# Optional extra logging
+dunstify -t 2000 "recently-used.xbel updated (line count: $(wc -l < "$XBEL_FILE"))"

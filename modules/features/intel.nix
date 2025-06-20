@@ -10,7 +10,7 @@ in
 
     options = singleEnableOption false;
 
-    nixos.ifEnabled = rec {
-      hardware.cpu.intel.updateMicrocode = pkgs.lib.mkDefault hardware.enableRedistributableFirmware;
+    nixos.ifEnabled = {
+      hardware.cpu.intel.updateMicrocode = true;
     };
   }

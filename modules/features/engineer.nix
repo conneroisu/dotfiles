@@ -211,6 +211,9 @@ in
     };
 
     darwin.ifEnabled = {
+      myconfig.programs = {
+        dx.enable = true;
+      };
       environment = {
         systemPackages =
           [

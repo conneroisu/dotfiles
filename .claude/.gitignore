@@ -1,9 +1,0 @@
-# Ignore everything
-*
-
-# But not the commands directory
-!commands/
-!commands/**
-
-# And keep the .gitignore file itself
-!.gitignore

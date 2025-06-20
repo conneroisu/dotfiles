@@ -1,10 +1,12 @@
 {
-  description = "A development shell for go";
+  description = "A development shell for nix";
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
+
   outputs = {
     nixpkgs,
     treefmt-nix,
@@ -28,16 +30,6 @@
           exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
           description = "Edit flake.nix";
         };
-        gx = {
-          exec = ''$EDITOR "$REPO_ROOT"/go.mod'';
-          description = "Edit go.mod";
-        };
-        lint = {
-          exec = ''
-            golangci-lint run
-          '';
-            description = "Run golangci-lint";
-          };
       };
 
       scriptPackages =
@@ -87,26 +79,6 @@
           export REPO_ROOT=$(git rev-parse --show-toplevel)
         '';
       };
-    });
-
-    packages = forAllSystems (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-      };
-    in {
-      # default = pkgs.buildGoModule {
-      #   pname = "my-go-project";
-      #   version = "0.0.1";
-      #   src = ./.;
-      #   vendorHash = "";
-      #   doCheck = false;
-      #   meta = with pkgs.lib; {
-      #     description = "My Go project";
-      #     homepage = "https://github.com/conneroisu/my-go-project";
-      #     license = licenses.asl20;
-      #     maintainers = with maintainers; [connerohnesorge];
-      #   };
-      # };
     });
 
     formatter = forAllSystems (system: let

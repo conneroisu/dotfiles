@@ -1,0 +1,99 @@
+
+{
+  "formatters": {
+    "exclusions": {
+      "generated": "lax",
+      "paths": [
+        "third_party$",
+        "builtin$",
+        "examples$"
+      ]
+    }
+  },
+  "linters": {
+    "enable": [
+      "asasalint",
+      "exhaustive",
+      "godox",
+      "nlreturn",
+      "bidichk",
+      "bodyclose",
+      "dupl",
+      "gocritic",
+      "godot",
+      "errname",
+      "copyloopvar",
+      "errname",
+      "gosec",
+      "goconst",
+      "intrange",
+      "perfsprint",
+      "usestdlibvars",
+      "gocheckcompilerdirectives",
+      "staticcheck",
+      "intrange",
+      "makezero",
+      "misspell",
+      "nosprintfhostport",
+      "revive",
+      "unconvert",
+      "usestdlibvars",
+      "wastedassign",
+      "whitespace",
+      "govet"
+    ],
+    "exclusions": {
+      "generated": "lax",
+      "paths": [
+        "(^|/)vendor($|/)",
+        "third_party$",
+        "builtin$",
+        "examples$"
+      ],
+      "presets": [
+        "comments",
+        "common-false-positives",
+        "legacy",
+        "std-error-handling"
+      ],
+      "linters": [
+        "gocognit",
+        "nestif"
+      ]
+    },
+    "settings": {
+      "revive": {
+        "enable-all-rules": false,
+        "rules": [
+          {
+            "exclude": [
+              "vendor/"
+            ],
+            "name": "blank-imports"
+          }
+        ]
+      },
+      "staticcheck": {
+        "checks": [
+          "-SA1019",
+          "all"
+        ]
+      }
+    }
+  },
+  "severity": {
+    "default": "warning",
+    "default-severity": "warning",
+    "rules": [
+      {
+        "linters": [
+          "goimports",
+          "intrange",
+          "usestdlibvars"
+        ],
+        "severity": "info"
+      }
+    ]
+  },
+  "version": "2"
+}

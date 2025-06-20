@@ -27,19 +27,19 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "input_path",
         type=Path,
         help="Path to the input WebP file",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "output_path",
         type=Path,
         help="Path to save the SVG file",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-m",
         "--method",
         choices=["embed", "trace"],
@@ -52,7 +52,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-f",
         "--format",
         choices=["png", "jpeg", "webp"],
@@ -63,7 +63,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-q",
         "--quality",
         type=int,
@@ -74,7 +74,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-w",
         "--width",
         type=int,
@@ -84,7 +84,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--height",
         type=int,
         help=(
@@ -93,7 +93,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--max-size",
         type=int,
         help=(
@@ -102,7 +102,7 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--background",
         default="transparent",
         help=(
@@ -113,20 +113,20 @@ def parse_args() -> argparse.Namespace:
         ),
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--optimize",
         action="store_true",
         help="Optimize the SVG output",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--preserve-aspect",
         action="store_true",
         default=True,
         help="Preserve aspect ratio (default: True)",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--trace-options",
         default="",
         help=(
@@ -195,8 +195,8 @@ def resize_image(
                 max_size / orig_w,
                 max_size / orig_h,
             )
-            new_w = int(orig_w * ratio)
-            new_h = int(orig_h * ratio)
+            new_w = max(1, int(orig_w * ratio))
+            new_h = max(1, int(orig_h * ratio))
             return img.resize(
                 (new_w, new_h),
                 Image.Resampling.LANCZOS,
@@ -209,14 +209,14 @@ def resize_image(
         )
     elif width:
         ratio = width / orig_w
-        new_h = int(orig_h * ratio)
+        new_h = max(1, int(orig_h * ratio))
         return img.resize(
             (width, new_h),
             Image.Resampling.LANCZOS,
         )
     elif height:
         ratio = height / orig_h
-        new_w = int(orig_w * ratio)
+        new_w = max(1, int(orig_w * ratio))
         return img.resize(
             (new_w, height),
             Image.Resampling.LANCZOS,
@@ -240,14 +240,9 @@ def image_to_base64(
             bg = Image.new(
                 "RGB", img.size, (255, 255, 255)
             )
-            if img.mode == "RGBA":
-                bg.paste(
-                    img, mask=img.getchannel("A")
-                )
-            else:
-                bg.paste(
-                    img, mask=img.getchannel("A")
-                )
+            bg.paste(
+                img, mask=img.getchannel("A")
+            )
             img = bg
         save_kwargs["quality"] = quality
         save_kwargs["optimize"] = True
@@ -374,7 +369,7 @@ def create_traced_svg(
                         "1",
                     )
 
-                img.save(temp_pbm_path, "PPM")
+                img.save(temp_pbm_path, "PBM")
 
             # Run potrace
             cmd = [
@@ -436,6 +431,11 @@ def get_file_size_info(
     ):
         in_size = input_path.stat().st_size
         out_size = output_path.stat().st_size
+
+        if in_size == 0:
+            print("Warning: Input file is empty")
+            return
+
         ratio = out_size / in_size
 
         print(f"Input size:  {in_size:,} bytes")
@@ -485,6 +485,13 @@ def main() -> None:
             "Error: Input and output paths cannot be the same"
         )
         sys.exit(1)
+
+    # Warn if output file exists
+    if args.output_path.exists():
+        print(
+            f"Warning: Output file {args.output_path} "
+            f"already exists and will be overwritten"
+        )
 
     try:
         if args.method == "trace":

@@ -66,6 +66,7 @@ delib.host {
       extraModulePackages = [];
     };
     hardware = {
+      nvidia-container-toolkit.enable = true;
       nvidia = {
         prime = {
           # Bus ID of the Intel GPU.
@@ -100,7 +101,6 @@ delib.host {
     };
 
     virtualisation.docker.enable = true;
-    hardware.nvidia-container-toolkit.enable = true;
 
     fileSystems = {
       "/" = {

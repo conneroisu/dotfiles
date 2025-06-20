@@ -53,6 +53,17 @@ delib.host {
         efi.canTouchEfiVariables = true;
         systemd-boot.configurationLimit = 4;
       };
+      initrd.availableKernelModules = [
+        "xhci_pci"
+        "thunderbolt"
+        "nvme"
+        "uas"
+        "sd_mod"
+        "rtsx_pci_sdmmc"
+      ];
+      initrd.kernelModules = [];
+      kernelModules = ["kvm-intel"];
+      extraModulePackages = [];
     };
     hardware = {
       nvidia = {
@@ -90,19 +101,6 @@ delib.host {
 
     virtualisation.docker.enable = true;
     hardware.nvidia-container-toolkit.enable = true;
-    boot = {
-      initrd.availableKernelModules = [
-        "xhci_pci"
-        "thunderbolt"
-        "nvme"
-        "uas"
-        "sd_mod"
-        "rtsx_pci_sdmmc"
-      ];
-      initrd.kernelModules = [];
-      kernelModules = ["kvm-intel"];
-      extraModulePackages = [];
-    };
 
     fileSystems = {
       "/" = {

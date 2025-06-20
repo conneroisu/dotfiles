@@ -80,3 +80,4 @@ zstyle ':completion:*' menu no
 bindkey '^[[1;5C' forward-word      # Ctrl+Right - move forward one word
 bindkey '^[[1;5D' backward-word     # Ctrl+Left - move backward one word
 alias claude="/home/connerohnesorge/.claude/local/claude"
+alias ad="git add"

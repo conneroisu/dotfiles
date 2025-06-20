@@ -4,7 +4,8 @@
   ...
 }: let
   inherit (delib) singleEnableOption;
-  program = pkgs.writeShellApplication "cpr" {
+  program = pkgs.writeShellApplication {
+    name = "cpr";
     text = ''
       gh pr list | cut -f1,2 | gum choose | cut -f1 | xargs gh pr checkout
     '';

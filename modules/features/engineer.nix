@@ -5,6 +5,22 @@
   ...
 }: let
   inherit (delib) singleEnableOption;
+
+  crossPlatformPkgs = [
+    # VCS
+    pkgs.git
+    pkgs.git-lfs
+    pkgs.jujutsu
+    # Platforms
+    pkgs.flyctl
+    pkgs.fh
+    pkgs.gh
+    pkgs.tea
+    # Infra
+    pkgs.kubectl
+    pkgs.ktailctl
+    pkgs.lazydocker
+  ];
 in
   delib.module {
     name = "features.engineer";
@@ -24,136 +40,122 @@ in
         catls.enable = true;
         cmbd.enable = true;
         duckdb.enable = true;
+        cpr.enable = true;
       };
-      fonts.packages = with pkgs; [
-        nerd-fonts.code-new-roman
-        corefonts
-        vistafonts
+      fonts.packages = [
+        pkgs.nerd-fonts.code-new-roman
+        pkgs.corefonts
+        pkgs.vistafonts
       ];
       environment = {
         systemPackages = let
           stablePkgs = inputs.stable-nixpkgs.legacyPackages.${pkgs.system};
         in
-          (with inputs; [
-            opencode.packages.${pkgs.system}.default
+          [
+            inputs.opencode.packages.${pkgs.system}.default
+            inputs.zen-browser.packages."${pkgs.system}".default
+            inputs.blink.packages."${pkgs.system}".default
+            inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
             # parcl.packages.${pkgs.system}.default
             stablePkgs.brave
-          ])
-          ++ (with pkgs; [
             # Shell
-            devenv
-            libxml2
-            gcc
-            zerotierone
-            minikube
+            pkgs.libxml2
+            pkgs.gcc
 
             ## Editor
-            neovim
-            jq
-            yq
-            tree-sitter
-            sad
+            pkgs.neovim
+            pkgs.jq
+            pkgs.yq
+            pkgs.tree-sitter
+            pkgs.sad
 
             ## Env
-            zsh
-            nushell
-            carapace
-            stow
-            age
-            kubectl
-            ktailctl
-            doppler
-            bun
-            file
-            nix-index
-            zinit
-            starship
-            direnv
-            nix-direnv
-            bat
-            fd
-            fzf
-            zellij
-            atuin
-            zoxide
-            pkg-config
-            lshw
-            gdb
-            gnupg
-            procps
-            unzip
-            sqlite
-            uv
-            eza
-            delta
-            htop
-            tealdeer
-            sleek
-            unixtools.xxd
-            ffmpeg
-            tree
-            ripgrep
+            pkgs.zsh
+            pkgs.nushell
+            pkgs.carapace
+            pkgs.stow
+            pkgs.age
+            pkgs.doppler
+            pkgs.file
+            pkgs.nix-index
+            pkgs.zinit
+            pkgs.starship
+            pkgs.direnv
+            pkgs.nix-direnv
+            pkgs.bat
+            pkgs.fd
+            pkgs.fzf
+            pkgs.zellij
+            pkgs.atuin
+            pkgs.zoxide
+            pkgs.pkg-config
+            pkgs.lshw
+            pkgs.gdb
+            pkgs.gnupg
+            pkgs.procps
+            pkgs.unzip
+            pkgs.sqlite
+            pkgs.uv
+            pkgs.eza
+            pkgs.delta
+            pkgs.htop
+            pkgs.tealdeer
+            pkgs.sleek
+            pkgs.unixtools.xxd
+            pkgs.ffmpeg
+            pkgs.tree
+            pkgs.ripgrep
 
-            # VCS
-            git
-            git-lfs
-            jujutsu
-
+            pkgs.bun
             # Apps
-            obsidian
-            zathura
-            vlc
-            nemo-with-extensions
-            nemo-preview
-            nemo-fileroller
+            pkgs.obsidian
+            pkgs.zathura
+            pkgs.vlc
+            pkgs.nemo-with-extensions
+            pkgs.nemo-preview
+            pkgs.nemo-fileroller
 
-            spotify
-            discord
-            telegram-desktop
-            obs-studio
-            eog
+            pkgs.spotify
+            pkgs.discord
+            pkgs.telegram-desktop
+            pkgs.obs-studio
+            pkgs.eog
 
             # Communication
-            tailscale
-            dnsutils
-            minicom
-            openvpn
-            cacert
-            arp-scan
-            vdhcoapp
-            usbutils
-            ethtool
-            curl
-            wget
+            pkgs.tailscale
+            pkgs.dnsutils
+            pkgs.minicom
+            pkgs.openvpn
+            pkgs.cacert
+            pkgs.arp-scan
+            pkgs.vdhcoapp
+            pkgs.usbutils
+            pkgs.ethtool
+            pkgs.curl
+            pkgs.wget
 
             # Platforms
-            fh
-            doppler
-            gh
-            tea
-            coder
+            pkgs.fh
+            pkgs.doppler
+            pkgs.gh
+            pkgs.tea
 
             # Emulation
-            docker
-            docker-compose
-            lazydocker
-            nixos-shell
+            pkgs.nixos-shell
+            pkgs.docker
+            pkgs.docker-compose
 
             # Languages (Base for when shell from project is not available)
-            nixd
-            statix
-            nodejs
-            lua-language-server
+            pkgs.nixd
+            pkgs.statix
+            pkgs.nodejs
+            pkgs.lua-language-server
 
             # Disks
-            squirreldisk
+            pkgs.squirreldisk
             pkgs.jetbrains.phpstorm
-          ])
-          ++ (with inputs; [
-            zen-browser.packages."${pkgs.system}".default
-            blink.packages."${pkgs.system}".default
-            blink.packages."${pkgs.system}".blink-fuzzy-lib
-          ]);
+          ]
+          ++ crossPlatformPkgs;
         variables = {
           EDITOR = "nvim";
           VISUAL = "nvim";
@@ -210,51 +212,46 @@ in
 
     darwin.ifEnabled = {
       environment = {
-        systemPackages = with pkgs; [
-          zinit
-          starship
-          direnv
-          nix-direnv
-          bat
-          wget
-          fd
-          jq
-          yq
-          spicetify-cli
-          fzf
-          zellij
-          atuin
-          zoxide
-          eza
-          delta
-          unzip
-          htop
-          tealdeer
-          sleek
-          tree-sitter
-          unixtools.xxd
-          tree
-          sad
-          ripgrep
-          stow
-          carapace
-          neovim
-          cmake
-          gnumake
-          uv
-          bun
-          git
-          # Platforms
-          flyctl
-          fh
-          gh
-          tea
-
-          # Languages
-          nixd
-          nodejs
-          lua-language-server
-        ];
+        systemPackages =
+          [
+            pkgs.zinit
+            pkgs.starship
+            pkgs.direnv
+            pkgs.nix-direnv
+            pkgs.bat
+            pkgs.wget
+            pkgs.fd
+            pkgs.jq
+            pkgs.yq
+            pkgs.spicetify-cli
+            pkgs.fzf
+            pkgs.zellij
+            pkgs.atuin
+            pkgs.zoxide
+            pkgs.eza
+            pkgs.delta
+            pkgs.unzip
+            pkgs.htop
+            pkgs.tealdeer
+            pkgs.sleek
+            pkgs.tree-sitter
+            pkgs.unixtools.xxd
+            pkgs.tree
+            pkgs.sad
+            pkgs.ripgrep
+            pkgs.stow
+            pkgs.carapace
+            pkgs.neovim
+            pkgs.cmake
+            pkgs.gnumake
+            pkgs.uv
+            pkgs.bun
+            # Languages
+            pkgs.nixd
+            pkgs.nodejs
+            pkgs.lua-language-server
+          ]
+          ++ crossPlatformPkgs;
         variables = {
           EDITOR = "nvim";
           VISUAL = "nvim";

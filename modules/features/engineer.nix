@@ -18,7 +18,6 @@
     pkgs.tea
     # Infra
     pkgs.kubectl
-    pkgs.ktailctl
     pkgs.lazydocker
   ];
 in
@@ -107,6 +106,7 @@ in
             pkgs.ripgrep
 
             pkgs.bun
+
             # Apps
             pkgs.obsidian
             pkgs.zathura
@@ -114,6 +114,7 @@ in
             pkgs.nemo-with-extensions
             pkgs.nemo-preview
             pkgs.nemo-fileroller
+            pkgs.ktailctl
 
             pkgs.spotify
             pkgs.discord

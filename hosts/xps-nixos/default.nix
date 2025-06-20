@@ -2,6 +2,7 @@
   delib,
   inputs,
   pkgs,
+  system,
   ...
 }:
 delib.host {
@@ -10,6 +11,7 @@ delib.host {
   rice = "dark";
   type = "laptop";
   home.home.stateVersion = "24.11";
+  homeManagerSystem = system;
 
   darwin = {
     imports = [

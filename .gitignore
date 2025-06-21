@@ -22,3 +22,4 @@ devenv.local.nix
 .devenv*
 .obsidian/
 .env
+result

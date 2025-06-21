@@ -51,7 +51,7 @@ in
           stablePkgs = inputs.stable-nixpkgs.legacyPackages.${pkgs.system};
         in
           [
-            inputs.opencode.packages.${pkgs.system}.default
+            # inputs.opencode.packages.${pkgs.system}.default
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib

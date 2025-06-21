@@ -1,0 +1,34 @@
+{
+  "name": "go-inertia-vue-app",
+  "version": "1.0.0",
+  "description": "Inertia.js app with Go backend and Vue frontend",
+  "type": "module",
+  "scripts": {
+    "dev": "bunx --bun vite",
+    "build": "bunx --bun vite build",
+    "preview": "bunx --bun vite preview",
+    "ui": "bunx --bun shadcn-vue@latest",
+    "postinstall": "bun2nix -o bun.nix"
+  },
+  "dependencies": {
+    "@inertiajs/vue3": "^2.0.0",
+    "@radix-icons/vue": "^1.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-vue-next": "^0.469.0",
+    "radix-vue": "^1.9.9",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/tsconfig": "^0.7.0",
+    "@vueuse/core": "^11.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  }
+}

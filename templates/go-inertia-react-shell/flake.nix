@@ -21,7 +21,7 @@
       "aarch64-darwin"
     ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-  in {
+  in rec {
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs {
         inherit system;
@@ -159,7 +159,7 @@
         pname = "go-inertia-react-app";
         version = "0.1.0";
         src = ./.;
-        vendorHash = null;
+        vendorHash = "sha256-PMd1wJ8aBIoYNVgItS7Q+L5IJXGeumHAfm6l12iu6R0=";
         doCheck = false;
 
         buildInputs = with pkgs; [go];
@@ -176,6 +176,13 @@
           license = licenses.mit;
           maintainers = with maintainers; [];
         };
+      };
+    });
+
+    apps = forAllSystems (system: {
+      default = {
+        type = "app";
+        program = "${packages.${system}.default}/bin/myapp";
       };
     });
 

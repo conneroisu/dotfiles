@@ -1,17 +1,6 @@
 {
   description = "A development shell for Go with Inertia.js and Vue";
-  
-  nixConfig = {
-    extra-substituters = [
-      "https://cache.nixos.org"
-      "https://cache.garnix.io"
-    ];
-    extra-trusted-public-keys = [
-      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
-    ];
-  };
-  
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
@@ -32,7 +21,7 @@
       "aarch64-darwin"
     ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-  in {
+  in rec {
     devShells = forAllSystems (system: let
       pkgs = import nixpkgs {
         inherit system;
@@ -70,14 +59,13 @@
         };
         setup = {
           exec = ''
-            go mod init myapp
-            go get github.com/romsar/gonertia/v2
-            bun init -y
-            bun add vue @vitejs/plugin-vue @inertiajs/vue3 vite
-            bun add -D typescript @vue/tsconfig
-            bun2nix -o bun.nix
+            echo "Installing dependencies..."
+            bun install
+            echo "Building frontend assets..."
+            bun run build
+            echo "Setup complete! Run 'dev' to start the development server."
           '';
-          description = "Initialize Go module and install dependencies";
+          description = "Install dependencies and build frontend";
         };
       };
 
@@ -165,28 +153,51 @@
       # frontend = pkgs.callPackage ./frontend.nix {
       #   inherit (bun2nix.lib.${system}) mkBunDerivation;
       # };
-      
+
+      # Development version that requires pre-built assets
       default = pkgs.buildGoModule {
         pname = "go-inertia-vue-app";
         version = "0.1.0";
         src = ./.;
-        vendorHash = null;
+        vendorHash = "sha256-PMd1wJ8aBIoYNVgItS7Q+L5IJXGeumHAfm6l12iu6R0=";
         doCheck = false;
-        
-        buildInputs = with pkgs; [ go ];
-        
-        # Frontend build disabled until dependencies are installed
-        # preBuild = ''
-        #   mkdir -p resources/build
-        #   cp -r ${frontend}/dist/* resources/build/
-        # '';
-        
+
+        buildInputs = with pkgs; [go];
+
+        postInstall = ''
+          mkdir -p $out/share/go-inertia-vue-app
+          
+          # Copy resources
+          cp -r resources $out/share/go-inertia-vue-app/
+          
+          # Copy pre-built assets if they exist
+          if [ -d public ]; then
+            cp -r public $out/share/go-inertia-vue-app/
+          fi
+          
+          # Create wrapper script that changes to the app directory
+          mv $out/bin/myapp $out/share/go-inertia-vue-app/
+          cat > $out/bin/go-inertia-vue-app <<EOF
+          #!/usr/bin/env bash
+          cd $out/share/go-inertia-vue-app
+          exec ./myapp
+          EOF
+          chmod +x $out/bin/go-inertia-vue-app
+        '';
+
         meta = with pkgs.lib; {
           description = "Go + Inertia.js + Vue application";
           homepage = "https://github.com/conneroisu/go-inertia-vue-shell";
           license = licenses.mit;
-          maintainers = with maintainers; [ ];
+          maintainers = with maintainers; [];
         };
+      };
+    });
+
+    apps = forAllSystems (system: {
+      default = {
+        type = "app";
+        program = "${packages.${system}.default}/bin/go-inertia-vue-app";
       };
     });
 

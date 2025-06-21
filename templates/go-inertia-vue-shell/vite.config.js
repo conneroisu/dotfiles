@@ -8,6 +8,11 @@ export default defineConfig({
     outDir: 'public/build',
     rollupOptions: {
       input: ['resources/js/app.js', 'resources/css/app.css'],
+      output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
+      }
     },
   },
 });

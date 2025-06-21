@@ -12,7 +12,7 @@ in
 
     nixos.ifEnabled = {myconfig, ...}: {
       services = {
-        tailscale.enable = true;
+        # tailscale.enable = true;
         fail2ban.enable = true;
       };
     };

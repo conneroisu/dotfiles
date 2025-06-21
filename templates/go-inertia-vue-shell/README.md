@@ -1,6 +1,6 @@
 # Go + Inertia.js + Vue Development Shell
 
-A Nix development shell for building full-stack applications with Go backend and Vue 3 frontend using Inertia.js.
+A Nix development shell for building full-stack applications with Go backend and Vue 3 frontend using Inertia.js with Shadcn UI components.
 
 ## Quick Start
 
@@ -9,31 +9,23 @@ A Nix development shell for building full-stack applications with Go backend and
    nix develop
    ```
 
-2. Initialize the project:
+2. Install dependencies and build frontend:
    ```bash
-   setup
-   ```
-
-3. Copy example files to get started:
-   ```bash
-   cp main.go.example main.go
-   cp package.json.example package.json
-   ```
-
-4. Install dependencies:
-   ```bash
-   go mod tidy
    bun install
+   bun run build
    ```
 
-5. Run development servers:
+3. Run the server:
    ```bash
-   dev
+   go run main.go
    ```
 
-   This will start:
-   - Go server with hot-reload (using Air) on http://localhost:8080
-   - Vite dev server for Vue
+   Or for development with hot-reload:
+   ```bash
+   dev  # Runs both Go (with air) and Vite dev server
+   ```
+
+   The application will be available at http://localhost:8081
 
 ## Project Structure
 
@@ -61,9 +53,8 @@ A Nix development shell for building full-stack applications with Go backend and
 
 ## Available Commands
 
-- `setup` - Initialize Go module and install dependencies
-- `dev` - Run development servers (Go + Vite)
-- `build` - Build for production
+- `dev` - Run development servers (Go with air + Vite)
+- `build` - Build frontend assets for production
 - `dx` - Edit flake.nix
 - `gx` - Edit go.mod
 - `px` - Edit package.json
@@ -82,22 +73,20 @@ A Nix development shell for building full-stack applications with Go backend and
 - shadcn-vue component library with Tailwind CSS
 - bun2nix integration for Nix package builds
 
-## Package Building
+## Running with Nix
 
-This template includes bun2nix integration for building Nix packages:
+To run the application with `nix run`:
 
 ```bash
-# Build the frontend package
-nix build .#frontend
+# First ensure frontend assets are built
+bun install
+bun run build
 
-# Build the complete application (Go + frontend)
-nix build
-
-# Development shell with bun2nix
-nix develop
+# Then run the application
+nix run .
 ```
 
-The `postinstall` script automatically runs `bun2nix -o bun.nix` to keep dependency files up to date.
+**Note**: The `nix run` command requires pre-built frontend assets in the `public/build` directory.
 
 ## Learn More
 

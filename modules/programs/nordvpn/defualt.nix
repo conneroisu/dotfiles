@@ -4,100 +4,43 @@
   ...
 }: let
   inherit (delib) singleEnableOption;
-  nordVpnPkg = pkgs.callPackage ({
-    autoPatchelfHook,
-    buildFHSEnvChroot,
-    dpkg,
-    fetchurl,
-    lib,
-    stdenv,
-    sysctl,
-    iptables,
-    iproute2,
-    procps,
-    cacert,
-    libxml2,
-    libidn2,
-    zlib,
-    wireguard-tools,
-  }: let
-    pname = "nordvpn";
-    version = "3.18.3";
+  nordVpnPkg = pkgs.callPackage (
+    { stdenv, lib, fetchurl, openvpn, libxml2, autoPatchelfHook, dpkg,... }:
 
-    nordVPNBase = stdenv.mkDerivation {
-      inherit pname version;
+stdenv.mkDerivation rec {
+  pname = "nordvpn";
+  version = "3.10.0-1";
 
-      src = fetchurl {
-        url = "https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/n/nordvpn/nordvpn_${version}_amd64.deb";
-        hash = "sha256-pCveN8cEwEXdvWj2FAatzg89fTLV9eYehEZfKq5JdaY=";
-      };
+  src = fetchurl {
+    url = "https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/nordvpn_${version}_amd64.deb";
+    sha256 = "BNAInjJlQsYpxfUKI13oK/P6n6gpBlvgSQoJAuZ3C2M=";
+  };
 
-      buildInputs = [libxml2 libidn2 stdenv.cc.cc.lib dpkg autoPatchelfHook];
-      nativeBuildInputs = [dpkg autoPatchelfHook stdenv.cc.cc.lib libxml2 libidn2];
+  nativeBuildInputs = [ libxml2 autoPatchelfHook dpkg ];
 
-      dontConfigure = true;
-      dontBuild = true;
+  unpackPhase = ''
+    dpkg -x $src unpacked
+  '';
 
-      unpackPhase = ''
-        runHook preUnpack
-        dpkg --extract $src .
-        runHook postUnpack
-      '';
+  installPhase = ''
+    mkdir -p $out/
+    sed -i 's;ExecStart=.*;;g' unpacked/usr/lib/systemd/system/nordvpnd.service
+    cp -r unpacked/* $out/
+    mv $out/usr/* $out/
+    mv $out/sbin/nordvpnd $out/bin/
+    rm -r $out/sbin
+    rm $out/var/lib/nordvpn/openvpn
+    ln -s ${openvpn}/bin/openvpn $out/var/lib/nordvpn/openvpn
+  '';
 
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out
-        mv usr/* $out/
-        mv var/ $out/
-        mv etc/ $out/
-        runHook postInstall
-      '';
-    };
-
-    nordVPNfhs = buildFHSEnvChroot {
-      name = "nordvpnd";
-      runScript = "nordvpnd";
-
-      # hardcoded path to /sbin/ip
-      targetPkgs = pkgs: [
-        nordVPNBase
-        sysctl
-        iptables
-        iproute2
-        procps
-        cacert
-        libxml2
-        libidn2
-        zlib
-        wireguard-tools
-      ];
-    };
-  in
-    stdenv.mkDerivation {
-      inherit pname version;
-
-      dontUnpack = true;
-      dontConfigure = true;
-      dontBuild = true;
-
-      installPhase = ''
-        runHook preInstall
-        mkdir -p $out/bin $out/share
-        ln -s ${nordVPNBase}/bin/nordvpn $out/bin
-        ln -s ${nordVPNfhs}/bin/nordvpnd $out/bin
-        ln -s ${nordVPNBase}/share/* $out/share/
-        ln -s ${nordVPNBase}/var $out/
-        runHook postInstall
-      '';
-
-      meta = with lib; {
-        description = "CLI client for NordVPN";
-        homepage = "https://www.nordvpn.com";
-        license = licenses.unfreeRedistributable;
-        maintainers = with maintainers; [dr460nf1r3];
-        platforms = ["x86_64-linux"];
-      };
-    }) {};
+  meta = with lib; {
+    description = "NordVPN: Best VPN service. Online security starts with a click";
+    downloadPage = "https://nordvpn.com/download/";
+    homepage = "https://nordvpn.com/";
+    license = licenses.unfree;
+    maintainers = with maintainers; [ juliosueiras ];
+    platforms = platforms.linux;
+  };});
 in
   delib.module {
     name = "programs.nordvpn";

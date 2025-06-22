@@ -6,42 +6,58 @@
 }: let
   inherit (delib) singleEnableOption;
   nordVpnPkg = pkgs.callPackage (
-    { stdenv, lib, fetchurl, openvpn, libxml2, autoPatchelfHook, dpkg,... }:
+    {
+      stdenv,
+      lib,
+      fetchurl,
+      openvpn,
+      libxml2,
+      autoPatchelfHook,
+      dpkg,
+      ...
+    }:
+      stdenv.mkDerivation rec {
+        pname = "nordvpn";
+        version = "3.18.0";
 
-stdenv.mkDerivation rec {
-  pname = "nordvpn";
-  version = "3.10.0-1";
+        src = fetchurl {
+          url = "https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/n/nordvpn/nordvpn_${version}_amd64.deb";
+          sha256 = "sha256-S+L/X6yGySWAX3eJfzDFVpwPLNhsNXKrXYt5pUQB2P4=";
+        };
 
-  src = fetchurl {
-    url = "https://repo.nordvpn.com/deb/nordvpn/debian/pool/main/nordvpn_${version}_amd64.deb";
-    sha256 = "BNAInjJlQsYpxfUKI13oK/P6n6gpBlvgSQoJAuZ3C2M=";
-  };
+        nativeBuildInputs = [libxml2 autoPatchelfHook dpkg];
 
-  nativeBuildInputs = [ libxml2 autoPatchelfHook dpkg ];
+        unpackPhase = ''
+          dpkg -x $src unpacked
+        '';
 
-  unpackPhase = ''
-    dpkg -x $src unpacked
+        installPhase = ''
+          mkdir -p $out/
+          sed -i 's;ExecStart=.*;;g' unpacked/usr/lib/systemd/system/nordvpnd.service
+          cp -r unpacked/* $out/
+          mv $out/usr/* $out/
+          mv $out/sbin/nordvpnd $out/bin/
+          rm -r $out/sbin
+          rm $out/var/lib/nordvpn/openvpn
+          ln -s ${openvpn}/bin/openvpn $out/var/lib/nordvpn/openvpn
+        '';
+
+        meta = with lib; {
+          description = "NordVPN: Best VPN service. Online security starts with a click";
+          downloadPage = "https://nordvpn.com/download/";
+          homepage = "https://nordvpn.com/";
+          license = licenses.unfree;
+          maintainers = with maintainers; [juliosueiras];
+          platforms = platforms.linux;
+        };
+      }
+  ) {};
+  nordvpnStartScript = pkgs.writeShellScript "nordvpn-start" ''
+    mkdir -m 700 -p /var/lib/nordvpn;
+    if [ -z "$(ls -A /var/lib/nordvpn)" ]; then
+      cp -r ${nordVpnPkg}/var/lib/nordvpn/* /var/lib/nordvpn;
+    fi
   '';
-
-  installPhase = ''
-    mkdir -p $out/
-    sed -i 's;ExecStart=.*;;g' unpacked/usr/lib/systemd/system/nordvpnd.service
-    cp -r unpacked/* $out/
-    mv $out/usr/* $out/
-    mv $out/sbin/nordvpnd $out/bin/
-    rm -r $out/sbin
-    rm $out/var/lib/nordvpn/openvpn
-    ln -s ${openvpn}/bin/openvpn $out/var/lib/nordvpn/openvpn
-  '';
-
-  meta = with lib; {
-    description = "NordVPN: Best VPN service. Online security starts with a click";
-    downloadPage = "https://nordvpn.com/download/";
-    homepage = "https://nordvpn.com/";
-    license = licenses.unfree;
-    maintainers = with maintainers; [ juliosueiras ];
-    platforms = platforms.linux;
-  };});
 in
   delib.module {
     name = "programs.nordvpn";
@@ -57,24 +73,21 @@ in
     #   '';
     # };
 
-    nixos.ifEnabled = {
+    nixos.ifEnabled = {myconfig, ...}: let
+      inherit (myconfig.constants) username;
+    in {
       networking.firewall.checkReversePath = false;
 
       environment.systemPackages = [nordVpnPkg];
 
       users.groups.nordvpn = {};
-      users.groups.nordvpn.members = [config.constants.username];
+      users.groups.nordvpn.members = [username];
       systemd = {
         services.nordvpn = {
           description = "NordVPN daemon.";
           serviceConfig = {
             ExecStart = "${nordVpnPkg}/bin/nordvpnd";
-            ExecStartPre = pkgs.writeShellScript "nordvpn-start" ''
-              mkdir -m 700 -p /var/lib/nordvpn;
-              if [ -z "$(ls -A /var/lib/nordvpn)" ]; then
-                cp -r ${nordVpnPkg}/var/lib/nordvpn/* /var/lib/nordvpn;
-              fi
-            '';
+            ExecStartPre = "${nordvpnStartScript}";
             NonBlocking = true;
             KillMode = "process";
             Restart = "on-failure";

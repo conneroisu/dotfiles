@@ -1,7 +1,3 @@
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-eval "$(zellij setup --generate-auto-start zsh)"
-fi
-
 autoload -Uz compinit && compinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
@@ -80,5 +76,7 @@ zstyle ':completion:*' menu no
 bindkey '^[[1;5C' forward-word      # Ctrl+Right - move forward one word
 bindkey '^[[1;5D' backward-word     # Ctrl+Left - move backward one word
 
-export PATH="/Users/connerohnesorge/.config/herd-lite/bin:$PATH"
-export PHP_INI_SCAN_DIR="/Users/connerohnesorge/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    export PATH="/Users/connerohnesorge/.config/herd-lite/bin:$PATH"
+    export PHP_INI_SCAN_DIR="/Users/connerohnesorge/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
+fi

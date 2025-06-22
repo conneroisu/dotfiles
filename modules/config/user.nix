@@ -47,6 +47,7 @@ delib.module {
     nix = pkgs.lib.mkForce {
       settings = {
         max-jobs = 8;
+        lazy-trees = true;
         experimental-features = [
           "nix-command"
           "flakes"

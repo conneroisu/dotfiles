@@ -11,42 +11,42 @@ in
 
     options = singleEnableOption false;
 
-    nixos.ifEnabled = {myconfig, ...}: {
+    nixos.ifEnabled = {
       environment = {
         systemPackages =
-          (with inputs; [
-            ghostty.packages."${pkgs.system}".default
-            ashell.packages.${pkgs.system}.default
-          ])
-          ++ (with pkgs; [
-            hyprcursor
-            hyprkeys
-            hyprpaper
-            playerctl
-            hypridle
-            hyprsunset
-            hyprwayland-scanner
-            hyprutils
-            wl-clipboard
-            hyprnotify
-            uwsm
-            grimblast
-            grim
-            slurp
+          [
+            inputs.ghostty.packages."${pkgs.system}".default
+            inputs.ashell.defaultPackage.${pkgs.system}
+          ]
+          ++ [
+            pkgs.hyprcursor
+            pkgs.hyprkeys
+            pkgs.hyprpaper
+            pkgs.playerctl
+            pkgs.hypridle
+            pkgs.hyprsunset
+            pkgs.hyprwayland-scanner
+            pkgs.hyprutils
+            pkgs.wl-clipboard
+            pkgs.hyprnotify
+            pkgs.uwsm
+            pkgs.grimblast
+            pkgs.grim
+            pkgs.slurp
             (pkgs.rofi.override {
               plugins = [
                 pkgs.rofi-rbw
                 pkgs.rofi-calc
               ];
             })
-            dunst
-            brightnessctl
-            hyprls
-            gnome-control-center
-            hyprpicker
-            gpu-screen-recorder
-            ffmpegthumbnailer
-          ]);
+            pkgs.dunst
+            pkgs.brightnessctl
+            pkgs.hyprls
+            pkgs.gnome-control-center
+            pkgs.hyprpicker
+            pkgs.gpu-screen-recorder
+            pkgs.ffmpegthumbnailer
+          ];
         variables = {
           XDG_SESSION_TYPE = "wayland";
           XDG_SESSION_DESKTOP = "Hyprland";
@@ -102,8 +102,8 @@ in
             "image/jpeg" = "org.gnome.Loupe.desktop";
             "image/ppm" = "org.gnome.Loupe.desktop";
             # Directories
-            "inode/directory" = "thunar.desktop";
-            "x-scheme-handler/file" = "thunar.desktop";
+            "inode/directory" = "nemo.desktop";
+            "x-scheme-handler/file" = "nemo.desktop";
             # .txt
             "text/plain" = "nvim.desktop";
           };

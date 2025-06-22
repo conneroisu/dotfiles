@@ -30,110 +30,107 @@ in
       ];
       environment = {
         systemPackages =
-          (with pkgs; [
+          [
             # Shell
 
             ## Editor
-            neovim
-            jq
-            yq
-            tree-sitter
-            sad
+            pkgs.neovim
+            pkgs.jq
+            pkgs.yq
+            pkgs.tree-sitter
+            pkgs.sad
 
             ## Env
-            zsh
-            nushell
-            carapace
-            stow
-            age
-            kubectl
-            ktailctl
-            doppler
-            bun
-            file
-            nix-index
-            zinit
-            starship
-            direnv
-            nix-direnv
-            bat
-            fd
-            fzf
-            zellij
-            atuin
-            zoxide
-            pkg-config
-            lshw
-            gdb
-            gnupg
-            procps
-            unzip
-            uv
-            eza
-            delta
-            htop
-            tealdeer
-            sleek
-            unixtools.xxd
-            ffmpeg
-            tree
-            ripgrep
+            pkgs.zsh
+            pkgs.nushell
+            pkgs.carapace
+            pkgs.stow
+            pkgs.age
+            pkgs.kubectl
+            pkgs.ktailctl
+            pkgs.doppler
+            pkgs.bun
+            pkgs.file
+            pkgs.nix-index
+            pkgs.zinit
+            pkgs.starship
+            pkgs.direnv
+            pkgs.nix-direnv
+            pkgs.bat
+            pkgs.fd
+            pkgs.fzf
+            pkgs.zellij
+            pkgs.atuin
+            pkgs.zoxide
+            pkgs.pkg-config
+            pkgs.lshw
+            pkgs.gdb
+            pkgs.gnupg
+            pkgs.procps
+            pkgs.unzip
+            pkgs.uv
+            pkgs.eza
+            pkgs.delta
+            pkgs.htop
+            pkgs.tealdeer
+            pkgs.sleek
+            pkgs.unixtools.xxd
+            pkgs.ffmpeg
+            pkgs.tree
+            pkgs.ripgrep
 
             # VCS
-            git
-            git-lfs
-            jujutsu
+            pkgs.git
+            pkgs.git-lfs
+            pkgs.jujutsu
 
             # Apps
-            obsidian
-            zathura
-            brave
-            spotify
-            discord
-            telegram-desktop
-            xfce.thunar
-            obs-studio
-            eog
+            pkgs.obsidian
+            pkgs.zathura
+            pkgs.brave
+            pkgs.spotify
+            pkgs.discord
+            pkgs.telegram-desktop
+            pkgs.obs-studio
+            pkgs.eog
+            pkgs.nemo-with-extensions
 
             # Communication
-            tailscale
-            dnsutils
-            minicom
-            openvpn
-            cacert
-            arp-scan
-            vdhcoapp
-            usbutils
-            ethtool
-            curl
-            wget
+            pkgs.tailscale
+            pkgs.dnsutils
+            pkgs.minicom
+            pkgs.openvpn
+            pkgs.cacert
+            pkgs.arp-scan
+            pkgs.vdhcoapp
+            pkgs.usbutils
+            pkgs.ethtool
+            pkgs.curl
+            pkgs.wget
 
             # Platforms
-            fh
-            doppler
-            gh
-            tea
+            pkgs.fh
+            pkgs.doppler
+            pkgs.gh
+            pkgs.tea
 
             # Emulation
-            docker
-            docker-compose
-            lazydocker
-            nixos-shell
+            pkgs.docker
+            pkgs.docker-compose
+            pkgs.lazydocker
+            pkgs.nixos-shell
 
             # Languages (Base for when shell from project is not available)
-            nixd
-            statix
-            nodejs
-            lua-language-server
-
-            # Disks
-            squirreldisk
-          ])
-          ++ (with inputs; [
-            zen-browser.packages."${pkgs.system}".default
-            blink.packages."${pkgs.system}".default
-            blink.packages."${pkgs.system}".blink-fuzzy-lib
-          ]);
+            pkgs.nixd
+            pkgs.statix
+            pkgs.nodejs
+            pkgs.lua-language-server
+          ]
+          ++ [
+            inputs.zen-browser.packages."${pkgs.system}".default
+            inputs.blink.packages."${pkgs.system}".default
+            inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
+          ];
         variables = {
           EDITOR = "nvim";
           VISUAL = "nvim";
@@ -174,51 +171,51 @@ in
         dx.enable = true;
       };
       environment = {
-        systemPackages = with pkgs; [
-          zinit
-          starship
-          direnv
-          nix-direnv
-          bat
-          wget
-          fd
-          jq
-          yq
-          spicetify-cli
-          fzf
-          zellij
-          atuin
-          zoxide
-          eza
-          delta
-          unzip
-          htop
-          tealdeer
-          sleek
-          tree-sitter
-          unixtools.xxd
-          tree
-          sad
-          ripgrep
-          stow
-          carapace
-          neovim
-          cmake
-          gnumake
-          uv
-          bun
-          git
-          podman
+        systemPackages = [
+          pkgs.zinit
+          pkgs.starship
+          pkgs.direnv
+          pkgs.nix-direnv
+          pkgs.bat
+          pkgs.wget
+          pkgs.fd
+          pkgs.jq
+          pkgs.yq
+          pkgs.spicetify-cli
+          pkgs.fzf
+          pkgs.zellij
+          pkgs.atuin
+          pkgs.zoxide
+          pkgs.eza
+          pkgs.delta
+          pkgs.unzip
+          pkgs.htop
+          pkgs.tealdeer
+          pkgs.sleek
+          pkgs.tree-sitter
+          pkgs.unixtools.xxd
+          pkgs.tree
+          pkgs.sad
+          pkgs.ripgrep
+          pkgs.stow
+          pkgs.carapace
+          pkgs.neovim
+          pkgs.cmake
+          pkgs.gnumake
+          pkgs.uv
+          pkgs.bun
+          pkgs.git
+          pkgs.podman
           # Platforms
-          flyctl
-          fh
-          gh
-          tea
+          pkgs.flyctl
+          pkgs.fh
+          pkgs.gh
+          pkgs.tea
 
           # Languages
-          nixd
-          nodejs
-          lua-language-server
+          pkgs.nixd
+          pkgs.nodejs
+          pkgs.lua-language-server
         ];
         variables = {
           EDITOR = "nvim";

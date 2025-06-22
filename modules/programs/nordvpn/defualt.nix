@@ -32,8 +32,8 @@
         hash = "sha256-pCveN8cEwEXdvWj2FAatzg89fTLV9eYehEZfKq5JdaY=";
       };
 
-      buildInputs = [libxml2 libidn2];
-      nativeBuildInputs = [dpkg autoPatchelfHook stdenv.cc.cc.lib];
+      buildInputs = [libxml2 libidn2 stdenv.cc.cc.lib dpkg autoPatchelfHook];
+      nativeBuildInputs = [dpkg autoPatchelfHook stdenv.cc.cc.lib libxml2 libidn2];
 
       dontConfigure = true;
       dontBuild = true;

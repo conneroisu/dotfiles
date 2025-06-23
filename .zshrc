@@ -44,6 +44,7 @@ alias wtl='git worktree list'
 alias wta='git worktree add'
 alias wt='git worktree'
 alias wtd='git worktree remove'
+alias k='kubectl'
 
 
 # Load a few important annexes, without Turbo
@@ -81,3 +82,4 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     export PHP_INI_SCAN_DIR="/Users/connerohnesorge/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
 fi
 source <(kubectl completion zsh)
+

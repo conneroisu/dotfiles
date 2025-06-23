@@ -12,6 +12,12 @@ All commands should be run using `nix develop -c <command>` to ensure the proper
 
 ### Development
 - `nix develop -c lint` - Run linting tools (statix, deadnix, nix flake check) (if on nixos, should run `nixos-rebuild build --flake .` for better results)
+- `nix develop -c dx` - Edit the flake.nix file
+- `nix fmt` - Format code using treefmt (alejandra for Nix, rustfmt, black for Python)
+
+### Testing
+- Individual program tests: `cd modules/programs/<program-name> && nix build` to test custom program builds
+- Convert_img tests: `cd modules/programs/convert_img && python -m pytest tests/`
 
 ### Installation/Rebuild
 ```bash
@@ -30,7 +36,13 @@ Create development shells with:
 ```bash
 nix flake init -t github:conneroisu/dotfiles#<template-name>
 ```
-Available templates: devshell, rust-shell, go-shell, go-templ-shell, remix-js-shell, laravel-shell
+Available templates: devshell, rust-shell, go-shell, go-templ-shell, remix-js-shell, laravel-shell, elixir-phoenix-shell
+
+### Debugging and Troubleshooting
+- `nix flake check` - Validate flake outputs and check for errors
+- `nix eval .#nixosConfigurations.<hostname>.config.system.build.toplevel` - Check NixOS configuration evaluation
+- `nix show-derivation` - Inspect derivation details for debugging builds
+- `nixos-rebuild build --flake . --show-trace` - Build without switching to catch configuration errors
 
 ## Architecture
 

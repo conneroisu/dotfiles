@@ -13,14 +13,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  DeterminateCI:
-    uses: conneroisu/ci/.github/workflows/workflow.yml@main
-    permissions:
-      id-token: write
-      contents: read
-    with:
-      visibility: public
-      fail-fast: true
+  # DeterminateCI:
+  #   uses: conneroisu/ci/.github/workflows/workflow.yml@main
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   with:
+  #     visibility: public
+  #     fail-fast: true
   
   flake-check:
     strategy:

@@ -1,0 +1,6 @@
+*.so
+result
+target
+__pycache__
+*.pyc
+.direnv

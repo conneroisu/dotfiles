@@ -1,9 +1,26 @@
 [project]
 name = "convert-img"
 version = "0.1.0"
-description = "Add your description here"
+description = "Universal Image Format Converter CLI Tool - Convert between JPEG, PNG, WebP, TIFF, BMP, GIF, AVIF, HEIF, ICO, SVG and more"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "pillow>=11.2.1",
 ]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=convert_img --cov-report=term-missing"

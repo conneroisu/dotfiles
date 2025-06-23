@@ -22,3 +22,5 @@
 	helper = !/run/current-system/sw/bin/gh auth git-credential
 [init]
 	defaultBranch = main
+[safe]
+	directory = /home/connerohnesorge/dotfiles

@@ -9,8 +9,8 @@
       nixpkgs.follows = "nixpkgs";
     };
 
-    # nordvpn.url = "github:conneroisu/nordvpn-flake/main";
-    nordvpn.url = "path:./nordvpn-flake";
+    nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
+    # nordvpn.url = "path:./nordvpn-flake";
     # parcl.url = "github:conneroisu/parcl";
     # parcl.inputs.nixpkgs.follows = "nixpkgs";
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";

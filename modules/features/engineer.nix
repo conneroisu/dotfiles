@@ -167,6 +167,7 @@ in
       services = {
         k3s.enable = true;
         gnome.gnome-keyring.enable = true;
+        nordvpn.enable = true;
       };
     };
 
@@ -187,6 +188,7 @@ in
           pkgs.yq
           pkgs.spicetify-cli
           pkgs.fzf
+          pkgs.zed-editor
           pkgs.zellij
           pkgs.atuin
           pkgs.zoxide

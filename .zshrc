@@ -80,3 +80,4 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     export PATH="/Users/connerohnesorge/.config/herd-lite/bin:$PATH"
     export PHP_INI_SCAN_DIR="/Users/connerohnesorge/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
 fi
+source <(kubectl completion zsh)

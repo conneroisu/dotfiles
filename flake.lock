@@ -1218,15 +1218,15 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1750677023,
+        "lastModified": 1750683275,
         "owner": "conneroisu",
         "repo": "nordvpn-flake",
-        "rev": "a7ce7bcade6e22d6ba05ced586650c0b1ab0cc62",
+        "rev": "0d524b475205d8a69cd7e954580c49493ac6156a",
         "type": "github"
       },
       "original": {
         "owner": "conneroisu",
-        "ref": "main",
+        "ref": "0d524b475205d8a69cd7e954580c49493ac6156a",
         "repo": "nordvpn-flake",
         "type": "github"
       }

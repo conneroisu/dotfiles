@@ -217,6 +217,10 @@
         description = "A Laravel shell for developing with nix";
         path = ./templates/laravel-shell;
       };
+      cuda-shell = {
+        description = "A cuda shell for developing with nix";
+        path = ./templates/cuda-shell;
+      };
     };
   };
 }

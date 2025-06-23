@@ -4,6 +4,11 @@
   ...
 }: let
   inherit (delib) singleEnableOption;
+
+  program = pkgs.writeShellScriptBin "dx" ''
+    [[ -f $EDITOR ]] || EDITOR=nvim
+    $EDITOR $(git rev-parse --show-toplevel)/flake.nix || echo "No toplevel file found"
+  '';
 in
   delib.module {
     name = "programs.dx";
@@ -12,15 +17,13 @@ in
 
     nixos.ifEnabled = {myconfig, ...}: {
       environment.systemPackages = [
-        (pkgs.writeShellScriptBin "dx" ''
-            $EDITOR $(git rev-parse --show-toplevel)/flake.nix'')
+        program
       ];
     };
 
     darwin.ifEnabled = {myconfig, ...}: {
       environment.systemPackages = [
-        (pkgs.writeShellScriptBin "dx" ''
-            $EDITOR $(git rev-parse --show-toplevel)/flake.nix'')
+        program
       ];
     };
   }

@@ -1,8 +1,9 @@
 """
-WebP to SVG Converter CLI Tool
+Universal Image to SVG Converter CLI Tool
 
-Converts WebP images to SVG format by embedding
-the image data or tracing for true vector conversion.
+Converts various image formats (JPEG, PNG, WebP, TIFF, BMP, GIF, AVIF, 
+HEIF, ICO, PCX, TGA, ICNS) to SVG format by embedding the image data or 
+tracing for true vector conversion.
 """
 
 from __future__ import annotations
@@ -18,9 +19,9 @@ from PIL import Image, UnidentifiedImageError
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Convert WebP images to SVG format. "
-            "Can embed raster data or create "
-            "traced vector graphics."
+            "Convert various image formats to SVG format. "
+            "Supports JPEG, PNG, WebP, TIFF, BMP, GIF, AVIF, HEIF, ICO, etc. "
+            "Can embed raster data or create traced vector graphics."
         ),
         formatter_class=(
             argparse.RawDescriptionHelpFormatter
@@ -30,7 +31,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "input_path",
         type=Path,
-        help="Path to the input WebP file",
+        help="Path to the input image file (supports JPEG, PNG, WebP, TIFF, "
+             "BMP, GIF, AVIF, HEIF, ICO, etc.)",
     )
 
     parser.add_argument(
@@ -55,7 +57,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-f",
         "--format",
-        choices=["png", "jpeg", "webp"],
+        choices=["png", "jpeg", "webp", "tiff", "bmp", "avif"],
         default="png",
         help=(
             "Format for embedded image data (default: png)\n"
@@ -162,9 +164,23 @@ def validate_input(input_path: Path) -> None:
                 "WEBP",
                 "PNG",
                 "JPEG",
+                "JPG",
                 "GIF",
                 "BMP",
                 "TIFF",
+                "TIF",
+                "AVIF",
+                "HEIF",
+                "HEIC",
+                "ICO",
+                "PCX",
+                "TGA",
+                "ICNS",
+                "PPM",
+                "PGM",
+                "PBM",
+                "XBM",
+                "XPM",
             ]
             if img.format not in allowed_formats:
                 print(
@@ -256,6 +272,20 @@ def image_to_base64(
     elif fmt.upper() == "WEBP":
         save_kwargs["quality"] = quality
         save_kwargs["optimize"] = True
+    elif fmt.upper() == "TIFF":
+        save_kwargs["compression"] = "lzw"
+    elif fmt.upper() == "BMP":
+        # BMP doesn't support transparency, convert RGBA to RGB
+        if img.mode in ("RGBA", "LA"):
+            bg = Image.new("RGB", img.size, (255, 255, 255))
+            if img.mode == "RGBA":
+                bg.paste(img, mask=img.getchannel("A"))
+            else:
+                bg.paste(img, mask=img.getchannel("A"))
+            img = bg
+    elif fmt.upper() == "AVIF":
+        save_kwargs["quality"] = quality
+        save_kwargs["optimize"] = True
 
     img.save(buffer, **save_kwargs)
     img_data = buffer.getvalue()
@@ -282,6 +312,9 @@ def create_embedded_svg(
         "png": "image/png",
         "jpeg": "image/jpeg",
         "webp": "image/webp",
+        "tiff": "image/tiff",
+        "bmp": "image/bmp",
+        "avif": "image/avif",
     }
     mime = mime_types.get(
         fmt.lower(), "image/png"

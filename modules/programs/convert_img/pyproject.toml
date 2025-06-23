@@ -1,7 +1,7 @@
 [project]
 name = "convert-img"
 version = "0.1.0"
-description = "Universal Image to SVG Converter CLI Tool"
+description = "Universal Image Format Converter CLI Tool - Convert between JPEG, PNG, WebP, TIFF, BMP, GIF, AVIF, HEIF, ICO, SVG and more"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

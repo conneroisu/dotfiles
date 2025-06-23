@@ -1,0 +1,45 @@
+# Test artifacts and temporary files
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.bmp
+*.tiff
+*.gif
+*.svg
+*.avif
+*.heif
+*.ico
+output*
+test-*
+final-*
+result*
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.cache
+.mypy_cache
+.dmypy.json
+dmypy.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Nix build artifacts
+result
+result-*

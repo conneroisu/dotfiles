@@ -72,7 +72,6 @@ delib.module {
     };
     users = {
       groups.${username} = {};
-      groups.nordvpn = {};
 
       users.${username} = {
         home = "/home/${username}";
@@ -82,7 +81,6 @@ delib.module {
           "wheel"
           "docker"
           "users"
-          "nordvpn"
         ];
 
         shell = pkgs.zsh;

@@ -37,7 +37,6 @@ delib.host {
         student.enable = true;
       };
       programs = {
-        nordvpn.enable = true;
         proton-x.enable = true;
       };
     };

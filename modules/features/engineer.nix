@@ -11,6 +11,7 @@ in
 
     nixos.always.imports = [
       inputs.nix-ld.nixosModules.nix-ld
+      inputs.nordvpn.nixosModules.nordvpn
     ];
 
     options = singleEnableOption false;
@@ -130,6 +131,7 @@ in
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
+            inputs.nordvpn.packages."${pkgs.system}".default
           ];
         variables = {
           EDITOR = "nvim";
@@ -161,7 +163,9 @@ in
       };
 
       security.rtkit.enable = true;
+
       services = {
+        k3s.enable = true;
         gnome.gnome-keyring.enable = true;
       };
     };
@@ -206,6 +210,9 @@ in
           pkgs.bun
           pkgs.git
           pkgs.podman
+          pkgs.rancher
+          pkgs.openssl
+
           # Platforms
           pkgs.flyctl
           pkgs.fh

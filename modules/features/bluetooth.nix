@@ -10,10 +10,11 @@ in
 
     options = singleEnableOption false;
 
-    nixos.ifEnabled = {myconfig, ...}: {
-      environment.systemPackages = with pkgs; [
-        blueman
+    nixos.ifEnabled = {
+      environment.systemPackages = [
+        pkgs.blueman
       ];
+      services.blueman.enable = true;
       hardware = {
         bluetooth = {
           enable = true;

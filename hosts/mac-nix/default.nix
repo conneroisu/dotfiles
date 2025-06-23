@@ -89,12 +89,12 @@ in
           PasswordAuthentication = true;
         };
       };
-      environment.systemPackages = with pkgs; [
-        vim
-        git
-        wget
-        curl
-        htop
+      environment.systemPackages = [
+        pkgs.vim
+        pkgs.git
+        pkgs.wget
+        pkgs.curl
+        pkgs.htop
       ];
       programs.zsh.enable = true;
     };
@@ -109,18 +109,6 @@ in
       };
       nix.enable = false;
       # $ nix-env -qaP | grep wget
-      environment.systemPackages = with pkgs;
-        [
-          # Macos Only
-          aerospace
-          raycast
-          xcodes
-          # Shared
-        ]
-        ++ (with inputs; [
-          blink.packages."${system}".default
-          blink.packages."${system}".blink-fuzzy-lib
-        ]);
       programs = {
         direnv.enable = true;
         direnv.nix-direnv.enable = true;
@@ -143,13 +131,27 @@ in
         };
       };
 
-      environment.shells = [pkgs.zsh];
+      environment = {
+        systemPackages =
+          [
+            # Macos Only
+            pkgs.aerospace
+            pkgs.raycast
+            pkgs.xcodes
+            # Shared
+          ]
+          ++ [
+            inputs.blink.packages."${system}".default
+            inputs.blink.packages."${system}".blink-fuzzy-lib
+          ];
+        shells = [pkgs.zsh];
 
-      environment.pathsToLink = ["/share/qemu"];
-      environment.etc."containers/containers.conf.d/99-gvproxy-path.conf".text = ''
-        [engine]
-        helper_binaries_dir = ["${pkgs.gvproxy}/bin"]
-      '';
+        pathsToLink = ["/share/qemu"];
+        etc."containers/containers.conf.d/99-gvproxy-path.conf".text = ''
+          [engine]
+          helper_binaries_dir = ["${pkgs.gvproxy}/bin"]
+        '';
+      };
       users.users.connerohnesorge = {
         home = "/Users/connerohnesorge";
       };

@@ -221,6 +221,10 @@
         description = "A cuda shell for developing with nix";
         path = ./templates/cuda-shell;
       };
+      zig-shell = {
+        description = "A zig shell for developing with nix";
+        path = ./templates/zig-shell;
+      };
     };
   };
 }

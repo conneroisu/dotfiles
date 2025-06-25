@@ -33,6 +33,7 @@ in
             pkgs.grimblast
             pkgs.grim
             pkgs.slurp
+            pkgs.kitty
             (pkgs.rofi.override {
               plugins = [
                 pkgs.rofi-rbw

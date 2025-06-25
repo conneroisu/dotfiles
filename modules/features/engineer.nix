@@ -165,7 +165,7 @@ in
       security.rtkit.enable = true;
 
       services = {
-        k3s.enable = true;
+        # k3s.enable = true;
         gnome.gnome-keyring.enable = true;
         nordvpn.enable = true;
       };

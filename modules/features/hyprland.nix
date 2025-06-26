@@ -72,7 +72,9 @@ in
         };
       };
 
+      security.pam.services.sddm.enableGnomeKeyring = true;
       services = {
+        gnome.gnome-keyring.enable = true;
         dbus.enable = true;
         gvfs.enable = true; # Mount, trash, and other functionalities
         tumbler.enable = true; # Thumbnails

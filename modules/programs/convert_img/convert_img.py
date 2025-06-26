@@ -1,8 +1,8 @@
 """
 Universal Image Format Converter CLI Tool
 
-Converts between various image formats (JPEG, PNG, WebP, TIFF, BMP, GIF, 
-AVIF, HEIF, ICO, PCX, TGA, ICNS, SVG) with support for format-specific 
+Converts between various image formats (JPEG, PNG, WebP, TIFF, BMP, GIF,
+AVIF, HEIF, ICO, PCX, TGA, ICNS, SVG) with support for format-specific
 options like quality, compression, and transparency handling.
 """
 
@@ -32,7 +32,7 @@ def parse_args() -> argparse.Namespace:
         "input_path",
         type=Path,
         help="Path to the input image file (supports JPEG, PNG, WebP, TIFF, "
-             "BMP, GIF, AVIF, HEIF, ICO, etc.)",
+        "BMP, GIF, AVIF, HEIF, ICO, etc.)",
     )
 
     parser.add_argument(
@@ -57,7 +57,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "-f",
         "--format",
-        choices=["auto", "png", "jpeg", "webp", "tiff", "bmp", "gif", "avif", "heif", "ico", "svg"],
+        choices=[
+            "auto",
+            "png",
+            "jpeg",
+            "webp",
+            "tiff",
+            "bmp",
+            "gif",
+            "avif",
+            "heif",
+            "ico",
+            "svg",
+        ],
         default="auto",
         help=(
             "Output format (default: auto - detect from file extension)\n"
@@ -141,12 +153,14 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def detect_output_format(output_path: Path, format_arg: str) -> str:
+def detect_output_format(
+    output_path: Path, format_arg: str
+) -> str:
     """Detect output format from file extension or format argument."""
     # Map file extensions to formats
     ext_to_format = {
         ".jpg": "jpeg",
-        ".jpeg": "jpeg", 
+        ".jpeg": "jpeg",
         ".png": "png",
         ".webp": "webp",
         ".tiff": "tiff",
@@ -159,23 +173,25 @@ def detect_output_format(output_path: Path, format_arg: str) -> str:
         ".ico": "ico",
         ".svg": "svg",
     }
-    
+
     ext = output_path.suffix.lower()
-    
+
     # SVG extension always takes precedence
     if ext == ".svg":
         return "svg"
-    
+
     # For non-SVG extensions, use format argument if provided
     if format_arg != "auto":
         return format_arg.lower()
-    
+
     # Use extension-based detection
     if ext in ext_to_format:
         return ext_to_format[ext]
-    
+
     # Default to PNG if extension not recognized
-    print(f"Warning: Unknown extension '{ext}', defaulting to PNG format")
+    print(
+        f"Warning: Unknown extension '{ext}', defaulting to PNG format"
+    )
     return "png"
 
 
@@ -183,7 +199,7 @@ def get_pillow_format(format_name: str) -> str:
     """Get the Pillow format string for a given format name."""
     format_map = {
         "jpeg": "JPEG",
-        "png": "PNG", 
+        "png": "PNG",
         "webp": "WEBP",
         "tiff": "TIFF",
         "bmp": "BMP",
@@ -195,7 +211,9 @@ def get_pillow_format(format_name: str) -> str:
     return format_map.get(format_name, "PNG")
 
 
-def prepare_image_for_format(img: Image.Image, output_format: str) -> Image.Image:
+def prepare_image_for_format(
+    img: Image.Image, output_format: str
+) -> Image.Image:
     """Prepare image for specific output format (handle transparency, etc.)."""
     if output_format in ("jpeg", "bmp"):
         # JPEG and BMP don't support transparency
@@ -203,13 +221,23 @@ def prepare_image_for_format(img: Image.Image, output_format: str) -> Image.Imag
             # Create white background
             if img.mode == "P":
                 img = img.convert("RGBA")
-            
+
             if img.mode in ("RGBA", "LA"):
-                bg = Image.new("RGB", img.size, (255, 255, 255))
+                bg = Image.new(
+                    "RGB",
+                    img.size,
+                    (255, 255, 255),
+                )
                 if img.mode == "RGBA":
-                    bg.paste(img, mask=img.getchannel("A"))
+                    bg.paste(
+                        img,
+                        mask=img.getchannel("A"),
+                    )
                 else:  # LA
-                    bg.paste(img, mask=img.getchannel("A"))
+                    bg.paste(
+                        img,
+                        mask=img.getchannel("A"),
+                    )
                 img = bg
             else:
                 img = img.convert("RGB")
@@ -218,42 +246,56 @@ def prepare_image_for_format(img: Image.Image, output_format: str) -> Image.Imag
         if img.mode not in ("P", "L"):
             if img.mode == "RGBA":
                 # Convert RGBA to P with transparency
-                img = img.convert("P", palette=Image.ADAPTIVE)
+                img = img.convert(
+                    "P", palette=Image.ADAPTIVE
+                )
             else:
                 img = img.convert("P")
     elif output_format == "ico":
         # ICO format considerations
         if img.mode == "P":
             img = img.convert("RGBA")
-    
+
     return img
 
 
 def convert_image_to_image(
-    input_path: Path, 
-    output_path: Path, 
+    input_path: Path,
+    output_path: Path,
     output_format: str,
     quality: int = 90,
     width: int | None = None,
     height: int | None = None,
     max_size: int | None = None,
-    optimize: bool = False
+    optimize: bool = False,
 ) -> None:
     """Convert image from one format to another."""
     with Image.open(input_path) as img:
-        print(f"Input: {img.width}x{img.height}, Mode: {img.mode}, Format: {img.format}")
-        
+        print(
+            f"Input: {img.width}x{img.height}, Mode: {img.mode}, Format: {img.format}"
+        )
+
         # Resize if requested
         if width or height or max_size:
-            img = resize_image(img, width, height, max_size)
-            print(f"Resized to: {img.width}x{img.height}")
-        
+            img = resize_image(
+                img, width, height, max_size
+            )
+            print(
+                f"Resized to: {img.width}x{img.height}"
+            )
+
         # Prepare image for target format
-        img = prepare_image_for_format(img, output_format)
-        
+        img = prepare_image_for_format(
+            img, output_format
+        )
+
         # Set up save arguments
-        save_kwargs = {"format": get_pillow_format(output_format)}
-        
+        save_kwargs = {
+            "format": get_pillow_format(
+                output_format
+            )
+        }
+
         if output_format == "jpeg":
             save_kwargs["quality"] = quality
             save_kwargs["optimize"] = optimize
@@ -269,14 +311,20 @@ def convert_image_to_image(
             save_kwargs["optimize"] = optimize
         elif output_format == "gif":
             save_kwargs["optimize"] = optimize
-        
+
         # Save the converted image
         img.save(output_path, **save_kwargs)
-        
-        print(f"Converted {input_path.name} → {output_path.name}")
-        print(f"Output format: {output_format.upper()}")
+
+        print(
+            f"Converted {input_path.name} → {output_path.name}"
+        )
+        print(
+            f"Output format: {output_format.upper()}"
+        )
         if output_format != "svg":
-            print(f"Output size: {img.width}x{img.height}")
+            print(
+                f"Output size: {img.width}x{img.height}"
+            )
 
 
 def validate_input(input_path: Path) -> None:
@@ -415,11 +463,17 @@ def image_to_base64(
     elif fmt.upper() == "BMP":
         # BMP doesn't support transparency, convert RGBA to RGB
         if img.mode in ("RGBA", "LA"):
-            bg = Image.new("RGB", img.size, (255, 255, 255))
+            bg = Image.new(
+                "RGB", img.size, (255, 255, 255)
+            )
             if img.mode == "RGBA":
-                bg.paste(img, mask=img.getchannel("A"))
+                bg.paste(
+                    img, mask=img.getchannel("A")
+                )
             else:
-                bg.paste(img, mask=img.getchannel("A"))
+                bg.paste(
+                    img, mask=img.getchannel("A")
+                )
             img = bg
     elif fmt.upper() == "AVIF":
         save_kwargs["quality"] = quality
@@ -658,8 +712,10 @@ def main() -> None:
         sys.exit(1)
 
     # Detect output format
-    output_format = detect_output_format(args.output_path, args.format)
-    
+    output_format = detect_output_format(
+        args.output_path, args.format
+    )
+
     try:
         if output_format == "svg":
             # Handle SVG conversion
@@ -671,55 +727,104 @@ def main() -> None:
                     args.trace_options,
                 )
                 if not success:
-                    print("Falling back to embed method...")
+                    print(
+                        "Falling back to embed method..."
+                    )
                     args.method = "embed"
                 else:
-                    print(f"Converted {args.input_path.name} → {args.output_path.name}")
-                    print("Method: Vector tracing")
-                    get_file_size_info(args.input_path, args.output_path)
+                    print(
+                        f"Converted {args.input_path.name} → {args.output_path.name}"
+                    )
+                    print(
+                        "Method: Vector tracing"
+                    )
+                    get_file_size_info(
+                        args.input_path,
+                        args.output_path,
+                    )
                     return
 
             if args.method == "embed":
                 # Load and process the image
-                with Image.open(args.input_path) as img:
-                    print(f"Original: {img.width}x{img.height}, Mode: {img.mode}, Format: {img.format}")
+                with Image.open(
+                    args.input_path
+                ) as img:
+                    print(
+                        f"Original: {img.width}x{img.height}, Mode: {img.mode}, Format: {img.format}"
+                    )
 
                     # Resize if requested
-                    if args.width or args.height or args.max_size:
-                        img = resize_image(img, args.width, args.height, args.max_size)
-                        print(f"Resized to: {img.width}x{img.height}")
+                    if (
+                        args.width
+                        or args.height
+                        or args.max_size
+                    ):
+                        img = resize_image(
+                            img,
+                            args.width,
+                            args.height,
+                            args.max_size,
+                        )
+                        print(
+                            f"Resized to: {img.width}x{img.height}"
+                        )
 
                     # For SVG embedding, use format from args or default to PNG
-                    embed_format = args.format if args.format != "auto" else "png"
+                    embed_format = (
+                        args.format
+                        if args.format != "auto"
+                        else "png"
+                    )
                     if embed_format == "svg":
                         embed_format = "png"  # Can't embed SVG in SVG
-                    
+
                     # Create SVG with embedded image
-                    svg_content = create_embedded_svg(
-                        img, embed_format, args.quality, args.background, args.optimize
+                    svg_content = (
+                        create_embedded_svg(
+                            img,
+                            embed_format,
+                            args.quality,
+                            args.background,
+                            args.optimize,
+                        )
                     )
 
                     # Write SVG file
-                    with open(args.output_path, "w", encoding="utf-8") as f:
+                    with open(
+                        args.output_path,
+                        "w",
+                        encoding="utf-8",
+                    ) as f:
                         f.write(svg_content)
 
-                    print(f"Converted {args.input_path.name} → {args.output_path.name}")
-                    print(f"Method: Embedded {embed_format.upper()}")
-                    print(f"SVG size: {img.width}x{img.height}")
-                    get_file_size_info(args.input_path, args.output_path)
+                    print(
+                        f"Converted {args.input_path.name} → {args.output_path.name}"
+                    )
+                    print(
+                        f"Method: Embedded {embed_format.upper()}"
+                    )
+                    print(
+                        f"SVG size: {img.width}x{img.height}"
+                    )
+                    get_file_size_info(
+                        args.input_path,
+                        args.output_path,
+                    )
         else:
             # Handle image-to-image conversion
             convert_image_to_image(
                 args.input_path,
-                args.output_path, 
+                args.output_path,
                 output_format,
                 args.quality,
                 args.width,
                 args.height,
                 args.max_size,
-                args.optimize
+                args.optimize,
             )
-            get_file_size_info(args.input_path, args.output_path)
+            get_file_size_info(
+                args.input_path, args.output_path
+            )
 
     except Exception as e:
         print(f"Error during conversion: {e}")

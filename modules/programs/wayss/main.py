@@ -24,8 +24,50 @@ License: Public domain
 import sys
 import subprocess
 import dbus
+import logging
+import re
 from datetime import datetime
 from pathlib import Path
+from contextlib import contextmanager
+
+try:
+    import gi
+
+    gi.require_version("Gtk", "3.0")
+    from gi.repository import Gtk, GLib
+
+    GTK_AVAILABLE = True
+except ImportError as e:
+    print(
+        f"GTK 3.0 not available: {e}",
+        file=sys.stderr,
+    )
+    try:
+        # Send D-Bus notification about missing GTK
+        session_bus = dbus.SessionBus()
+        notification_object = (
+            session_bus.get_object(
+                "org.freedesktop.Notifications",
+                "/org/freedesktop/Notifications",
+            )
+        )
+        notification_interface = dbus.Interface(
+            notification_object,
+            "org.freedesktop.Notifications",
+        )
+        notification_interface.Notify(
+            "Screenshot Tool",
+            0,
+            "dialog-error",
+            "GTK 3.0 Required",
+            "This application requires GTK 3.0 and python3-gi to function properly.",
+            [],
+            {"urgency": dbus.Int32(2)},
+            5000,
+        )
+    except Exception:
+        pass  # If D-Bus also fails, just continue to exit
+    sys.exit(1)
 
 # Configuration constants
 DEFAULT_SCREENSHOTS_DIR = "Pictures/Screenshots"  # Relative to home directory
@@ -43,6 +85,18 @@ URGENCY_NORMAL = (
 URGENCY_CRITICAL = (
     2  # Critical/error notifications
 )
+
+# Geometry validation pattern for slurp output (x,y widthxheight)
+GEOMETRY_PATTERN = re.compile(
+    r"^\d+,\d+\s+\d+x\d+$"
+)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger("wayss")
 
 
 def send_hyprland_notification(
@@ -135,7 +189,7 @@ def run_command(
     command: str | list[str],
     input_data: bytes | None = None,
     capture_output: bool = True,
-) -> subprocess.CompletedProcess | None:
+) -> subprocess.CompletedProcess[bytes] | None:
     """
     Execute a shell command with comprehensive error handling and logging.
 
@@ -182,10 +236,27 @@ def run_command(
 
     except subprocess.CalledProcessError as e:
         # Command executed but returned non-zero exit code
-        # This typically means the command failed (e.g., user cancelled selection)
+        cmd_str = (
+            " ".join(command)
+            if isinstance(command, list)
+            else command
+        )
+        error_msg = f"Command '{cmd_str}' failed with exit code {e.returncode}"
+        if e.stderr:
+            stderr_text = e.stderr.decode(
+                "utf-8", errors="replace"
+            ).strip()
+            if stderr_text:
+                error_msg += f": {stderr_text}"
+
+        logging.error(error_msg)
         send_hyprland_notification(
             "Command Failed",
-            f"Command '{' '.join(command)}' failed with exit code {e.returncode}",
+            (
+                error_msg[:100] + "..."
+                if len(error_msg) > 100
+                else error_msg
+            ),
             icon="dialog-error",
             urgency=URGENCY_CRITICAL,
             timeout_ms=5000,
@@ -194,15 +265,57 @@ def run_command(
 
     except FileNotFoundError:
         # Command binary not found in PATH
-        # This means required dependency is not installed
+        cmd_name = (
+            command[0]
+            if isinstance(command, list)
+            else command.split()[0]
+        )
+        error_msg = f"Command '{cmd_name}' not found. Please install the required package."
+        logging.error(error_msg)
         send_hyprland_notification(
             "Command Not Found",
-            f"Command '{command[0]}' not found. Please install the required package.",
+            error_msg,
             icon="dialog-error",
             urgency=URGENCY_CRITICAL,
             timeout_ms=5000,
         )
         return None
+
+    except Exception as e:
+        cmd_str = (
+            " ".join(command)
+            if isinstance(command, list)
+            else command
+        )
+        error_msg = f"Unexpected error running '{cmd_str}': {e}"
+        logging.error(error_msg)
+        send_hyprland_notification(
+            "Unexpected Error",
+            (
+                error_msg[:100] + "..."
+                if len(error_msg) > 100
+                else error_msg
+            ),
+            icon="dialog-error",
+            urgency=URGENCY_CRITICAL,
+            timeout_ms=5000,
+        )
+        return None
+
+
+def validate_geometry(geometry: str) -> bool:
+    """
+    Validate slurp geometry output format.
+
+    Args:
+        geometry (str): Geometry string from slurp (e.g., "100,200 300x400")
+
+    Returns:
+        bool: True if geometry format is valid, False otherwise
+    """
+    return bool(
+        GEOMETRY_PATTERN.match(geometry.strip())
+    )
 
 
 def take_screenshot() -> bytes | None:
@@ -250,8 +363,22 @@ def take_screenshot() -> bytes | None:
         )
         return None
 
-    # Extract the selection coordinates from slurp output
-    selection = slurp_result.stdout.decode('utf-8').strip()
+    # Extract and validate the selection coordinates from slurp output
+    selection = slurp_result.stdout.decode(
+        "utf-8"
+    ).strip()
+
+    if not validate_geometry(selection):
+        error_msg = f"Invalid geometry format from slurp: '{selection}'"
+        logger.error(error_msg)
+        send_hyprland_notification(
+            "Invalid Selection",
+            "Screen selection returned invalid geometry. Please try again.",
+            icon="dialog-error",
+            urgency=URGENCY_CRITICAL,
+            timeout_ms=5000,
+        )
+        return None
 
     # Step 2: Capture screenshot of selected region using grim
     # grim -g specifies geometry, "-" outputs to stdout instead of file
@@ -311,6 +438,41 @@ def copy_to_clipboard(image_data: bytes) -> bool:
     return result is not None
 
 
+def validate_file_path(
+    file_path: str | Path,
+) -> Path:
+    """
+    Validate and normalize file path.
+
+    Args:
+        file_path: Path to validate
+
+    Returns:
+        Path: Validated and normalized Path object
+
+    Raises:
+        ValueError: If path is invalid or unsafe
+    """
+    path = Path(file_path).expanduser().resolve()
+
+    # Ensure path is within user's home directory for security
+    home = Path.home().resolve()
+    try:
+        path.relative_to(home)
+    except ValueError:
+        raise ValueError(
+            f"Path {path} is outside user home directory"
+        )
+
+    # Check for valid filename
+    if not path.name or path.name.startswith("."):
+        raise ValueError(
+            f"Invalid filename: {path.name}"
+        )
+
+    return path
+
+
 def save_screenshot(
     image_data: bytes, file_path: str | Path
 ) -> bool:
@@ -318,6 +480,7 @@ def save_screenshot(
     Save screenshot image data to a file with automatic directory creation.
 
     This function handles the complete file saving process including:
+    - Path validation and security checks
     - Creating parent directories if they don't exist
     - Writing binary image data to file
     - Comprehensive error handling with user notifications
@@ -325,50 +488,49 @@ def save_screenshot(
     Args:
         image_data (bytes): Raw image data to save (typically PNG format)
         file_path (str | Path): Destination file path for the screenshot
-                                     Can be string or pathlib.Path object
 
     Returns:
         bool: True if file was saved successfully, False if any error occurred
-
-    Side Effects:
-        - Creates parent directories if they don't exist
-        - Sends error notifications if saving fails
-        - Overwrites existing files without warning
-
-    Error Handling:
-        - Permission errors (insufficient write access)
-        - Disk space errors (filesystem full)
-        - Invalid path errors (non-existent drive, invalid characters)
-
-    Example:
-        >>> image_data = take_screenshot()
-        >>> if image_data:
-        >>>     success = save_screenshot(image_data, "~/Pictures/test.png")
     """
     try:
-        # Convert string paths to Path objects for easier manipulation
-        file_path = Path(
+        # Validate and normalize the file path
+        validated_path = validate_file_path(
             file_path
-        ).expanduser()  # Expand ~ to home directory
+        )
 
-        # Ensure parent directories exist (e.g., ~/Pictures/Screenshots/)
-        # parents=True creates intermediate directories, exist_ok=True doesn't fail if exists
-        file_path.parent.mkdir(
+        # Ensure parent directories exist
+        validated_path.parent.mkdir(
             parents=True, exist_ok=True
         )
 
         # Write binary image data to file
-        # Using 'wb' mode for binary write, which preserves image data exactly
-        with open(file_path, "wb") as f:
-            f.write(image_data)
+        validated_path.write_bytes(image_data)
 
+        logger.info(
+            f"Screenshot saved to: {validated_path}"
+        )
         return True
+
+    except ValueError as e:
+        # Path validation failed
+        error_msg = f"Invalid file path: {e}"
+        logger.error(error_msg)
+        send_hyprland_notification(
+            "Invalid Path",
+            error_msg,
+            icon="dialog-error",
+            urgency=URGENCY_CRITICAL,
+            timeout_ms=5000,
+        )
+        return False
 
     except PermissionError as e:
         # User doesn't have write permission to destination directory
+        error_msg = f"Permission denied: {e}"
+        logger.error(error_msg)
         send_hyprland_notification(
             "Permission Denied",
-            f"Cannot save to {file_path}: Permission denied {e}",
+            error_msg,
             icon="dialog-error",
             urgency=URGENCY_CRITICAL,
             timeout_ms=5000,
@@ -377,9 +539,11 @@ def save_screenshot(
 
     except OSError as e:
         # Covers disk full, invalid paths, filesystem errors, etc.
+        error_msg = f"Cannot save screenshot: {e}"
+        logger.error(error_msg)
         send_hyprland_notification(
             "Save Failed",
-            f"Cannot save screenshot to {file_path}: {e}",
+            error_msg,
             icon="dialog-error",
             urgency=URGENCY_CRITICAL,
             timeout_ms=5000,
@@ -388,9 +552,11 @@ def save_screenshot(
 
     except Exception as e:
         # Catch-all for unexpected errors
+        error_msg = f"Unexpected error saving screenshot: {e}"
+        logger.error(error_msg)
         send_hyprland_notification(
             "Unexpected Error",
-            f"Unexpected error saving screenshot: {e}",
+            error_msg,
             icon="dialog-error",
             urgency=URGENCY_CRITICAL,
             timeout_ms=5000,
@@ -404,10 +570,7 @@ def add_to_recent_files(
     """
     Add the screenshot file to the system's recent files database.
 
-    This function tries two methods to add files to recent files:
-    1. GTK Recent Manager (preferred) - integrates with desktop environment
-    2. Manual XDG recently-used.xbel editing (fallback) - direct XML manipulation
-
+    Uses GTK Recent Manager to integrate with desktop environment's recent files system.
     Recent files integration allows the screenshot to appear in:
     - File manager "Recent" sections
     - Application "Open Recent" menus
@@ -422,23 +585,13 @@ def add_to_recent_files(
         bool: True if successfully added to recent files, False otherwise
 
     Dependencies:
-        - python3-gi (optional): For GTK Recent Manager integration
-        - GTK 3.0 (optional): Required by python3-gi
+        - python3-gi: For GTK Recent Manager integration
+        - GTK 3.0: Required by python3-gi
 
     Note:
-        The function automatically falls back to manual XDG editing if GTK is unavailable.
-        Both methods follow the XDG Recent Files specification.
+        GTK is required for this application to function properly.
     """
     try:
-        # Method 1: Use GTK Recent Manager (preferred approach)
-        # This integrates properly with the desktop environment's recent files system
-        import gi
-
-        gi.require_version(
-            "Gtk", "3.0"
-        )  # Ensure we use GTK 3.0
-        from gi.repository import Gtk
-
         # Get the default recent files manager instance
         recent_manager = (
             Gtk.RecentManager.get_default()
@@ -455,33 +608,80 @@ def add_to_recent_files(
         # Add file to recent files database
         recent_manager.add_item(file_uri)
 
-        return True
+        # Start the GTK event loop to process the recent files change signal
+        # This is necessary for the change to take effect
+        GLib.idle_add(Gtk.main_quit)
+        Gtk.main()
 
-    except ImportError:
-        # GTK/gi not available - this is common and expected in minimal environments
-        send_hyprland_notification(
-            "Recent Files",
-            "GTK not available, using fallback method for recent files",
-            icon="dialog-information",
-            urgency=URGENCY_LOW,
-            timeout_ms=2000,
-        )
-        return add_to_recent_files_fallback(
-            file_path
-        )
+        return True
 
     except Exception as e:
         # GTK available but failed (permissions, D-Bus issues, etc.)
         send_hyprland_notification(
             "Recent Files Warning",
-            f"GTK recent files failed: {e}. Trying fallback method.",
+            f"GTK recent files failed: {e}",
             icon="dialog-warning",
             urgency=URGENCY_NORMAL,
             timeout_ms=3000,
         )
-        return add_to_recent_files_fallback(
-            file_path
+        return False
+
+
+@contextmanager
+def atomic_file_update(file_path: Path):
+    """
+    Context manager for atomic file updates with backup.
+
+    Creates a temporary file for writing, then atomically moves it
+    to replace the original file. Creates a backup before replacement.
+    """
+    backup_file = None
+    temp_file = None
+
+    try:
+        # Create backup if original exists
+        if file_path.exists():
+            backup_file = file_path.with_suffix(
+                f"{file_path.suffix}.bak"
+            )
+            backup_file.write_bytes(
+                file_path.read_bytes()
+            )
+
+        # Create temporary file in same directory for atomic move
+        temp_file = file_path.with_suffix(
+            f"{file_path.suffix}.tmp"
         )
+
+        yield temp_file
+
+        # Atomic move
+        temp_file.replace(file_path)
+        temp_file = None  # Successfully moved, don't delete
+
+    except Exception:
+        # Restore from backup if something went wrong
+        if (
+            backup_file
+            and backup_file.exists()
+            and file_path.exists()
+        ):
+            try:
+                backup_file.replace(file_path)
+            except Exception as restore_error:
+                logger.error(
+                    f"Failed to restore backup: {restore_error}"
+                )
+        raise
+    finally:
+        # Clean up temporary file if it still exists
+        if temp_file and temp_file.exists():
+            try:
+                temp_file.unlink()
+            except Exception as cleanup_error:
+                logger.warning(
+                    f"Failed to clean up temp file: {cleanup_error}"
+                )
 
 
 def add_to_recent_files_fallback(
@@ -534,17 +734,6 @@ def add_to_recent_files_fallback(
             )
             return False
 
-        # Create backup before modification to prevent data loss
-        backup_file = recent_file.with_suffix(
-            ".xbel.bak"
-        )
-        backup_content = recent_file.read_text(
-            encoding="utf-8"
-        )
-        backup_file.write_text(
-            backup_content, encoding="utf-8"
-        )
-
         # Prepare file metadata for XDG format
         abs_path = (
             Path(file_path).expanduser().resolve()
@@ -574,18 +763,24 @@ def add_to_recent_files_fallback(
         lines = content.split("\n")
         new_lines = []
 
-        # Insert new bookmark entry after the <recent-files> opening tag
-        # This ensures the new entry appears at the top of recent files lists
-        for line in lines:
-            new_lines.append(line)
-            if "<recent-files>" in line:
-                new_lines.append(bookmark_entry)
+        # Use atomic file update to prevent corruption
+        with atomic_file_update(
+            recent_file
+        ) as temp_file:
+            # Insert new bookmark entry after the <recent-files> opening tag
+            # This ensures the new entry appears at the top of recent files lists
+            for line in lines:
+                new_lines.append(line)
+                if "<recent-files>" in line:
+                    new_lines.append(
+                        bookmark_entry
+                    )
 
-        # Write updated XML back to file
-        updated_content = "\n".join(new_lines)
-        recent_file.write_text(
-            updated_content, encoding="utf-8"
-        )
+            # Write updated XML to temporary file
+            updated_content = "\n".join(new_lines)
+            temp_file.write_text(
+                updated_content, encoding="utf-8"
+            )
 
         return True
 
@@ -661,76 +856,51 @@ def send_notification_with_action(
         ... )
         # Creates notification with "Copy to clipboard" button
     """
-    if file_path:
-        # Create notification with copy action button
-        command = [
-            "dunstify",
-            message,  # Main message text
-            "-t",
-            str(timeout),  # Timeout duration
-        ]
-    else:
-        # Simple notification without actions
-        command = [
-            "dunstify",
-            message,
-            "-t",
-            str(timeout),
-        ]
+    command = [
+        "dunstify",
+        message,
+        "-t",
+        str(timeout),
+    ]
 
     # Send notification (don't capture output)
     run_command(command, capture_output=False)
+
+
+def create_screenshot_path() -> Path:
+    """
+    Generate a unique timestamped screenshot file path.
+
+    Returns:
+        Path: Full path for the new screenshot file
+    """
+    timestamp = datetime.now().strftime(
+        TIMESTAMP_FORMAT
+    )
+    screenshots_dir = (
+        Path.home() / DEFAULT_SCREENSHOTS_DIR
+    )
+    return (
+        screenshots_dir
+        / f"Screenshot-{timestamp}.{SCREENSHOT_FORMAT}"
+    )
 
 
 def main() -> None:
     """
     Main function orchestrating the complete screenshot workflow.
 
-    This function coordinates all the screenshot operations in sequence:
-    1. Setup and initialization
-    2. Interactive screenshot capture
-    3. Clipboard integration
-    4. File saving with timestamp
-    5. Recent files integration
-    6. User notifications throughout
-
-    Workflow Steps:
-        1. Generate timestamped filename and directory path
-        2. Notify user that screenshot process is starting
-        3. Use slurp/grim to capture user-selected screen region
-        4. Copy captured image to Wayland clipboard
-        5. Save image file to Pictures/Screenshots/ directory
-        6. Add saved file to system recent files database
-        7. Send final notification with action buttons
-
-    Error Handling:
-        Each step includes comprehensive error handling with user-friendly
-        notifications. The script gracefully handles missing dependencies,
-        user cancellation, permission issues, and other common failures.
-
-    Exit Codes:
-        0: Success - screenshot captured and saved
-        1: Failure - screenshot capture failed
-        1: Failure - file save failed
-
-    File Naming:
-        Screenshots are saved with format: Screenshot-YYYY-MM-DD_HH:MM:SS.png
-        This ensures unique filenames and chronological sorting.
+    Coordinates screenshot operations with comprehensive error handling:
+    1. Generate unique file path
+    2. Capture user-selected screen region
+    3. Copy to clipboard and save to file
+    4. Update recent files database
+    5. Send user notifications
     """
-    # Generate timestamp for unique filename
-    # Format: YYYY-MM-DD_HH:MM:SS (e.g., 2024-03-15_14:30:45)
-    timestamp = datetime.now().strftime(
-        TIMESTAMP_FORMAT
-    )
+    logger.info("Starting screenshot capture")
 
-    # Setup screenshot directory and file path
-    screenshots_dir = (
-        Path.home() / DEFAULT_SCREENSHOTS_DIR
-    )
-    file_path = (
-        screenshots_dir
-        / f"Screenshot-{timestamp}.{SCREENSHOT_FORMAT}"
-    )
+    # Generate unique file path
+    file_path = create_screenshot_path()
 
     # Notify user that screenshot process is beginning
     send_hyprland_notification(
@@ -741,25 +911,16 @@ def main() -> None:
         timeout_ms=2000,
     )
 
-    # Step 1: Capture screenshot of user-selected region
+    # Capture screenshot
     image_data = take_screenshot()
     if not image_data:
-        # Screenshot capture failed (user cancelled, missing deps, etc.)
-        send_hyprland_notification(
-            "Screenshot Cancelled",
-            "Screenshot was not taken",
-            icon="dialog-information",
-            urgency=URGENCY_NORMAL,
-            timeout_ms=3000,
+        logger.warning(
+            "Screenshot capture failed or cancelled"
         )
-        sys.exit(1)  # Exit with error code
+        sys.exit(1)
 
-    # Step 2: Copy screenshot to clipboard for immediate use
-    clipboard_success = copy_to_clipboard(
-        image_data
-    )
-    if not clipboard_success:
-        # Clipboard copy failed but continue with saving
+    # Copy to clipboard (non-critical)
+    if not copy_to_clipboard(image_data):
         send_hyprland_notification(
             "Clipboard Warning",
             "Screenshot captured but failed to copy to clipboard",
@@ -768,62 +929,37 @@ def main() -> None:
             timeout_ms=3000,
         )
 
-    # Step 3: Save screenshot to file system
-    save_success = save_screenshot(
-        image_data, file_path
-    )
-    if not save_success:
-        # File save failed - this is critical since we lose the screenshot
-        send_hyprland_notification(
-            "Save Failed",
-            "Screenshot captured but could not be saved to file",
-            icon="dialog-error",
-            urgency=URGENCY_CRITICAL,
-            timeout_ms=5000,
-        )
-        sys.exit(1)  # Exit with error code
+    # Save to file (critical)
+    if not save_screenshot(image_data, file_path):
+        logger.error("Failed to save screenshot")
+        sys.exit(1)
 
-    # Step 4: Send legacy notification (compatibility with original script)
-    initial_message = f"Screenshot of the region taken at {timestamp}"
-    send_notification(initial_message)
-
-    # Step 5: Add screenshot to recent files for easy access
-    recent_files_success = add_to_recent_files(
-        file_path
-    )
-    if recent_files_success:
-        send_hyprland_notification(
-            "Recent Files Updated",
-            "Screenshot added to recent files - find it in file manager Recent section",
-            icon="emblem-default",
-            urgency=URGENCY_LOW,
-            timeout_ms=2000,
-        )
+    # Add to recent files (non-critical)
+    if add_to_recent_files(file_path):
+        logger.info("Added to recent files")
     else:
-        # Recent files failed but not critical - screenshot still saved successfully
-        send_hyprland_notification(
-            "Recent Files Warning",
-            "Screenshot saved but couldn't add to recent files",
-            icon="dialog-warning",
-            urgency=URGENCY_LOW,
-            timeout_ms=3000,
+        logger.warning(
+            "Failed to add to recent files"
         )
 
-    # Step 6: Send final notification with interactive actions
-    final_message = (
-        f"Screenshot saved: {file_path.name}"
+    # Send completion notifications
+    send_notification(
+        f"Screenshot taken: {file_path.name}"
     )
     send_notification_with_action(
-        final_message, file_path=file_path
+        f"Screenshot saved: {file_path.name}",
+        file_path=file_path,
     )
-
-    # Step 7: Send completion notification via D-Bus
     send_hyprland_notification(
         "Screenshot Complete! 📸",
         f"Successfully saved to {file_path.name}",
         icon="camera-photo",
         urgency=URGENCY_LOW,
         timeout_ms=3000,
+    )
+
+    logger.info(
+        f"Screenshot workflow completed: {file_path}"
     )
 
 

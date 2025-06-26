@@ -44,6 +44,7 @@ in
             ## Env
             pkgs.zsh
             pkgs.nushell
+            pkgs.dbus
             pkgs.carapace
             pkgs.stow
             pkgs.age

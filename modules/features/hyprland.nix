@@ -79,6 +79,7 @@ in
         hypridle.enable = true;
       };
 
+      myconfig.programs.wayss.enable = true;
       xdg = {
         portal = {
           enable = true;

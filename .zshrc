@@ -83,3 +83,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 source <(kubectl completion zsh)
 
+
+# Turso
+export PATH="$PATH:/home/connerohnesorge/.turso"

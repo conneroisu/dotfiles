@@ -45,6 +45,7 @@ in
             pkgs.zsh
             pkgs.nushell
             pkgs.dbus
+            pkgs.lsof
             pkgs.carapace
             pkgs.stow
             pkgs.age
@@ -142,6 +143,7 @@ in
       };
 
       programs = {
+        tmux.enable = true;
         nix-ld.dev.enable = true;
         direnv.enable = true;
         direnv.nix-direnv.enable = true;

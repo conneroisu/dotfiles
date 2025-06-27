@@ -147,7 +147,6 @@
           '';
 
           env = {
-            # CUDA environment (if needed)
             CUDA_HOME = "${pkgs.cudaPackages.cudatoolkit}";
             LD_LIBRARY_PATH = "${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.stdenv.cc.cc.lib}/lib";
             RUST_BACKTRACE = "1";
@@ -155,30 +154,27 @@
             LOCAL = "1";
           };
 
-          shell-packages = with pkgs;
+          shell-packages =
             [
               # Nix tools
-              alejandra
-              nixd
-              nil
-              statix
-              deadnix
+              pkgs.alejandra
+              pkgs.nixd
+              pkgs.nil
+              pkgs.statix
+              pkgs.deadnix
+              pkgs.uv
 
               # Rust toolchain
               rustToolchain
-              cargo-watch
-              cargo-edit
+              pkgs.cargo-watch
+              pkgs.cargo-edit
 
               # Build tools
-              pkg-config
-              protobuf
+              pkgs.pkg-config
+              pkgs.protobuf
 
               # CUDA support
-              cudatoolkit
-
-              # Development tools
-              git
-              direnv
+              pkgs.cudatoolkit
             ]
             ++ builtins.attrValues scriptPackages;
         in {

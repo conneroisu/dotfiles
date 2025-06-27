@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Rust Web Shell{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <!-- Hero section -->
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+                    Welcome to 
+                    <span class="text-blue-600">Rust Web Shell</span>
+                </h1>
+                <p class="mt-6 text-lg leading-8 text-gray-600">
+                    A modern web application built with Rust, Axum, TailwindCSS, and Alpine.js. 
+                    Fast, secure, and ready for production.
+                </p>
+                <div class="mt-10 flex items-center justify-center gap-x-6">
+                    {% match user %}
+                        {% when Some with (_u) %}
+                            <a href="/dashboard" class="btn btn-primary">
+                                Go to Dashboard
+                            </a>
+                        {% when None %}
+                            <a href="/signup" class="btn btn-primary">
+                                Get Started
+                            </a>
+                            <a href="/login" class="text-sm font-semibold leading-6 text-gray-900">
+                                Sign In <span aria-hidden="true">→</span>
+                            </a>
+                    {% endmatch %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature section -->
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:text-center">
+            <h2 class="text-base font-semibold leading-7 text-blue-600">Built with Modern Tech</h2>
+            <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                Everything you need to get started
+            </p>
+            <p class="mt-6 text-lg leading-8 text-gray-600">
+                This template provides a solid foundation for building modern web applications with Rust.
+            </p>
+        </div>
+        
+        <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+            <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+                <div class="flex flex-col">
+                    <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                        🦀 <span>Rust Backend</span>
+                    </dt>
+                    <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                        <p class="flex-auto">
+                            Fast and safe backend built with Axum, featuring async/await, type safety, and memory safety.
+                        </p>
+                    </dd>
+                </div>
+                
+                <div class="flex flex-col">
+                    <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                        🎨 <span>Modern Frontend</span>
+                    </dt>
+                    <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                        <p class="flex-auto">
+                            Beautiful UI with TailwindCSS and interactive features powered by Alpine.js.
+                        </p>
+                    </dd>
+                </div>
+                
+                <div class="flex flex-col">
+                    <dt class="flex items-center gap-x-3 text-base font-semibold leading-7 text-gray-900">
+                        🔒 <span>Secure by Default</span>
+                    </dt>
+                    <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
+                        <p class="flex-auto">
+                            Built-in authentication, password hashing, and session management for security.
+                        </p>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Tech stack showcase -->
+    <div class="bg-white py-24 sm:py-32">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+            <h2 class="text-center text-lg font-semibold leading-8 text-gray-900">
+                Powered by the best technologies
+            </h2>
+            <div class="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
+                <div class="col-span-2 max-h-12 w-full object-contain lg:col-span-1 flex items-center justify-center">
+                    <span class="text-2xl font-bold text-gray-700">🦀 Rust</span>
+                </div>
+                <div class="col-span-2 max-h-12 w-full object-contain lg:col-span-1 flex items-center justify-center">
+                    <span class="text-lg font-semibold text-gray-700">Axum</span>
+                </div>
+                <div class="col-span-2 max-h-12 w-full object-contain lg:col-span-1 flex items-center justify-center">
+                    <span class="text-lg font-semibold text-gray-700">TailwindCSS</span>
+                </div>
+                <div class="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1 flex items-center justify-center">
+                    <span class="text-lg font-semibold text-gray-700">Alpine.js</span>
+                </div>
+                <div class="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1 flex items-center justify-center">
+                    <span class="text-lg font-semibold text-gray-700">SQLite</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

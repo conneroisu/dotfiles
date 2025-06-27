@@ -1,0 +1,54 @@
+[package]
+name = "rust-web-shell"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["macros"] }
+tower-sessions = "0.12"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["fs", "cors", "trace"] }
+hyper = { version = "1.0", features = ["full"] }
+
+# Templates
+askama = { version = "0.12", features = ["with-axum"] }
+askama_axum = "0.4"
+
+# Database & ORM
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite", "uuid", "chrono", "migrate"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Async runtime
+tokio = { version = "1.0", features = ["full"] }
+
+# Password hashing
+argon2 = "0.5"
+rand = "0.8"
+
+# Validation
+validator = { version = "0.18", features = ["derive"] }
+
+# Environment and configuration
+dotenvy = "0.15"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+[build-dependencies]
+# No special build dependencies needed
+# Assets are built via build.rs using npm/node
+
+[dev-dependencies]
+tempfile = "3.8"

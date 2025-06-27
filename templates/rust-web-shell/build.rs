@@ -9,16 +9,17 @@ fn main() {
     println!("cargo:rerun-if-changed=package.json");
     println!("cargo:rerun-if-changed=tailwind.config.js");
     println!("cargo:rerun-if-changed=tsconfig.json");
+    println!("cargo:rerun-if-changed=input.css");
 
     let out_dir = env::var("OUT_DIR").unwrap();
     let assets_dir = Path::new("assets");
     let dist_dir = assets_dir.join("dist");
-    
+
     // Create assets directories if they don't exist
     if !assets_dir.exists() {
         fs::create_dir_all(&assets_dir).expect("Failed to create assets directory");
     }
-    
+
     if !dist_dir.exists() {
         fs::create_dir_all(&dist_dir).expect("Failed to create dist directory");
     }
@@ -97,7 +98,10 @@ fn main() {
             .expect("Failed to run bun install");
 
         if !output.status.success() {
-            panic!("bun install failed: {}", String::from_utf8_lossy(&output.stderr));
+            panic!(
+                "bun install failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
         }
     }
 
@@ -107,15 +111,20 @@ fn main() {
         .args([
             "x",
             "tailwindcss",
-            "-i", "assets/styles/input.css",
-            "-o", "assets/dist/output.css",
-            "--minify"
+            "-i",
+            "assets/styles/input.css",
+            "-o",
+            "assets/dist/output.css",
+            "--minify",
         ])
         .output()
         .expect("Failed to run TailwindCSS");
 
     if !css_output.status.success() {
-        panic!("TailwindCSS build failed: {}", String::from_utf8_lossy(&css_output.stderr));
+        panic!(
+            "TailwindCSS build failed: {}",
+            String::from_utf8_lossy(&css_output.stderr)
+        );
     }
 
     // Build TypeScript with bun
@@ -126,28 +135,30 @@ fn main() {
             "assets/js/index.ts",
             "--minify",
             "--format=iife",
-            "--outfile=assets/dist/index.js"
+            "--outfile=assets/dist/index.js",
         ])
         .output()
         .expect("Failed to run bun build");
 
     if !js_output.status.success() {
-        panic!("bun build failed: {}", String::from_utf8_lossy(&js_output.stderr));
+        panic!(
+            "bun build failed: {}",
+            String::from_utf8_lossy(&js_output.stderr)
+        );
     }
 
     // Copy built assets to OUT_DIR so they can be included in the binary
     let target_css = Path::new(&out_dir).join("output.css");
     let target_js = Path::new(&out_dir).join("index.js");
-    
+
     if Path::new("assets/dist/output.css").exists() {
-        fs::copy("assets/dist/output.css", &target_css)
-            .expect("Failed to copy CSS to OUT_DIR");
+        fs::copy("assets/dist/output.css", &target_css).expect("Failed to copy CSS to OUT_DIR");
     }
-    
+
     if Path::new("assets/dist/index.js").exists() {
-        fs::copy("assets/dist/index.js", &target_js)
-            .expect("Failed to copy JS to OUT_DIR");
+        fs::copy("assets/dist/index.js", &target_js).expect("Failed to copy JS to OUT_DIR");
     }
 
     println!("cargo:warning=Assets built successfully!");
 }
+

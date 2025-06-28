@@ -1,8 +1,46 @@
+/**
+  # Host Configuration: mac-nix (Conner's MacBook Air)
+  
+  ## Description
+  Primary development machine configuration for macOS (Apple Silicon).
+  This host runs nix-darwin for package management and includes a VMware
+  guest configuration for running NixOS VMs locally.
+  
+  ## Host Type
+  - Type: laptop
+  - System: aarch64-darwin (Apple Silicon)
+  - Rice: dark theme
+  
+  ## Key Features
+  - **Engineer role**: Development tools and environments
+  - **macOS integration**: Native macOS apps (Aerospace, Raycast, Xcodes)
+  - **VMware support**: Configured for NixOS VM development
+  - **Blink shell**: Terminal emulator with fuzzy search
+  
+  ## Platform-specific Configurations
+  ### Darwin (Primary)
+  - Touch ID for sudo authentication
+  - Custom dock and trackpad settings
+  - Nix Apps integration in /Applications
+  - Container support via gvproxy
+  
+  ### NixOS (VM Guest)
+  - VMware guest tools and drivers
+  - Shared folder mounting at /mnt/hgfs
+  - Basic development environment
+  - SSH access enabled
+  
+  ## Enabled Programs
+  - dx: Flake.nix editor
+  - catls: Ruby-based file browser
+  - convert_img: Image conversion utility
+*/
 {
   delib,
   inputs,
   pkgs,
   config,
+  lib,
   ...
 }: let
   system = "aarch64-darwin";
@@ -30,9 +68,9 @@ in
       imports = [
         inputs.determinate.nixosModules.default
       ];
-      nixpkgs.hostPlatform = "aarch64-linux";
+      nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
       nixpkgs.config.allowUnfree = true;
-      myconfig.features.engineer.enable = pkgs.lib.mkForce false;
+      myconfig.features.engineer.enable = lib.mkForce false;
       system.stateVersion = "24.11";
       virtualisation.vmware.guest.enable = true;
       boot = {
@@ -76,7 +114,7 @@ in
       networking = {
         hostName = "mac-nix-vm";
         networkmanager.enable = true;
-        useDHCP = pkgs.lib.mkForce true;
+        useDHCP = lib.mkForce true;
         interfaces.ens33.useDHCP = true; # VMware default network interface
       };
       users.users.connerohnesorge = {
@@ -164,7 +202,7 @@ in
           pathsToLink = "/Applications";
         };
       in
-        pkgs.lib.mkForce ''
+        lib.mkForce ''
           # Set up applications.
           echo "setting up /Applications..." >&2
           rm -rf /Applications/Nix\ Apps

@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Rust Web Shell{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Create your account
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Or
+                <a href="/login" class="font-medium text-blue-600 hover:text-blue-500">
+                    sign in to your existing account
+                </a>
+            </p>
+        </div>
+        
+        <div class="card">
+            <form x-data="signupForm()" @submit.prevent="submitForm" class="space-y-6">
+                <div>
+                    <label for="username" class="form-label">
+                        Username
+                    </label>
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        autocomplete="username"
+                        required
+                        x-model="form.username"
+                        class="form-input"
+                        :class="{'border-red-300': errors.username}"
+                        placeholder="Choose a username"
+                    >
+                    <p x-show="errors.username" x-text="errors.username" class="mt-1 text-sm text-red-600"></p>
+                </div>
+
+                <div>
+                    <label for="email" class="form-label">
+                        Email address
+                    </label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                        x-model="form.email"
+                        class="form-input"
+                        :class="{'border-red-300': errors.email}"
+                        placeholder="Enter your email"
+                    >
+                    <p x-show="errors.email" x-text="errors.email" class="mt-1 text-sm text-red-600"></p>
+                </div>
+
+                <div>
+                    <label for="password" class="form-label">
+                        Password
+                    </label>
+                    <div class="relative">
+                        <input
+                            id="password"
+                            name="password"
+                            :type="showPassword ? 'text' : 'password'"
+                            autocomplete="new-password"
+                            required
+                            x-model="form.password"
+                            class="form-input pr-10"
+                            :class="{'border-red-300': errors.password}"
+                            placeholder="Create a password"
+                            @input="checkPasswordStrength"
+                        >
+                        <button
+                            type="button"
+                            @click="showPassword = !showPassword"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                        >
+                            <span x-text="showPassword ? '🙈' : '👁️'"></span>
+                        </button>
+                    </div>
+                    
+                    <!-- Password strength indicator -->
+                    <div x-show="form.password" class="mt-2">
+                        <div class="flex space-x-1">
+                            <div class="h-2 w-1/4 rounded" :class="passwordStrength >= 1 ? 'bg-red-500' : 'bg-gray-200'"></div>
+                            <div class="h-2 w-1/4 rounded" :class="passwordStrength >= 2 ? 'bg-yellow-500' : 'bg-gray-200'"></div>
+                            <div class="h-2 w-1/4 rounded" :class="passwordStrength >= 3 ? 'bg-green-400' : 'bg-gray-200'"></div>
+                            <div class="h-2 w-1/4 rounded" :class="passwordStrength >= 4 ? 'bg-green-500' : 'bg-gray-200'"></div>
+                        </div>
+                        <p class="text-xs text-gray-600 mt-1" x-text="passwordStrengthText"></p>
+                    </div>
+                    
+                    <p x-show="errors.password" x-text="errors.password" class="mt-1 text-sm text-red-600"></p>
+                </div>
+
+                <div>
+                    <label for="confirm-password" class="form-label">
+                        Confirm Password
+                    </label>
+                    <input
+                        id="confirm-password"
+                        name="confirm-password"
+                        type="password"
+                        autocomplete="new-password"
+                        required
+                        x-model="form.confirmPassword"
+                        class="form-input"
+                        :class="{'border-red-300': errors.confirmPassword}"
+                        placeholder="Confirm your password"
+                    >
+                    <p x-show="errors.confirmPassword" x-text="errors.confirmPassword" class="mt-1 text-sm text-red-600"></p>
+                </div>
+
+                <div class="flex items-center">
+                    <input
+                        id="terms"
+                        name="terms"
+                        type="checkbox"
+                        required
+                        x-model="form.acceptTerms"
+                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    >
+                    <label for="terms" class="ml-2 block text-sm text-gray-900">
+                        I agree to the
+                        <a href="/terms" class="text-blue-600 hover:text-blue-500">Terms of Service</a>
+                        and
+                        <a href="/privacy" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <div>
+                    <button
+                        type="submit"
+                        :disabled="loading || !form.acceptTerms"
+                        class="btn btn-primary w-full"
+                        :class="{'opacity-50 cursor-not-allowed': loading || !form.acceptTerms}"
+                    >
+                        <span x-show="!loading">Create Account</span>
+                        <span x-show="loading" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Creating Account...
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function signupForm() {
+        return {
+            form: {
+                username: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                acceptTerms: false
+            },
+            errors: {},
+            loading: false,
+            showPassword: false,
+            passwordStrength: 0,
+            passwordStrengthText: '',
+            
+            checkPasswordStrength() {
+                const password = this.form.password;
+                let score = 0;
+                let text = '';
+                
+                if (password.length >= 8) score++;
+                if (/[a-z]/.test(password)) score++;
+                if (/[A-Z]/.test(password)) score++;
+                if (/[0-9]/.test(password)) score++;
+                if (/[^A-Za-z0-9]/.test(password)) score++;
+                
+                this.passwordStrength = Math.min(score, 4);
+                
+                const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+                this.passwordStrengthText = texts[this.passwordStrength] || '';
+            },
+            
+            async submitForm() {
+                this.loading = true;
+                this.errors = {};
+                
+                // Client-side validation
+                if (this.form.password !== this.form.confirmPassword) {
+                    this.errors.confirmPassword = 'Passwords do not match';
+                    this.loading = false;
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: this.form.username,
+                            email: this.form.email,
+                            password: this.form.password,
+                            confirm_password: this.form.confirmPassword
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        window.location.href = '/login?message=Account created successfully. Please sign in.';
+                    } else {
+                        this.errors = data.errors || { general: data.message || 'Registration failed' };
+                    }
+                } catch (error) {
+                    this.errors = { general: 'Network error. Please try again.' };
+                } finally {
+                    this.loading = false;
+                }
+            }
+        }
+    }
+</script>
+{% endblock %}

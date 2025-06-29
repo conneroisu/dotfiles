@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Rust Web Shell{% endblock %}
+
+{% block head %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8">
+    <!-- Page header -->
+    <div class="sm:flex sm:items-center">
+        <div class="sm:flex-auto">
+            <h1 class="text-2xl font-semibold leading-6 text-gray-900">Dashboard</h1>
+            <p class="mt-2 text-sm text-gray-700">
+                Welcome back, {{ dashboard_user.username }}! Here's your account overview.
+            </p>
+        </div>
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <button type="button" class="btn btn-primary">
+                New Action
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats section -->
+    <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
+        <div class="card">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span class="text-white text-sm font-medium">👤</span>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 truncate">Account Status</dt>
+                        <dd class="text-lg font-medium text-gray-900">
+                            {% if dashboard_user.email_verified %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Verified
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    Unverified
+                                </span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <span class="text-white text-sm font-medium">📅</span>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 truncate">Member Since</dt>
+                        <dd class="text-lg font-medium text-gray-900">
+                            {{ dashboard_user.created_at_formatted }}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                        <span class="text-white text-sm font-medium">⚡</span>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 truncate">Last Activity</dt>
+                        <dd class="text-lg font-medium text-gray-900">
+                            {{ dashboard_user.updated_at_formatted }}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Information -->
+    <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- Profile Information -->
+        <div class="card" x-data="profileForm()">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-medium text-gray-900">Profile Information</h3>
+                <button @click="editMode = !editMode" class="text-sm text-blue-600 hover:text-blue-700">
+                    <span x-text="editMode ? 'Cancel' : 'Edit'"></span>
+                </button>
+            </div>
+
+            <form @submit.prevent="updateProfile" class="space-y-4">
+                <div>
+                    <label for="username" class="form-label">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        x-model="form.username"
+                        :readonly="!editMode"
+                        class="form-input"
+                        :class="{'bg-gray-50': !editMode}"
+                    >
+                </div>
+
+                <div>
+                    <label for="email" class="form-label">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        x-model="form.email"
+                        :readonly="!editMode"
+                        class="form-input"
+                        :class="{'bg-gray-50': !editMode}"
+                    >
+                </div>
+
+                <div x-show="editMode" x-transition>
+                    <button type="submit" class="btn btn-primary" :disabled="loading">
+                        <span x-show="!loading">Update Profile</span>
+                        <span x-show="loading">Updating...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="card" x-data="securityForm()">
+            <h3 class="text-lg font-medium text-gray-900 mb-6">Security Settings</h3>
+
+            <!-- Message Display -->
+            <div x-show="message.show" x-transition class="mb-4">
+                <div 
+                    class="p-4 rounded-md"
+                    :class="{
+                        'bg-green-50 border border-green-200 text-green-800': message.type === 'success',
+                        'bg-red-50 border border-red-200 text-red-800': message.type === 'error'
+                    }"
+                >
+                    <div class="flex justify-between items-center">
+                        <span x-text="message.text"></span>
+                        <button @click="message.show = false" class="ml-4 text-sm opacity-70 hover:opacity-100">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <form @submit.prevent="changePassword" class="space-y-4">
+                <div>
+                    <label for="current-password" class="form-label">Current Password</label>
+                    <input
+                        type="password"
+                        id="current-password"
+                        x-model="form.currentPassword"
+                        class="form-input"
+                        placeholder="Enter current password"
+                    >
+                </div>
+
+                <div>
+                    <label for="new-password" class="form-label">New Password</label>
+                    <input
+                        type="password"
+                        id="new-password"
+                        x-model="form.newPassword"
+                        @input="validatePasswords()"
+                        class="form-input"
+                        :class="{'border-red-300 focus:border-red-500 focus:ring-red-500': errors.newPassword}"
+                        placeholder="Enter new password"
+                    >
+                    <p x-show="errors.newPassword" x-text="errors.newPassword" class="mt-1 text-sm text-red-600"></p>
+                </div>
+
+                <div>
+                    <label for="confirm-new-password" class="form-label">Confirm New Password</label>
+                    <input
+                        type="password"
+                        id="confirm-new-password"
+                        x-model="form.confirmPassword"
+                        @input="validatePasswords()"
+                        class="form-input"
+                        :class="{'border-red-300 focus:border-red-500 focus:ring-red-500': errors.confirmPassword}"
+                        placeholder="Confirm new password"
+                    >
+                    <p x-show="errors.confirmPassword" x-text="errors.confirmPassword" class="mt-1 text-sm text-red-600"></p>
+                </div>
+
+                <button type="submit" class="btn btn-secondary" :disabled="loading || !isFormValid">
+                    <span x-show="!loading">Change Password</span>
+                    <span x-show="loading">Changing...</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Activity Feed -->
+    <div class="mt-8">
+        <div class="card">
+            <h3 class="text-lg font-medium text-gray-900 mb-6">Recent Activity</h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                        <span class="text-sm text-gray-900">Account created</span>
+                    </div>
+                    <span class="text-sm text-gray-500">{{ dashboard_user.created_at_full }}</span>
+                </div>
+                
+                <div class="flex items-center justify-between py-3 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                        <span class="text-sm text-gray-900">Last login</span>
+                    </div>
+                    <span class="text-sm text-gray-500">{{ dashboard_user.updated_at_full }}</span>
+                </div>
+                
+                {% if !dashboard_user.email_verified %}
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 bg-yellow-500 rounded-full mr-3"></div>
+                        <span class="text-sm text-gray-900">Email verification pending</span>
+                    </div>
+                    <button class="text-sm text-blue-600 hover:text-blue-700">
+                        Resend verification
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function profileForm() {
+        return {
+            editMode: false,
+            loading: false,
+            form: {
+                username: '{{ dashboard_user.username }}',
+                email: '{{ dashboard_user.email }}'
+            },
+            
+            async updateProfile() {
+                this.loading = true;
+                
+                try {
+                    const response = await fetch('/api/profile', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(this.form)
+                    });
+                    
+                    if (response.ok) {
+                        this.editMode = false;
+                        // Show success message
+                    } else {
+                        // Handle errors
+                    }
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                } finally {
+                    this.loading = false;
+                }
+            }
+        }
+    }
+    
+    function securityForm() {
+        return {
+            loading: false,
+            form: {
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            },
+            errors: {
+                newPassword: '',
+                confirmPassword: ''
+            },
+            isFormValid: false,
+            message: {
+                text: '',
+                type: '', // 'success' or 'error'
+                show: false
+            },
+            
+            validatePasswords() {
+                this.errors.newPassword = '';
+                this.errors.confirmPassword = '';
+                
+                if (this.form.newPassword && this.form.newPassword.length < 8) {
+                    this.errors.newPassword = 'Password must be at least 8 characters long';
+                }
+                
+                if (this.form.confirmPassword && this.form.newPassword !== this.form.confirmPassword) {
+                    this.errors.confirmPassword = 'Passwords do not match';
+                }
+                
+                this.isFormValid = this.form.currentPassword && 
+                                 this.form.newPassword && 
+                                 this.form.confirmPassword && 
+                                 this.form.newPassword === this.form.confirmPassword &&
+                                 this.form.newPassword.length >= 8;
+            },
+            
+            async changePassword() {
+                this.validatePasswords();
+                
+                if (!this.isFormValid) {
+                    return;
+                }
+                
+                this.loading = true;
+                
+                try {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const response = await fetch('/api/change-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': csrfToken,
+                        },
+                        body: JSON.stringify({
+                            current_password: this.form.currentPassword,
+                            new_password: this.form.newPassword
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        this.form = {
+                            currentPassword: '',
+                            newPassword: '',
+                            confirmPassword: ''
+                        };
+                        this.errors = {
+                            newPassword: '',
+                            confirmPassword: ''
+                        };
+                        this.isFormValid = false;
+                        this.message = {
+                            text: 'Password changed successfully!',
+                            type: 'success',
+                            show: true
+                        };
+                        setTimeout(() => { this.message.show = false; }, 5000);
+                    } else {
+                        const errorData = await response.json();
+                        this.message = {
+                            text: errorData.message || 'Failed to change password. Please try again.',
+                            type: 'error',
+                            show: true
+                        };
+                        setTimeout(() => { this.message.show = false; }, 5000);
+                    }
+                } catch (error) {
+                    console.error('Error changing password:', error);
+                    this.message = {
+                        text: 'Network error. Please check your connection and try again.',
+                        type: 'error',
+                        show: true
+                    };
+                    setTimeout(() => { this.message.show = false; }, 5000);
+                } finally {
+                    this.loading = false;
+                }
+            }
+        }
+    }
+</script>
+{% endblock %}

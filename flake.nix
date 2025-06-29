@@ -225,6 +225,10 @@
         description = "A zig shell for developing with nix";
         path = ./templates/zig-shell;
       };
+      rust-web-shell = {
+        description = "A rust web shell for developing with nix";
+        path = ./templates/rust-web-shell;
+      };
     };
   };
 }

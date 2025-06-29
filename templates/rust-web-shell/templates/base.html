@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Rust Web Shell{% endblock %}</title>
+    
+    <!-- TailwindCSS -->
+    <style>{{ css|safe }}</style>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Alpine.js will be included via our bundled JavaScript -->
+    <script defer>{{ js|safe }}</script>
+    
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-gray-900">
+                        🦀 Rust Web Shell
+                    </a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    {% match user %}
+                        {% when Some with (u) %}
+                            <span class="text-sm text-gray-700">Welcome, {{ u.username }}!</span>
+                            <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+                            <form action="/logout" method="post" class="inline">
+                                <button type="submit" class="text-sm text-gray-500 hover:text-gray-700">
+                                    Logout
+                                </button>
+                            </form>
+                        {% when None %}
+                            <a href="/login" class="text-sm text-gray-700 hover:text-gray-900">Login</a>
+                            <a href="/signup" class="btn btn-primary">Sign Up</a>
+                    {% endmatch %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% if !flash_messages.is_empty() %}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+            {% for message in flash_messages %}
+                <div class="alert alert-{{ message.level }} mb-4" 
+                     x-data="{ show: true }" 
+                     x-show="show" 
+                     x-transition>
+                    <div class="flex justify-between items-center">
+                        <span>{{ message.content }}</span>
+                        <button @click="show = false" class="ml-4 text-sm opacity-70 hover:opacity-100">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-sm text-gray-500">
+                Built with 🦀 Rust, Axum, TailwindCSS, and Alpine.js
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

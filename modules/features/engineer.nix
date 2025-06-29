@@ -1,3 +1,72 @@
+/**
+  # Feature Module: Software Engineer Toolkit
+  
+  ## Description
+  Comprehensive development environment for software engineers. Provides
+  a complete suite of development tools, editors, version control systems,
+  language runtimes, and productivity utilities for professional software
+  development across multiple platforms and languages.
+  
+  ## Platform Support
+  - ✅ NixOS (full support)
+  - ✅ Darwin (most tools, platform-specific adaptations)
+  
+  ## What This Enables
+  - **Development Tools**: Editors, debuggers, profilers
+  - **Custom Programs**: dx, md2pdf, convert_img, catls, cmbd
+  - **Language Support**: Go, Rust, Python, Node.js, and more
+  - **Cloud Platforms**: AWS, Kubernetes, Docker tooling
+  - **Version Control**: Git with enhanced tools
+  - **Fonts**: Programming fonts including NerdFonts
+  
+  ## Tool Categories
+  ### Editors & IDE Support
+  - Neovim with full LSP support
+  - Tree-sitter for syntax highlighting
+  - Code formatting and linting tools
+  
+  ### Shell Environment
+  - Zsh and Nushell with completions
+  - Terminal multiplexers (Tmux, Zellij)
+  - Modern CLI tools (fd, ripgrep, bat, fzf)
+  
+  ### Development Utilities
+  - Container tools (Docker, Podman, Kubernetes)
+  - Build systems (Make, Just, Bazel)
+  - API testing (HTTPie, Hurl)
+  - Database clients
+  
+  ### Languages & Runtimes
+  - Go: Full toolchain with templ support
+  - Rust: Compiler, Cargo, Rustfmt, Clippy
+  - Python: Multiple versions with Poetry
+  - Node.js: Via Volta version manager
+  - JVM: Zulu JDK builds
+  
+  ### Cloud & DevOps
+  - AWS CLI and SSM tools
+  - Kubernetes (kubectl, k9s, stern)
+  - Infrastructure as Code (Terraform)
+  - CI/CD tools
+  
+  ## Integrations
+  - NordVPN for secure connections
+  - nix-ld for running dynamic binaries
+  - Tailscale for development networks
+  
+  ## Common Use Cases
+  - Full-stack web development
+  - Systems programming
+  - Cloud infrastructure management
+  - DevOps and automation
+  - Open source contribution
+  
+  ## Performance Tools
+  - Profiling: pprof, flamegraph
+  - Monitoring: htop, bottom, procs
+  - Network: tcpdump, tshark
+  - Benchmarking utilities
+*/
 {
   delib,
   pkgs,
@@ -44,6 +113,8 @@ in
             ## Env
             pkgs.zsh
             pkgs.nushell
+            pkgs.dbus
+            pkgs.lsof
             pkgs.carapace
             pkgs.stow
             pkgs.age
@@ -141,6 +212,7 @@ in
       };
 
       programs = {
+        tmux.enable = true;
         nix-ld.dev.enable = true;
         direnv.enable = true;
         direnv.nix-direnv.enable = true;

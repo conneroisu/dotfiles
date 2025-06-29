@@ -70,4 +70,12 @@ in
         };
       };
     };
+
+    darwin.ifEnabled = {
+      # AMD GPU support not applicable on Darwin/macOS
+    };
+
+    home.ifEnabled = {
+      # AMD-specific home configuration can be added here if needed
+    };
   }

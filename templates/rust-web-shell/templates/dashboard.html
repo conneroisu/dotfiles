@@ -151,9 +151,12 @@
                         type="password"
                         id="new-password"
                         x-model="form.newPassword"
+                        @input="validatePasswords()"
                         class="form-input"
+                        :class="{'border-red-300 focus:border-red-500 focus:ring-red-500': errors.newPassword}"
                         placeholder="Enter new password"
                     >
+                    <p x-show="errors.newPassword" x-text="errors.newPassword" class="mt-1 text-sm text-red-600"></p>
                 </div>
 
                 <div>
@@ -162,12 +165,15 @@
                         type="password"
                         id="confirm-new-password"
                         x-model="form.confirmPassword"
+                        @input="validatePasswords()"
                         class="form-input"
+                        :class="{'border-red-300 focus:border-red-500 focus:ring-red-500': errors.confirmPassword}"
                         placeholder="Confirm new password"
                     >
+                    <p x-show="errors.confirmPassword" x-text="errors.confirmPassword" class="mt-1 text-sm text-red-600"></p>
                 </div>
 
-                <button type="submit" class="btn btn-secondary" :disabled="loading">
+                <button type="submit" class="btn btn-secondary" :disabled="loading || !isFormValid">
                     <span x-show="!loading">Change Password</span>
                     <span x-show="loading">Changing...</span>
                 </button>
@@ -260,10 +266,35 @@
                 newPassword: '',
                 confirmPassword: ''
             },
+            errors: {
+                newPassword: '',
+                confirmPassword: ''
+            },
+            isFormValid: false,
+            
+            validatePasswords() {
+                this.errors.newPassword = '';
+                this.errors.confirmPassword = '';
+                
+                if (this.form.newPassword && this.form.newPassword.length < 8) {
+                    this.errors.newPassword = 'Password must be at least 8 characters long';
+                }
+                
+                if (this.form.confirmPassword && this.form.newPassword !== this.form.confirmPassword) {
+                    this.errors.confirmPassword = 'Passwords do not match';
+                }
+                
+                this.isFormValid = this.form.currentPassword && 
+                                 this.form.newPassword && 
+                                 this.form.confirmPassword && 
+                                 this.form.newPassword === this.form.confirmPassword &&
+                                 this.form.newPassword.length >= 8;
+            },
             
             async changePassword() {
-                if (this.form.newPassword !== this.form.confirmPassword) {
-                    alert('New passwords do not match');
+                this.validatePasswords();
+                
+                if (!this.isFormValid) {
                     return;
                 }
                 
@@ -287,6 +318,11 @@
                             newPassword: '',
                             confirmPassword: ''
                         };
+                        this.errors = {
+                            newPassword: '',
+                            confirmPassword: ''
+                        };
+                        this.isFormValid = false;
                         // Show success message
                     } else {
                         // Handle errors

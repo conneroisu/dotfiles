@@ -2,6 +2,10 @@
 
 {% block title %}Dashboard - Rust Web Shell{% endblock %}
 
+{% block head %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+{% endblock %}
+
 {% block content %}
 <div class="px-4 sm:px-6 lg:px-8">
     <!-- Page header -->
@@ -132,6 +136,24 @@
         <!-- Security Settings -->
         <div class="card" x-data="securityForm()">
             <h3 class="text-lg font-medium text-gray-900 mb-6">Security Settings</h3>
+
+            <!-- Message Display -->
+            <div x-show="message.show" x-transition class="mb-4">
+                <div 
+                    class="p-4 rounded-md"
+                    :class="{
+                        'bg-green-50 border border-green-200 text-green-800': message.type === 'success',
+                        'bg-red-50 border border-red-200 text-red-800': message.type === 'error'
+                    }"
+                >
+                    <div class="flex justify-between items-center">
+                        <span x-text="message.text"></span>
+                        <button @click="message.show = false" class="ml-4 text-sm opacity-70 hover:opacity-100">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <form @submit.prevent="changePassword" class="space-y-4">
                 <div>
@@ -271,6 +293,11 @@
                 confirmPassword: ''
             },
             isFormValid: false,
+            message: {
+                text: '',
+                type: '', // 'success' or 'error'
+                show: false
+            },
             
             validatePasswords() {
                 this.errors.newPassword = '';
@@ -301,10 +328,12 @@
                 this.loading = true;
                 
                 try {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                     const response = await fetch('/api/change-password', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-CSRF-Token': csrfToken,
                         },
                         body: JSON.stringify({
                             current_password: this.form.currentPassword,
@@ -323,12 +352,29 @@
                             confirmPassword: ''
                         };
                         this.isFormValid = false;
-                        // Show success message
+                        this.message = {
+                            text: 'Password changed successfully!',
+                            type: 'success',
+                            show: true
+                        };
+                        setTimeout(() => { this.message.show = false; }, 5000);
                     } else {
-                        // Handle errors
+                        const errorData = await response.json();
+                        this.message = {
+                            text: errorData.message || 'Failed to change password. Please try again.',
+                            type: 'error',
+                            show: true
+                        };
+                        setTimeout(() => { this.message.show = false; }, 5000);
                     }
                 } catch (error) {
                     console.error('Error changing password:', error);
+                    this.message = {
+                        text: 'Network error. Please check your connection and try again.',
+                        type: 'error',
+                        show: true
+                    };
+                    setTimeout(() => { this.message.show = false; }, 5000);
                 } finally {
                     this.loading = false;
                 }

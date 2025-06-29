@@ -46,6 +46,7 @@ pub struct UserResponse {
     pub email: String,
     pub username: String,
     pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
     pub email_verified: bool,
 }
 
@@ -56,6 +57,7 @@ impl From<User> for UserResponse {
             email: user.email,
             username: user.username,
             created_at: user.created_at,
+            updated_at: user.updated_at,
             email_verified: user.email_verified,
         }
     }

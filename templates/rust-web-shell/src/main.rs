@@ -1,7 +1,5 @@
-use axum::http::Method;
 use rust_web_shell::{create_app, setup_database};
 use std::env;
-use tower_http::cors::{Any, CorsLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]

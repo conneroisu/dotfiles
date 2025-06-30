@@ -13,7 +13,7 @@
     '';
 in
   delib.module {
-    name = "programs.catls";
+    name = "programs.splitm";
 
     options = singleEnableOption false;
 

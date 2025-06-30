@@ -2,46 +2,45 @@
   # Program Module: catls (Enhanced File Browser)
   
   ## Description
-  A Ruby-based enhanced file listing utility that provides colorized
-  and formatted directory listings with additional metadata. Improves
-  upon standard `ls` with better visual presentation and information.
+  A Python-based enhanced file listing utility that provides XML-formatted
+  output of directory contents with file filtering and pattern matching.
+  Useful for code analysis and file content inspection.
   
   ## Platform Support
   - ✅ NixOS
   - ✅ Darwin
   
   ## Features
-  - Colorized output based on file types
-  - Enhanced file metadata display
-  - Human-readable file sizes
-  - Git integration (if applicable)
+  - XML-formatted output
+  - Pattern matching for file inclusion/exclusion
+  - Content filtering with glob patterns
+  - Binary file detection
+  - File type detection
   - Recursive directory traversal
-  - Custom formatting options
+  - Line number display
+  - Debug mode
   
   ## Implementation
-  - **Language**: Ruby
-  - **Source**: ./catls.rb
-  - **Dependencies**: Ruby standard library
-  - **Build**: Nix writers.writeRubyBin
+  - **Language**: Python 3.11+
+  - **Source**: ./catls.py
+  - **Dependencies**: Python standard library
+  - **Build**: Nix writers.writePython3Bin
   
   ## Usage
   ```bash
-  catls                 # List current directory
-  catls /path/to/dir   # List specific directory
-  catls -la            # Long format with all files
+  catls                         # List current directory
+  catls /path/to/dir           # List specific directory
+  catls -r                     # Recursive listing
+  catls --regex "*.py"         # Include only Python files
+  catls --pattern "*import*"   # Show only lines with imports
+  catls -n                     # Show line numbers
   ```
   
   ## Common Use Cases
-  - Quick directory overview with colors
-  - File browsing in terminal
-  - Integration with shell aliases
-  - Scripting and automation
-  
-  ## Advantages over ls
-  - Better color coding
-  - More intuitive output
-  - Consistent cross-platform behavior
-  - Extensible Ruby implementation
+  - Code analysis and inspection
+  - File content search and filtering
+  - Documentation generation
+  - Codebase exploration
   
   ## Configuration
   Enabled via:
@@ -55,11 +54,11 @@
 }: let
   inherit (delib) singleEnableOption;
   program =
-    pkgs.writers.writeRubyBin "catls" {
+    pkgs.writers.writePython3Bin "catls" {
       libraries = [
       ];
     } ''
-      ${builtins.readFile ./catls.rb}
+      ${builtins.readFile ./catls.py}
     '';
 in
   delib.module {

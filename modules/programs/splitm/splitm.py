@@ -1,7 +1,18 @@
 #!/usr/bin/env python3
+"""
+Split a file into sections based on a delimiter and save each section to a new file.
+
+Usage:
+    splitm.py [options] <input>
+
+Options:
+    -h, --help      Show this help message and exit
+    -d, --delimiter Delimiter to split on
+    -p, --prefix    Prefix for output filenames
+"""
+
 
 import argparse
-import os
 from typing import cast
 from dataclasses import dataclass
 

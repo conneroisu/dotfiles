@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Split a file into sections based on a delimiter and save each section to a new file.
 
@@ -11,7 +10,6 @@ Options:
     -p, --prefix    Prefix for output filenames
 """
 
-
 import argparse
 from typing import cast
 from dataclasses import dataclass
@@ -22,11 +20,12 @@ class Args:
     """
     Dataclass to store command-line arguments.
 
-    Attributes: 
+    Attributes:
         input_filename: the name of the input file to split
         delimiter: the delimiter to split on
         output_prefix: prefix for output filenames
     """
+
     input_filename: str = "tmp"
     delimiter: str = "---"
     output_prefix: str = "section_"

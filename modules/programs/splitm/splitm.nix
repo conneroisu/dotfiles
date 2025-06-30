@@ -6,7 +6,10 @@
   inherit (delib) singleEnableOption;
   program =
     pkgs.writers.writePython3Bin "splitm" {
-      libraries = [
+      flakeIgnore = [
+        "E501"
+        "W503"
+        "W391"
       ];
     } ''
       ${builtins.readFile ./splitm.py}

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 import argparse
 import os
@@ -304,7 +303,7 @@ def parse_args() -> Args:
         parsed_args.all,
     )
     args.recursive = cast(
-        bool, 
+        bool,
         parsed_args.recursive,
     )
     args.debug = cast(

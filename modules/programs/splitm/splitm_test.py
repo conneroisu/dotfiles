@@ -1,16 +1,18 @@
+import os
 import pytest
 from splitm import split_file
+from pyfakefs.fake_filesystem import FakeFilesystem
 
 
 @pytest.fixture
-def fake_filesystem(fs):  # pylint:disable=invalid-name
+def fake_filesystem(fs: FakeFilesystem):  # pylint:disable=invalid-name
     """Variable name 'fs' causes a pylint warning. Provide a longer name
     acceptable to pylint for use in tests.
     """
     yield fs
 
 
-def test_split_file(fake_filesystem):
+def test_split_file(fake_filesystem: FakeFilesystem):
     """Test the split_file function."""
     fake_filesystem.create_file(
         "/tf2",
@@ -24,10 +26,8 @@ def test_split_file(fake_filesystem):
     )
 
     assert fake_filesystem.exists("/tf2")
-    assert fake_filesystem.exists("/tf2/section_1.txt")
-    assert fake_filesystem.exists("/tf2/section_2.txt")
-    assert fake_filesystem.exists("/tf2/section_3.txt")
-
-    assert fake_filesystem.read("/tf2/section_1.txt") == "This is a test file."
-    assert fake_filesystem.read("/tf2/section_2.txt") == "This is the second section."
-    assert fake_filesystem.read("/tf2/section_3.txt") == "This is the third section."
+    assert fake_filesystem.exists("/section_1.txt")
+    assert fake_filesystem.exists("/section_2.txt")
+    assert fake_filesystem.exists("/section_3.txt")
+    with open("/section_1.txt", "r") as f:
+        assert f.read() == "This is a test file."

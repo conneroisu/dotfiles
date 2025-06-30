@@ -15,7 +15,6 @@
 # - macOS: Basic user setup with nix-darwin integration
 # - NixOS: Full user account with system service groups and SSH access
 # - Both: Nix flakes support and binary cache configuration
-
 {
   delib,
   pkgs,
@@ -32,25 +31,26 @@ delib.module {
     nix = {
       settings = {
         # Enable modern Nix features
+        lazy-trees = true;
         experimental-features = [
-          "nix-command"  # New nix CLI commands
-          "flakes"       # Nix flakes support
+          "nix-command" # New nix CLI commands
+          "flakes" # Nix flakes support
         ];
-        
+
         # Users allowed to perform privileged Nix operations
         trusted-users = [
           "root"
-          "@wheel"           # All wheel group members
+          "@wheel" # All wheel group members
           "connerohnesorge"
         ];
-        
+
         # Users allowed to use Nix daemon
         allowed-users = [
           "root"
           "@wheel"
           "connerohnesorge"
         ];
-        
+
         # Binary cache configuration for faster builds
         substituters = [
           "https://cache.nixos.org"
@@ -60,12 +60,12 @@ delib.module {
         ];
       };
     };
-    
+
     # User and group creation
     users = {
       groups.${username} = {};
       users.${username} = {
-        home = "/Users/${username}";  # macOS home directory convention
+        home = "/Users/${username}"; # macOS home directory convention
       };
     };
   };
@@ -78,29 +78,29 @@ delib.module {
     nix = pkgs.lib.mkForce {
       settings = {
         # Performance optimizations
-        max-jobs = 8;         # Parallel build jobs
-        lazy-trees = true;    # Lazy evaluation for better performance
-        
+        max-jobs = 8; # Parallel build jobs
+        lazy-trees = true; # Lazy evaluation for better performance
+
         # Enable modern Nix features
         experimental-features = [
           "nix-command"
           "flakes"
         ];
-        
+
         # Privileged user configuration
         trusted-users = [
           "root"
           "@wheel"
           "connerohnesorge"
         ];
-        
+
         # Allowed user configuration
         allowed-users = [
           "root"
           "@wheel"
           "connerohnesorge"
         ];
-        
+
         # Binary cache for faster package installation
         substituters = [
           "https://cache.nixos.org"
@@ -110,29 +110,29 @@ delib.module {
         ];
       };
     };
-    
+
     # User and group management
     users = {
       # Create user's primary group
       groups.${username} = {};
-      
+
       # Create NordVPN group for VPN access
       groups.nordvpn = {};
 
       # Main user account configuration
       users.${username} = {
-        home = "/home/${username}";  # Linux home directory convention
-        isNormalUser = true;         # Standard user (not system account)
-        
+        home = "/home/${username}"; # Linux home directory convention
+        isNormalUser = true; # Standard user (not system account)
+
         # System group memberships for required services
         extraGroups = [
-          "networkmanager"  # Network configuration access
-          "wheel"          # Sudo privileges
-          "docker"         # Docker daemon access
-          "users"          # Standard users group
-          "nordvpn"        # VPN access
+          "networkmanager" # Network configuration access
+          "wheel" # Sudo privileges
+          "docker" # Docker daemon access
+          "users" # Standard users group
+          "nordvpn" # VPN access
         ];
-        
+
         # SSH public key for remote access
         openssh.authorizedKeys.keys = [
           ''
@@ -144,7 +144,7 @@ delib.module {
         shell = pkgs.zsh;
       };
     };
-    
+
     # Note: Custom nix.conf generation is available but currently disabled
     # The commented section below shows how to generate custom nix configuration
     # if needed for specialized setups

@@ -159,34 +159,7 @@ def should_include(
 
 
 def get_real_path(path: str) -> str:
-    """Get the real absolute path using shell commands."""
-    try:
-        result = subprocess.run(
-            ["realpath", path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-        )
-        if (
-            result.returncode == 0
-            and result.stdout.strip()
-        ):
-            return result.stdout.strip()
-
-        result = subprocess.run(
-            ["readlink", "-f", path],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            text=True,
-        )
-        if (
-            result.returncode == 0
-            and result.stdout.strip()
-        ):
-            return result.stdout.strip()
-    except FileNotFoundError:
-        pass
-
+    """Get the real absolute path using Python's built-in path resolution."""
     try:
         return str(Path(path).resolve())
     except Exception:
@@ -364,32 +337,8 @@ def parse_args() -> Args:
     return args
 
 
-def main():
-    """Main function."""
-    args = parse_args()
-
-    if args.debug:
-        os.environ["CATLS_DEBUG"] = "1"
-
-    if not os.path.isdir(args.directory):
-        print(
-            f"Error: '{args.directory}' is not a valid directory.",
-            file=sys.stderr,
-        )
-        sys.exit(1)
-
-    # Clean up ignore directories
-    args.ignore_dir = [
-        d.rstrip("/") for d in args.ignore_dir
-    ]
-
-    if args.debug:
-        print(
-            f"Debug: Ignoring directories: {args.ignore_dir}",
-            file=sys.stderr,
-        )
-
-    # Find all files
+def find_files(args) -> list[str]:
+    """Find all files in the directory based on the provided arguments."""
     files: list[str] = []
     maxdepth = (
         float("inf") if args.recursive else 1
@@ -451,6 +400,173 @@ def main():
             )
 
     files.sort()
+    return files
+
+
+def process_file(file_path: str, args) -> None:
+    """Process a single file and output its contents."""
+    if args.directory == ".":
+        rel_path: str = file_path
+    else:
+        try:
+            rel_path = str(
+                Path(file_path).relative_to(
+                    Path(args.directory)
+                )
+            )
+        except ValueError:
+            rel_path = file_path
+
+    if not should_include(
+        rel_path, args.include_regex
+    ):
+        return
+
+    if should_ignore(
+        rel_path,
+        args.ignore_regex,
+        args.ignore_dir,
+    ):
+        if args.debug:
+            print(
+                f"Debug: Ignoring file: {rel_path}",
+                file=sys.stderr,
+            )
+        return
+
+    safe_path = escape(rel_path)
+    print(f'<file path="{safe_path}">')
+
+    if is_binary(file_path):
+        print(  # binary
+            "<binary>true</binary>"
+        )
+        print(  # binary content
+            "<content>[Binary file - contents not displayed]</content>"
+        )
+    else:
+        filetype = guess_filetype(file_path)
+        print(
+            f"<type>{escape(filetype)}</type>"
+        )
+
+        try:
+            with open(
+                file_path,
+                "r",
+                encoding="utf-8",
+                errors="replace",
+            ) as f:
+                content = f.readlines()
+
+            line_count = len(content)
+            filtered_content: list[
+                tuple[int, str]
+            ] = []
+
+            if args.content_pattern:
+                try:
+                    regex_pattern = wildcard_to_regex(
+                        args.content_pattern
+                    )
+                    pattern = re.compile(
+                        regex_pattern
+                    )
+                    for i, line in enumerate(
+                        content
+                    ):
+                        if pattern.search(
+                            line
+                        ):
+                            filtered_content.append(
+                                (i + 1, line)
+                            )
+                except re.error as e:
+                    print(
+                        f"<error>Error in pattern: {escape(str(e))}</error>"
+                    )
+                    filtered_content = [
+                        (i + 1, line)
+                        for i, line in enumerate(
+                            content
+                        )
+                    ]
+            else:
+                filtered_content = [
+                    (i + 1, line)
+                    for i, line in enumerate(
+                        content
+                    )
+                ]
+
+            filtered_count = len(
+                filtered_content
+            )
+
+            if (
+                filtered_count > 1000
+                and not args.content_pattern
+            ):
+                to_display = filtered_content[
+                    :100
+                ]
+                print_trailing_message = True
+            else:
+                to_display = filtered_content
+                print_trailing_message = False
+
+            print("<content>")
+            for line_num, line in to_display:
+                if args.show_line_numbers:
+                    print(
+                        f"{line_num:>4}| {line}",
+                        end="",
+                    )
+                else:
+                    print(line, end="")
+
+            if print_trailing_message:
+                print(
+                    f"... ({line_count - 100} more lines)"
+                )
+
+            print("</content>")
+
+        except Exception as e:
+            print(
+                f"<error>{escape(str(e))}</error>"
+            )
+
+    print("</file>")
+
+
+def main():
+    """Main function."""
+    args = parse_args()
+
+    if args.debug:
+        os.environ["CATLS_DEBUG"] = "1"
+
+    if not os.path.isdir(args.directory):
+        print(
+            f"Error: '{args.directory}' is not a valid directory.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # Clean up ignore directories
+    args.ignore_dir = [
+        d.rstrip("/") for d in args.ignore_dir
+    ]
+
+    if args.debug:
+        print(
+            f"Debug: Ignoring directories: {args.ignore_dir}",
+            file=sys.stderr,
+        )
+
+    # Find all files
+    files = find_files(args)
 
     if not files:
         print(
@@ -461,139 +577,7 @@ def main():
     print("<files>")
 
     for file_path in files:
-        if args.directory == ".":
-            rel_path: str = file_path
-        else:
-            try:
-                rel_path = str(
-                    Path(file_path).relative_to(
-                        Path(args.directory)
-                    )
-                )
-            except ValueError:
-                rel_path = file_path
-
-        if not should_include(
-            rel_path, args.include_regex
-        ):
-            continue
-
-        if should_ignore(
-            rel_path,
-            args.ignore_regex,
-            args.ignore_dir,
-        ):
-            if args.debug:
-                print(
-                    f"Debug: Ignoring file: {rel_path}",
-                    file=sys.stderr,
-                )
-            continue
-
-        safe_path = escape(rel_path)
-        print(f'<file path="{safe_path}">')
-
-        if is_binary(file_path):
-            print(  # binary
-                "<binary>true</binary>"
-            )
-            print(  # binary content
-                "<content>[Binary file - contents not displayed]</content>"
-            )
-        else:
-            filetype = guess_filetype(file_path)
-            print(
-                f"<type>{escape(filetype)}</type>"
-            )
-
-            try:
-                with open(
-                    file_path,
-                    "r",
-                    encoding="utf-8",
-                    errors="replace",
-                ) as f:
-                    content = f.readlines()
-
-                line_count = len(content)
-                filtered_content: list[
-                    tuple[int, str]
-                ] = []
-
-                if args.content_pattern:
-                    try:
-                        regex_pattern = wildcard_to_regex(
-                            args.content_pattern
-                        )
-                        pattern = re.compile(
-                            regex_pattern
-                        )
-                        for i, line in enumerate(
-                            content
-                        ):
-                            if pattern.search(
-                                line
-                            ):
-                                filtered_content.append(
-                                    (i + 1, line)
-                                )
-                    except re.error as e:
-                        print(
-                            f"<error>Error in pattern: {escape(str(e))}</error>"
-                        )
-                        filtered_content = [
-                            (i + 1, line)
-                            for i, line in enumerate(
-                                content
-                            )
-                        ]
-                else:
-                    filtered_content = [
-                        (i + 1, line)
-                        for i, line in enumerate(
-                            content
-                        )
-                    ]
-
-                filtered_count = len(
-                    filtered_content
-                )
-
-                if (
-                    filtered_count > 1000
-                    and not args.content_pattern
-                ):
-                    to_display = filtered_content[
-                        :100
-                    ]
-                    print_trailing_message = True
-                else:
-                    to_display = filtered_content
-                    print_trailing_message = False
-
-                print("<content>")
-                for line_num, line in to_display:
-                    if args.show_line_numbers:
-                        print(
-                            f"{line_num:>4}| {line}",
-                            end="",
-                        )
-                    else:
-                        print(line, end="")
-
-                if print_trailing_message:
-                    print(
-                        f"... ({line_count - 100} more lines)"
-                    )
-
-                print("</content>")
-
-            except Exception as e:
-                print(
-                    f"<error>{escape(str(e))}</error>"
-                )
-
-        print("</file>")
+        process_file(file_path, args)
 
     print("</files>")
 

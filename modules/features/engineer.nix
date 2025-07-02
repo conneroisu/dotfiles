@@ -247,6 +247,7 @@ in
     darwin.ifEnabled = {
       myconfig.programs = {
         dx.enable = true;
+        splitm.enable = true;
       };
       environment = {
         systemPackages = [

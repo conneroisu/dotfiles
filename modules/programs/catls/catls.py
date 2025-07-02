@@ -337,7 +337,7 @@ def parse_args() -> Args:
     return args
 
 
-def find_files(args) -> list[str]:
+def find_files(args: Args) -> list[str]:
     """Find all files in the directory based on the provided arguments."""
     files: list[str] = []
     maxdepth = (
@@ -345,7 +345,7 @@ def find_files(args) -> list[str]:
     )
 
     # Walk directory structure
-    dir_stack = [(args.directory, 0)]
+    dir_stack: list[tuple[str, int]] = [(args.directory, 0)]
     while dir_stack:
         current_dir, current_depth = (
             dir_stack.pop()
@@ -403,7 +403,7 @@ def find_files(args) -> list[str]:
     return files
 
 
-def process_file(file_path: str, args) -> None:
+def process_file(file_path: str, args: Args) -> None:
     """Process a single file and output its contents."""
     if args.directory == ".":
         rel_path: str = file_path

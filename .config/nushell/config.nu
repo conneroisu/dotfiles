@@ -776,3 +776,4 @@ def nvimfi [] {
 }
 
 alias cf = cd (fd --type d --hidden --exclude .git --strip-cwd-prefix --max-depth 99 | fzf --reverse --preview "ls --color {}")
+source $"($nu.home-path)/.cargo/env.nu"

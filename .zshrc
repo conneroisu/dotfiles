@@ -88,7 +88,3 @@ source <(kubectl completion zsh)
 
 # Turso
 export PATH="$PATH:/home/connerohnesorge/.turso"
-
-### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
-export PATH="/Users/connerohnesorge/.rd/bin:$PATH"
-### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)

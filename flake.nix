@@ -229,6 +229,10 @@
         description = "A rust web shell for developing with nix";
         path = ./templates/rust-web-shell;
       };
+      tanstack-shell = {
+        description = "A TanStack Start shell with auth system and dashboard";
+        path = ./templates/tanstack-shell;
+      };
     };
   };
 }

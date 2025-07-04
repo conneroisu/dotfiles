@@ -152,7 +152,6 @@
             # TypeScript and development tools
             nodePackages.typescript
             nodePackages.typescript-language-server
-            nodePackages."@types/node"
             
             # Linting and formatting
             nodePackages.eslint
@@ -169,7 +168,7 @@
             postgresql
             
             # Optional: Testing tools
-            nodePackages.jest
+            # Note: Jest will be installed via npm in package.json
             
             # Development utilities
             jq

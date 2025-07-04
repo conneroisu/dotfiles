@@ -22,3 +22,6 @@ devenv.local.nix
 .devenv*
 .obsidian/
 .env
+__pycache__/
+*.pyc
+*.so

@@ -46,6 +46,7 @@ alias wt='git worktree'
 alias wtd='git worktree remove'
 alias k='kubectl'
 alias nix-env='echo "panic: nix-env is disabled (#61)" >&2 && false'
+alias vim='nvim'
 
 
 # Load a few important annexes, without Turbo

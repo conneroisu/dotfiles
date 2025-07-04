@@ -18,8 +18,10 @@
 
           src = pkgs.lib.cleanSource ./.;
 
-          # This hash needs to be calculated - use `lib.fakeHash` for initial builds
-          npmDepsHash = pkgs.lib.fakeHash;
+          # Force empty cache since we don't have a proper package-lock.json yet
+          forceEmptyCache = true;
+          makeCacheWritable = true;
+          npmDepsHash = "sha256-1N2GFrBbbToq1dzObK6MPOrhQIPx1Y1Lx4IOEICHVbo=";
 
           nativeBuildInputs = with pkgs; [
             nodejs_20
@@ -43,8 +45,8 @@
           buildPhase = ''
             runHook preBuild
             
-            # Install dependencies
-            npm ci --offline --cache .npm-cache
+            # Install dependencies without using package-lock cache
+            npm install --no-fund --no-audit --prefer-offline
             
             # Run the build
             npm run build

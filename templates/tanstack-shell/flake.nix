@@ -16,7 +16,7 @@
           pname = "tanstack-auth-app";
           version = "0.1.0";
 
-          src = ./.;
+          src = pkgs.lib.cleanSource ./.;
 
           # This hash needs to be calculated - use `lib.fakeHash` for initial builds
           npmDepsHash = pkgs.lib.fakeHash;

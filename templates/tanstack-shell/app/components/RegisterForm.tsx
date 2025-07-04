@@ -19,17 +19,12 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       confirmPassword: '',
     },
     onSubmit: async ({ value }) => {
-      try {
-        await register({ data: value })
-        router.invalidate()
-        if (onSuccess) {
-          onSuccess()
-        } else {
-          await router.navigate({ to: '/dashboard' })
-        }
-      } catch (error) {
-        // Form will handle the error display
-        throw error
+      await register({ data: value })
+      void router.invalidate()
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        await router.navigate({ to: '/dashboard' })
       }
     },
     validators: {
@@ -42,7 +37,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       onSubmit={(e) => {
         e.preventDefault()
         e.stopPropagation()
-        form.handleSubmit()
+        void form.handleSubmit()
       }}
       className="space-y-6"
     >
@@ -51,7 +46,8 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         validators={{
           onChange: zodValidator(registerSchema.shape.name),
         }}
-        children={(field) => (
+      >
+        {(field) => (
           <div className="form-group">
             <label htmlFor={field.name} className="form-label">
               Full name
@@ -78,14 +74,15 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             )}
           </div>
         )}
-      />
+      </form.Field>
 
       <form.Field
         name="email"
         validators={{
           onChange: zodValidator(registerSchema.shape.email),
         }}
-        children={(field) => (
+      >
+        {(field) => (
           <div className="form-group">
             <label htmlFor={field.name} className="form-label">
               Email address
@@ -112,14 +109,15 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             )}
           </div>
         )}
-      />
+      </form.Field>
 
       <form.Field
         name="password"
         validators={{
           onChange: zodValidator(registerSchema.shape.password),
         }}
-        children={(field) => (
+      >
+        {(field) => (
           <div className="form-group">
             <label htmlFor={field.name} className="form-label">
               Password
@@ -146,14 +144,15 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             )}
           </div>
         )}
-      />
+      </form.Field>
 
       <form.Field
         name="confirmPassword"
         validators={{
           onChange: zodValidator(registerSchema.shape.confirmPassword),
         }}
-        children={(field) => (
+      >
+        {(field) => (
           <div className="form-group">
             <label htmlFor={field.name} className="form-label">
               Confirm password
@@ -180,7 +179,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             )}
           </div>
         )}
-      />
+      </form.Field>
 
       <div className="flex items-center">
         <input
@@ -193,13 +192,13 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         />
         <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
           I agree to the{' '}
-          <a href="#" className="text-primary-600 hover:text-primary-500">
+          <button type="button" className="text-primary-600 hover:text-primary-500">
             Terms of Service
-          </a>{' '}
+          </button>{' '}
           and{' '}
-          <a href="#" className="text-primary-600 hover:text-primary-500">
+          <button type="button" className="text-primary-600 hover:text-primary-500">
             Privacy Policy
-          </a>
+          </button>
         </label>
       </div>
 

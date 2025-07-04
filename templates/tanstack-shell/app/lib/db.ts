@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3'
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator'
 import * as schema from './schema'
 
-const dbPath = process.env.DATABASE_URL?.replace('file:', '') || './db.sqlite'
+const dbPath = process.env.DATABASE_URL?.replace('file:', '') ?? './db.sqlite'
 const sqlite = new Database(dbPath)
 
 // Enable WAL mode for better performance

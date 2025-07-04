@@ -88,3 +88,4 @@ source <(kubectl completion zsh)
 
 # Turso
 export PATH="$PATH:/home/connerohnesorge/.turso"
+export PATH="/Users/connerohnesorge/.local/bin:$PATH"

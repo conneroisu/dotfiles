@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ES6"],
-    "allowJs": true,
-    "skipLibCheck": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "allowJs": false,
+    "skipLibCheck": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -21,11 +21,48 @@
     "paths": {
       "~/*": ["./app/*"]
     },
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    
+    // Additional strict checks
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    
+    // Additional module checks
+    "verbatimModuleSyntax": true,
+    "allowArbitraryExtensions": false,
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
+    
+    // Output options
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": true,
+    
+    // Advanced options
+    "noErrorTruncation": true,
+    "preserveConstEnums": true,
+    "assumeChangesOnlyAffectDirectDependencies": true
   },
   "include": [
     "app",
-    "vite.config.ts"
+    "test",
+    "vite.config.ts",
+    "vitest.config.ts"
   ],
   "exclude": [
     "node_modules",

@@ -6,13 +6,18 @@ import { count } from 'drizzle-orm'
 
 const getDashboardStats = createServerFn({ method: 'GET' })
   .handler(async () => {
-    const [userCountResult] = await db.select({ count: count() }).from(users)
-    
-    return {
-      totalUsers: userCountResult.count,
-      newUsersThisWeek: Math.floor(Math.random() * 10) + 1, // Mock data
-      activeToday: Math.floor(Math.random() * userCountResult.count) + 1, // Mock data
-      conversionRate: (Math.random() * 10 + 5).toFixed(1), // Mock data
+    try {
+      const [userCountResult] = await db.select({ count: count() }).from(users)
+      
+      return {
+        totalUsers: userCountResult.count,
+        newUsersThisWeek: Math.floor(Math.random() * 10) + 1, // Mock data
+        activeToday: Math.floor(Math.random() * userCountResult.count) + 1, // Mock data
+        conversionRate: (Math.random() * 10 + 5).toFixed(1), // Mock data
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard stats:', error)
+      throw new Error('Unable to load dashboard statistics. Please try again later.')
     }
   })
 

@@ -35,8 +35,11 @@ This is a modern full-stack web application built with **TanStack Start**, featu
 
 ### Development Tools
 - **ESLint** - Code linting with TypeScript rules
+- **oxlint** - Fast Rust-based linter with strict rules (--deny=all)
 - **Prettier** - Code formatting
-- **Jest** - Unit testing framework
+- **Vitest** - Modern testing framework with browser testing support
+- **Playwright** - Cross-browser testing automation
+- **Testing Library** - React component testing utilities
 - **Drizzle Kit** - Database migration and studio tools
 
 ## Project Structure
@@ -81,10 +84,12 @@ npm run start            # Start production server
 
 ### Code Quality
 ```bash
-npm run lint             # Run ESLint
-npm run lint:fix         # Fix ESLint issues
+npm run lint             # Run both ESLint and oxlint with strict rules
+npm run lint:eslint      # Run ESLint only
+npm run lint:oxlint      # Run oxlint only (with --deny=all for maximum strictness)
+npm run lint:fix         # Fix ESLint and oxlint issues
 npm run format           # Format code with Prettier
-npm run type-check       # Check TypeScript types
+npm run type-check       # Check TypeScript types (strict mode enabled)
 ```
 
 ### Database
@@ -96,9 +101,20 @@ npm run db:studio        # Open Drizzle Studio (database UI)
 
 ### Testing
 ```bash
-npm run test             # Run Jest tests
+npm run test             # Run Vitest tests in headless mode
+npm run test:ui          # Run Vitest with interactive UI
 npm run test:watch       # Run tests in watch mode
+npm run test:browser     # Run browser tests with Playwright
+npm run test:browser:ui  # Run browser tests with UI (great for debugging)
+npm run test:coverage    # Run tests with coverage report
 ```
+
+#### Browser Testing
+The project uses Vitest with Playwright for comprehensive browser testing:
+- **Authentication tests** (`test/browser/auth.test.ts`) - Login, registration, logout flows
+- **Dashboard tests** (`test/browser/dashboard.test.ts`) - Protected routes, navigation, responsive design
+- Tests run against a real browser (Chromium by default)
+- Use `npm run test:browser:ui` for interactive debugging with browser preview
 
 ### Nix Operations
 ```bash
@@ -219,6 +235,52 @@ nix build               # Creates result/ symlink
 3. Set up production database
 4. Configure CORS origins
 5. Set up HTTPS in production
+
+## Testing Strategy
+
+### Unit Testing
+- Component tests using Vitest and Testing Library
+- Server function tests with mocked database
+- Utility function tests with full coverage
+- Run with `npm run test` for headless execution
+
+### Browser Testing
+- End-to-end tests using Vitest Browser mode with Playwright
+- Real browser automation (Chromium, Firefox, Safari)
+- Authentication flow testing
+- Dashboard functionality testing
+- Responsive design verification
+- Run with `npm run test:browser` for full browser tests
+
+### Test Structure
+```
+test/
+├── setup.ts             # Global test setup and utilities
+├── unit/                # Unit tests for components and utilities
+├── browser/             # Browser-based E2E tests
+│   ├── auth.test.ts     # Authentication flow tests
+│   └── dashboard.test.ts # Dashboard functionality tests
+└── fixtures/            # Test data and mocks
+```
+
+### Writing Tests
+```typescript
+// Browser test example
+test('should handle login flow', async () => {
+  await page.goto('/login')
+  await page.fill('input[name="email"]', 'test@example.com')
+  await page.fill('input[name="password"]', 'password123')
+  await page.click('button[type="submit"]')
+  await expect(page).toHaveURL(/\/dashboard/)
+})
+
+// Component test example
+test('renders login form', () => {
+  render(<LoginForm />)
+  expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+  expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
+})
+```
 
 ## Best Practices
 

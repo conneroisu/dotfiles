@@ -8,7 +8,7 @@ import { users, sessions, loginSchema, registerSchema, type User } from './schem
 import { getCookie, setCookie, deleteCookie } from 'vinxi/http'
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.SESSION_SECRET || 'your-super-secret-session-key-change-this-in-production'
+  process.env.SESSION_SECRET ?? 'your-super-secret-session-key-change-this-in-production'
 )
 
 const SESSION_COOKIE_NAME = 'auth-session'
@@ -62,7 +62,7 @@ export async function validateSession(token: string): Promise<User | null> {
       where: eq(users.id, userId),
     })
 
-    return user || null
+    return user ?? null
   } catch {
     return null
   }

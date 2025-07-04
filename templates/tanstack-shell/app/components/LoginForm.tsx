@@ -18,19 +18,14 @@ export function LoginForm({ redirectTo, onSuccess }: LoginFormProps) {
       password: '',
     },
     onSubmit: async ({ value }) => {
-      try {
-        await login({ data: value })
-        router.invalidate()
-        
-        if (onSuccess) {
-          onSuccess()
-        } else {
-          const targetPath = redirectTo || '/dashboard'
-          await router.navigate({ to: targetPath })
-        }
-      } catch (error) {
-        // Form will handle the error display
-        throw error
+      await login({ data: value })
+      void router.invalidate()
+      
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        const targetPath = redirectTo ?? '/dashboard'
+        await router.navigate({ to: targetPath })
       }
     },
     validators: {
@@ -43,7 +38,7 @@ export function LoginForm({ redirectTo, onSuccess }: LoginFormProps) {
       onSubmit={(e) => {
         e.preventDefault()
         e.stopPropagation()
-        form.handleSubmit()
+        void form.handleSubmit()
       }}
       className="space-y-6"
     >
@@ -52,7 +47,8 @@ export function LoginForm({ redirectTo, onSuccess }: LoginFormProps) {
         validators={{
           onChange: zodValidator(loginSchema.shape.email),
         }}
-        children={(field) => (
+      >
+        {(field) => (
           <div className="form-group">
             <label htmlFor={field.name} className="form-label">
               Email address
@@ -79,14 +75,15 @@ export function LoginForm({ redirectTo, onSuccess }: LoginFormProps) {
             )}
           </div>
         )}
-      />
+      </form.Field>
 
       <form.Field
         name="password"
         validators={{
           onChange: zodValidator(loginSchema.shape.password),
         }}
-        children={(field) => (
+      >
+        {(field) => (
           <div className="form-group">
             <label htmlFor={field.name} className="form-label">
               Password
@@ -113,7 +110,7 @@ export function LoginForm({ redirectTo, onSuccess }: LoginFormProps) {
             )}
           </div>
         )}
-      />
+      </form.Field>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center">
@@ -129,12 +126,12 @@ export function LoginForm({ redirectTo, onSuccess }: LoginFormProps) {
         </div>
 
         <div className="text-sm">
-          <a
-            href="#"
+          <button
+            type="button"
             className="font-medium text-primary-600 hover:text-primary-500"
           >
             Forgot your password?
-          </a>
+          </button>
         </div>
       </div>
 

@@ -1,39 +1,39 @@
 /**
-  # Host Configuration: mac-nix (Conner's MacBook Air)
-  
-  ## Description
-  Primary development machine configuration for macOS (Apple Silicon).
-  This host runs nix-darwin for package management and includes a VMware
-  guest configuration for running NixOS VMs locally.
-  
-  ## Host Type
-  - Type: laptop
-  - System: aarch64-darwin (Apple Silicon)
-  - Rice: dark theme
-  
-  ## Key Features
-  - **Engineer role**: Development tools and environments
-  - **macOS integration**: Native macOS apps (Aerospace, Raycast, Xcodes)
-  - **VMware support**: Configured for NixOS VM development
-  - **Blink shell**: Terminal emulator with fuzzy search
-  
-  ## Platform-specific Configurations
-  ### Darwin (Primary)
-  - Touch ID for sudo authentication
-  - Custom dock and trackpad settings
-  - Nix Apps integration in /Applications
-  - Container support via gvproxy
-  
-  ### NixOS (VM Guest)
-  - VMware guest tools and drivers
-  - Shared folder mounting at /mnt/hgfs
-  - Basic development environment
-  - SSH access enabled
-  
-  ## Enabled Programs
-  - dx: Flake.nix editor
-  - catls: Ruby-based file browser
-  - convert_img: Image conversion utility
+# Host Configuration: mac-nix (Conner's MacBook Air)
+
+## Description
+Primary development machine configuration for macOS (Apple Silicon).
+This host runs nix-darwin for package management and includes a VMware
+guest configuration for running NixOS VMs locally.
+
+## Host Type
+- Type: laptop
+- System: aarch64-darwin (Apple Silicon)
+- Rice: dark theme
+
+## Key Features
+- **Engineer role**: Development tools and environments
+- **macOS integration**: Native macOS apps (Aerospace, Raycast, Xcodes)
+- **VMware support**: Configured for NixOS VM development
+- **Blink shell**: Terminal emulator with fuzzy search
+
+## Platform-specific Configurations
+### Darwin (Primary)
+- Touch ID for sudo authentication
+- Custom dock and trackpad settings
+- Nix Apps integration in /Applications
+- Container support via gvproxy
+
+### NixOS (VM Guest)
+- VMware guest tools and drivers
+- Shared folder mounting at /mnt/hgfs
+- Basic development environment
+- SSH access enabled
+
+## Enabled Programs
+- dx: Flake.nix editor
+- catls: Ruby-based file browser
+- convert_img: Image conversion utility
 */
 {
   delib,
@@ -140,7 +140,43 @@ in
     darwin = {
       imports = [
         # inputs.determinate.darwinModules.default
+        inputs.nix-homebrew.darwinModules.nix-homebrew
       ];
+
+      nix-homebrew = {
+        # Install Homebrew under the default prefix
+        enable = true;
+        autoMigrate = true;
+
+        # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
+        enableRosetta = true;
+
+        # User owning the Homebrew prefix
+        user = "connerohnesorge";
+
+        # Optional: Declarative tap management
+        taps = {
+          "homebrew/homebrew-core" = inputs.homebrew-core;
+          "homebrew/homebrew-cask" = inputs.homebrew-cask;
+          "dagger/tap" = inputs.dagger;
+        };
+
+        # Optional: Enable fully-declarative tap management
+        #
+        # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
+        mutableTaps = true;  # Enable mutable taps to allow dagger tap
+      };
+      homebrew = {
+        enable = true;
+        # Optional: Enable homebrew-bundle
+        #
+        # Homebrew-bundle allows you to install packages from a git repository
+        # without having to add them to your Brewfile.
+        taps = ["dagger/tap"];
+        casks = [
+          "container-use"  # Simplified cask name
+        ];
+      };
       nixpkgs = {
         hostPlatform = system;
         config.allowUnfree = true;
@@ -158,6 +194,7 @@ in
       };
       system = {
         stateVersion = 5;
+        primaryUser = "connerohnesorge";
         defaults = {
           dock.autohide = true;
 

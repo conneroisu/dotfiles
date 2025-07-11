@@ -205,6 +205,7 @@ in
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
             inputs.nordvpn.packages."${pkgs.system}".default
+            inputs.nix-auth.packages."${pkgs.system}".default
           ];
         variables = {
           EDITOR = "nvim";
@@ -300,6 +301,9 @@ in
           pkgs.nixd
           pkgs.nodejs
           pkgs.lua-language-server
+
+          # Nix tools
+          inputs.nix-auth.packages."${pkgs.system}".default
         ];
         variables = {
           EDITOR = "nvim";

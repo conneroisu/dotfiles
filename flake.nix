@@ -8,7 +8,20 @@
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
+    nix-homebrew.url = "github:zhaofengli/nix-homebrew";
 
+    # Optional: Declarative tap management
+    homebrew-core = {
+      url = "github:homebrew/homebrew-core";
+      flake = false;
+    };
+    homebrew-cask = {
+      url = "github:homebrew/homebrew-cask";
+      flake = false;
+    };
+
+    dagger.url = "github:dagger/homebrew-tap";
+    dagger.flake = false;
     nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
     # nordvpn.url = "path:./nordvpn-flake";
     # parcl.url = "github:conneroisu/parcl";
@@ -36,6 +49,7 @@
       url = "github:yunfachi/denix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
+      inputs.nix-darwin.follows = "nix-darwin";
     };
 
     hyprland.url = "github:hyprwm/hyprland";
@@ -68,6 +82,9 @@
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    nix-auth.url = "github:numtide/nix-auth";
+    nix-auth.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -228,10 +245,6 @@
       rust-web-shell = {
         description = "A rust web shell for developing with nix";
         path = ./templates/rust-web-shell;
-      };
-      tanstack-shell = {
-        description = "A TanStack Start shell with auth system and dashboard";
-        path = ./templates/tanstack-shell;
       };
     };
   };

@@ -2,7 +2,7 @@
   description = "Modular configuration of Home Manager and NixOS with Denix";
 
   inputs = {
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.11.5b";
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.14.4b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     ashell.url = "github:MalpenZibo/ashell";
     ashell.inputs = {
@@ -62,7 +62,6 @@
     stylix.inputs = {
       nixpkgs.follows = "nixpkgs";
       systems.follows = "systems";
-      home-manager.follows = "home-manager";
     };
 
     ghostty.url = "github:ghostty-org/ghostty/main";

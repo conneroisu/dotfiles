@@ -226,9 +226,9 @@
         description = "A Remix JS shell for developing with bun";
         path = ./templates/remix-js-shell;
       };
-      elixir-phoenix-shell = {
+      phoenix-shell = {
         description = "An Elixir Phoenix Framework shell for developing with nix";
-        path = ./templates/elixir-phoenix-shell;
+        path = ./templates/phoenix-shell;
       };
       laravel-shell = {
         description = "A Laravel shell for developing with nix";

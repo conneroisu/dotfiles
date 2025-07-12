@@ -107,6 +107,7 @@ in
           EDITOR = "nvim";        # Default text editor
           SYSTEMD_EDITOR = "nvim"; # Editor for systemd operations
           VISUAL = "nvim";        # Visual editor for applications
+          MANPAGER = "nvim +Man!"; # Manpage viewer
         };
       };
     };

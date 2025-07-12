@@ -3,7 +3,7 @@ command=zsh
 
 font-family = "CodeNewRoman Nerd Font"
 
-window-decoration = true
+window-decoration = false
 
 background = #000000
 

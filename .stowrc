@@ -29,3 +29,4 @@
 --ignore README.md
 --ignore clean.sh
 --ignore .github
+--ignore CLAUDE.md

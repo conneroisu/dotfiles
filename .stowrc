@@ -30,3 +30,4 @@
 --ignore clean.sh
 --ignore .github
 --ignore CLAUDE.md
+--ignore AGENTS.md

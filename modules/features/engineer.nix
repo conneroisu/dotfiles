@@ -93,6 +93,7 @@ in
         catls.enable = true;
         cmbd.enable = true;
         splitm.enable = true;
+        nviml.enable = true;
       };
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman

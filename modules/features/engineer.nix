@@ -210,6 +210,7 @@ in
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
             inputs.nordvpn.packages."${pkgs.system}".default
             inputs.nix-auth.packages."${pkgs.system}".default
+            inputs.nix-tree-rs.packages."${pkgs.system}".default
           ];
         variables = {
           EDITOR = "nvim";

@@ -58,6 +58,9 @@
     nix-ld.url = "github:Mic92/nix-ld";
     nix-ld.inputs.nixpkgs.follows = "nixpkgs";
 
+    nix-tree-rs.url = "github:Mic92/nix-tree-rs";
+    nix-tree-rs.inputs.nixpkgs.follows = "nixpkgs";
+
     stylix.url = "https://flakehub.com/f/danth/stylix/0.1.776";
     stylix.inputs = {
       nixpkgs.follows = "nixpkgs";

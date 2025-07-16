@@ -31,6 +31,10 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: Allow Nix to be used in this shell environment
+        run: |
+          . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
       - name: Run Claude Code Review
         id: claude-review
         uses: anthropics/claude-code-action@beta

@@ -3,7 +3,7 @@ log_level = "warn"
 # Possible status bar outputs, values could be: All, Active, or a list of outputs
 # All: the status bar will be displayed on all the available outputs, example: outputs = "All"
 # active: the status bar will be displayed on the active output, example: outputs = "Active"
-# list of outputs: the status bar will be displayed on the outputs listed here, example: outputs = { targets = ["DP-1", "eDP-1"] }
+# list of outputs: the status bar will be displayed on the outputs listed here, example: outputs = { Targets = ["DP-1", "eDP-1"] }
 # if the outputs is not available the bar will be displayed in the active output
 outputs = "All"
 # Bar position, possible values Top | Bottom.
@@ -16,10 +16,6 @@ app_launcher_cmd = "~/.config/rofi/launcher.sh"
 # without a value the related button will not appear
 # optional, default None
 clipboard_cmd = "cliphist-rofi-img | wl-copy"
-# Maximum number of chars that can be present in the window title
-# after that the title will be truncated
-# optional, default 150
-truncate_title_after_length = 20
 
 # Declare which modules should be used and in which position in the status bar.
 # This is the list of all possible modules
@@ -44,7 +40,8 @@ left = [ "WindowTitle" ]
 center = [ "Workspaces" ]
 # The modules that will be displayed on the right side of the status bar
 # The nested modules array will form a group sharing the same element in the status bar
-right = [ "SystemInfo", [ "Clock", "Privacy", "Settings"] ]
+# You can also use custom modules to extend the normal set of options, see configuration below
+right = [ "SystemInfo", [ "Clock", "Privacy", "Settings" ], "CustomNotifications" ]
 
 # Update module configuration.
 # Without a value the related button will not appear.
@@ -63,6 +60,7 @@ update_cmd = 'alacritty -e bash -c "paru; echo Done - Press enter to exit; read"
 # MonitorSpecific: only the workspaces of the related monitor will be displayed
 # optional, default All
 visibility_mode = "All"
+
 # Enable filling with empty workspaces
 # For example:
 # With this flag set to true if there are only 2 workspaces,
@@ -70,6 +68,26 @@ visibility_mode = "All"
 # two more workspaces, the workspace 2 and the workspace 3
 # optional, default false
 enable_workspace_filling = false
+
+# If you want to see more workspaces prefilled, set the number here:
+# max_workspaces = 6
+# In addition to the 4 workspaces described above it will also show workspaces 5 and 6
+# Only works with `enable_workspace_filling = true`
+
+# WindowTitle module configuration, optional
+[window_title]
+# The information to get from your active window.
+# Possible modes are:
+# - Title
+# - Class
+# optional, default Title
+mode = "Title"
+
+# Maximum number of chars that can be present in the window title
+# after that the title will be truncated
+# optional, default 150
+truncate_title_after_length = 150
+
 
 # keyboardLayout module configuration
 # optional
@@ -137,7 +155,26 @@ format = "%a %d %b %R"
 
 # Media player module configuration
 [media_player]
-max_title_length = 30
+# optional, default 100
+max_title_length = 100
+
+# Custom modules configuration (you can have multiple)
+[[CustomModule]]
+# The name will link the module in your left/center/right definition
+name = "CustomNotifications"
+# The default icon for this custom module
+icon = ""
+# The command that will be executed on click
+command = "swaync-client -t -sw"
+# You can optionally configure your custom module to update the UI using another command
+# The output right now follows the waybar json-style output, using the `alt` and `text` field
+# E.g. `{"text": "3", "alt": "notification"}`
+listen_cmd = "swaync-client -swb"
+# You can define behavior for the `text` and `alt` fields
+# Any number of regex can be used to change the icon based on the alt field
+icons.'dnd.*' = ""
+# Another regex can optionally show a red "alert" dot on the icon
+alert = ".*notification"
 
 # Settings module configuration
 [settings]
@@ -145,6 +182,12 @@ max_title_length = 30
 # without a value the related button will not appear
 # optional, default None
 lock_cmd = "hyprlock &"
+# commands used to respectively shutdown, suspend, reboot and logout
+# all optional, without values the defaults shown here will be used
+shutdown_cmd = "shutdown now"
+suspend_cmd = "systemctl suspend"
+reboot_cmd = "systemctl reboot"
+logout_cmd = "loginctl kill-user $(whoami)"
 # command used to open the sinks audio settings
 # without a value the related button will not appear
 # optional default None
@@ -165,6 +208,9 @@ vpn_more_cmd = "nm-connection-editor"
 # without a value the related button will not appear
 # optional, default None
 bluetooth_more_cmd = "blueman-manager"
+# option to remove the airtplane button
+# optional, default false
+remove_airplane_btn = true
 
 # Appearance config
 # Each color could be a simple hex color like #228800 or an
@@ -178,7 +224,7 @@ bluetooth_more_cmd = "blueman-manager"
 # text = "#ffffff" # optional default base text color
 [appearance]
 # optional, default iced.rs font
-font_name = "CodeNewRoman Nerd Font"
+font_name = "Comic Sans MS"
 # The style of the main bar, possible values are: Islands | Solid | Gradient
 # optional, default Islands
 style = "Islands"

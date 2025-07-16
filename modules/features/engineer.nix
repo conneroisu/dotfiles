@@ -101,105 +101,108 @@ in
         vistafonts
       ];
       environment = {
-        systemPackages =
+        systemPackages = with pkgs;
           [
             # Shell
 
             ## Editor
-            pkgs.neovim
-            pkgs.jq
-            pkgs.yq
-            pkgs.tree-sitter
-            pkgs.sad
+            neovim
+            jq
+            yq
+            tree-sitter
+            sad
 
             ## Env
-            pkgs.zsh
-            pkgs.nushell
-            pkgs.dbus
-            pkgs.lsof
-            pkgs.carapace
-            pkgs.stow
-            pkgs.age
-            pkgs.kubectl
-            pkgs.ktailctl
-            pkgs.doppler
-            pkgs.bun
-            pkgs.file
-            pkgs.nix-index
-            pkgs.zinit
-            pkgs.starship
-            pkgs.direnv
-            pkgs.nix-direnv
-            pkgs.bat
-            pkgs.fd
-            pkgs.fzf
-            pkgs.zellij
-            pkgs.atuin
-            pkgs.zoxide
-            pkgs.pkg-config
-            pkgs.lshw
-            pkgs.gdb
-            pkgs.gnupg
-            pkgs.procps
-            pkgs.unzip
-            pkgs.uv
-            pkgs.eza
-            pkgs.delta
-            pkgs.htop
-            pkgs.tealdeer
-            pkgs.sleek
-            pkgs.unixtools.xxd
-            pkgs.ffmpeg
-            pkgs.tree
-            pkgs.ripgrep
+            zsh
+            nushell
+            dbus
+            lsof
+            carapace
+            stow
+            age
+            kubectl
+            ktailctl
+            doppler
+            bun
+            file
+            nix-index
+            zinit
+            starship
+            direnv
+            nix-direnv
+            bat
+            fd
+            fzf
+            zellij
+            atuin
+            zoxide
+            pkg-config
+            lshw
+            gdb
+            gnupg
+            procps
+            unzip
+            uv
+            eza
+            delta
+            htop
+            tealdeer
+            sleek
+            unixtools.xxd
+            ffmpeg
+            tree
+            ripgrep
+            fd
+            fdtools
+            vscode-langservers-extracted
 
             # VCS
-            pkgs.git
-            pkgs.git-lfs
-            pkgs.jujutsu
+            git
+            git-lfs
+            jujutsu
 
             # Apps
-            pkgs.obsidian
-            pkgs.zathura
-            pkgs.brave
-            pkgs.spotify
-            pkgs.discord
-            pkgs.telegram-desktop
-            pkgs.obs-studio
-            pkgs.eog
-            pkgs.nemo-with-extensions
+            obsidian
+            zathura
+            brave
+            spotify
+            discord
+            telegram-desktop
+            obs-studio
+            eog
+            nemo-with-extensions
 
             # Communication
-            pkgs.tailscale
-            pkgs.dnsutils
-            pkgs.minicom
-            pkgs.openvpn
-            pkgs.cacert
-            pkgs.arp-scan
-            pkgs.vdhcoapp
-            pkgs.usbutils
-            pkgs.ethtool
-            pkgs.curl
-            pkgs.wget
+            tailscale
+            dnsutils
+            minicom
+            openvpn
+            cacert
+            arp-scan
+            vdhcoapp
+            usbutils
+            ethtool
+            curl
+            wget
 
             # Platforms
-            pkgs.fh
-            pkgs.doppler
-            pkgs.gh
-            pkgs.tea
+            fh
+            doppler
+            gh
+            tea
 
             # Emulation
-            pkgs.docker
-            pkgs.docker-compose
-            pkgs.docker-buildx
-            pkgs.lazydocker
-            pkgs.nixos-shell
+            docker
+            docker-compose
+            docker-buildx
+            lazydocker
+            nixos-shell
 
             # Languages (Base for when shell from project is not available)
-            pkgs.nixd
-            pkgs.statix
-            pkgs.nodejs
-            pkgs.lua-language-server
+            nixd
+            statix
+            nodejs
+            lua-language-server
           ]
           ++ [
             inputs.zen-browser.packages."${pkgs.system}".default
@@ -253,55 +256,56 @@ in
         splitm.enable = true;
       };
       environment = {
-        systemPackages = [
-          pkgs.zinit
-          pkgs.starship
-          pkgs.direnv
-          pkgs.nix-direnv
-          pkgs.bat
-          pkgs.wget
-          pkgs.fd
-          pkgs.jq
-          pkgs.yq
-          pkgs.spicetify-cli
-          pkgs.fzf
-          pkgs.zed-editor
-          pkgs.zellij
-          pkgs.atuin
-          pkgs.zoxide
-          pkgs.eza
-          pkgs.delta
-          pkgs.unzip
-          pkgs.htop
-          pkgs.tealdeer
-          pkgs.sleek
-          pkgs.tree-sitter
-          pkgs.unixtools.xxd
-          pkgs.tree
-          pkgs.sad
-          pkgs.ripgrep
-          pkgs.stow
-          pkgs.carapace
-          pkgs.neovim
-          pkgs.cmake
-          pkgs.gnumake
-          pkgs.uv
-          pkgs.bun
-          pkgs.git
-          pkgs.podman
-          pkgs.rancher
-          pkgs.openssl
+        systemPackages = with pkgs; [
+          zinit
+          starship
+          direnv
+          nix-direnv
+          bat
+          wget
+          fd
+          jq
+          yq
+          spicetify-cli
+          fzf
+          zed-editor
+          zellij
+          atuin
+          zoxide
+          eza
+          delta
+          unzip
+          htop
+          tealdeer
+          sleek
+          tree-sitter
+          unixtools.xxd
+          tree
+          sad
+          ripgrep
+          stow
+          carapace
+          neovim
+          cmake
+          gnumake
+          uv
+          vscode-langservers-extracted
+          bun
+          git
+          podman
+          rancher
+          openssl
 
           # Platforms
-          pkgs.flyctl
-          pkgs.fh
-          pkgs.gh
-          pkgs.tea
+          flyctl
+          fh
+          gh
+          tea
 
           # Languages
-          pkgs.nixd
-          pkgs.nodejs
-          pkgs.lua-language-server
+          nixd
+          nodejs
+          lua-language-server
 
           # Nix tools
           inputs.nix-auth.packages."${pkgs.system}".default

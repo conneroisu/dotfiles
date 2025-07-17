@@ -203,6 +203,7 @@ in
             statix
             nodejs
             lua-language-server
+            squirreldisk
           ]
           ++ [
             inputs.zen-browser.packages."${pkgs.system}".default

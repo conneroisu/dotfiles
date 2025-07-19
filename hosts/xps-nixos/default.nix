@@ -101,13 +101,13 @@ delib.host {
     networking = {
       hostName = "xps-nixos";
       networkmanager.enable = true;
-      defaultGateway = {
-        # address = "192.168.1.1";
-        # interface = "wlp0s20f3";
-        address = "192.168.1.19";
-        # interface = "enp0s13f0u3u1c2";
-        interface = "enp0s13f0u3c2";
-      };
+      # defaultGateway = {
+      #   # address = "192.168.1.1";
+      #   # interface = "wlp0s20f3";
+      #   address = "192.168.1.19";
+      #   # interface = "enp0s13f0u3u1c2";
+      #   interface = "enp0s13f0u3c2";
+      # };
     };
 
     hardware = {

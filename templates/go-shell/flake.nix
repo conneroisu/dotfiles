@@ -17,10 +17,20 @@
       "aarch64-darwin"
     ];
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-  in {
-    devShells = forAllSystems (system: let
+
+    perSystem = forAllSystems (system: let
       pkgs = import nixpkgs {
         inherit system;
+        overlays = [
+          (final: prev: {
+            # Add your overlays here
+            # Example:
+            # my-overlay = final: prev: {
+            #   my-package = prev.callPackage ./my-package { };
+            # };
+            final.buildGoModule = prev.buildGo124Module;
+          })
+        ];
       };
 
       scripts = {
@@ -46,9 +56,14 @@
         )
         scripts;
 
-      buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
+      treefmtModule = {
+        projectRootFile = "flake.nix";
+        programs = {
+          alejandra.enable = true; # Nix formatter
+        };
+      };
     in {
-      default = pkgs.mkShell {
+      devShell = pkgs.mkShell {
         name = "dev";
 
         # Available packages on https://search.nixos.org/packages
@@ -59,17 +74,17 @@
             statix
             deadnix
 
-            go_1_24 # Go Tools
+            go_1_23 # Go Tools
             air
             golangci-lint
             gopls
-            (buildWithSpecificGo revive)
-            (buildWithSpecificGo golines)
-            (buildWithSpecificGo golangci-lint-langserver)
-            (buildWithSpecificGo gomarkdoc)
-            (buildWithSpecificGo gotests)
-            (buildWithSpecificGo gotools)
-            (buildWithSpecificGo reftools)
+            revive
+            golines
+            golangci-lint-langserver
+            gomarkdoc
+            gotests
+            gotools
+            reftools
             pprof
             graphviz
             goreleaser
@@ -81,37 +96,38 @@
           export REPO_ROOT=$(git rev-parse --show-toplevel)
         '';
       };
+
+      packages = {
+        # default = pkgs.buildGoModule {
+        #   pname = "my-go-project";
+        #   version = "0.0.1";
+        #   src = ./.;
+        #   vendorHash = "";
+        #   doCheck = false;
+        #   meta = with pkgs.lib; {
+        #     description = "My Go project";
+        #     homepage = "https://github.com/conneroisu/my-go-project";
+        #     license = licenses.asl20;
+        #     maintainers = with maintainers; [connerohnesorge];
+        #   };
+        # };
+      };
+
+      formatter = treefmt-nix.lib.mkWrapper pkgs treefmtModule;
+    });
+  in {
+    devShells = forAllSystems (system: {
+      default = perSystem.${system}.devShell;
     });
 
-    packages = forAllSystems (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-      };
-    in {
-      # default = pkgs.buildGoModule {
-      #   pname = "my-go-project";
-      #   version = "0.0.1";
-      #   src = ./.;
-      #   vendorHash = "";
-      #   doCheck = false;
-      #   meta = with pkgs.lib; {
-      #     description = "My Go project";
-      #     homepage = "https://github.com/conneroisu/my-go-project";
-      #     license = licenses.asl20;
-      #     maintainers = with maintainers; [connerohnesorge];
-      #   };
-      # };
-    });
+    packages = forAllSystems (
+      system:
+        perSystem.${system}.packages
+    );
 
-    formatter = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      treefmtModule = {
-        projectRootFile = "flake.nix";
-        programs = {
-          alejandra.enable = true; # Nix formatter
-        };
-      };
-    in
-      treefmt-nix.lib.mkWrapper pkgs treefmtModule);
+    formatter = forAllSystems (
+      system:
+        perSystem.${system}.formatter
+    );
   };
 }

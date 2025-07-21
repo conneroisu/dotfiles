@@ -101,6 +101,7 @@ in
         systemPackages =
           [
             inputs.ghostty.packages."${pkgs.system}".default
+            inputs.hyprland.packages."${pkgs.system}".default
             inputs.ashell.defaultPackage.${pkgs.system}
           ]
           ++ [
@@ -142,7 +143,7 @@ in
           GBM_BACKEND = "nvidia-drm";
           SDL_VIDEODRIVER = "wayland";
           CLUTTER_BACKEND = "wayland";
-          QT_QPA_PLATFORM = "wayland;xcb";
+          QT_QPA_PLATFORM = "wayland";
         };
       };
 
@@ -166,6 +167,10 @@ in
         dbus = {
           enable = true;
           implementation = "broker";
+        };
+        xserver = {
+          enable = true;
+          displayManager.gdm.enable = true;
         };
       };
 

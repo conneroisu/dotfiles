@@ -1,1 +1,0 @@
-../../../../default/templates/ocaml-shell/lib/ocaml_template.ml

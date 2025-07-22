@@ -140,43 +140,8 @@ in
     darwin = {
       imports = [
         # inputs.determinate.darwinModules.default
-        inputs.nix-homebrew.darwinModules.nix-homebrew
       ];
 
-      nix-homebrew = {
-        # Install Homebrew under the default prefix
-        enable = true;
-        autoMigrate = true;
-
-        # Apple Silicon Only: Also install Homebrew under the default Intel prefix for Rosetta 2
-        enableRosetta = true;
-
-        # User owning the Homebrew prefix
-        user = "connerohnesorge";
-
-        # Optional: Declarative tap management
-        taps = {
-          "homebrew/homebrew-core" = inputs.homebrew-core;
-          "homebrew/homebrew-cask" = inputs.homebrew-cask;
-          "dagger/tap" = inputs.dagger;
-        };
-
-        # Optional: Enable fully-declarative tap management
-        #
-        # With mutableTaps disabled, taps can no longer be added imperatively with `brew tap`.
-        mutableTaps = true;  # Enable mutable taps to allow dagger tap
-      };
-      homebrew = {
-        enable = true;
-        # Optional: Enable homebrew-bundle
-        #
-        # Homebrew-bundle allows you to install packages from a git repository
-        # without having to add them to your Brewfile.
-        taps = ["dagger/tap"];
-        casks = [
-          "container-use"  # Simplified cask name
-        ];
-      };
       nixpkgs = {
         hostPlatform = system;
         config.allowUnfree = true;
@@ -214,6 +179,7 @@ in
             pkgs.raycast
             pkgs.xcodes
             # Shared
+            pkgs.skypilot
           ]
           ++ [
             inputs.blink.packages."${system}".default

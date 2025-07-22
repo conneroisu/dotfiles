@@ -1,0 +1,5 @@
+(executable
+ (public_name ocaml_template)
+ (name main)
+ (libraries ocaml_template base stdio yojson logs fmt.tty)
+ (preprocess (pps ppx_jane)))

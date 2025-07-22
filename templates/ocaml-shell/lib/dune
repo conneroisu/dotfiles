@@ -1,0 +1,5 @@
+(library
+ (public_name ocaml_template)
+ (name ocaml_template)
+ (libraries base stdio core lwt lwt.unix yojson logs logs.fmt)
+ (preprocess (pps ppx_jane)))

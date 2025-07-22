@@ -33,68 +33,9 @@
           exec = ''$EDITOR "$REPO_ROOT"/dune-project'';
           description = "Edit dune-project";
         };
-        init-project = {
-          exec = ''
-            if [ ! -f "$REPO_ROOT"/dune-project ]; then
-              echo "Initializing OCaml project..."
-              cat > "$REPO_ROOT"/dune-project << 'EOF'
-(lang dune 3.0)
-
-(name my_project)
-
-(package
- (name my_project)
- (depends ocaml dune base stdio))
-EOF
-              
-              mkdir -p lib bin test
-              
-              cat > lib/dune << 'EOF'
-(library
- (public_name my_project)
- (name my_project))
-EOF
-              
-              cat > lib/my_project.ml << 'EOF'
-let hello name = Printf.sprintf "Hello, %s!" name
-EOF
-              
-              cat > bin/dune << 'EOF'
-(executable
- (public_name my_project)
- (name main)
- (libraries my_project))
-EOF
-              
-              cat > bin/main.ml << 'EOF'
-open My_project
-
-let () = print_endline (hello "World")
-EOF
-              
-              cat > test/dune << 'EOF'
-(test
- (name test_my_project)
- (libraries my_project alcotest))
-EOF
-              
-              cat > test/test_my_project.ml << 'EOF'
-let test_hello () =
-  Alcotest.(check string) "same string" "Hello, World!" (My_project.hello "World")
-
-let () =
-  let open Alcotest in
-  run "My_project" [
-    "hello", [ test_case "Hello function" `Quick test_hello ];
-  ]
-EOF
-              
-              echo "Project initialized! Try: dune build && dune exec my_project"
-            else
-              echo "dune-project already exists"
-            fi
-          '';
-          description = "Initialize a new OCaml project structure";
+        run-example = {
+          exec = ''dune exec examples/simple_example.exe'';
+          description = "Run the simple example program";
         };
         build = {
           exec = ''dune build'';
@@ -241,52 +182,144 @@ EOF
           echo "   • qcheck       - Property-based testing"
           echo ""
           echo "🚀 Quick Commands:"
-          echo "   • init-project - Create a new OCaml project structure"
           echo "   • build        - Build your project (dune build)"
           echo "   • test         - Run tests (dune runtest)"
           echo "   • repl         - Start REPL with project loaded"
           echo "   • fmt          - Format code"
           echo "   • docs         - Generate documentation"
           echo "   • clean        - Clean build artifacts"
+          echo "   • run-example  - Run the simple example program"
           echo ""
-          echo "💡 Get started: run 'init-project' to create a sample project!"
+          echo "💡 Try: 'nix build' to create installable packages!"
+          echo "💡 Try: 'build && dune exec ocaml_template' to run the CLI!"
           echo "═══════════════════════════════════════════════"
         '';
       };
 
       packages = {
-        # Example package build (uncomment and customize for your project)
-        # default = pkgs.ocamlPackages.buildDunePackage {
-        #   pname = "my-ocaml-project";
-        #   version = "0.1.0";
-        #   src = ./.;
-        #   
-        #   # Dependencies from OCaml ecosystem
-        #   buildInputs = with pkgs.ocamlPackages; [
-        #     base
-        #     stdio
-        #     core
-        #     lwt
-        #     cmdliner
-        #     yojson
-        #   ];
-        #   
-        #   # Test dependencies
-        #   checkInputs = with pkgs.ocamlPackages; [
-        #     alcotest
-        #     qcheck
-        #   ];
-        #   
-        #   # Enable tests during build
-        #   doCheck = true;
-        #   
-        #   meta = with pkgs.lib; {
-        #     description = "My OCaml project";
-        #     homepage = "https://github.com/user/my-ocaml-project";
-        #     license = licenses.mit;
-        #     maintainers = [ maintainers.your-name ];
-        #   };
-        # };
+        default = pkgs.ocamlPackages.buildDunePackage {
+          pname = "ocaml_template";
+          version = "0.1.0";
+          src = ./.;
+          
+          # Runtime dependencies
+          propagatedBuildInputs = with pkgs.ocamlPackages; [
+            base
+            stdio
+            core
+            lwt
+            cmdliner
+            yojson
+            logs
+            fmt
+            ppx_jane
+            qcheck
+          ];
+          
+          # Build dependencies  
+          buildInputs = with pkgs.ocamlPackages; [
+            dune_3
+            findlib
+          ];
+          
+          # Test dependencies
+          checkInputs = with pkgs.ocamlPackages; [
+            alcotest
+            alcotest-lwt
+            qcheck
+            ounit2
+          ];
+          
+          # Disable tests for now to focus on build
+          doCheck = false;
+          
+          # Override build phase to avoid --only-packages issue
+          buildPhase = ''
+            runHook preBuild
+            dune build --profile release lib bin examples @install
+            runHook postBuild
+          '';
+          
+          meta = with pkgs.lib; {
+            description = "OCaml template project with modern tooling and best practices";
+            longDescription = ''
+              A comprehensive OCaml project template featuring:
+              - Modern library ecosystem (Base, Core, Lwt)
+              - Command-line interface with Cmdliner
+              - JSON handling with Yojson
+              - Comprehensive testing with Alcotest and QCheck
+              - Async programming examples
+              - Structured logging
+              - Documentation with ODocs
+            '';
+            homepage = "https://github.com/user/ocaml-template";
+            changelog = "https://github.com/user/ocaml-template/blob/main/CHANGELOG.md";
+            license = licenses.mit;
+            maintainers = with maintainers; [ /* Add your maintainer info */ ];
+            platforms = platforms.unix;
+          };
+        };
+
+        # Additional build targets
+        lib = pkgs.ocamlPackages.buildDunePackage {
+          pname = "ocaml-template-lib";
+          version = "0.1.0";
+          src = ./.;
+          
+          # Only build the library, not the executable
+          buildPhase = ''
+            runHook preBuild
+            dune build lib/
+            runHook postBuild
+          '';
+          
+          installPhase = ''
+            runHook preInstall
+            dune install --prefix=$out --libdir=$OCAMLFIND_DESTDIR lib
+            runHook postInstall
+          '';
+          
+          propagatedBuildInputs = with pkgs.ocamlPackages; [
+            base stdio core lwt yojson logs ppx_jane
+          ];
+          
+          doCheck = false; # Skip tests for lib-only build
+          
+          meta = with pkgs.lib; {
+            description = "OCaml template library only";
+            license = licenses.mit;
+          };
+        };
+
+        examples = pkgs.ocamlPackages.buildDunePackage {
+          pname = "ocaml-template-examples";
+          version = "0.1.0";
+          src = ./.;
+          
+          # Build library and examples
+          buildPhase = ''
+            runHook preBuild
+            dune build lib/ examples/
+            runHook postBuild
+          '';
+          
+          installPhase = ''
+            runHook preInstall
+            dune install --prefix=$out --libdir=$OCAMLFIND_DESTDIR lib examples
+            runHook postInstall
+          '';
+          
+          propagatedBuildInputs = with pkgs.ocamlPackages; [
+            base stdio core lwt yojson logs fmt ppx_jane
+          ];
+          
+          doCheck = false;
+          
+          meta = with pkgs.lib; {
+            description = "OCaml template with examples";
+            license = licenses.mit;
+          };
+        };
       };
 
       formatter = treefmt-nix.lib.mkWrapper pkgs treefmtModule;

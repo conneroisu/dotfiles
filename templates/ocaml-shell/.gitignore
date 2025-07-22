@@ -1,44 +1,151 @@
-# OCaml build artifacts
-_build/
-*.install
-*.merlin
+# ===============================================
+# OCaml Template Project .gitignore
+# ===============================================
 
-# Dune generated files
-.dune/
-dune-project.dev
+# OCaml Build Artifacts
+# ---------------------
+_build/                    # Dune build directory
+*.install                  # Install files
+*.merlin                   # Merlin configuration
+*.cmi                      # Compiled interface files
+*.cmo                      # Compiled bytecode object files
+*.cmx                      # Compiled native object files
+*.o                        # Object files
+*.a                        # Archive files
+*.cmxa                     # Native archive files
+*.cma                      # Bytecode archive files
+*.cmxs                     # Native plugin files
+*.byte                     # Bytecode executables
+*.native                   # Native executables
+*.exe                      # Windows executables
 
-# Editor files
-.vscode/
-*.swp
-*.swo
-*~
-\#*\#
-.#*
+# Dune Generated Files
+# -------------------
+.dune/                     # Dune cache
+dune-project.dev           # Development dune-project
+*.opam                     # Generated opam files (when auto-generated)
+.merlin                    # Generated merlin config
 
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Package Management
+# ------------------
+_opam/                     # Local opam switch
+.opam/                     # Opam directory
+*.opam.locked              # Opam lock files
+opam.locked                # Opam lock file
 
-# Nix result symlinks
-result
-result-*
+# Development Environment
+# -----------------------
+.direnv/                   # Direnv cache
+.envrc.local              # Local environment overrides
 
-# Direnv
-.direnv/
+# Nix
+# ---
+result                     # Nix build result
+result-*                   # Nix build results with names
+.gcroots                   # Nix garbage collection roots
 
-# Opam
-_opam/
-*.opam.locked
+# IDE and Editor Files
+# -------------------
+.vscode/                   # VS Code settings
+.idea/                     # IntelliJ/IDEA
+*.swp                      # Vim swap files
+*.swo                      # Vim swap files  
+*~                         # Emacs backup files
+\#*\#                      # Emacs auto-save files
+.#*                        # Emacs lock files
+*.orig                     # Merge conflict originals
+.metals/                   # Scala Metals LSP
+.bloop/                    # Bloop build server
+.bsp/                      # Build Server Protocol
 
-# Log files
-*.log
+# AI Development Tools
+# -------------------
+.cursor/                   # Cursor IDE cache
+.continue/                 # Continue.dev cache
+.aider*                    # Aider chat history
+.claude*                   # Claude chat history
+.copilot*                  # GitHub Copilot cache
+.codeium/                  # Codeium cache
 
-# Backup files
-*.bak
-*.backup
-*.tmp
+# Documentation Generation
+# ------------------------
+docs/_build/               # Documentation build
+_doc/                      # Generated documentation
+*.html                     # Generated HTML files (unless explicitly needed)
+*.pdf                      # Generated PDF files (unless explicitly needed)
+
+# Testing and Coverage
+# -------------------
+bisect*.coverage           # Bisect coverage files
+bisect*.out               # Bisect output files
+coverage/                 # Coverage reports
+*.coverage                # Coverage data
+junit.xml                 # JUnit test reports
+test-results/             # Test result directories
+
+# Logs and Temporary Files
+# ------------------------
+*.log                      # Log files
+*.tmp                      # Temporary files
+*.temp                     # Temporary files
+*.cache                    # Cache files
+.cache/                    # Cache directories
+
+# OS Generated Files
+# -----------------
+.DS_Store                  # macOS Finder info
+.DS_Store?                 # macOS Finder info
+._*                        # macOS resource forks
+.Spotlight-V100            # macOS Spotlight
+.Trashes                   # macOS Trash
+ehthumbs.db               # Windows image cache
+Thumbs.db                 # Windows image cache
+Desktop.ini               # Windows folder config
+
+# Backup and Archive Files
+# ------------------------
+*.bak                      # Backup files
+*.backup                   # Backup files
+*.old                      # Old versions
+*.save                     # Save files
+*.tar.gz                   # Archives (unless explicitly needed)
+*.zip                      # Archives (unless explicitly needed)
+*.tgz                      # Archives (unless explicitly needed)
+
+# Security and Secrets
+# --------------------
+.env                       # Environment variables
+.env.local                 # Local environment variables
+.env.*.local              # Environment variable files
+secrets.json              # Secret configuration
+*.key                      # Private keys
+*.pem                      # Certificate files
+*.p12                      # Certificate files
+auth.json                 # Authentication files
+
+# Profiling and Performance
+# -------------------------
+*.prof                     # Profiling output
+perf.data                 # Linux perf data
+perf.data.old             # Linux perf data
+*.trace                    # Trace files
+*.memtrace                # Memory trace files
+
+# Development Databases
+# ---------------------
+*.db                       # SQLite databases
+*.sqlite                   # SQLite databases
+*.sqlite3                 # SQLite databases
+
+# Node.js (if using for tooling)
+# ------------------------------
+node_modules/             # Node packages
+npm-debug.log*            # npm debug logs
+yarn-debug.log*           # Yarn debug logs
+yarn-error.log*           # Yarn error logs
+.npm/                     # npm cache
+.yarn/                    # Yarn cache
+
+# Custom Project Files
+# --------------------
+# Add project-specific ignores below this line

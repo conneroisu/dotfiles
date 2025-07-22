@@ -20,12 +20,20 @@ A comprehensive Nix flake for OCaml development with modern tooling and best pra
 # Enter the development shell
 nix develop
 
-# Initialize a new project
-init-project
-
-# Build and run
+# Build the project  
 build
-dune exec my_project
+
+# Run the main CLI application
+dune exec ocaml_template
+
+# Run the examples
+run-example
+
+# Build installable packages
+nix build
+
+# Run the built binary
+./result/bin/ocaml_template
 ```
 
 ### Using Traditional Nix
@@ -45,13 +53,13 @@ Once in the development shell, you have access to these convenient commands:
 
 | Command | Description |
 |---------|-------------|
-| `init-project` | Create a new OCaml project structure |
 | `build` | Build your project (`dune build`) |
 | `test` | Run tests (`dune runtest`) |
 | `repl` | Start REPL with project loaded (`dune utop`) |
 | `fmt` | Format code with ocamlformat |
 | `docs` | Generate documentation with odoc |
 | `clean` | Clean build artifacts |
+| `run-example` | Run the simple example program |
 | `dx` | Edit flake.nix |
 | `ox` | Edit dune-project |
 
@@ -91,27 +99,44 @@ Once in the development shell, you have access to these convenient commands:
 
 ## Project Structure
 
-When you run `init-project`, it creates:
+The template includes a complete project structure:
 
 ```
-my_project/
-├── dune-project          # Project configuration
-├── lib/                  # Library code
-│   ├── dune             # Library build config
-│   └── my_project.ml    # Main library module
-├── bin/                 # Executable code
-│   ├── dune            # Binary build config
-│   └── main.ml         # Main executable
-└── test/               # Test code
-    ├── dune           # Test build config
-    └── test_my_project.ml
+ocaml_template/
+├── dune-project              # Project configuration & dependencies
+├── .ocamlformat             # Code formatting configuration
+├── lib/                     # Library code
+│   ├── dune                # Library build configuration
+│   └── ocaml_template.ml   # Main library with modules:
+│                           #   - Math (fibonacci, primes)
+│                           #   - Json_utils (JSON handling)
+│                           #   - Async_utils (Lwt examples)
+│                           #   - Logger (structured logging)
+├── bin/                    # Executable applications
+│   ├── dune               # Binary build configuration
+│   └── main.ml           # Main CLI application
+├── examples/              # Usage examples
+│   ├── dune              # Example build configuration
+│   └── simple_example.ml # Demonstrates library features
+└── test/                 # Test suite (temporarily simplified)
+    ├── dune             # Test build configuration
+    └── test_ocaml_template.ml # Unit & property-based tests
 ```
 
 ## Configuration Files
 
-The shell automatically creates:
+### Development Configuration
+- **`.ocamlformat`** - Automatic code formatting configuration
+- **`.envrc`** - Direnv integration for automatic shell activation  
+- **`.gitignore`** - Comprehensive ignore patterns for OCaml development
 
-### `.ocamlformat`
+### AI Development Assistant Integration
+- **`.cursorrules`** - Cursor IDE rules for OCaml development
+- **`CLAUDE.md`** - Claude AI development assistance guide
+- **`AGENTS.md`** - Multi-agent AI workflow patterns  
+- **`GEMINI.md`** - Google Gemini AI integration guide
+
+### Code Formatting (`.ocamlformat`)
 ```
 version = 0.27.0
 profile = default
@@ -120,7 +145,14 @@ indent = 2
 break-cases = fit-or-vertical
 ```
 
-This provides consistent formatting across your project.
+### AI Assistant Configuration
+The project includes comprehensive AI assistant integration:
+- **Cursor IDE**: Optimized rules for OCaml development with modern tooling
+- **Claude AI**: Detailed project context and coding standards
+- **Multi-Agent**: Workflows for coordinated AI assistance
+- **Google Gemini**: Large context utilization strategies
+
+These configurations ensure consistent, high-quality AI-assisted development.
 
 ## Development Workflow
 
@@ -190,55 +222,79 @@ opam install lwt cohttp-lwt-unix
 
 ## Building Packages
 
-Uncomment and customize the package definition in `flake.nix` to build installable packages:
+The template includes ready-to-use Nix package definitions:
 
-```nix
-packages.default = pkgs.ocamlPackages.buildDunePackage {
-  pname = "my-project";
-  version = "0.1.0";
-  src = ./.;
-  # ... customize as needed
-};
-```
-
-Then build with:
+### Main Package (default)
 ```bash
-nix build
+nix build                    # Builds complete project with CLI and examples
+./result/bin/ocaml_template  # Run the main CLI
+./result/bin/simple_example  # Run the examples
 ```
+
+### Library Only  
+```bash
+nix build .#lib             # Builds only the library component
+```
+
+### Examples Package
+```bash  
+nix build .#examples        # Builds library + examples
+```
+
+The packages are defined in `flake.nix` with:
+- Full dependency management
+- Proper OCaml ecosystem integration
+- Cross-platform support (Linux, macOS)
+- Metadata and documentation
 
 ## Examples
 
-### Simple Hello World
-```ocaml
-(* lib/my_project.ml *)
-let greet name = Printf.sprintf "Hello, %s!" name
+### Running the Examples
 
-(* bin/main.ml *)
-let () = print_endline (My_project.greet "OCaml")
+```bash
+# In development shell
+run-example
+
+# Or with nix build
+nix build && ./result/bin/simple_example
 ```
 
-### Using Lwt for Async
-```ocaml
-open Lwt.Syntax
+Output:
+```
+=== OCaml Template Examples ===
 
-let fetch_data () =
-  let* () = Lwt_unix.sleep 1.0 in
-  Lwt.return "Data fetched!"
+1. Basic Greetings:
+   Hello, Alice!
+   Bonjour, Bob!
 
-let () = 
-  Lwt_main.run (fetch_data ()) |> print_endline
+2. Math Functions:
+   Fibonacci sequence (first 10): 0, 1, 1, 2, 3, 5, 8, 13, 21, 34
+   Prime numbers up to 50: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47
+
+3. JSON Handling:
+   { "name": "Alice", "age": 25, "email": "alice@example.com" }
+   { "name": "Bob", "age": 30, "email": null }
+
+4. Logging Example:
+   [INFO] This is an info message
+   [WARNING] This is a warning
 ```
 
-### Property-based Testing
-```ocaml
-open QCheck
+### Main CLI Application
 
-let test_reverse_involution =
-  Test.make ~count:1000 ~name:"reverse is involution"
-    (list int) (fun l -> List.rev (List.rev l) = l)
+```bash
+# Build and run
+build && dune exec ocaml_template
 
-let () = QCheck_runner.run_tests [test_reverse_involution]
+# Or use nix build
+nix build && ./result/bin/ocaml_template
 ```
+
+The CLI demonstrates:
+- Mathematical computations (Fibonacci, prime numbers)
+- JSON serialization/deserialization
+- Structured logging
+- Modern OCaml patterns
 
 ## Troubleshooting
 

@@ -1,0 +1,8 @@
+version = 0.27.0
+profile = default
+margin = 100
+indent = 2
+break-cases = fit-or-vertical
+break-infix = fit-or-vertical
+break-fun-decl = fit-or-vertical
+break-fun-sig = fit-or-vertical

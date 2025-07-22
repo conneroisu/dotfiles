@@ -1,0 +1,4 @@
+(test
+ (name test_ocaml_template)
+ (libraries ocaml_template alcotest qcheck base stdio)
+ (preprocess (pps ppx_jane)))

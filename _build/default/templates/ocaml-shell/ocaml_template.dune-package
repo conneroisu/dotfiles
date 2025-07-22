@@ -1,0 +1,62 @@
+(lang dune 3.19)
+(name ocaml_template)
+(sections (lib .) (libexec .) (bin ../../bin) (doc ../../doc/ocaml_template))
+(files
+ (lib
+  (META
+   dune-package
+   ocaml_template.a
+   ocaml_template.cma
+   ocaml_template.cmi
+   ocaml_template.cmt
+   ocaml_template.cmx
+   ocaml_template.cmxa
+   ocaml_template.ml))
+ (libexec (ocaml_template.cmxs))
+ (bin (ocaml_template simple_example))
+ (doc (README.md)))
+(library
+ (name ocaml_template)
+ (kind normal)
+ (archives (byte ocaml_template.cma) (native ocaml_template.cmxa))
+ (plugins (byte ocaml_template.cma) (native ocaml_template.cmxs))
+ (native_archives ocaml_template.a)
+ (requires
+  base
+  stdio
+  core
+  lwt
+  lwt.unix
+  yojson
+  logs
+  logs.fmt
+  ppx_sexp_conv.runtime-lib
+  sexplib0
+  ppx_compare.runtime-lib
+  ppx_enumerate.runtime-lib
+  ppx_hash.runtime-lib
+  ppx_here.runtime-lib
+  ppx_assert.runtime-lib
+  ppx_bench.runtime-lib
+  bin_prot
+  fieldslib
+  ppx_inline_test.config
+  ppx_inline_test.runtime-lib
+  ppx_module_timer.runtime
+  ppx_stable_witness.runtime
+  ppx_string.runtime
+  typerep
+  variantslib
+  ppx_expect.runtime
+  ppx_expect.config
+  ppx_log.types
+  ppx_log.syntax
+  base_quickcheck.ppx_quickcheck.runtime
+  base_quickcheck)
+ (main_module_name Ocaml_template)
+ (modes byte native)
+ (modules
+  (singleton
+   (obj_name ocaml_template)
+   (visibility public)
+   (source (path Ocaml_template) (impl (path ocaml_template.ml))))))

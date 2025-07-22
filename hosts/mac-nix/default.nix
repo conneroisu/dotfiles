@@ -179,7 +179,6 @@ in
             pkgs.raycast
             pkgs.xcodes
             # Shared
-            pkgs.skypilot
           ]
           ++ [
             inputs.blink.packages."${system}".default

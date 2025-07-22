@@ -55,11 +55,13 @@
             elixir
             erlang
             nodejs
-            inotify-tools
             postgresql
             openssl
             git
           ]
+          # inotify-tools is Linux-only, use fswatch on Darwin instead
+          ++ pkgs.lib.optionals pkgs.stdenv.isLinux [ inotify-tools ]
+          ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [ fswatch ]
           ++ builtins.attrValues scriptPackages;
 
         shellHook = ''

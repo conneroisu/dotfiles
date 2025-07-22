@@ -66,10 +66,10 @@
   - System integration
   - Auto-updates through Nix
   
-  ### Darwin (Planned)
-  - Will use Homebrew casks
-  - Native macOS applications
-  - Keychain integration planned
+  ### Darwin
+  - macOS support can be added when needed
+  - Native macOS applications available
+  - Keychain integration possible
   
   ## Configuration
   Enabled via:
@@ -101,8 +101,6 @@ in
       ];
     };
     darwin.ifEnabled = {
-      # TODO: maybe use homebrew
-      # environment.systemPackages = [
-      # ];
+      # macOS packages can be added when needed
     };
   }

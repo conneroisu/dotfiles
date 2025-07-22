@@ -1,5 +1,5 @@
 {
-  description = "v1-llm development environment";
+  description = "Rust + Python development environment with optional CUDA support";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -27,6 +27,12 @@
         rustToolchain = pkgs.rust-bin.stable.latest.default.override {
           extensions = ["rust-src" "clippy" "rustfmt"];
         };
+
+        # CUDA support only available on Linux systems
+        cudaSupport = pkgs.stdenv.isLinux;
+        cudaPackages = pkgs.lib.optionals cudaSupport [
+          pkgs.cudaPackages.cudatoolkit
+        ];
 
         # Prefer usage of uv
         # pythonEnv = pkgs.python311.withPackages (ps:
@@ -73,6 +79,16 @@
             exec = ''git clean -fdx'';
             description = "Clean project";
           };
+          lint-python = {
+            exec = rooted ''
+              cd "$REPO_ROOT"
+              ruff check .
+              ruff format --check .
+              mypy . || true
+            '';
+            deps = with pkgs; [ruff mypy];
+            description = "Lint Python code";
+          };
           lint-rust = {
             exec = rooted ''
               cd "$REPO_ROOT"
@@ -90,7 +106,7 @@
               deadnix "$REPO_ROOT"/flake.nix
               nix flake check
             '';
-            deps = with pkgs; [statix deadnix] ++ [rustToolchain];
+            deps = with pkgs; [statix deadnix ruff mypy] ++ [rustToolchain];
             description = "Run all linting steps";
           };
           build-rust = {
@@ -112,7 +128,7 @@
             exec = rooted ''
               cd "$REPO_ROOT"
               cargo fmt
-              ruff format "$REPO_ROOT"/train
+              ruff format .
               alejandra "$REPO_ROOT"/flake.nix
             '';
             deps = with pkgs; [alejandra ruff] ++ [rustToolchain];
@@ -135,36 +151,43 @@
       in {
         devShells = let
           shellHook = ''
-            echo "🦀 Rust + 🐍 Python Cuda development environment"
+            echo "🦀 Rust + 🐍 Python${pkgs.lib.optionalString cudaSupport " + CUDA"} development environment"
             echo "Available commands:"
             ${pkgs.lib.concatStringsSep "\n" (
               pkgs.lib.mapAttrsToList (name: script: ''echo "  ${name} - ${script.description}"'') scripts
             )}
             echo ""
 
+            ${pkgs.lib.optionalString cudaSupport ''
             # Set environment variables for CUDA
-            export CUDA_PATH=${pkgs.cudatoolkit}
+            export CUDA_PATH=${pkgs.cudaPackages.cudatoolkit}
+            ''}
           '';
 
           env = {
-            CUDA_HOME = "${pkgs.cudaPackages.cudatoolkit}";
-            LD_LIBRARY_PATH = "${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.stdenv.cc.cc.lib}/lib";
             RUST_BACKTRACE = "1";
             DEV = "1";
             LOCAL = "1";
-          };
+          } // (pkgs.lib.optionalAttrs cudaSupport {
+            CUDA_HOME = "${pkgs.cudaPackages.cudatoolkit}";
+            LD_LIBRARY_PATH = "${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.stdenv.cc.cc.lib}/lib";
+          });
 
           shell-packages =
             [
-              # Nix tools
+              # Nix development tools
               pkgs.alejandra
               pkgs.nixd
               pkgs.nil
               pkgs.statix
               pkgs.deadnix
-              pkgs.uv
 
-              # Rust toolchain
+              # Python tools
+              pkgs.uv
+              pkgs.ruff
+              pkgs.mypy
+
+              # Rust toolchain and tools
               rustToolchain
               pkgs.cargo-watch
               pkgs.cargo-edit
@@ -172,10 +195,8 @@
               # Build tools
               pkgs.pkg-config
               pkgs.protobuf
-
-              # CUDA support
-              pkgs.cudatoolkit
             ]
+            ++ cudaPackages
             ++ builtins.attrValues scriptPackages;
         in {
           default = pkgs.mkShell {

@@ -271,6 +271,8 @@ in
           spicetify-cli
           fzf
           zed-editor
+          python313Packages.huggingface-hub
+          skypilot
           zellij
           atuin
           zoxide

@@ -1,0 +1,181 @@
+# ===============================================
+# Cursor IDE Rules for OCaml Template Project
+# ===============================================
+# This file configures Cursor IDE for optimal OCaml development
+# Place this file in your project root as .cursorrules
+
+# Project Context
+This is a modern OCaml project template using:
+- OCaml 5.3.0 with multicore support
+- Dune 3.19 as the build system
+- Modern libraries: Base, Core, Lwt, Yojson, Cmdliner
+- Nix flakes for reproducible development environment
+- Comprehensive testing with Alcotest and QCheck
+- Documentation with ODocs
+
+# Code Style and Standards
+## OCaml Style Guidelines
+- Use 2-space indentation (configured in .ocamlformat)
+- Follow Jane Street's Base/Core conventions
+- Prefer `let*` syntax for monadic operations (Lwt, Result)
+- Use meaningful module signatures
+- Document public functions with (** ... *) comments
+- Use `open Base` and specific opens like `open Lwt.Syntax`
+
+## Naming Conventions
+- Module names: PascalCase (e.g., `Json_utils`)
+- Function names: snake_case (e.g., `fibonacci`, `is_prime`)
+- Type names: lowercase (e.g., `person`, `config`)
+- Constants: UPPERCASE (e.g., `DEFAULT_PORT`)
+- Private functions: prefix with underscore (e.g., `_internal_helper`)
+
+## File Organization
+- Library code: `lib/` directory
+- Executables: `bin/` directory  
+- Tests: `test/` directory
+- Examples: `examples/` directory
+- Each module should have a corresponding `.mli` interface file for public modules
+
+# Development Workflow
+## Build Commands
+- `nix develop` - Enter development shell
+- `dune build` - Build the project
+- `dune exec ocaml_template` - Run main executable
+- `dune exec examples/simple_example.exe` - Run examples
+- `dune runtest` - Run tests
+- `nix build` - Create installable packages
+
+## Code Quality
+- Always run `dune build @fmt` before committing
+- Use `dune build @doc` to generate documentation
+- Run tests frequently with `dune runtest`
+- Use `merlin` for IDE integration (auto-configured)
+
+# AI Assistant Instructions
+## Code Generation Rules
+1. **Always follow OCaml best practices**:
+   - Use pattern matching extensively
+   - Avoid exceptions in favor of `Result.t` types
+   - Use `Option.t` for nullable values
+   - Prefer immutable data structures
+
+2. **Error Handling**:
+   - Use `Result.t` for operations that can fail
+   - Use `Or_error.t` from Base for detailed error information
+   - Handle errors at appropriate abstraction levels
+   - Provide meaningful error messages
+
+3. **Type Safety**:
+   - Define custom types for domain concepts
+   - Use phantom types for additional safety when appropriate
+   - Avoid using `Obj.magic` or other unsafe operations
+   - Prefer explicit over implicit type conversions
+
+4. **Performance Considerations**:
+   - Be mindful of tail recursion for large lists
+   - Use appropriate data structures (Array for random access, List for sequential)
+   - Consider using `Core.Sequence` for lazy evaluation
+   - Profile performance-critical code
+
+## Library Usage Guidelines
+1. **Base/Core Libraries**:
+   - Prefer `Base` and `Core` over standard library
+   - Use `Stdio` for I/O operations
+   - Use `Core.Command` for CLI applications (alternative to Cmdliner)
+
+2. **Async Programming**:
+   - Use `Lwt` for async operations
+   - Use `let*` syntax for monadic composition
+   - Handle timeouts and cancellation appropriately
+   - Avoid blocking operations in async contexts
+
+3. **JSON Handling**:
+   - Use `Yojson` for JSON operations
+   - Define proper type conversions with `to_json`/`from_json` functions
+   - Handle JSON parsing errors gracefully
+
+4. **Testing**:
+   - Write unit tests with `Alcotest`
+   - Use `QCheck` for property-based testing
+   - Test both happy path and error cases
+   - Use `Lwt` test helpers for async tests
+
+## Code Review Checklist
+When reviewing or generating code, ensure:
+- [ ] All functions have appropriate type annotations
+- [ ] Error cases are properly handled
+- [ ] Code follows formatting standards (will be enforced by .ocamlformat)
+- [ ] Public functions are documented
+- [ ] Tests are included for new functionality
+- [ ] No unused opens or variables
+- [ ] Memory safety (no uncaught exceptions in critical paths)
+
+## Dune Configuration
+- Use `(preprocess (pps ppx_jane))` for Jane Street PPX extensions
+- Specify library dependencies explicitly in `dune` files
+- Use `(libraries ...)` not `(library ...)` in executable stanzas
+- Include `(public_name ...)` for installable executables
+
+## Common Patterns
+### Module Structure
+```ocaml
+(* Interface file (.mli) *)
+type t
+val create : string -> t Or_error.t
+val to_string : t -> string
+
+(* Implementation file (.ml) *)
+open Base
+
+type t = {
+  field1 : string;
+  field2 : int;
+}
+
+let create str =
+  if String.is_empty str
+  then Or_error.error_string "Empty string not allowed"
+  else Ok { field1 = str; field2 = String.length str }
+
+let to_string { field1; field2 } =
+  Printf.sprintf "%s (%d)" field1 field2
+```
+
+### Error Handling
+```ocaml
+let safe_operation x =
+  match operation x with
+  | Ok result -> process result
+  | Error err -> 
+    Logs.err (fun m -> m "Operation failed: %s" (Error.to_string_hum err));
+    Error err
+```
+
+### Async Operations
+```ocaml
+let async_example () =
+  let open Lwt.Syntax in
+  let* data = fetch_data () in
+  let* processed = process_data data in
+  Lwt.return (Ok processed)
+```
+
+# Project-Specific Notes
+## Available Modules
+- `Ocaml_template.Math` - Mathematical utilities
+- `Ocaml_template.Json_utils` - JSON serialization helpers
+- `Ocaml_template.Async_utils` - Lwt async utilities  
+- `Ocaml_template.Logger` - Structured logging
+
+## Build Targets
+- `ocaml_template` - Main CLI application
+- `simple_example` - Example program demonstrating library features
+- Library can be used by other projects via `dune-project` dependencies
+
+## Testing Strategy
+- Unit tests for pure functions
+- Property-based tests for mathematical operations
+- Integration tests for CLI functionality
+- Mock external dependencies in tests
+
+Remember: This template demonstrates modern OCaml practices. Use it as a reference for idiomatic OCaml code patterns and project structure.

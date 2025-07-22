@@ -1,0 +1,28 @@
+(lang dune 3.0)
+
+(name ocaml_template)
+
+(package
+ (name ocaml_template)
+ (synopsis "OCaml template project with modern tooling")
+ (description "A complete OCaml project template featuring modern libraries, testing, and documentation")
+ (authors "Your Name <your.email@example.com>")
+ (maintainers "Your Name <your.email@example.com>")
+ (license MIT)
+ (homepage "https://github.com/user/ocaml-template")
+ (bug_reports "https://github.com/user/ocaml-template/issues")
+ (depends 
+  ocaml 
+  dune
+  (base (>= 0.16.0))
+  (stdio (>= 0.16.0))
+  (core (>= 0.16.0))
+  (lwt (>= 5.6.0))
+  (cmdliner (>= 1.2.0))
+  (yojson (>= 2.0.0))
+  (logs (>= 0.7.0))
+  (fmt (>= 0.9.0))
+  (alcotest :with-test)
+  (alcotest-lwt :with-test)
+  (qcheck :with-test)
+  (odoc :with-doc)))

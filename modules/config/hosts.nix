@@ -19,7 +19,6 @@
 # - Multi-monitor support with per-display settings
 # - Automatic kernel parameter generation for display resolution
 # - Touch screen detection and configuration
-
 {delib, ...}:
 delib.module {
   name = "hosts";
@@ -47,11 +46,11 @@ delib.module {
             listOfOption (enum allFeatures)
             {
               # Desktop: Full-featured workstation setup
-              desktop = ["cli" "gui" "engineer"];
+              desktop = ["features.engineer"];
               # Server: Minimal headless configuration
               server = [""];
               # Laptop: Full features + power management + NVIDIA support
-              laptop = ["cli" "gui" "engineer" "powersave" "nvidia"];
+              laptop = ["cli" "gui" "features.engineer" "features.power-efficient" "features.nvidia"];
             }
             .${
               config.type
@@ -66,20 +65,20 @@ delib.module {
 
               # Display identification (e.g. DP-1, HDMI-A-1, eDP-1)
               name = noDefault (strOption null);
-              
+
               # Primary display detection (auto-set for single display)
               primary = boolOption (builtins.length config.displays == 1);
-              
+
               # Display properties
-              refreshRate = intOption 60;     # Default to 60Hz
-              width = intOption 1920;         # Default to 1920x1080
+              refreshRate = intOption 60; # Default to 60Hz
+              width = intOption 1920; # Default to 1920x1080
               height = intOption 1080;
-              x = intOption 0;                # Position in multi-monitor setup
+              x = intOption 0; # Position in multi-monitor setup
               y = intOption 0;
             };
           }) [];
         }
-        // 
+        //
         # Generate boolean options for each feature (e.g., cliFeatured, guiFeatured)
         # This allows modules to check `myconfig.host.cliFeatured` easily
         builtins.listToAttrs (
@@ -93,7 +92,7 @@ delib.module {
   in {
     # Single host configuration option
     host = hostOption host;
-    # Multiple hosts configuration option  
+    # Multiple hosts configuration option
     hosts = hostsOption host;
   };
 

@@ -1,45 +1,44 @@
 /**
-  # Host Configuration: oxe-nixos
-  
-  ## Description
-  Server/workstation configuration running NixOS with full desktop capabilities.
-  This host is configured as a server type but includes a complete Hyprland
-  desktop environment for when GUI access is needed.
-  
-  ## Host Type
-  - Type: server
-  - System: x86_64-linux (assumed, imports AMD module)
-  - Rice: dark theme
-  
-  ## Key Features
-  - **Full desktop server**: Hyprland Wayland compositor
-  - **AMD graphics**: Optimized for AMD GPUs
-  - **Audio/Bluetooth**: Full multimedia support
-  - **Development environment**: Engineer role enabled
-  - **Privacy tools**: Darknet features enabled
-  - **Secrets management**: Secure credential handling
-  
-  ## Hardware Support
-  - AMD GPU drivers and optimizations
-  - Audio subsystem with PipeWire (assumed via audio feature)
-  - Bluetooth connectivity
-  - Hardware configuration imported from ./hardware.nix
-  
-  ## System Configuration
-  - Systemd-boot with Plymouth boot splash
-  - Locale: en_US.UTF-8 (Chicago timezone)
-  - RTKit for real-time audio
-  - libinput for input device handling
-  
-  ## Security
-  - Determinate Systems hardening
-  - Secrets management enabled
-  - Limited boot history (4 generations)
+# Host Configuration: oxe-nixos
+
+## Description
+Server/workstation configuration running NixOS with full desktop capabilities.
+This host is configured as a server type but includes a complete Hyprland
+desktop environment for when GUI access is needed.
+
+## Host Type
+- Type: server
+- System: x86_64-linux (assumed, imports AMD module)
+- Rice: dark theme
+
+## Key Features
+- **Full desktop server**: Hyprland Wayland compositor
+- **AMD graphics**: Optimized for AMD GPUs
+- **Audio/Bluetooth**: Full multimedia support
+- **Development environment**: Engineer role enabled
+- **Privacy tools**: Darknet features enabled
+- **Secrets management**: Secure credential handling
+
+## Hardware Support
+- AMD GPU drivers and optimizations
+- Audio subsystem with PipeWire (assumed via audio feature)
+- Bluetooth connectivity
+- Hardware configuration imported from ./hardware.nix
+
+## System Configuration
+- Systemd-boot with Plymouth boot splash
+- Locale: en_US.UTF-8 (Chicago timezone)
+- RTKit for real-time audio
+- libinput for input device handling
+
+## Security
+- Determinate Systems hardening
+- Secrets management enabled
+- Limited boot history (4 generations)
 */
 {
   delib,
   inputs,
-  pkgs,
   ...
 }:
 delib.host {
@@ -58,6 +57,7 @@ delib.host {
   };
 
   nixos = {
+    nixpkgs.config.allowUnfree = true;
     imports = [
       inputs.determinate.nixosModules.default
       ./hardware.nix
@@ -66,8 +66,6 @@ delib.host {
     myconfig = {
       features = {
         amd.enable = true;
-        audio.enable = true;
-        bluetooth.enable = true;
         hyprland.enable = true;
         engineer.enable = true;
         darknet.enable = true;
@@ -75,7 +73,6 @@ delib.host {
       };
     };
 
-    nixpkgs.config.allowUnfree = true;
     boot = {
       plymouth.enable = true;
       loader = {
@@ -84,12 +81,10 @@ delib.host {
         systemd-boot.configurationLimit = 4;
       };
     };
-    security.rtkit.enable = true;
 
-    services = {
-      ## Temporarily Enable Devices
-      ## TODO: Remove
-      libinput.enable = true;
+    security = {
+      rtkit.enable = true;
+      pam.services.login.enableGnomeKeyring = true;
     };
 
     time.timeZone = "America/Chicago";

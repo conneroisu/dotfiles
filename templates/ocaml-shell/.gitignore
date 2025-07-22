@@ -1,0 +1,44 @@
+# OCaml build artifacts
+_build/
+*.install
+*.merlin
+
+# Dune generated files
+.dune/
+dune-project.dev
+
+# Editor files
+.vscode/
+*.swp
+*.swo
+*~
+\#*\#
+.#*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Nix result symlinks
+result
+result-*
+
+# Direnv
+.direnv/
+
+# Opam
+_opam/
+*.opam.locked
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.backup
+*.tmp

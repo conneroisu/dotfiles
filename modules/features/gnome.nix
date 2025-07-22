@@ -20,10 +20,6 @@ in
         };
       };
 
-      programs = {
-        gnome.enable = true;
-      };
-
       security.pam.services.sddm.enableGnomeKeyring = true;
       services = {
         gnome.gnome-keyring.enable = true;

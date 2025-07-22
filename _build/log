@@ -1,0 +1,16 @@
+# dune exec my_project
+# OCAMLPARAM: unset
+# Shared cache: enabled-except-user-rules
+# Shared cache location: /home/connerohnesorge/.cache/dune/db
+# Workspace root: /home/connerohnesorge/dotfiles
+# Auto-detected concurrency: 16
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ /nix/store/7a41wz61jbzd9h2dhr0dvp3f8wb6xs5a-ocaml-5.3.0/bin/ocamlc.opt -config > /tmp/nix-shell.59F2X1/dune_48d5ac_output

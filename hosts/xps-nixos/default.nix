@@ -83,6 +83,7 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         student.enable = true;
+        gnome.enable = true;
       };
       programs = {
         proton-x.enable = true;
@@ -123,11 +124,15 @@ delib.host {
         };
       };
     };
-    security.rtkit.enable = true;
+    security = {
+      rtkit.enable = true;
+      pam.services.login.enableGnomeKeyring = true;
+    };
     services = {
       ## Devices
       printing.enable = true;
       libinput.enable = true;
+      gnome.gnome-keyring.enable = true;
     };
 
     time.timeZone = "America/Chicago";

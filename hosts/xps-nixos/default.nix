@@ -57,11 +57,13 @@ delib.host {
   type = "laptop";
   home.home.stateVersion = "24.11";
 
+  # This is just here to make the denix host module happy.
+  # It evaluates each hosts: darwin, nixos, ... TODO: Improve comment.
   darwin = {
     imports = [
       inputs.determinate.darwinModules.default
     ];
-    nixpkgs.hostPlatform = "aarch64-darwin";
+    nixpkgs.hostPlatform = "x86_64-darwin";
     system.stateVersion = "24.11";
   };
 
@@ -81,6 +83,7 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         student.enable = true;
+        gnome.enable = true;
       };
       programs = {
         proton-x.enable = true;
@@ -121,11 +124,15 @@ delib.host {
         };
       };
     };
-    security.rtkit.enable = true;
+    security = {
+      rtkit.enable = true;
+      pam.services.login.enableGnomeKeyring = true;
+    };
     services = {
       ## Devices
       printing.enable = true;
       libinput.enable = true;
+      gnome.gnome-keyring.enable = true;
     };
 
     time.timeZone = "America/Chicago";

@@ -116,6 +116,8 @@ in
             zsh
             nushell
             dbus
+            upower
+            upower-notify
             lsof
             carapace
             stow

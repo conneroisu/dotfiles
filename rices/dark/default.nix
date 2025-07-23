@@ -19,13 +19,14 @@
   
   ## What Gets Themed
   ### NixOS
-  - Window managers (Hyprland, etc.)
+  - Window managers (Hyprland, KDE Plasma, etc.)
   - GTK applications
   - Qt applications  
-  - Terminal emulators
-  - Text editors (Neovim, etc.)
+  - Terminal emulators (including Konsole)
+  - Text editors (Neovim, Kate, etc.)
   - Spotify (via Spicetify)
   - GNOME applications
+  - KDE Plasma desktop and applications
   - System notifications
   
   ### Darwin
@@ -128,6 +129,8 @@ delib.rice {
         gnome.enable = true;
         gtk.enable = true;
         spicetify.enable = true;
+        # KDE Plasma theming works via qt.enable above
+        # kde.enable and konsole.enable not available in current Stylix version
       };
     };
   };

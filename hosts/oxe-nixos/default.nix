@@ -44,7 +44,7 @@ desktop environment for when GUI access is needed.
 delib.host {
   name = "oxe-nixos";
 
-  rice = "dark";
+  rice = "empty";
   type = "server";
   home.home.stateVersion = "24.11";
 

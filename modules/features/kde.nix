@@ -69,7 +69,6 @@ in
         # Media and multimedia
         mediaApps = with pkgs.kdePackages; [
           elisa dragon kamoso k3b
-          phonon phonon-backend-vlc
         ];
         
         # Communication and PIM
@@ -85,7 +84,7 @@ in
         
         # System integration
         systemIntegration = with pkgs.kdePackages; [
-          discover powerdevil partition-manager
+          discover powerdevil
           plasma-browser-integration plasma-thunderbolt
           plasma-nm bluedevil print-manager
         ];
@@ -93,7 +92,7 @@ in
         # Themes and appearance
         themes = with pkgs.kdePackages; [
           breeze breeze-icons breeze-gtk
-          oxygen oxygen-icons plasma-theme-oxygen
+          oxygen oxygen-icons
         ];
         
         # Security and wallet
@@ -104,7 +103,7 @@ in
         # Utilities
         utilities = with pkgs.kdePackages; [
           filelight kcharselect kcolorchooser kfind
-          ktimer kruler kwrite
+          ktimer kruler
         ];
         
         # Optional games
@@ -183,8 +182,7 @@ in
           jack.enable = true;
         };
         
-        # Network and connectivity
-        networkmanager.enable = true;
+        # Connectivity
         blueman.enable = true;
         
         # Printing and discovery
@@ -206,9 +204,18 @@ in
         
         # Additional services
         geoclue2.enable = true;
+      };
+
+      # Input method configuration
+      i18n.inputMethod = {
+        enable = true;
+        type = "fcitx5";
         fcitx5 = {
-          enable = true;
           waylandFrontend = true;
+          plasma6Support = true;
+          addons = with pkgs; [
+            fcitx5-gtk
+          ];
         };
       };
 
@@ -216,9 +223,9 @@ in
       xdg = {
         portal = {
           enable = true;
-          extraPortals = with pkgs; [
-            xdg-desktop-portal-kde
-            xdg-desktop-portal-gtk
+          extraPortals = [
+            pkgs.kdePackages.xdg-desktop-portal-kde
+            pkgs.xdg-desktop-portal-gtk
           ];
           config = {
             common.default = ["kde"];
@@ -261,15 +268,9 @@ in
       security = {
         polkit.enable = true;
         rtkit.enable = true;
-        pam = {
-          services = {
-            sddm.enableGnomeKeyring = true;
-            sddm-autologin.enableGnomeKeyring = true;
-          };
-          kwallet = {
-            enable = true;
-            forceRun = true;
-          };
+        pam.services = {
+          sddm.enableGnomeKeyring = true;
+          sddm-autologin.enableGnomeKeyring = true;
         };
       };
 

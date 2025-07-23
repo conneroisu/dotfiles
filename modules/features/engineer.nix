@@ -251,6 +251,7 @@ in
         # k3s.enable = true;
         gnome.gnome-keyring.enable = true;
         nordvpn.enable = true;
+        upower.enable = true;
       };
     };
 

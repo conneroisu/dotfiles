@@ -69,7 +69,7 @@ in
         
         # Media and multimedia
         mediaApps = with pkgs.kdePackages; [
-          elisa dragon kamoso k3b
+          elisa dragon k3b
         ];
         
         # Communication and PIM

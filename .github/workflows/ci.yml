@@ -61,9 +61,6 @@ jobs:
         
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@v3
-        with:
-          # Enable additional platforms for cross-compilation if needed
-          extra-platforms: ${{ matrix.arch == 'aarch64' && matrix.platform == 'linux' && 'aarch64-linux' || '' }}
           
       - name: Run flake check
         run: nix flake check .

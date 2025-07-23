@@ -7,8 +7,9 @@ async fn main() -> anyhow::Result<()> {
     // Initialize tracing
     tracing_subscriber::registry()
         .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "rust_web_shell=debug,tower_http=debug,axum::rejection=trace".into()),
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+                "rust_web_shell=debug,tower_http=debug,axum::rejection=trace".into()
+            }),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
@@ -17,12 +18,10 @@ async fn main() -> anyhow::Result<()> {
     dotenvy::dotenv().ok();
 
     // Get configuration from environment
-    let database_url = env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "sqlite:app.db".to_string());
-    
-    let host = env::var("HOST")
-        .unwrap_or_else(|_| "127.0.0.1".to_string());
-    
+    let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| "sqlite:app.db".to_string());
+
+    let host = env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
+
     let port = env::var("PORT")
         .unwrap_or_else(|_| "3000".to_string())
         .parse::<u16>()
@@ -38,8 +37,12 @@ async fn main() -> anyhow::Result<()> {
 
     // Create the listener
     let listener = tokio::net::TcpListener::bind(format!("{}:{}", host, port)).await?;
-    
-    tracing::info!("🦀 Rust Web Shell server starting on http://{}:{}", host, port);
+
+    tracing::info!(
+        "🦀 Rust Web Shell server starting on http://{}:{}",
+        host,
+        port
+    );
     tracing::info!("📱 Dashboard: http://{}:{}/dashboard", host, port);
     tracing::info!("🔐 Login: http://{}:{}/login", host, port);
     tracing::info!("📝 Signup: http://{}:{}/signup", host, port);

@@ -161,4 +161,3 @@ fn main() {
 
     println!("cargo:warning=Assets built successfully!");
 }
-

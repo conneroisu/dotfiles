@@ -1,18 +1,18 @@
 use crate::models::{CreateUserRequest, LoginRequest, User, UserResponse};
+use argon2::password_hash::{SaltString, rand_core::OsRng};
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
-use argon2::password_hash::{rand_core::OsRng, SaltString};
 use askama::Template;
 use axum::{
+    Json,
     extract::{Query, State},
     http::StatusCode,
     response::{Html, IntoResponse, Redirect, Response},
-    Json,
 };
-use tower_sessions::Session;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::SqlitePool;
 use std::collections::HashMap;
+use tower_sessions::Session;
 use validator::Validate;
 
 #[derive(Template)]
@@ -73,7 +73,9 @@ fn hash_password(password: &str) -> Result<String, argon2::password_hash::Error>
 fn verify_password(password: &str, hash: &str) -> Result<bool, argon2::password_hash::Error> {
     let parsed_hash = PasswordHash::new(hash)?;
     let argon2 = Argon2::default();
-    Ok(argon2.verify_password(password.as_bytes(), &parsed_hash).is_ok())
+    Ok(argon2
+        .verify_password(password.as_bytes(), &parsed_hash)
+        .is_ok())
 }
 
 pub async fn show_login(
@@ -83,12 +85,12 @@ pub async fn show_login(
 ) -> Result<Html<String>, Response> {
     let (css, js) = get_assets();
     let user = get_user_from_session(&session, &pool).await;
-    
+
     // If user is already logged in, redirect to dashboard
     if user.is_some() {
         return Err(Redirect::to("/dashboard").into_response());
     }
-    
+
     let mut flash_messages = Vec::new();
     if let Some(message) = query.message {
         flash_messages.push(FlashMessage {
@@ -96,14 +98,14 @@ pub async fn show_login(
             content: message,
         });
     }
-    
+
     let template = LoginTemplate {
         css,
         js,
         user,
         flash_messages,
     };
-    
+
     match template.render() {
         Ok(html) => Ok(Html(html)),
         Err(e) => {
@@ -122,7 +124,9 @@ pub async fn handle_login(
     if let Err(validation_errors) = login_request.validate() {
         let mut errors = HashMap::new();
         for (field, field_errors) in validation_errors.field_errors() {
-            let error_message = field_errors[0].message.as_ref()
+            let error_message = field_errors[0]
+                .message
+                .as_ref()
                 .map(|m| m.as_ref())
                 .unwrap_or("Invalid input");
             errors.insert(field, error_message);
@@ -176,15 +180,17 @@ pub async fn handle_login(
                 "user": UserResponse::from(user)
             })))
         }
-        Ok(false) => {
-            Ok(Json(json!({
-                "success": false,
-                "message": "Invalid email or password"
-            })))
-        }
+        Ok(false) => Ok(Json(json!({
+            "success": false,
+            "message": "Invalid email or password"
+        }))),
         Err(e) => {
             tracing::error!("Password verification error: {}", e);
-            Err((StatusCode::INTERNAL_SERVER_ERROR, "Password verification error").into_response())
+            Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "Password verification error",
+            )
+                .into_response())
         }
     }
 }
@@ -195,19 +201,19 @@ pub async fn show_signup(
 ) -> Result<Html<String>, Response> {
     let (css, js) = get_assets();
     let user = get_user_from_session(&session, &pool).await;
-    
+
     // If user is already logged in, redirect to dashboard
     if user.is_some() {
         return Err(Redirect::to("/dashboard").into_response());
     }
-    
+
     let template = SignupTemplate {
         css,
         js,
         user,
         flash_messages: Vec::new(),
     };
-    
+
     match template.render() {
         Ok(html) => Ok(Html(html)),
         Err(e) => {
@@ -225,7 +231,9 @@ pub async fn handle_signup(
     if let Err(validation_errors) = signup_request.validate() {
         let mut errors = HashMap::new();
         for (field, field_errors) in validation_errors.field_errors() {
-            let error_message = field_errors[0].message.as_ref()
+            let error_message = field_errors[0]
+                .message
+                .as_ref()
                 .map(|m| m.as_ref())
                 .unwrap_or("Invalid input");
             errors.insert(field, error_message);
@@ -275,19 +283,26 @@ pub async fn handle_signup(
         Ok(hash) => hash,
         Err(e) => {
             tracing::error!("Password hashing error: {}", e);
-            return Err((StatusCode::INTERNAL_SERVER_ERROR, "Password hashing error").into_response());
+            return Err(
+                (StatusCode::INTERNAL_SERVER_ERROR, "Password hashing error").into_response(),
+            );
         }
     };
 
     // Create the user
-    match User::create(&pool, signup_request.email, signup_request.username, password_hash).await {
-        Ok(user) => {
-            Ok(Json(json!({
-                "success": true,
-                "message": "Account created successfully",
-                "user": UserResponse::from(user)
-            })))
-        }
+    match User::create(
+        &pool,
+        signup_request.email,
+        signup_request.username,
+        password_hash,
+    )
+    .await
+    {
+        Ok(user) => Ok(Json(json!({
+            "success": true,
+            "message": "Account created successfully",
+            "user": UserResponse::from(user)
+        }))),
         Err(e) => {
             tracing::error!("Database error creating user: {}", e);
             Err((StatusCode::INTERNAL_SERVER_ERROR, "Database error").into_response())

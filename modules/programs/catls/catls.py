@@ -345,7 +345,9 @@ def find_files(args: Args) -> list[str]:
     )
 
     # Walk directory structure
-    dir_stack: list[tuple[str, int]] = [(args.directory, 0)]
+    dir_stack: list[tuple[str, int]] = [
+        (args.directory, 0)
+    ]
     while dir_stack:
         current_dir, current_depth = (
             dir_stack.pop()
@@ -403,7 +405,9 @@ def find_files(args: Args) -> list[str]:
     return files
 
 
-def process_file(file_path: str, args: Args) -> None:
+def process_file(
+    file_path: str, args: Args
+) -> None:
     """Process a single file and output its contents."""
     if args.directory == ".":
         rel_path: str = file_path
@@ -438,17 +442,13 @@ def process_file(file_path: str, args: Args) -> None:
     print(f'<file path="{safe_path}">')
 
     if is_binary(file_path):
-        print(  # binary
-            "<binary>true</binary>"
-        )
+        print("<binary>true</binary>")  # binary
         print(  # binary content
             "<content>[Binary file - contents not displayed]</content>"
         )
     else:
         filetype = guess_filetype(file_path)
-        print(
-            f"<type>{escape(filetype)}</type>"
-        )
+        print(f"<type>{escape(filetype)}</type>")
 
         try:
             with open(
@@ -466,8 +466,10 @@ def process_file(file_path: str, args: Args) -> None:
 
             if args.content_pattern:
                 try:
-                    regex_pattern = wildcard_to_regex(
-                        args.content_pattern
+                    regex_pattern = (
+                        wildcard_to_regex(
+                            args.content_pattern
+                        )
                     )
                     pattern = re.compile(
                         regex_pattern
@@ -475,9 +477,7 @@ def process_file(file_path: str, args: Args) -> None:
                     for i, line in enumerate(
                         content
                     ):
-                        if pattern.search(
-                            line
-                        ):
+                        if pattern.search(line):
                             filtered_content.append(
                                 (i + 1, line)
                             )
@@ -499,9 +499,7 @@ def process_file(file_path: str, args: Args) -> None:
                     )
                 ]
 
-            filtered_count = len(
-                filtered_content
-            )
+            filtered_count = len(filtered_content)
 
             if (
                 filtered_count > 1000

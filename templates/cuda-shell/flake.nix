@@ -48,7 +48,6 @@
           pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
         ];
 
-
         rooted = exec:
           builtins.concatStringsSep "\n"
           [
@@ -153,15 +152,18 @@
             echo ""
           '';
 
-          env = {
-            RUST_BACKTRACE = "1";
-            DEV = "1";
-            LOCAL = "1";
-          } // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
-            LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
-          } // pkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {
-            DYLD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
-          };
+          env =
+            {
+              RUST_BACKTRACE = "1";
+              DEV = "1";
+              LOCAL = "1";
+            }
+            // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+              LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
+            }
+            // pkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {
+              DYLD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
+            };
 
           corePackages = [
             # Nix development tools
@@ -191,7 +193,8 @@
             pkgs.opencv4
           ];
 
-          shell-packages = corePackages
+          shell-packages =
+            corePackages
             ++ pythonPackages
             ++ rustPackages
             ++ systemPackages

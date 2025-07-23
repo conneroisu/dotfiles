@@ -36,9 +36,9 @@ def test_split_file(
         output_prefix="section_",
     )
 
-    assert fake_filesystem.exists(  # pyright: ignore[reportUnknownMemberType]
+    assert fake_filesystem.exists(
         "/tf2"
-    )
+    )  # pyright: ignore[reportUnknownMemberType]
     assert fake_filesystem.exists(  # pyright: ignore[reportUnknownMemberType]
         "/section_1.txt"
     )

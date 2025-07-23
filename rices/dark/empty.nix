@@ -8,5 +8,5 @@
 delib.rice {
   name = "empty";
   home = {};
-  nixos = { };
+  nixos = {};
 }

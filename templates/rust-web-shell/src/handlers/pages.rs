@@ -1,4 +1,4 @@
-use crate::handlers::auth::{get_user_from_session, FlashMessage};
+use crate::handlers::auth::{FlashMessage, get_user_from_session};
 use crate::models::UserResponse;
 use askama::Template;
 use axum::{
@@ -6,8 +6,8 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse, Response},
 };
-use tower_sessions::Session;
 use sqlx::SqlitePool;
+use tower_sessions::Session;
 
 #[derive(Template)]
 #[template(path = "index.html")]
@@ -31,14 +31,14 @@ pub async fn show_index(
 ) -> Result<Html<String>, Response> {
     let (css, js) = get_assets();
     let user = get_user_from_session(&session, &pool).await;
-    
+
     let template = IndexTemplate {
         css,
         js,
         user,
         flash_messages: Vec::new(),
     };
-    
+
     match template.render() {
         Ok(html) => Ok(Html(html)),
         Err(e) => {

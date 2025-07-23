@@ -15,7 +15,6 @@
 # - Linux: Enables GTK theming with dark theme preference
 # - macOS: Uses /Users/ path convention and includes m-cli
 # - Both: Provides consistent editor and fetch tool experience
-
 {
   delib,
   pkgs,
@@ -73,11 +72,11 @@ in
         if isLinux
         then true
         else false;
-        
+
       home = {
         # Set username from constants
         inherit username;
-        
+
         # Platform-specific home directory paths
         homeDirectory =
           if isDarwin
@@ -88,25 +87,25 @@ in
         # Fetch tools for system information display
         packages = with pkgs;
           [
-            cpufetch    # CPU information fetcher
-            fastfetch   # Fast system information display
-            ipfetch     # IP and network information
-            onefetch    # Git repository information
+            cpufetch # CPU information fetcher
+            fastfetch # Fast system information display
+            ipfetch # IP and network information
+            onefetch # Git repository information
           ]
           # Linux-specific packages
           ++ lib.optionals isLinux [
-            ramfetch    # RAM usage information
+            ramfetch # RAM usage information
           ]
-          # macOS-specific packages  
+          # macOS-specific packages
           ++ lib.optionals isDarwin [
-            m-cli       # macOS command line tools
+            m-cli # macOS command line tools
           ];
-          
+
         # Essential environment variables for consistent editor experience
         sessionVariables = {
-          EDITOR = "nvim";        # Default text editor
+          EDITOR = "nvim"; # Default text editor
           SYSTEMD_EDITOR = "nvim"; # Editor for systemd operations
-          VISUAL = "nvim";        # Visual editor for applications
+          VISUAL = "nvim"; # Visual editor for applications
           MANPAGER = "nvim +Man!"; # Manpage viewer
         };
       };

@@ -40,9 +40,12 @@ Enabled via:
     pkgs.writers.writePython3Bin "cccleaner" {
       libraries = [];
       flakeIgnore = [
-        "E501"  # line too long
-        "W503"  # line break before binary operator
-        "E203"  # whitespace before ':'
+        "E501" # line too long
+        "W503" # line break before binary operator
+        "E203" # whitespace before ':'
+        "F541" # f-string is missing placeholders
+        "W291" # trailing whitespace
+        "W391" # blank line at end of file
       ];
     } ''
       ${builtins.readFile ./cccleaner.py}

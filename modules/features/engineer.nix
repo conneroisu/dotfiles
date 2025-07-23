@@ -137,9 +137,9 @@ in
             fd
             fzf
             zellij
-	    vscode-langservers-extracted
-	    yaml-language-server
-	    gcc
+            vscode-langservers-extracted
+            yaml-language-server
+            gcc
             atuin
             zoxide
             pkg-config

@@ -148,4 +148,8 @@ if __name__ == "__main__":
 
     # Run the function with default parameters
     args = parse_args()
-    split_file(args.input_filename, args.delimiter, args.output_prefix)
+    split_file(
+        args.input_filename,
+        args.delimiter,
+        args.output_prefix,
+    )

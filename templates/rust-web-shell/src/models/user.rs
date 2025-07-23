@@ -20,13 +20,13 @@ pub struct User {
 pub struct CreateUserRequest {
     #[validate(email)]
     pub email: String,
-    
+
     #[validate(length(min = 3, max = 50))]
     pub username: String,
-    
+
     #[validate(length(min = 8, max = 128))]
     pub password: String,
-    
+
     #[validate(must_match(other = "password"))]
     pub confirm_password: String,
 }
@@ -35,7 +35,7 @@ pub struct CreateUserRequest {
 pub struct LoginRequest {
     #[validate(email)]
     pub email: String,
-    
+
     #[validate(length(min = 1))]
     pub password: String,
 }
@@ -72,7 +72,7 @@ impl User {
     ) -> Result<User, sqlx::Error> {
         let id = Uuid::new_v4().to_string();
         let now = Utc::now();
-        
+
         let user = sqlx::query_as::<_, User>(
             r#"
             INSERT INTO users (id, email, username, password_hash, created_at, updated_at, email_verified, is_active)
@@ -94,7 +94,10 @@ impl User {
         Ok(user)
     }
 
-    pub async fn find_by_email(pool: &SqlitePool, email: &str) -> Result<Option<User>, sqlx::Error> {
+    pub async fn find_by_email(
+        pool: &SqlitePool,
+        email: &str,
+    ) -> Result<Option<User>, sqlx::Error> {
         let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE email = ?1")
             .bind(email)
             .fetch_optional(pool)
@@ -112,7 +115,10 @@ impl User {
         Ok(user)
     }
 
-    pub async fn find_by_username(pool: &SqlitePool, username: &str) -> Result<Option<User>, sqlx::Error> {
+    pub async fn find_by_username(
+        pool: &SqlitePool,
+        username: &str,
+    ) -> Result<Option<User>, sqlx::Error> {
         let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE username = ?1")
             .bind(username)
             .fetch_optional(pool)

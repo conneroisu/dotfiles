@@ -13,7 +13,6 @@
 # - Set `myconfig.args.shared.someValue = "value"` to make it available everywhere
 # - Set `myconfig.args.nixos.someValue = "value"` for NixOS-specific arguments
 # - Set `myconfig.args.home.someValue = "value"` for Home Manager-specific arguments
-
 {delib, ...}:
 delib.module {
   name = "args";
@@ -21,10 +20,10 @@ delib.module {
   options.args = with delib; {
     # Shared arguments available to both NixOS and Home Manager configurations
     shared = attrsLegacyOption {};
-    
+
     # NixOS-specific arguments only available in NixOS context
     nixos = attrsLegacyOption {};
-    
+
     # Home Manager-specific arguments only available in Home Manager context
     home = attrsLegacyOption {};
   };

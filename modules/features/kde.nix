@@ -52,74 +52,121 @@ in
       environment.systemPackages = let
         # Core KDE Plasma packages
         coreDesktop = with pkgs.kdePackages; [
-          plasma-desktop plasma-workspace plasma-workspace-wallpapers
-          kwin systemsettings krunner kglobalaccel
+          plasma-desktop
+          plasma-workspace
+          plasma-workspace-wallpapers
+          kwin
+          systemsettings
+          krunner
+          kglobalaccel
         ];
-        
+
         # Essential applications
         coreApps = with pkgs.kdePackages; [
-          dolphin dolphin-plugins konsole kate spectacle
-          okular gwenview ark kcalc
+          dolphin
+          dolphin-plugins
+          konsole
+          kate
+          spectacle
+          okular
+          gwenview
+          ark
+          kcalc
         ];
-        
+
         # File system and I/O
         fileSystem = with pkgs.kdePackages; [
-          kio kio-extras kio-fuse baloo baloo-widgets
+          kio
+          kio-extras
+          kio-fuse
+          baloo
+          baloo-widgets
         ];
-        
+
         # Media and multimedia
         mediaApps = with pkgs.kdePackages; [
-          elisa dragon k3b
+          elisa
+          dragon
+          k3b
         ];
-        
+
         # Communication and PIM
         communicationApps = with pkgs.kdePackages; [
-          kontact kmail kaddressbook korganizer
+          kontact
+          kmail
+          kaddressbook
+          korganizer
           kdeconnect-kde
         ];
-        
+
         # Development tools
         devTools = with pkgs.kdePackages; [
-          kdevelop kompare
+          kdevelop
+          kompare
         ];
-        
+
         # System integration
         systemIntegration = with pkgs.kdePackages; [
-          discover powerdevil
-          plasma-browser-integration plasma-thunderbolt
-          plasma-nm bluedevil print-manager
+          discover
+          powerdevil
+          plasma-browser-integration
+          plasma-thunderbolt
+          plasma-nm
+          bluedevil
+          print-manager
         ];
-        
+
         # Themes and appearance
         themes = with pkgs.kdePackages; [
-          breeze breeze-icons breeze-gtk
-          oxygen oxygen-icons
+          breeze
+          breeze-icons
+          breeze-gtk
+          oxygen
+          oxygen-icons
         ];
-        
+
         # Security and wallet
         security = with pkgs.kdePackages; [
-          kwallet kwallet-pam kwalletmanager ksshaskpass
+          kwallet
+          kwallet-pam
+          kwalletmanager
+          ksshaskpass
         ];
-        
+
         # Utilities
         utilities = with pkgs.kdePackages; [
-          filelight kcharselect kcolorchooser kfind
-          ktimer kruler
+          filelight
+          kcharselect
+          kcolorchooser
+          kfind
+          ktimer
+          kruler
         ];
-        
+
         # Optional games
         games = with pkgs.kdePackages; [
-          kmahjongg kpat
+          kmahjongg
+          kpat
         ];
-        
+
         # Third-party applications with good KDE integration
         thirdParty = with pkgs; [
-          firefox vlc libreoffice-qt
-          gimp inkscape audacity obs-studio
+          firefox
+          vlc
+          libreoffice-qt
+          gimp
+          inkscape
+          audacity
+          obs-studio
         ];
       in
-        coreDesktop ++ coreApps ++ fileSystem ++ mediaApps
-        ++ communicationApps ++ devTools ++ systemIntegration
+        coreDesktop
+        ++ coreApps
+        ++ fileSystem
+        ++ mediaApps
+        ++ communicationApps
+        ++ devTools
+        ++ systemIntegration
         ++ themes ++ security ++ utilities ++ games ++ thirdParty;
 
       environment.variables = {
@@ -129,16 +176,16 @@ in
         XDG_CURRENT_DESKTOP = lib.mkDefault "KDE";
         KDE_SESSION_VERSION = "6";
         KDE_FULL_SESSION = "true";
-        
+
         # Qt/Wayland configuration
         QT_QPA_PLATFORM = lib.mkDefault "wayland;xcb";
         QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
         QT_AUTO_SCREEN_SCALE_FACTOR = "1";
         QT_SCALE_FACTOR_ROUNDING_POLICY = "RoundPreferFloor";
-        
+
         # Theme integration (overridden by Stylix when active)
         GTK_THEME = lib.mkDefault "Breeze";
-        
+
         # Input method configuration
         GTK_IM_MODULE = "fcitx";
         QT_IM_MODULE = "fcitx";
@@ -171,13 +218,13 @@ in
           };
           gdm.enable = lib.mkForce false;
         };
-        
+
         # Core system services
         dbus.enable = true;
         udisks2.enable = true;
         upower.enable = true;
         accounts-daemon.enable = true;
-        
+
         # Audio stack
         pipewire = {
           enable = true;
@@ -185,10 +232,10 @@ in
           alsa.enable = true;
           jack.enable = true;
         };
-        
+
         # Connectivity
         blueman.enable = true;
-        
+
         # Printing and discovery
         printing.enable = true;
         avahi = {
@@ -196,16 +243,16 @@ in
           nssmdns4 = true;
           openFirewall = true;
         };
-        
+
         # Hardware and power
         fwupd.enable = true;
         thermald.enable = true;
         power-profiles-daemon.enable = false;
-        
+
         # File system services
         gvfs.enable = true;
         tumbler.enable = true;
-        
+
         # Additional services
         geoclue2.enable = true;
       };
@@ -242,7 +289,7 @@ in
             };
           };
         };
-        
+
         # Default applications
         mime = {
           enable = true;
@@ -306,16 +353,25 @@ in
         enableDefaultPackages = true;
         packages = with pkgs; [
           # Primary fonts
-          noto-fonts noto-fonts-cjk-sans noto-fonts-emoji
-          fira-code fira-code-symbols
+          noto-fonts
+          noto-fonts-cjk-sans
+          noto-fonts-emoji
+          fira-code
+          fira-code-symbols
           # Development fonts
-          source-code-pro source-sans-pro source-serif-pro
+          source-code-pro
+          source-sans-pro
+          source-serif-pro
           # System fonts
-          liberation_ttf ubuntu_font_family cantarell-fonts
+          liberation_ttf
+          ubuntu_font_family
+          cantarell-fonts
           # Specialized fonts
-          mplus-outline-fonts.githubRelease dina-font proggyfonts
+          mplus-outline-fonts.githubRelease
+          dina-font
+          proggyfonts
         ];
-        
+
         fontconfig = {
           enable = true;
           defaultFonts = {
@@ -367,14 +423,21 @@ in
       # Additional KDE packages for Home Manager
       home.packages = with pkgs.kdePackages; [
         # Extra utilities
-        filelight kcharselect kcolorchooser
-        kruler ktimer kfind
+        filelight
+        kcharselect
+        kcolorchooser
+        kruler
+        ktimer
+        kfind
         # Plasma addons
-        kdeplasma-addons plasma-browser-integration
+        kdeplasma-addons
+        plasma-browser-integration
         # Development tools
-        kdevelop kompare
+        kdevelop
+        kompare
         # Optional games
-        kmahjongg kpat
+        kmahjongg
+        kpat
       ];
     };
   }

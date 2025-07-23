@@ -1,4 +1,4 @@
-use crate::handlers::auth::{get_user_from_session, FlashMessage};
+use crate::handlers::auth::{FlashMessage, get_user_from_session};
 use crate::models::UserResponse;
 use askama::Template;
 use axum::{
@@ -6,9 +6,9 @@ use axum::{
     http::StatusCode,
     response::{Html, IntoResponse, Redirect, Response},
 };
-use tower_sessions::Session;
+use rand::{Rng, distributions::Alphanumeric};
 use sqlx::SqlitePool;
-use rand::{distributions::Alphanumeric, Rng};
+use tower_sessions::Session;
 
 #[derive(Template)]
 #[template(path = "dashboard.html")]
@@ -54,19 +54,22 @@ async fn get_or_create_csrf_token(session: &Session) -> Result<String, Response>
     if let Ok(Some(token)) = session.get::<String>("csrf_token").await {
         return Ok(token);
     }
-    
+
     // Generate new token and store in session
     let token = generate_csrf_token();
     if let Err(_) = session.insert("csrf_token", &token).await {
         tracing::error!("Failed to store CSRF token in session");
         return Err((StatusCode::INTERNAL_SERVER_ERROR, "Session error").into_response());
     }
-    
+
     Ok(token)
 }
 
 // Validate CSRF token from request against session
-pub async fn validate_csrf_token(session: &Session, provided_token: &str) -> Result<bool, Response> {
+pub async fn validate_csrf_token(
+    session: &Session,
+    provided_token: &str,
+) -> Result<bool, Response> {
     match session.get::<String>("csrf_token").await {
         Ok(Some(session_token)) => Ok(session_token == provided_token),
         Ok(None) => Ok(false), // No token in session
@@ -82,7 +85,7 @@ pub async fn show_dashboard(
     State(pool): State<SqlitePool>,
 ) -> Result<Html<String>, Response> {
     let (css, js) = get_assets();
-    
+
     // Get user from session
     let user_response = match get_user_from_session(&session, &pool).await {
         Some(user) => user,
@@ -91,10 +94,10 @@ pub async fn show_dashboard(
             return Err(Redirect::to("/login").into_response());
         }
     };
-    
+
     // Get or create CSRF token
     let csrf_token = get_or_create_csrf_token(&session).await?;
-    
+
     // Convert to dashboard user with formatted dates
     let dashboard_user = DashboardUser {
         email: user_response.email.clone(),
@@ -102,10 +105,16 @@ pub async fn show_dashboard(
         email_verified: user_response.email_verified,
         created_at_formatted: user_response.created_at.format("%b %d, %Y").to_string(),
         updated_at_formatted: user_response.updated_at.format("%b %d, %Y").to_string(),
-        created_at_full: user_response.created_at.format("%b %d, %Y at %I:%M %p").to_string(),
-        updated_at_full: user_response.updated_at.format("%b %d, %Y at %I:%M %p").to_string(),
+        created_at_full: user_response
+            .created_at
+            .format("%b %d, %Y at %I:%M %p")
+            .to_string(),
+        updated_at_full: user_response
+            .updated_at
+            .format("%b %d, %Y at %I:%M %p")
+            .to_string(),
     };
-    
+
     let template = DashboardTemplate {
         css,
         js,
@@ -114,7 +123,7 @@ pub async fn show_dashboard(
         flash_messages: Vec::new(),
         csrf_token,
     };
-    
+
     match template.render() {
         Ok(html) => Ok(Html(html)),
         Err(e) => {

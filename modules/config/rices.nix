@@ -18,7 +18,6 @@
 # - Define rice configurations in the `rices/` directory
 # - Set `myconfig.rice = "theme-name"` in host configurations
 # - Stylix will automatically apply the theme to supported applications
-
 {
   delib,
   inputs,
@@ -44,7 +43,7 @@ delib.module {
   # Note: Stylix home-manager module is currently disabled but available
   home.always = {myconfig, ...}: {
     # imports = [inputs.stylix.homeModules.stylix];
-    
+
     # Validate that all referenced rice names exist in the rices directory
     assertions = delib.riceNamesAssertions myconfig.rices;
   };
@@ -53,7 +52,7 @@ delib.module {
   nixos.always = {myconfig, ...}: {
     # Import Stylix module for system-wide theming
     imports = [inputs.stylix.nixosModules.stylix];
-    
+
     # Validate that all referenced rice names exist in the rices directory
     assertions = delib.riceNamesAssertions myconfig.rices;
   };

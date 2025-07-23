@@ -80,7 +80,7 @@ in
         
         # Development tools
         devTools = with pkgs.kdePackages; [
-          kdevelop kompare umbrello
+          kdevelop kompare
         ];
         
         # System integration
@@ -281,7 +281,6 @@ in
       # Hardware configuration
       hardware = {
         enableAllFirmware = true;
-        pulseaudio.enable = false; # Using PipeWire
         bluetooth = {
           enable = true;
           powerOnBoot = true;
@@ -307,7 +306,7 @@ in
         enableDefaultPackages = true;
         packages = with pkgs; [
           # Primary fonts
-          noto-fonts noto-fonts-cjk noto-fonts-emoji
+          noto-fonts noto-fonts-cjk-sans noto-fonts-emoji
           fira-code fira-code-symbols
           # Development fonts
           source-code-pro source-sans-pro source-serif-pro

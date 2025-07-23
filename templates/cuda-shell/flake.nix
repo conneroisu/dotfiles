@@ -1,5 +1,5 @@
 {
-  description = "Rust + Python development environment with optional CUDA support";
+  description = "Rust + Python development environment";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -28,32 +28,26 @@
           extensions = ["rust-src" "clippy" "rustfmt"];
         };
 
-        # CUDA support only available on Linux systems
-        cudaSupport = pkgs.stdenv.isLinux;
-        cudaPackages = pkgs.lib.optionals cudaSupport [
-          pkgs.cudaPackages.cudatoolkit
+        # Platform-specific packages
+        linuxPackages = pkgs.lib.optionals pkgs.stdenv.isLinux [
+          pkgs.libGL
+          pkgs.mesa
+          pkgs.xorg.libX11
+          pkgs.xorg.libXrandr
+          pkgs.xorg.libXinerama
+          pkgs.xorg.libXcursor
+          pkgs.xorg.libXi
         ];
 
-        # Prefer usage of uv
-        # pythonEnv = pkgs.python311.withPackages (ps:
-        #   with ps; [
-        #     pip
-        #     torch-bin
-        #     torchvision-bin
-        #     transformers
-        #     datasets
-        #     accelerate
-        #     boto3
-        #     onnxruntime
-        #     numpy
-        #     scipy
-        #     matplotlib
-        #     jupyter
-        #     ipython
-        #     black
-        #     ruff
-        #     mypy
-        #   ]);
+        darwinPackages = pkgs.lib.optionals pkgs.stdenv.isDarwin [
+          pkgs.libiconv
+          pkgs.darwin.apple_sdk.frameworks.CoreFoundation
+          pkgs.darwin.apple_sdk.frameworks.CoreServices
+          pkgs.darwin.apple_sdk.frameworks.Foundation
+          pkgs.darwin.apple_sdk.frameworks.Security
+          pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
+        ];
+
 
         rooted = exec:
           builtins.concatStringsSep "\n"
@@ -151,52 +145,58 @@
       in {
         devShells = let
           shellHook = ''
-            echo "🦀 Rust + 🐍 Python${pkgs.lib.optionalString cudaSupport " + CUDA"} development environment"
+            echo "🦀 Rust + 🐍 Python development environment"
             echo "Available commands:"
             ${pkgs.lib.concatStringsSep "\n" (
               pkgs.lib.mapAttrsToList (name: script: ''echo "  ${name} - ${script.description}"'') scripts
             )}
             echo ""
-
-            ${pkgs.lib.optionalString cudaSupport ''
-            # Set environment variables for CUDA
-            export CUDA_PATH=${pkgs.cudaPackages.cudatoolkit}
-            ''}
           '';
 
           env = {
             RUST_BACKTRACE = "1";
             DEV = "1";
             LOCAL = "1";
-          } // (pkgs.lib.optionalAttrs cudaSupport {
-            CUDA_HOME = "${pkgs.cudaPackages.cudatoolkit}";
-            LD_LIBRARY_PATH = "${pkgs.cudaPackages.cudatoolkit}/lib:${pkgs.stdenv.cc.cc.lib}/lib";
-          });
+          } // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
+            LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
+          } // pkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {
+            DYLD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
+          };
 
-          shell-packages =
-            [
-              # Nix development tools
-              pkgs.alejandra
-              pkgs.nixd
-              pkgs.nil
-              pkgs.statix
-              pkgs.deadnix
+          corePackages = [
+            # Nix development tools
+            pkgs.alejandra
+            pkgs.nixd
+            pkgs.nil
+            pkgs.statix
+            pkgs.deadnix
+          ];
 
-              # Python tools
-              pkgs.uv
-              pkgs.ruff
-              pkgs.mypy
+          pythonPackages = [
+            pkgs.uv
+            pkgs.ruff
+            pkgs.mypy
+          ];
 
-              # Rust toolchain and tools
-              rustToolchain
-              pkgs.cargo-watch
-              pkgs.cargo-edit
+          rustPackages = [
+            rustToolchain
+            pkgs.cargo-watch
+            pkgs.cargo-edit
+          ];
 
-              # Build tools
-              pkgs.pkg-config
-              pkgs.protobuf
-            ]
-            ++ cudaPackages
+          systemPackages = [
+            pkgs.pkg-config
+            pkgs.protobuf
+            pkgs.openssl
+            pkgs.opencv4
+          ];
+
+          shell-packages = corePackages
+            ++ pythonPackages
+            ++ rustPackages
+            ++ systemPackages
+            ++ linuxPackages
+            ++ darwinPackages
             ++ builtins.attrValues scriptPackages;
         in {
           default = pkgs.mkShell {
@@ -205,33 +205,8 @@
           };
         };
 
-        packages = let
-          # Build the Rust package
-          # llm-package = pkgs.rustPlatform.buildRustPackage {
-          #   pname = "v1-llm";
-          #   version = "0.1.0";
-          #   src = ./.;
-          #   cargoLock = {
-          #     lockFile = ./Cargo.lock;
-          #   };
-          #
-          #   buildInputs = with pkgs;
-          #     [
-          #       openssl
-          #       pkg-config
-          #     ]
-          #     ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
-          #       libiconv
-          #       darwin.apple_sdk.frameworks.Security
-          #       darwin.apple_sdk.frameworks.SystemConfiguration
-          #     ];
-          #
-          #   nativeBuildInputs = with pkgs; [
-          #     pkg-config
-          #     protobuf
-          #   ];
-          # };
-        in {
+        packages = {
+          # Add custom packages here
         };
       }
     );

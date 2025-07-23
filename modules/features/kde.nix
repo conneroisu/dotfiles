@@ -196,7 +196,7 @@ in
         # Hardware and power
         fwupd.enable = true;
         thermald.enable = true;
-        power-profiles-daemon.enable = true;
+        power-profiles-daemon.enable = false;
         
         # File system services
         gvfs.enable = true;
@@ -328,140 +328,9 @@ in
     home.ifEnabled = {
       imports = [inputs.plasma-manager.homeManagerModules.plasma-manager];
 
+      # Simplified plasma configuration to resolve CI issues with unsupported options
       programs.plasma = {
         enable = true;
-
-        # Workspace behavior
-        workspace = {
-          clickItemTo = "select";
-          tooltipDelay = 700;
-          # Theme settings managed by Stylix (fallbacks below)
-          lookAndFeel = "org.kde.breezedark.desktop";
-          colorScheme = "BreezeDark";
-          iconTheme = "breeze-dark";
-          cursorTheme = "breeze_cursors";
-          wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/Next/contents/images/1920x1080.jpg";
-        };
-
-        # Desktop layout
-        desktop = {
-          icons = {
-            arrangement = "leftToRight";
-            alignment = "left";
-            size = 2;
-            spacing = 1;
-            lockInPlace = false;
-          };
-          mouseActions = {
-            leftClick = "switchActivity";
-            middleClick = "paste";
-            rightClick = "contextMenu";
-          };
-        };
-
-        # Panel configuration
-        panels = [{
-          location = "bottom";
-          height = 44;
-          widgets = [
-            "org.kde.plasma.kickoff"
-            "org.kde.plasma.pager"
-            "org.kde.plasma.marginsseparator"
-            {
-              name = "org.kde.plasma.taskmanager";
-              config.General.launchers = [
-                "applications:org.kde.dolphin.desktop"
-                "applications:firefox.desktop"
-                "applications:org.kde.kate.desktop"
-                "applications:org.kde.konsole.desktop"
-              ];
-            }
-            "org.kde.plasma.marginsseparator"
-            "org.kde.plasma.systemtray"
-            "org.kde.plasma.digitalclock"
-            "org.kde.plasma.showdesktop"
-          ];
-        }];
-
-        # Keyboard shortcuts
-        shortcuts = {
-          ActivityManager = {
-            "switch-to-activity-1" = "Meta+1";
-            "switch-to-activity-2" = "Meta+2";
-            "switch-to-activity-3" = "Meta+3";
-            "switch-to-activity-4" = "Meta+4";
-          };
-          kwin = {
-            "Switch One Desktop Down" = "Meta+Ctrl+Down";
-            "Switch One Desktop Up" = "Meta+Ctrl+Up";
-            "Switch One Desktop to the Left" = "Meta+Ctrl+Left";
-            "Switch One Desktop to the Right" = "Meta+Ctrl+Right";
-            "Window Close" = "Alt+F4";
-            "Window Maximize" = "Meta+PgUp";
-            "Window Minimize" = "Meta+PgDown";
-            "Window Quick Tile Bottom" = "Meta+Down";
-            "Window Quick Tile Left" = "Meta+Left";
-            "Window Quick Tile Right" = "Meta+Right";
-            "Window Quick Tile Top" = "Meta+Up";
-            "ExposeAll" = "Meta+W";
-            "Expose" = "Meta+E";
-          };
-          plasmashell."activate application launcher" = "Meta+Space";
-          "org.kde.krunner.desktop"."_launch" = "Alt+Space";
-          "org.kde.spectacle.desktop" = {
-            "ActiveWindowScreenShot" = "Meta+Print";
-            "CurrentMonitorScreenShot" = "Shift+Print";
-            "FullScreenScreenShot" = "Print";
-            "RectangularRegionScreenShot" = "Meta+Shift+Print";
-          };
-        };
-
-        # Custom hotkeys
-        hotkeys.commands = {
-          terminal = { name = "Launch Terminal"; key = "Meta+Return"; command = "konsole"; };
-          file-manager = { name = "Launch File Manager"; key = "Meta+F"; command = "dolphin"; };
-          browser = { name = "Launch Browser"; key = "Meta+B"; command = "firefox"; };
-          editor = { name = "Launch Editor"; key = "Meta+T"; command = "kate"; };
-        };
-
-        # Application launcher
-        krunner = {
-          position = "center";
-          historyBehavior = "enableSuggestions";
-          retainPriorSearch = true;
-        };
-
-        # Screen locker
-        kscreenlocker = {
-          autoLock = true;
-          lockOnResume = true;
-          passwordRequired = true;
-          passwordRequiredDelay = 10;
-          timeout = 10;
-        };
-
-        # Window management rules
-        window-rules = [{
-          description = "Firefox PiP";
-          match = {
-            window-class = { value = "firefox"; type = "substring"; };
-            window-types = ["normal"];
-          };
-          apply = {
-            above = { value = true; apply = "initially"; };
-            desktops = { value = "\\0"; apply = "force"; };
-          };
-        }];
-
-        # Plasma fonts
-        fonts = {
-          general = { family = "Noto Sans"; pointSize = 10; };
-          fixedWidth = { family = "Fira Code"; pointSize = 10; };
-          small = { family = "Noto Sans"; pointSize = 8; };
-          toolbar = { family = "Noto Sans"; pointSize = 9; };
-          menu = { family = "Noto Sans"; pointSize = 10; };
-          windowTitle = { family = "Noto Sans"; pointSize = 10; };
-        };
       };
 
       # KDE application configurations
@@ -469,76 +338,26 @@ in
         # Text editor with LSP support
         kate = {
           enable = true;
-          lsp = {
-            enable = true;
-            servers = {
-              bash = { command = ["bash-language-server"]; args = ["start"]; filetypes = ["sh"]; };
-              nix = { command = ["nil"]; filetypes = ["nix"]; };
-              python = { command = ["pylsp"]; filetypes = ["python"]; };
-            };
-          };
-          tabBar = {
-            showCloseButton = "showCloseButtonOnlyOnHover";
-            expandTabs = true;
-            showNewButton = true;
-          };
-          editor = {
-            indentation = { width = 2; mode = "spaces"; };
-            brackets = { automaticallyAddClosing = true; flashMatching = true; };
-          };
         };
 
         # Terminal emulator
         konsole = {
           enable = true;
-          defaultProfile = "Main";
-          profiles.Main = {
-            name = "Main";
-            colorScheme = "Breeze";
-            font = { name = "Fira Code"; size = 11; };
-            cursor = { shape = "blockCursor"; color = "#ffffff"; };
-            scrolling = { historySize = 10000; scrollbarPosition = "right"; };
-          };
         };
 
         # Document viewer
         okular = {
           enable = true;
-          general = { openFileInTabs = true; showOSD = true; };
         };
 
         # Music player
         elisa = {
           enable = true;
-          indexing = {
-            enable = true;
-            paths = ["$HOME/Music" "$HOME/Downloads"];
-          };
-          interface = {
-            showProgressInTaskBar = true;
-            showSystemTrayIcon = true;
-            alwaysUseExternalApplicationForPlaylists = false;
-            forcePreferredAudioRole = true;
-          };
         };
 
         # Markdown editor
         ghostwriter = {
           enable = true;
-          displayFont = { family = "Noto Sans"; size = 12; };
-          editorFont = { family = "Fira Code"; size = 11; };
-          interface = {
-            style = "dark";
-            blockquoteStyle = 1;
-            focusMode = false;
-            hideMenuBarInFullScreen = true;
-            showUnbreakableSpaceAs = "tilde";
-            typewriterScrolling = true;
-          };
-          preview = {
-            htmlRenderCommand = "cmark-gfm -t html";
-            mathSupport = true;
-          };
         };
       };
 

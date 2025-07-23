@@ -39,6 +39,7 @@ the Base16 color scheme through Qt theming.
   delib,
   pkgs,
   inputs,
+  lib,
   ...
 }: let
   inherit (delib) singleEnableOption;
@@ -161,11 +162,14 @@ in
       services = {
         # Desktop environment
         desktopManager.plasma6.enable = true;
-        displayManager.sddm = {
-          enable = true;
-          wayland.enable = true;
-          theme = "breeze";
-          autoNumlock = true;
+        displayManager = {
+          sddm = {
+            enable = true;
+            wayland.enable = true;
+            theme = "breeze";
+            autoNumlock = true;
+          };
+          gdm.enable = lib.mkForce false;
         };
         
         # Core system services
@@ -364,12 +368,12 @@ in
       # Additional KDE packages for Home Manager
       home.packages = with pkgs.kdePackages; [
         # Extra utilities
-        kwrite filelight kcharselect kcolorchooser
+        filelight kcharselect kcolorchooser
         kruler ktimer kfind
         # Plasma addons
         kdeplasma-addons plasma-browser-integration
         # Development tools
-        kdevelop kompare umbrello
+        kdevelop kompare
         # Optional games
         kmahjongg kpat
       ];

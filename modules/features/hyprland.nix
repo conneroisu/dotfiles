@@ -87,6 +87,7 @@ Configured through Hyprland config with:
   delib,
   pkgs,
   inputs,
+  lib,
   ...
 }: let
   inherit (delib) singleEnableOption;
@@ -171,7 +172,7 @@ in
         xserver = {
           enable = true;
         };
-        displayManager.gdm.enable = true;
+        displayManager.gdm.enable = lib.mkDefault true;
       };
 
       xdg = {

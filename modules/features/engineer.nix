@@ -94,6 +94,7 @@ in
         cmbd.enable = true;
         splitm.enable = true;
         nviml.enable = true;
+        cccleaner.enable = true;
       };
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman
@@ -262,6 +263,7 @@ in
       myconfig.programs = {
         dx.enable = true;
         splitm.enable = true;
+        cccleaner.enable = true;
       };
       environment = {
         systemPackages = with pkgs; [

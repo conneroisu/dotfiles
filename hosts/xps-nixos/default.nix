@@ -83,7 +83,7 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         student.enable = true;
-        gnome.enable = true;
+        kde.enable = true;
       };
       programs = {
         proton-x.enable = true;

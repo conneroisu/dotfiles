@@ -125,19 +125,19 @@ in
       environment.variables = {
         # Session and desktop identification
         XDG_SESSION_TYPE = "wayland";
-        XDG_SESSION_DESKTOP = "KDE";
-        XDG_CURRENT_DESKTOP = "KDE";
+        XDG_SESSION_DESKTOP = lib.mkDefault "KDE";
+        XDG_CURRENT_DESKTOP = lib.mkDefault "KDE";
         KDE_SESSION_VERSION = "6";
         KDE_FULL_SESSION = "true";
         
         # Qt/Wayland configuration
-        QT_QPA_PLATFORM = "wayland;xcb";
+        QT_QPA_PLATFORM = lib.mkDefault "wayland;xcb";
         QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
         QT_AUTO_SCREEN_SCALE_FACTOR = "1";
         QT_SCALE_FACTOR_ROUNDING_POLICY = "RoundPreferFloor";
         
         # Theme integration (overridden by Stylix when active)
-        GTK_THEME = "Breeze";
+        GTK_THEME = lib.mkDefault "Breeze";
         
         # Input method configuration
         GTK_IM_MODULE = "fcitx";
@@ -248,22 +248,22 @@ in
           enable = true;
           defaultApplications = {
             # Web
-            "text/html" = "firefox.desktop";
-            "x-scheme-handler/http" = "firefox.desktop";
-            "x-scheme-handler/https" = "firefox.desktop";
+            "text/html" = lib.mkDefault "firefox.desktop";
+            "x-scheme-handler/http" = lib.mkDefault "firefox.desktop";
+            "x-scheme-handler/https" = lib.mkDefault "firefox.desktop";
             # Files
-            "inode/directory" = "org.kde.dolphin.desktop";
-            "text/plain" = "org.kde.kate.desktop";
+            "inode/directory" = lib.mkDefault "org.kde.dolphin.desktop";
+            "text/plain" = lib.mkDefault "org.kde.kate.desktop";
             # Images
-            "image/jpeg" = "org.kde.gwenview.desktop";
-            "image/png" = "org.kde.gwenview.desktop";
+            "image/jpeg" = lib.mkDefault "org.kde.gwenview.desktop";
+            "image/png" = lib.mkDefault "org.kde.gwenview.desktop";
             # Documents
-            "application/pdf" = "org.kde.okular.desktop";
+            "application/pdf" = lib.mkDefault "org.kde.okular.desktop";
             # Audio/Video
-            "audio/mpeg" = "org.kde.elisa.desktop";
-            "video/mp4" = "vlc.desktop";
+            "audio/mpeg" = lib.mkDefault "org.kde.elisa.desktop";
+            "video/mp4" = lib.mkDefault "vlc.desktop";
             # Archives
-            "application/zip" = "org.kde.ark.desktop";
+            "application/zip" = lib.mkDefault "org.kde.ark.desktop";
           };
         };
       };

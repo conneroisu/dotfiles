@@ -58,7 +58,7 @@ export class ConfigManager {
   private loadConfig(): HookConfig {
     return {
       security: {
-        blockDangerousCommands: process.env.CLAUDE_HOOKS_BLOCK_DANGEROUS === 'true',
+        blockDangerousCommands: process.env.CLAUDE_HOOKS_BLOCK_DANGEROUS !== 'false', // enabled by default
         allowedCommands: process.env.CLAUDE_HOOKS_ALLOWED_COMMANDS?.split(',') || [],
         maxInputSize: parseInt(process.env.CLAUDE_HOOKS_MAX_INPUT_SIZE || '1048576'), // 1MB default
         enableEnvFileProtection: process.env.CLAUDE_HOOKS_PROTECT_ENV !== 'false', // enabled by default

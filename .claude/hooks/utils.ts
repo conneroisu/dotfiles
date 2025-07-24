@@ -6,6 +6,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import type { LogEntry, LogLevel, HookResult } from './types.ts';
+import { ConfigManager } from './config.ts';
 
 export class Logger {
   private static logsDir = 'logs';
@@ -74,7 +75,8 @@ export class InputReader {
   static async readStdinJson<T>(): Promise<T> {
     const chunks: Buffer[] = [];
     let totalSize = 0;
-    const maxInputSize = 1048576; // 1MB limit to prevent DoS
+    const config = ConfigManager.getInstance().getSecurityConfig();
+    const maxInputSize = config.maxInputSize; // Configurable limit to prevent DoS
     
     for await (const chunk of process.stdin) {
       totalSize += chunk.length;
@@ -146,20 +148,50 @@ export class SecurityValidator {
       return { allowed: true };
     }
 
-    // Comprehensive dangerous rm command patterns (currently informational only)
+    const config = ConfigManager.getInstance().getSecurityConfig();
+    
+    // If dangerous command blocking is disabled in config, only log
+    if (!config.blockDangerousCommands) {
+      Logger.info('Dangerous command validation disabled by configuration');
+      return { allowed: true };
+    }
+
+    // Check for explicitly safe patterns first - very restrictive
+    const safePaths = [
+      /^rm\s+-rf?\s+\/tmp\/\w+-\d+\//,  // Only allow /tmp/name-numbers/ pattern
+      /^rm\s+-rf?\s+\/var\/tmp\/\w+-\d+\//,  // Only allow /var/tmp/name-numbers/ pattern
+      /^rm\s+-rf?\s+\.\/tmp\//,  // Allow relative ./tmp/ paths
+    ];
+    
+    for (const safePattern of safePaths) {
+      if (safePattern.test(command)) {
+        return { allowed: true }; // Explicitly allow safe temp directory operations
+      }
+    }
+
+    // Comprehensive dangerous rm command patterns - blocking based on config
     const dangerousPatterns = [
-      /rm\s+(-[rf]*[rf]+[^;]*|[^;]*-[rf]*[rf]+)/,
-      /rm\s+.*\*/,
-      /rm\s+.*\/\*/,
-      /rm\s+-rf?\s+\/(?!tmp|var\/tmp)/,
-      /sudo\s+rm/
+      /rm\s+-rf?\s+\//, // Block all rm -rf on root paths (safe patterns checked first)
+      /rm\s+.*\*/, // Block rm with wildcards
+      /rm\s+.*\/\*/, // Block rm with directory wildcards
+      /sudo\s+rm/, // Block sudo rm commands
+      /rm\s+-rf?\s+\.\./, // Block rm with parent directory traversal
+      /rm\s+-rf?\s+~/, // Block rm on home directory
+      /rm\s+-rf?\s+\$/ // Block rm with variables that could be dangerous
     ];
 
     for (const pattern of dangerousPatterns) {
       if (pattern.test(command)) {
-        Logger.warn('Potentially dangerous rm command detected', { command, pattern: pattern.toString() });
-        // Currently only logging, not blocking
-        break;
+        const reason = `Dangerous command pattern detected: ${pattern.toString()}. Command blocked for security.`;
+        
+        if (config.logSecurityViolations) {
+          Logger.warn('Dangerous command blocked', { command, pattern: pattern.toString() });
+        }
+        
+        return { 
+          allowed: false, 
+          reason 
+        };
       }
     }
 

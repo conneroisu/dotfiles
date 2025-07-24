@@ -36,13 +36,31 @@ describe('SecurityValidator', () => {
   });
 
   describe('validateDangerousCommands', () => {
-    test('should log but allow rm -rf commands (current behavior)', () => {
+    test('should block dangerous rm -rf commands', () => {
       const result = SecurityValidator.validateDangerousCommands('Bash', { command: 'rm -rf /tmp/test' });
-      expect(result.allowed).toBe(true); // Currently only logging, not blocking
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Dangerous command pattern detected');
+    });
+
+    test('should block rm commands with wildcards', () => {
+      const result = SecurityValidator.validateDangerousCommands('Bash', { command: 'rm -f *.txt' });
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Dangerous command pattern detected');
+    });
+
+    test('should block sudo rm commands', () => {
+      const result = SecurityValidator.validateDangerousCommands('Bash', { command: 'sudo rm /important/file' });
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Dangerous command pattern detected');
     });
 
     test('should allow safe commands', () => {
       const result = SecurityValidator.validateDangerousCommands('Bash', { command: 'ls -la' });
+      expect(result.allowed).toBe(true);
+    });
+
+    test('should allow safe rm commands in tmp directories', () => {
+      const result = SecurityValidator.validateDangerousCommands('Bash', { command: 'rm -rf /tmp/user-12345/' });
       expect(result.allowed).toBe(true);
     });
 

@@ -124,7 +124,10 @@ delib.rice {
       };
       targets = {
         grub.enable = false;
-        qt.enable = true;
+        qt = {
+          enable = true;
+          platform = "qtct";
+        };
         plymouth.enable = false;
         gnome.enable = true;
         gtk.enable = true;

@@ -73,8 +73,14 @@ export class Logger {
 export class InputReader {
   static async readStdinJson<T>(): Promise<T> {
     const chunks: Buffer[] = [];
+    let totalSize = 0;
+    const maxInputSize = 1048576; // 1MB limit to prevent DoS
     
     for await (const chunk of process.stdin) {
+      totalSize += chunk.length;
+      if (totalSize > maxInputSize) {
+        throw new Error(`Input too large: ${totalSize} bytes exceeds limit of ${maxInputSize} bytes`);
+      }
       chunks.push(chunk);
     }
     
@@ -176,7 +182,12 @@ export function handleError(error: unknown, context: string): HookResult {
   return createHookResult(false, `${context}: ${message}`);
 }
 
-export async function executeShellCommand(command: string): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+export async function executeShellCommand(
+  command: string, 
+  options: { timeout?: number; maxOutputSize?: number } = {}
+): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  const { timeout = 30000, maxOutputSize = 1048576 } = options; // 30s timeout, 1MB output limit
+  
   // Validate command before execution
   const validation = validateCommandString(command);
   if (!validation.valid) {
@@ -190,11 +201,42 @@ export async function executeShellCommand(command: string): Promise<{ stdout: st
     stderr: 'pipe'
   });
 
-  const stdout = await new Response(proc.stdout).text();
-  const stderr = await new Response(proc.stderr).text();
-  const exitCode = await proc.exited;
+  // Set up timeout
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      proc.kill();
+      reject(new Error(`Command timed out after ${timeout}ms`));
+    }, timeout);
+  });
 
-  return { stdout, stderr, exitCode };
+  try {
+    // Race between command completion and timeout
+    const [stdout, stderr, exitCode] = await Promise.race([
+      Promise.all([
+        limitResponseSize(new Response(proc.stdout).text(), maxOutputSize),
+        limitResponseSize(new Response(proc.stderr).text(), maxOutputSize),
+        proc.exited
+      ]),
+      timeoutPromise
+    ]);
+
+    return { stdout, stderr, exitCode };
+  } catch (error) {
+    proc.kill(); // Ensure process is cleaned up
+    throw error;
+  }
+}
+
+async function limitResponseSize(responsePromise: Promise<string>, maxSize: number): Promise<string> {
+  const response = await responsePromise;
+  if (response.length > maxSize) {
+    Logger.warn('Command output truncated due to size limit', { 
+      actualSize: response.length, 
+      maxSize 
+    });
+    return response.substring(0, maxSize) + '\n... [output truncated]';
+  }
+  return response;
 }
 
 export async function executeShellCommandSafe(command: string, args: string[] = []): Promise<{ stdout: string; stderr: string; exitCode: number }> {

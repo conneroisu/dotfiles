@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "user_prompt_submit": "cd hooks && bun index.ts user_prompt_submit",
+    "pre_tool_use": "cd hooks && bun index.ts pre_tool_use",
+    "post_tool_use": "cd hooks && bun index.ts post_tool_use",
+    "stop": "cd hooks && bun index.ts stop --chat",
+    "subagent_stop": "cd hooks && bun index.ts subagent_stop --chat"
+  }
+}

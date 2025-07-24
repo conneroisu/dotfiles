@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/hooks/user_prompt_submit.py"
+            "command": "cd $(git rev-parse --show-toplevel)/.claude/hooks && bun index.ts user_prompt_submit"
           }
         ]
       }
@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/hooks/pre_tool_use.py"
+            "command": "cd $(git rev-parse --show-toplevel)/.claude/hooks && bun index.ts pre_tool_use"
           }
         ]
       }
@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/hooks/post_tool_use.py"
+            "command": "cd $(git rev-parse --show-toplevel)/.claude/hooks && bun index.ts post_tool_use"
           }
         ]
       }
@@ -56,7 +56,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/hooks/notification.py --notify"
+            "command": "cd $(git rev-parse --show-toplevel)/.claude/hooks && bun index.ts notification"
           }
         ]
       }
@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/hooks/stop.py --chat"
+            "command": "cd $(git rev-parse --show-toplevel)/.claude/hooks && bun index.ts stop --chat"
           }
         ]
       }
@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/hooks/subagent_stop.py"
+            "command": "cd $(git rev-parse --show-toplevel)/.claude/hooks && bun index.ts subagent_stop --chat"
           }
         ]
       }

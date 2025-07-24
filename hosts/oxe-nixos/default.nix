@@ -44,7 +44,7 @@ desktop environment for when GUI access is needed.
 delib.host {
   name = "oxe-nixos";
 
-  rice = "empty";
+  rice = "dark";
   type = "server";
   home.home.stateVersion = "24.11";
 
@@ -70,7 +70,7 @@ delib.host {
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;
-        kde.enable = true;
+        kde.enable = false;
       };
     };
 

@@ -66,12 +66,6 @@ in
     options = singleEnableOption false;
 
     home.ifEnabled = {
-      # Enable Ghostty terminal emulator program
-      programs.ghostty = {
-        enable = true;
-        package = pkgs.ghostty or null;
-      };
-
       # Deploy platform-specific configuration file
       xdg.configFile."ghostty/config" = {
         source =

@@ -93,6 +93,8 @@ Works seamlessly with:
   inputs,
   pkgs,
   moduleSystem,
+  lib,
+  config,
   ...
 }:
 delib.rice {
@@ -109,6 +111,7 @@ delib.rice {
           zathura.enable = true;
         };
       };
+      myconfig.programs.ghostty.enable = true;
     }
     else {};
   nixos = {
@@ -126,7 +129,6 @@ delib.rice {
         grub.enable = false;
         qt = {
           enable = true;
-          platform = "qtct";
         };
         plymouth.enable = false;
         gnome.enable = true;

@@ -1,0 +1,16 @@
+[
+  {
+    "session_id": "129cee5b-0720-42ec-be20-ecc78dc7d90a",
+    "transcript_path": "/home/connerohnesorge/.claude/projects/-home-connerohnesorge-dotfiles/129cee5b-0720-42ec-be20-ecc78dc7d90a.jsonl",
+    "cwd": "/home/connerohnesorge/dotfiles",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input"
+  },
+  {
+    "session_id": "c33e0ff6-e15c-4f85-98ea-266437ed8495",
+    "transcript_path": "/home/connerohnesorge/.claude/projects/-home-connerohnesorge-dotfiles/c33e0ff6-e15c-4f85-98ea-266437ed8495.jsonl",
+    "cwd": "/home/connerohnesorge/dotfiles",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input"
+  }
+]

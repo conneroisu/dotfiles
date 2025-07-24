@@ -17,7 +17,9 @@ export class SubagentStopHook {
         args: process.argv.slice(2),
         options: {
           chat: { type: 'boolean', default: false }
-        }
+        },
+        allowPositionals: true,
+        strict: false
       });
 
       const input = await InputReader.readStdinJson<SubagentStopHookInput>();

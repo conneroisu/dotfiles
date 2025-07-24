@@ -64,9 +64,11 @@ async function main(): Promise<void> {
       args: process.argv.slice(2),
       options: {
         help: { type: 'boolean', short: 'h', default: false },
-        list: { type: 'boolean', short: 'l', default: false }
+        list: { type: 'boolean', short: 'l', default: false },
+        chat: { type: 'boolean', default: false }
       },
-      allowPositionals: true
+      allowPositionals: true,
+      strict: false
     });
 
     if (args.help) {

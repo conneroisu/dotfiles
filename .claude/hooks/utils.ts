@@ -6,6 +6,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import type { LogEntry, LogLevel, HookResult } from './types.ts';
+import { ConfigManager } from './config.ts';
 
 export class Logger {
   private static logsDir = join(dirname(import.meta.path), 'logs');
@@ -74,7 +75,8 @@ export class InputReader {
   static async readStdinJson<T>(): Promise<T> {
     const chunks: Buffer[] = [];
     let totalSize = 0;
-    const maxInputSize = 1048576; // 1MB limit to prevent DoS
+    const config = ConfigManager.getInstance().getSecurityConfig();
+    const maxInputSize = config.maxInputSize; // Configurable limit to prevent DoS
     
     for await (const chunk of process.stdin) {
       totalSize += chunk.length;
@@ -117,6 +119,13 @@ export class SecurityValidator {
       return { allowed: true };
     }
 
+    const config = ConfigManager.getInstance().getSecurityConfig();
+    
+    // Skip validation if env file protection is disabled
+    if (!config.enableEnvFileProtection) {
+      return { allowed: true };
+    }
+
     const filePath = toolInput?.file_path || toolInput?.notebook_path || '';
     
     if (!filePath || typeof filePath !== 'string') {
@@ -146,7 +155,9 @@ export class SecurityValidator {
       return { allowed: true };
     }
 
-    // Comprehensive dangerous rm command patterns (currently informational only)
+    const config = ConfigManager.getInstance().getSecurityConfig();
+    
+    // Comprehensive dangerous rm command patterns
     const dangerousPatterns = [
       /rm\s+(-[rf]*[rf]+[^;]*|[^;]*-[rf]*[rf]+)/,
       /rm\s+.*\*/,
@@ -157,8 +168,15 @@ export class SecurityValidator {
 
     for (const pattern of dangerousPatterns) {
       if (pattern.test(command)) {
-        Logger.warn('Potentially dangerous rm command detected', { command, pattern: pattern.toString() });
-        // Currently only logging, not blocking
+        const message = `Potentially dangerous rm command detected: ${command}`;
+        Logger.warn(message, { command, pattern: pattern.toString() });
+        
+        if (config.blockDangerousCommands) {
+          return {
+            allowed: false,
+            reason: `Dangerous command blocked for security: ${command}`
+          };
+        }
         break;
       }
     }

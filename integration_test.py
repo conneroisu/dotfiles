@@ -25,15 +25,11 @@ class IntegrationTester:
             "error_scenario_handling": [],
             "template_compatibility": [],
         }
-        self.script_path = (
-            Path(__file__).parent / "run.py"
-        )
+        self.script_path = Path(__file__).parent / "run.py"
 
     def test_real_flake_extraction(self):
         """Test extraction from real flakes in the repository."""
-        print(
-            "🔍 Testing real flake extraction..."
-        )
+        print("🔍 Testing real flake extraction...")
 
         # Find actual flakes in the repository
         flake_paths = [
@@ -66,12 +62,8 @@ class IntegrationTester:
                 if result.returncode == 0:
                     # Validate JSON output
                     try:
-                        data = json.loads(
-                            result.stdout
-                        )
-                        self.results[
-                            "real_flake_extraction"
-                        ].append(
+                        data = json.loads(result.stdout)
+                        self.results["real_flake_extraction"].append(
                             {
                                 "flake_path": flake_path,
                                 "success": True,
@@ -82,42 +74,31 @@ class IntegrationTester:
                                     )
                                 )
                                 > 0,
-                                "has_system": "system"
-                                in data,
+                                "has_system": "system" in data,
                                 "valid_json": True,
                             }
                         )
                     except json.JSONDecodeError:
-                        self.results[
-                            "real_flake_extraction"
-                        ].append(
+                        self.results["real_flake_extraction"].append(
                             {
                                 "flake_path": flake_path,
                                 "success": False,
                                 "error": "Invalid JSON output",
-                                "output": result.stdout[
-                                    :200
-                                ],
+                                "output": result.stdout[:200],
                             }
                         )
                 else:
-                    self.results[
-                        "real_flake_extraction"
-                    ].append(
+                    self.results["real_flake_extraction"].append(
                         {
                             "flake_path": flake_path,
                             "success": False,
                             "returncode": result.returncode,
-                            "error": result.stderr[
-                                :200
-                            ],
+                            "error": result.stderr[:200],
                         }
                     )
 
             except subprocess.TimeoutExpired:
-                self.results[
-                    "real_flake_extraction"
-                ].append(
+                self.results["real_flake_extraction"].append(
                     {
                         "flake_path": flake_path,
                         "success": False,
@@ -125,9 +106,7 @@ class IntegrationTester:
                     }
                 )
             except Exception as e:
-                self.results[
-                    "real_flake_extraction"
-                ].append(
+                self.results["real_flake_extraction"].append(
                     {
                         "flake_path": flake_path,
                         "success": False,
@@ -138,9 +117,7 @@ class IntegrationTester:
         successful = len(
             [
                 r
-                for r in self.results[
-                    "real_flake_extraction"
-                ]
+                for r in self.results["real_flake_extraction"]
                 if r.get("success", False)
             ]
         )
@@ -150,9 +127,7 @@ class IntegrationTester:
 
     def test_command_line_execution(self):
         """Test various command-line argument combinations."""
-        print(
-            "🔍 Testing command-line execution..."
-        )
+        print("🔍 Testing command-line execution...")
 
         test_cases = [
             {
@@ -218,30 +193,18 @@ class IntegrationTester:
                     # Check if output file was created (for cases with -o flag)
                     output_created = (
                         Path(temp_output).exists()
-                        and Path(temp_output)
-                        .stat()
-                        .st_size
-                        > 0
+                        and Path(temp_output).stat().st_size > 0
                     )
 
-                    self.results[
-                        "command_line_execution"
-                    ].append(
+                    self.results["command_line_execution"].append(
                         {
-                            "description": test_case[
-                                "description"
-                            ],
-                            "args": test_case[
-                                "args"
-                            ],
-                            "success": result.returncode
-                            == 0,
+                            "description": test_case["description"],
+                            "args": test_case["args"],
+                            "success": result.returncode == 0,
                             "returncode": result.returncode,
                             "output_created": output_created,
                             "stderr_length": (
-                                len(result.stderr)
-                                if result.stderr
-                                else 0
+                                len(result.stderr) if result.stderr else 0
                             ),
                         }
                     )
@@ -251,25 +214,17 @@ class IntegrationTester:
                         Path(temp_output).unlink()
 
                 except subprocess.TimeoutExpired:
-                    self.results[
-                        "command_line_execution"
-                    ].append(
+                    self.results["command_line_execution"].append(
                         {
-                            "description": test_case[
-                                "description"
-                            ],
+                            "description": test_case["description"],
                             "success": False,
                             "error": "Timeout",
                         }
                     )
                 except Exception as e:
-                    self.results[
-                        "command_line_execution"
-                    ].append(
+                    self.results["command_line_execution"].append(
                         {
-                            "description": test_case[
-                                "description"
-                            ],
+                            "description": test_case["description"],
                             "success": False,
                             "error": str(e),
                         }
@@ -282,21 +237,15 @@ class IntegrationTester:
         successful = len(
             [
                 r
-                for r in self.results[
-                    "command_line_execution"
-                ]
+                for r in self.results["command_line_execution"]
                 if r.get("success", False)
             ]
         )
-        print(
-            f"   ✅ {successful}/{len(test_cases)} command-line scenarios succeeded"
-        )
+        print(f"   ✅ {successful}/{len(test_cases)} command-line scenarios succeeded")
 
     def test_output_format_validation(self):
         """Test and validate different output formats."""
-        print(
-            "🔍 Testing output format validation..."
-        )
+        print("🔍 Testing output format validation...")
 
         formats = ["nix", "json"]
 
@@ -316,78 +265,50 @@ class IntegrationTester:
                     timeout=15,
                 )
 
-                if (
-                    result.returncode == 0
-                    and result.stdout
-                ):
+                if result.returncode == 0 and result.stdout:
                     # Validate format-specific output
                     if format_type == "json":
                         try:
-                            json.loads(
-                                result.stdout
-                            )
+                            json.loads(result.stdout)
                             format_valid = True
-                            validation_msg = (
-                                "Valid JSON"
-                            )
-                        except (
-                            json.JSONDecodeError
-                        ) as e:
+                            validation_msg = "Valid JSON"
+                        except json.JSONDecodeError as e:
                             format_valid = False
                             validation_msg = f"Invalid JSON: {e}"
                     elif format_type == "nix":
                         # Basic Nix format validation
                         format_valid = (
-                            "pkgs.mkShell"
-                            in result.stdout
-                            and "{"
-                            in result.stdout
+                            "pkgs.mkShell" in result.stdout and "{" in result.stdout
                         )
                         validation_msg = (
-                            "Valid Nix format"
-                            if format_valid
-                            else "Invalid Nix format"
+                            "Valid Nix format" if format_valid else "Invalid Nix format"
                         )
                     else:
                         format_valid = True
-                        validation_msg = (
-                            "Format check skipped"
-                        )
+                        validation_msg = "Format check skipped"
 
-                    self.results[
-                        "output_format_validation"
-                    ].append(
+                    self.results["output_format_validation"].append(
                         {
                             "format": format_type,
                             "success": True,
                             "format_valid": format_valid,
                             "validation_msg": validation_msg,
-                            "output_length": len(
-                                result.stdout
-                            ),
+                            "output_length": len(result.stdout),
                         }
                     )
                 else:
-                    self.results[
-                        "output_format_validation"
-                    ].append(
+                    self.results["output_format_validation"].append(
                         {
                             "format": format_type,
                             "success": False,
                             "error": (
-                                result.stderr[
-                                    :200
-                                ]
-                                if result.stderr
-                                else "No output"
+                                result.stderr[:200] if result.stderr else "No output"
                             ),
                         }
                     )
 
             except Exception as e:
-                self.results[
-                    "output_format_validation"
-                ].append(
+                self.results["output_format_validation"].append(
                     {
                         "format": format_type,
                         "success": False,
@@ -398,22 +319,15 @@ class IntegrationTester:
         valid_formats = len(
             [
                 r
-                for r in self.results[
-                    "output_format_validation"
-                ]
-                if r.get("success", False)
-                and r.get("format_valid", False)
+                for r in self.results["output_format_validation"]
+                if r.get("success", False) and r.get("format_valid", False)
             ]
         )
-        print(
-            f"   ✅ {valid_formats}/{len(formats)} output formats validated"
-        )
+        print(f"   ✅ {valid_formats}/{len(formats)} output formats validated")
 
     def test_error_scenario_handling(self):
         """Test error scenarios and graceful failure."""
-        print(
-            "🔍 Testing error scenario handling..."
-        )
+        print("🔍 Testing error scenario handling...")
 
         error_scenarios = [
             {
@@ -469,50 +383,34 @@ class IntegrationTester:
                 )
 
                 # For expected failures, non-zero return code is success
-                scenario_handled = (
-                    result.returncode != 0
-                ) == scenario["expected_failure"]
+                scenario_handled = (result.returncode != 0) == scenario[
+                    "expected_failure"
+                ]
 
-                self.results[
-                    "error_scenario_handling"
-                ].append(
+                self.results["error_scenario_handling"].append(
                     {
-                        "description": scenario[
-                            "description"
-                        ],
-                        "expected_failure": scenario[
-                            "expected_failure"
-                        ],
+                        "description": scenario["description"],
+                        "expected_failure": scenario["expected_failure"],
                         "actual_returncode": result.returncode,
                         "scenario_handled": scenario_handled,
                         "has_error_message": (
-                            len(result.stderr) > 0
-                            if result.stderr
-                            else False
+                            len(result.stderr) > 0 if result.stderr else False
                         ),
                     }
                 )
 
             except subprocess.TimeoutExpired:
-                self.results[
-                    "error_scenario_handling"
-                ].append(
+                self.results["error_scenario_handling"].append(
                     {
-                        "description": scenario[
-                            "description"
-                        ],
+                        "description": scenario["description"],
                         "scenario_handled": False,
                         "error": "Timeout",
                     }
                 )
             except Exception as e:
-                self.results[
-                    "error_scenario_handling"
-                ].append(
+                self.results["error_scenario_handling"].append(
                     {
-                        "description": scenario[
-                            "description"
-                        ],
+                        "description": scenario["description"],
                         "scenario_handled": False,
                         "error": str(e),
                     }
@@ -521,12 +419,8 @@ class IntegrationTester:
         handled = len(
             [
                 r
-                for r in self.results[
-                    "error_scenario_handling"
-                ]
-                if r.get(
-                    "scenario_handled", False
-                )
+                for r in self.results["error_scenario_handling"]
+                if r.get("scenario_handled", False)
             ]
         )
         print(
@@ -535,29 +429,20 @@ class IntegrationTester:
 
     def test_template_compatibility(self):
         """Test compatibility with available templates."""
-        print(
-            "🔍 Testing template compatibility..."
-        )
+        print("🔍 Testing template compatibility...")
 
         template_dir = Path("./templates")
         if not template_dir.exists():
-            print(
-                "   ⚠️  Templates directory not found"
-            )
+            print("   ⚠️  Templates directory not found")
             return
 
         # Find templates with flake.nix files
         templates = []
         for item in template_dir.iterdir():
-            if (
-                item.is_dir()
-                and (item / "flake.nix").exists()
-            ):
+            if item.is_dir() and (item / "flake.nix").exists():
                 templates.append(item)
 
-        for template_path in templates[
-            :5
-        ]:  # Limit to first 5 templates
+        for template_path in templates[:5]:  # Limit to first 5 templates
             try:
                 result = subprocess.run(
                     [
@@ -575,12 +460,8 @@ class IntegrationTester:
 
                 if result.returncode == 0:
                     try:
-                        data = json.loads(
-                            result.stdout
-                        )
-                        self.results[
-                            "template_compatibility"
-                        ].append(
+                        data = json.loads(result.stdout)
+                        self.results["template_compatibility"].append(
                             {
                                 "template": template_path.name,
                                 "success": True,
@@ -605,9 +486,7 @@ class IntegrationTester:
                             }
                         )
                     except json.JSONDecodeError:
-                        self.results[
-                            "template_compatibility"
-                        ].append(
+                        self.results["template_compatibility"].append(
                             {
                                 "template": template_path.name,
                                 "success": False,
@@ -615,16 +494,12 @@ class IntegrationTester:
                             }
                         )
                 else:
-                    self.results[
-                        "template_compatibility"
-                    ].append(
+                    self.results["template_compatibility"].append(
                         {
                             "template": template_path.name,
                             "success": False,
                             "error": (
-                                result.stderr[
-                                    :150
-                                ]
+                                result.stderr[:150]
                                 if result.stderr
                                 else "Unknown error"
                             ),
@@ -632,9 +507,7 @@ class IntegrationTester:
                     )
 
             except subprocess.TimeoutExpired:
-                self.results[
-                    "template_compatibility"
-                ].append(
+                self.results["template_compatibility"].append(
                     {
                         "template": template_path.name,
                         "success": False,
@@ -642,9 +515,7 @@ class IntegrationTester:
                     }
                 )
             except Exception as e:
-                self.results[
-                    "template_compatibility"
-                ].append(
+                self.results["template_compatibility"].append(
                     {
                         "template": template_path.name,
                         "success": False,
@@ -655,18 +526,12 @@ class IntegrationTester:
         compatible = len(
             [
                 r
-                for r in self.results[
-                    "template_compatibility"
-                ]
+                for r in self.results["template_compatibility"]
                 if r.get("success", False)
             ]
         )
-        total = len(
-            self.results["template_compatibility"]
-        )
-        print(
-            f"   ✅ {compatible}/{total} templates compatible"
-        )
+        total = len(self.results["template_compatibility"])
+        print(f"   ✅ {compatible}/{total} templates compatible")
 
     def run_all_tests(self):
         """Run all integration tests."""
@@ -674,9 +539,7 @@ class IntegrationTester:
         print("=" * 50)
 
         if not self.script_path.exists():
-            print(
-                f"❌ Script not found: {self.script_path}"
-            )
+            print(f"❌ Script not found: {self.script_path}")
             return False
 
         self.test_real_flake_extraction()
@@ -702,10 +565,7 @@ class IntegrationTester:
             if not results:
                 continue
 
-            if (
-                category
-                == "error_scenario_handling"
-            ):
+            if category == "error_scenario_handling":
                 # Special handling for error scenarios
                 passed = len(
                     [
@@ -718,54 +578,30 @@ class IntegrationTester:
                     ]
                 )
             else:
-                passed = len(
-                    [
-                        r
-                        for r in results
-                        if r.get("success", False)
-                    ]
-                )
+                passed = len([r for r in results if r.get("success", False)])
 
             total = len(results)
             total_tests += total
             total_passed += passed
 
             status = (
-                "✅"
-                if passed == total
-                else (
-                    "⚠️"
-                    if passed > total * 0.7
-                    else "❌"
-                )
+                "✅" if passed == total else ("⚠️" if passed > total * 0.7 else "❌")
             )
-            print(
-                f"{status} {category.replace('_', ' ').title()}: {passed}/{total}"
-            )
+            print(f"{status} {category.replace('_', ' ').title()}: {passed}/{total}")
 
-        success_rate = (
-            (total_passed / total_tests) * 100
-            if total_tests > 0
-            else 0
-        )
+        success_rate = (total_passed / total_tests) * 100 if total_tests > 0 else 0
         print(
             f"\n🎯 Integration Success Rate: {success_rate:.1f}% ({total_passed}/{total_tests})"
         )
 
         if success_rate >= 85:
-            print(
-                "🏆 EXCELLENT - Production ready integration"
-            )
+            print("🏆 EXCELLENT - Production ready integration")
             return True
         elif success_rate >= 70:
-            print(
-                "⚠️  GOOD - Minor integration issues"
-            )
+            print("⚠️  GOOD - Minor integration issues")
             return True
         else:
-            print(
-                "❌ POOR - Significant integration problems"
-            )
+            print("❌ POOR - Significant integration problems")
             return False
 
 

@@ -46,28 +46,15 @@ class NixEdgeCaseTester:
                 timeout=5,
             )
             self.results["nix_availability"] = {
-                "available": result.returncode
-                == 0,
-                "version": (
-                    result.stdout.strip()
-                    if result.returncode == 0
-                    else None
-                ),
-                "error": (
-                    result.stderr
-                    if result.returncode != 0
-                    else None
-                ),
+                "available": result.returncode == 0,
+                "version": (result.stdout.strip() if result.returncode == 0 else None),
+                "error": (result.stderr if result.returncode != 0 else None),
             }
             if result.returncode == 0:
-                print(
-                    f"   ✅ Nix available: {result.stdout.strip()}"
-                )
+                print(f"   ✅ Nix available: {result.stdout.strip()}")
                 return True
             else:
-                print(
-                    f"   ⚠️  Nix not available: {result.stderr}"
-                )
+                print(f"   ⚠️  Nix not available: {result.stderr}")
                 return False
         except (
             subprocess.TimeoutExpired,
@@ -82,13 +69,9 @@ class NixEdgeCaseTester:
 
     def test_malformed_nix_expressions(self):
         """Test various malformed Nix expressions if Nix is available."""
-        print(
-            "🔍 Testing malformed Nix expressions..."
-        )
+        print("🔍 Testing malformed Nix expressions...")
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         extractor = DevShellExtractor(config)
 
         malformed_expressions = [
@@ -107,54 +90,36 @@ class NixEdgeCaseTester:
         for expr in malformed_expressions:
             try:
                 # This will likely fail, but shouldn't crash the program
-                result = extractor.nix_eval_json(
-                    expr, use_expr=True
-                )
-                self.results[
-                    "malformed_expressions"
-                ].append(
+                result = extractor.nix_eval_json(expr, use_expr=True)
+                self.results["malformed_expressions"].append(
                     {
                         "expression": expr,
                         "handled": True,
                         "result": "Unexpectedly succeeded",
-                        "output": (
-                            result[:100]
-                            if result
-                            else None
-                        ),
+                        "output": (result[:100] if result else None),
                     }
                 )
             except NixError as e:
-                self.results[
-                    "malformed_expressions"
-                ].append(
+                self.results["malformed_expressions"].append(
                     {
                         "expression": expr,
                         "handled": True,
-                        "error": str(e)[
-                            :200
-                        ],  # Limit error length
+                        "error": str(e)[:200],  # Limit error length
                     }
                 )
             except Exception as e:
-                self.results[
-                    "malformed_expressions"
-                ].append(
+                self.results["malformed_expressions"].append(
                     {
                         "expression": expr,
                         "handled": False,
-                        "unexpected_error": str(
-                            e
-                        ),
+                        "unexpected_error": str(e),
                     }
                 )
 
         handled = len(
             [
                 r
-                for r in self.results[
-                    "malformed_expressions"
-                ]
+                for r in self.results["malformed_expressions"]
                 if r.get("handled", False)
             ]
         )
@@ -164,13 +129,9 @@ class NixEdgeCaseTester:
 
     def test_real_subprocess_failures(self):
         """Test real subprocess failure scenarios."""
-        print(
-            "🔍 Testing real subprocess failures..."
-        )
+        print("🔍 Testing real subprocess failures...")
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         extractor = DevShellExtractor(config)
 
         # Test scenarios that should cause subprocess failures
@@ -204,69 +165,45 @@ class NixEdgeCaseTester:
         for scenario in failure_scenarios:
             try:
                 scenario["method"]()
-                self.results[
-                    "real_subprocess_failures"
-                ].append(
+                self.results["real_subprocess_failures"].append(
                     {
-                        "scenario": scenario[
-                            "name"
-                        ],
+                        "scenario": scenario["name"],
                         "handled": False,
                         "result": "Unexpectedly succeeded",
                     }
                 )
-            except (
-                subprocess.CalledProcessError
-            ) as e:
-                self.results[
-                    "real_subprocess_failures"
-                ].append(
+            except subprocess.CalledProcessError as e:
+                self.results["real_subprocess_failures"].append(
                     {
-                        "scenario": scenario[
-                            "name"
-                        ],
+                        "scenario": scenario["name"],
                         "handled": True,
                         "error_type": "CalledProcessError",
                         "returncode": e.returncode,
                     }
                 )
             except subprocess.TimeoutExpired as e:
-                self.results[
-                    "real_subprocess_failures"
-                ].append(
+                self.results["real_subprocess_failures"].append(
                     {
-                        "scenario": scenario[
-                            "name"
-                        ],
+                        "scenario": scenario["name"],
                         "handled": True,
                         "error_type": "TimeoutExpired",
                         "timeout": e.timeout,
                     }
                 )
             except FileNotFoundError as e:
-                self.results[
-                    "real_subprocess_failures"
-                ].append(
+                self.results["real_subprocess_failures"].append(
                     {
-                        "scenario": scenario[
-                            "name"
-                        ],
+                        "scenario": scenario["name"],
                         "handled": True,
                         "error_type": "FileNotFoundError",
                     }
                 )
             except Exception as e:
-                self.results[
-                    "real_subprocess_failures"
-                ].append(
+                self.results["real_subprocess_failures"].append(
                     {
-                        "scenario": scenario[
-                            "name"
-                        ],
+                        "scenario": scenario["name"],
                         "handled": True,
-                        "error_type": type(
-                            e
-                        ).__name__,
+                        "error_type": type(e).__name__,
                         "error": str(e),
                     }
                 )
@@ -274,9 +211,7 @@ class NixEdgeCaseTester:
         handled = len(
             [
                 r
-                for r in self.results[
-                    "real_subprocess_failures"
-                ]
+                for r in self.results["real_subprocess_failures"]
                 if r.get("handled", False)
             ]
         )
@@ -286,13 +221,9 @@ class NixEdgeCaseTester:
 
     def test_flake_discovery_edge_cases(self):
         """Test flake discovery with various real paths."""
-        print(
-            "🔍 Testing flake discovery edge cases..."
-        )
+        print("🔍 Testing flake discovery edge cases...")
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         extractor = DevShellExtractor(config)
 
         # Test with various paths that might exist on the system
@@ -304,40 +235,24 @@ class NixEdgeCaseTester:
             "",  # Empty path
             (
                 "./templates/go-shell"
-                if Path(
-                    "./templates/go-shell"
-                ).exists()
+                if Path("./templates/go-shell").exists()
                 else "/tmp"
             ),  # Relative path
         ]
 
         for path in test_paths:
             try:
-                result = (
-                    extractor.discover_devshells(
-                        path
-                    )
-                )
-                self.results[
-                    "flake_discovery"
-                ].append(
+                result = extractor.discover_devshells(path)
+                self.results["flake_discovery"].append(
                     {
                         "path": path,
                         "handled": True,
-                        "devshells_found": len(
-                            result
-                        ),
-                        "systems": (
-                            list(result.keys())
-                            if result
-                            else []
-                        ),
+                        "devshells_found": len(result),
+                        "systems": (list(result.keys()) if result else []),
                     }
                 )
             except Exception as e:
-                self.results[
-                    "flake_discovery"
-                ].append(
+                self.results["flake_discovery"].append(
                     {
                         "path": path,
                         "handled": True,
@@ -345,33 +260,21 @@ class NixEdgeCaseTester:
                     }
                 )
 
-        print(
-            f"   ✅ Tested {len(test_paths)} flake discovery scenarios"
-        )
+        print(f"   ✅ Tested {len(test_paths)} flake discovery scenarios")
 
     def test_system_detection_accuracy(self):
         """Test system detection accuracy."""
-        print(
-            "🔍 Testing system detection accuracy..."
-        )
+        print("🔍 Testing system detection accuracy...")
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         extractor = DevShellExtractor(config)
 
         try:
-            detected_system = (
-                extractor.get_current_system()
-            )
+            detected_system = extractor.get_current_system()
 
             # Validate the detected system format
             valid_format = (
-                "-" in detected_system
-                and len(
-                    detected_system.split("-")
-                )
-                >= 2
+                "-" in detected_system and len(detected_system.split("-")) >= 2
             )
 
             self.results["system_detection"] = {
@@ -380,24 +283,18 @@ class NixEdgeCaseTester:
                 "handled": True,
             }
 
-            print(
-                f"   ✅ Detected system: {detected_system}"
-            )
+            print(f"   ✅ Detected system: {detected_system}")
 
         except Exception as e:
             self.results["system_detection"] = {
                 "handled": True,
                 "error": str(e),
             }
-            print(
-                f"   ⚠️  System detection failed: {e}"
-            )
+            print(f"   ⚠️  System detection failed: {e}")
 
     def test_file_operations_edge_cases(self):
         """Test file operations with edge cases."""
-        print(
-            "🔍 Testing file operations edge cases..."
-        )
+        print("🔍 Testing file operations edge cases...")
 
         # Create temporary files for testing
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -421,82 +318,56 @@ class NixEdgeCaseTester:
             ]
 
             for filename, content in test_cases:
-                file_path = (
-                    Path(temp_dir) / filename
-                )
+                file_path = Path(temp_dir) / filename
                 if isinstance(content, bytes):
                     file_path.write_bytes(content)
                 else:
-                    file_path.write_text(
-                        content, encoding="utf-8"
-                    )
+                    file_path.write_text(content, encoding="utf-8")
                 test_files.append(str(file_path))
 
             # Test file operations
-            config = DevShellConfig(
-                flake_path=".", quiet=True
-            )
+            config = DevShellConfig(flake_path=".", quiet=True)
 
             for file_path in test_files:
                 try:
                     # Test with file as flake path
                     config.flake_path = file_path
-                    extractor = DevShellExtractor(
-                        config
-                    )
+                    extractor = DevShellExtractor(config)
 
                     # Test output file writing
-                    output_file = (
-                        file_path + ".out"
-                    )
-                    config.output_file = (
-                        output_file
-                    )
+                    output_file = file_path + ".out"
+                    config.output_file = output_file
 
-                    self.results[
-                        "file_operations"
-                    ].append(
+                    self.results["file_operations"].append(
                         {
-                            "file": os.path.basename(
-                                file_path
-                            ),
+                            "file": os.path.basename(file_path),
                             "handled": True,
                             "config_created": True,
                         }
                     )
 
                 except Exception as e:
-                    self.results[
-                        "file_operations"
-                    ].append(
+                    self.results["file_operations"].append(
                         {
-                            "file": os.path.basename(
-                                file_path
-                            ),
+                            "file": os.path.basename(file_path),
                             "handled": True,
                             "error": str(e)[:200],
                         }
                     )
 
-        print(
-            f"   ✅ Tested {len(test_cases)} file operation scenarios"
-        )
+        print(f"   ✅ Tested {len(test_cases)} file operation scenarios")
 
     def run_all_tests(self):
         """Run all Nix edge case tests."""
         print("⚙️  NIX EDGE CASE VERIFICATION")
         print("=" * 50)
 
-        nix_available = (
-            self.check_nix_availability()
-        )
+        nix_available = self.check_nix_availability()
 
         if nix_available:
             self.test_malformed_nix_expressions()
         else:
-            print(
-                "   ⚠️  Skipping Nix expression tests (Nix not available)"
-            )
+            print("   ⚠️  Skipping Nix expression tests (Nix not available)")
 
         self.test_real_subprocess_failures()
         self.test_flake_discovery_edge_cases()
@@ -521,22 +392,10 @@ class NixEdgeCaseTester:
                 continue  # Skip availability check in stats
 
             if isinstance(results, list):
-                passed = len(
-                    [
-                        r
-                        for r in results
-                        if r.get("handled", True)
-                    ]
-                )
+                passed = len([r for r in results if r.get("handled", True)])
                 total = len(results)
             elif isinstance(results, dict):
-                passed = (
-                    1
-                    if results.get(
-                        "handled", True
-                    )
-                    else 0
-                )
+                passed = 1 if results.get("handled", True) else 0
                 total = 1
             else:
                 continue
@@ -544,18 +403,10 @@ class NixEdgeCaseTester:
             total_tests += total
             total_passed += passed
 
-            status = (
-                "✅" if passed == total else "⚠️"
-            )
-            print(
-                f"{status} {category.replace('_', ' ').title()}: {passed}/{total}"
-            )
+            status = "✅" if passed == total else "⚠️"
+            print(f"{status} {category.replace('_', ' ').title()}: {passed}/{total}")
 
-        success_rate = (
-            (total_passed / total_tests) * 100
-            if total_tests > 0
-            else 0
-        )
+        success_rate = (total_passed / total_tests) * 100 if total_tests > 0 else 0
         print(
             f"\n🎯 Edge Case Handling Score: {success_rate:.1f}% ({total_passed}/{total_tests})"
         )

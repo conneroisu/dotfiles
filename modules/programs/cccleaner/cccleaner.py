@@ -15,9 +15,7 @@ from datetime import datetime
 from typing import Any
 
 
-def should_remove_entry(
-    entry: dict[str, Any], min_length: int = 10
-) -> bool:
+def should_remove_entry(entry: dict[str, Any], min_length: int = 10) -> bool:
     """
     Determine if a history entry should be removed.
 
@@ -29,24 +27,12 @@ def should_remove_entry(
         True if the entry should be removed, False otherwise
     """
     display = entry.get("display", "")
-    pasted_contents = entry.get(
-        "pastedContents", {}
-    )
+    pasted_contents = entry.get("pastedContents", {})
 
     # Keep entries with pasted content
-    if (
-        pasted_contents
-        and len(pasted_contents) > 0
-    ):
-        for (
-            paste_data
-        ) in pasted_contents.values():
-            if (
-                isinstance(paste_data, dict)
-                and paste_data.get(
-                    "content", ""
-                ).strip()
-            ):
+    if pasted_contents and len(pasted_contents) > 0:
+        for paste_data in pasted_contents.values():
+            if isinstance(paste_data, dict) and paste_data.get("content", "").strip():
                 return False
 
     # Remove short messages without meaningful pasted content
@@ -81,16 +67,12 @@ def clean_project_history(
     filtered_history = [
         entry
         for entry in original_history
-        if not should_remove_entry(
-            entry, min_length
-        )
+        if not should_remove_entry(entry, min_length)
     ]
 
     project_data["history"] = filtered_history
 
-    removed_count = original_count - len(
-        filtered_history
-    )
+    removed_count = original_count - len(filtered_history)
 
     return {
         "original_count": original_count,
@@ -116,9 +98,7 @@ def clean_claude_json(
         Dictionary with cleaning statistics
     """
     # Read the original file
-    with open(
-        file_path, "r", encoding="utf-8"
-    ) as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     # Create backup if requested
@@ -141,94 +121,53 @@ def clean_claude_json(
         project_path,
         project_data,
     ) in projects.items():
-        stats = clean_project_history(
-            project_data, min_length
-        )
+        stats = clean_project_history(project_data, min_length)
         total_stats["projects_processed"] += 1
-        total_stats[
-            "total_original_entries"
-        ] += stats["original_count"]
-        total_stats[
-            "total_removed_entries"
-        ] += stats["removed_count"]
-        total_stats[
-            "total_remaining_entries"
-        ] += stats["remaining_count"]
-        total_stats["project_details"][
-            project_path
-        ] = stats
+        total_stats["total_original_entries"] += stats["original_count"]
+        total_stats["total_removed_entries"] += stats["removed_count"]
+        total_stats["total_remaining_entries"] += stats["remaining_count"]
+        total_stats["project_details"][project_path] = stats
 
     # Write the cleaned data back
-    with open(
-        file_path, "w", encoding="utf-8"
-    ) as f:
-        json.dump(
-            data, f, indent=2, ensure_ascii=False
-        )
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
     return total_stats
 
 
 def print_stats(stats: dict[str, Any]) -> None:
     """Print cleaning statistics in a readable format."""
-    print(
-        f"\n=== Claude History Cleaning Results ==="
-    )
-    print(
-        f"Projects processed: {stats['projects_processed']}"
-    )
-    print(
-        f"Total entries before: {stats['total_original_entries']}"
-    )
-    print(
-        f"Total entries removed: {stats['total_removed_entries']}"
-    )
-    print(
-        f"Total entries remaining: {stats['total_remaining_entries']}"
-    )
+    print(f"\n=== Claude History Cleaning Results ===")
+    print(f"Projects processed: {stats['projects_processed']}")
+    print(f"Total entries before: {stats['total_original_entries']}")
+    print(f"Total entries removed: {stats['total_removed_entries']}")
+    print(f"Total entries remaining: {stats['total_remaining_entries']}")
 
     if stats["total_removed_entries"] > 0:
         percentage = (
-            stats["total_removed_entries"]
-            / stats["total_original_entries"]
+            stats["total_removed_entries"] / stats["total_original_entries"]
         ) * 100
-        print(
-            f"Percentage removed: {percentage:.1f}%"
-        )
+        print(f"Percentage removed: {percentage:.1f}%")
 
     print(f"\n=== Per-Project Details ===")
-    for project_path, project_stats in stats[
-        "project_details"
-    ].items():
+    for project_path, project_stats in stats["project_details"].items():
         if project_stats["removed_count"] > 0:
             print(f"{project_path}:")
-            print(
-                f"  Before: {project_stats['original_count']} entries"
-            )
-            print(
-                f"  Removed: {project_stats['removed_count']} entries"
-            )
-            print(
-                f"  After: {project_stats['remaining_count']} entries"
-            )
+            print(f"  Before: {project_stats['original_count']} entries")
+            print(f"  Removed: {project_stats['removed_count']} entries")
+            print(f"  After: {project_stats['remaining_count']} entries")
 
 
-def dry_run_analysis(
-    file_path: str, min_length: int = 10
-) -> None:
+def dry_run_analysis(file_path: str, min_length: int = 10) -> None:
     """Perform dry-run analysis without modifying files."""
-    with open(
-        file_path, "r", encoding="utf-8"
-    ) as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     projects = data.get("projects", {})
     total_would_remove = 0
     total_entries = 0
 
-    print(
-        "=== DRY RUN - No changes will be made ==="
-    )
+    print("=== DRY RUN - No changes will be made ===")
 
     for (
         project_path,
@@ -237,11 +176,7 @@ def dry_run_analysis(
         history = project_data.get("history", [])
         total_entries += len(history)
         would_remove = sum(
-            1
-            for entry in history
-            if should_remove_entry(
-                entry, min_length
-            )
+            1 for entry in history if should_remove_entry(entry, min_length)
         )
         total_would_remove += would_remove
 
@@ -253,21 +188,13 @@ def dry_run_analysis(
     print(f"\nSummary:")
     print(f"Total entries: {total_entries}")
     print(f"Would remove: {total_would_remove}")
-    print(
-        f"Would keep: {total_entries - total_would_remove}"
-    )
+    print(f"Would keep: {total_entries - total_would_remove}")
 
     if total_would_remove > 0:
-        percentage = (
-            total_would_remove / total_entries
-        ) * 100
-        print(
-            f"Percentage to remove: {percentage:.1f}%"
-        )
+        percentage = (total_would_remove / total_entries) * 100
+        print(f"Percentage to remove: {percentage:.1f}%")
     else:
-        print(
-            "No entries would be removed - file is already clean!"
-        )
+        print("No entries would be removed - file is already clean!")
 
 
 def main():
@@ -314,24 +241,18 @@ Examples:
 
     # Determine file path
     if args.file_path is None:
-        file_path = str(
-            Path.home() / ".claude.json"
-        )
+        file_path = str(Path.home() / ".claude.json")
     else:
         file_path = args.file_path
 
     # Check if file exists
     if not os.path.exists(file_path):
-        print(
-            f"Error: File not found: {file_path}"
-        )
+        print(f"Error: File not found: {file_path}")
         sys.exit(1)
 
     try:
         if args.dry_run:
-            dry_run_analysis(
-                file_path, args.min_length
-            )
+            dry_run_analysis(file_path, args.min_length)
         else:
             # Perform actual cleaning
             stats = clean_claude_json(
@@ -340,14 +261,10 @@ Examples:
                 backup=not args.no_backup,
             )
             print_stats(stats)
-            print(
-                "\nCleaning completed successfully!"
-            )
+            print("\nCleaning completed successfully!")
 
     except json.JSONDecodeError as e:
-        print(
-            f"Error: Invalid JSON in file {file_path}: {e}"
-        )
+        print(f"Error: Invalid JSON in file {file_path}: {e}")
         sys.exit(1)
     except Exception as e:
         print(f"Error: {e}")

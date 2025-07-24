@@ -38,27 +38,16 @@ class FuzzTestGenerator:
     """Generates various types of fuzz test data."""
 
     @staticmethod
-    def random_string(
-        length: int = None, charset: str = None
-    ) -> str:
+    def random_string(length: int = None, charset: str = None) -> str:
         """Generate random string with optional length and character set."""
         if length is None:
             length = random.randint(0, 100)
         if charset is None:
-            charset = (
-                string.ascii_letters
-                + string.digits
-                + string.punctuation
-            )
-        return "".join(
-            random.choice(charset)
-            for _ in range(length)
-        )
+            charset = string.ascii_letters + string.digits + string.punctuation
+        return "".join(random.choice(charset) for _ in range(length))
 
     @staticmethod
-    def malformed_paths() -> (
-        Generator[str, None, None]
-    ):
+    def malformed_paths() -> Generator[str, None, None]:
         """Generate malformed file paths."""
         paths = [
             "",  # Empty
@@ -99,9 +88,7 @@ class FuzzTestGenerator:
             yield path
 
     @staticmethod
-    def malformed_json() -> (
-        Generator[str, None, None]
-    ):
+    def malformed_json() -> Generator[str, None, None]:
         """Generate malformed JSON strings."""
         jsons = [
             "",  # Empty
@@ -119,9 +106,7 @@ class FuzzTestGenerator:
             '{"key": Infinity}',  # Infinity value
             '{"\\u0000": "null byte"}',  # Null byte in key
             '{"": "empty key"}',  # Empty key
-            json.dumps(
-                {"key": "a" * 10000}
-            ),  # Very long value
+            json.dumps({"key": "a" * 10000}),  # Very long value
             "\x00",  # Null byte
             "null",  # Valid JSON but unexpected
             "true",  # Valid JSON but unexpected
@@ -132,9 +117,7 @@ class FuzzTestGenerator:
             yield j
 
     @staticmethod
-    def system_strings() -> (
-        Generator[str, None, None]
-    ):
+    def system_strings() -> Generator[str, None, None]:
         """Generate various system strings."""
         systems = [
             "",  # Empty
@@ -147,8 +130,7 @@ class FuzzTestGenerator:
             "wasm32-wasi",  # Unusual target
             "\x00",  # Null byte
             "a" * 100,  # Very long
-            "x86_64-linux-"
-            + "a" * 50,  # Long suffix
+            "x86_64-linux-" + "a" * 50,  # Long suffix
             "i686-linux",  # 32-bit
             "armv7l-linux",  # ARM
             "powerpc64le-linux",  # PowerPC
@@ -158,9 +140,7 @@ class FuzzTestGenerator:
             yield system
 
     @staticmethod
-    def shell_names() -> (
-        Generator[str, None, None]
-    ):
+    def shell_names() -> Generator[str, None, None]:
         """Generate various shell names."""
         names = [
             "",  # Empty
@@ -193,9 +173,7 @@ class FuzzTestGenerator:
             yield name
 
     @staticmethod
-    def derivation_paths() -> (
-        Generator[str, None, None]
-    ):
+    def derivation_paths() -> Generator[str, None, None]:
         """Generate various derivation paths."""
         paths = [
             "",  # Empty
@@ -225,19 +203,11 @@ class TestDevShellConfig(unittest.TestCase):
         self,
     ):
         """Test DevShellConfig creation with various fuzz inputs."""
-        for (
-            flake_path
-        ) in FuzzTestGenerator.malformed_paths():
-            with self.subTest(
-                flake_path=repr(flake_path)
-            ):
+        for flake_path in FuzzTestGenerator.malformed_paths():
+            with self.subTest(flake_path=repr(flake_path)):
                 # Should not raise exception during creation
-                config = DevShellConfig(
-                    flake_path=flake_path
-                )
-                self.assertEqual(
-                    config.flake_path, flake_path
-                )
+                config = DevShellConfig(flake_path=flake_path)
+                self.assertEqual(config.flake_path, flake_path)
 
     def test_config_with_extreme_values(self):
         """Test config with extreme parameter values."""
@@ -250,19 +220,13 @@ class TestDevShellConfig(unittest.TestCase):
             output_file=long_string,
             format=long_string,  # Will be validated later
         )
-        self.assertEqual(
-            len(config.flake_path), 10000
-        )
+        self.assertEqual(len(config.flake_path), 10000)
 
     def test_config_with_special_characters(self):
         """Test config with special characters."""
         special_chars = "\x00\x01\x02\xff\u0000\u00ff\u2603\U0001f600"
-        config = DevShellConfig(
-            flake_path=special_chars
-        )
-        self.assertEqual(
-            config.flake_path, special_chars
-        )
+        config = DevShellConfig(flake_path=special_chars)
+        self.assertEqual(config.flake_path, special_chars)
 
 
 class TestDevShellData(unittest.TestCase):
@@ -273,22 +237,13 @@ class TestDevShellData(unittest.TestCase):
         # Generate various list combinations
         for _ in range(100):
             build_inputs = [
-                FuzzTestGenerator.random_string()
-                for _ in range(
-                    random.randint(0, 20)
-                )
+                FuzzTestGenerator.random_string() for _ in range(random.randint(0, 20))
             ]
             native_inputs = [
-                FuzzTestGenerator.random_string()
-                for _ in range(
-                    random.randint(0, 20)
-                )
+                FuzzTestGenerator.random_string() for _ in range(random.randint(0, 20))
             ]
             prop_inputs = [
-                FuzzTestGenerator.random_string()
-                for _ in range(
-                    random.randint(0, 20)
-                )
+                FuzzTestGenerator.random_string() for _ in range(random.randint(0, 20))
             ]
 
             data = DevShellData(
@@ -302,9 +257,7 @@ class TestDevShellData(unittest.TestCase):
 
             # Test to_dict conversion
             dict_result = data.to_dict()
-            self.assertIsInstance(
-                dict_result, dict
-            )
+            self.assertIsInstance(dict_result, dict)
             self.assertEqual(
                 dict_result["build_inputs"],
                 build_inputs,
@@ -321,9 +274,7 @@ class TestDevShellData(unittest.TestCase):
             flake_path="",
         )
         dict_result = data.to_dict()
-        self.assertEqual(
-            len(dict_result["build_inputs"]), 0
-        )
+        self.assertEqual(len(dict_result["build_inputs"]), 0)
 
 
 class TestNixError(unittest.TestCase):
@@ -332,19 +283,11 @@ class TestNixError(unittest.TestCase):
     def test_nix_error_with_fuzz_messages(self):
         """Test NixError with various message formats."""
         for _ in range(50):
-            message = (
-                FuzzTestGenerator.random_string()
-            )
-            with self.subTest(
-                message=repr(message)
-            ):
+            message = FuzzTestGenerator.random_string()
+            with self.subTest(message=repr(message)):
                 error = NixError(message)
-                self.assertEqual(
-                    str(error), message
-                )
-                self.assertIsInstance(
-                    error, Exception
-                )
+                self.assertEqual(str(error), message)
+                self.assertIsInstance(error, Exception)
 
 
 class TestDevShellExtractor(unittest.TestCase):
@@ -357,9 +300,7 @@ class TestDevShellExtractor(unittest.TestCase):
             verbose=False,
             quiet=True,
         )
-        self.extractor = DevShellExtractor(
-            self.config
-        )
+        self.extractor = DevShellExtractor(self.config)
 
     def test_nix_eval_json_with_malformed_expressions(
         self,
@@ -381,14 +322,10 @@ class TestDevShellExtractor(unittest.TestCase):
         for expr in malformed_exprs:
             with self.subTest(expr=repr(expr)):
                 with self.assertRaises(NixError):
-                    self.extractor.nix_eval_json(
-                        expr
-                    )
+                    self.extractor.nix_eval_json(expr)
 
     @patch("subprocess.check_output")
-    def test_nix_eval_json_with_mocked_failures(
-        self, mock_check_output
-    ):
+    def test_nix_eval_json_with_mocked_failures(self, mock_check_output):
         """Test nix_eval_json with various subprocess failures."""
         error_messages = [
             "is not available on the requested hostPlatform",
@@ -401,37 +338,21 @@ class TestDevShellExtractor(unittest.TestCase):
         ]
 
         for error_msg in error_messages:
-            with self.subTest(
-                error_msg=error_msg
-            ):
-                mock_check_output.side_effect = (
-                    subprocess.CalledProcessError(
-                        1, "nix", stderr=error_msg
-                    )
+            with self.subTest(error_msg=error_msg):
+                mock_check_output.side_effect = subprocess.CalledProcessError(
+                    1, "nix", stderr=error_msg
                 )
                 with self.assertRaises(NixError):
-                    self.extractor.nix_eval_json(
-                        "test"
-                    )
+                    self.extractor.nix_eval_json("test")
 
     def test_drv_to_pkgname_with_fuzz_paths(self):
         """Test drv_to_pkgname with fuzzed derivation paths."""
-        for (
-            drv_path
-        ) in FuzzTestGenerator.derivation_paths():
-            with self.subTest(
-                drv_path=repr(drv_path)
-            ):
+        for drv_path in FuzzTestGenerator.derivation_paths():
+            with self.subTest(drv_path=repr(drv_path)):
                 # Should not raise exception
-                result = (
-                    self.extractor.drv_to_pkgname(
-                        drv_path
-                    )
-                )
+                result = self.extractor.drv_to_pkgname(drv_path)
                 if result is not None:
-                    self.assertIsInstance(
-                        result, str
-                    )
+                    self.assertIsInstance(result, str)
 
     def test_drv_to_pkgname_edge_cases(self):
         """Test drv_to_pkgname with specific edge cases."""
@@ -460,22 +381,14 @@ class TestDevShellExtractor(unittest.TestCase):
                 drv_path=drv_path,
                 expected=expected,
             ):
-                result = (
-                    self.extractor.drv_to_pkgname(
-                        drv_path
-                    )
-                )
+                result = self.extractor.drv_to_pkgname(drv_path)
                 self.assertEqual(result, expected)
 
     def test_drv_to_pkgname_none_input(self):
         """Test drv_to_pkgname with None input."""
         # The function should handle None gracefully
         try:
-            result = (
-                self.extractor.drv_to_pkgname(
-                    None
-                )
-            )
+            result = self.extractor.drv_to_pkgname(None)
             self.assertIsNone(result)
         except (AttributeError, TypeError):
             # These exceptions are acceptable for None input
@@ -491,9 +404,7 @@ class TestDevShellExtractor(unittest.TestCase):
             [None, None, None],  # Multiple Nones
             ["a", None, "b", None, "c"],  # Mixed
             ["a", "a", "a"],  # Duplicates
-            [
-                str(i) for i in range(1000)
-            ],  # Large sequence
+            [str(i) for i in range(1000)],  # Large sequence
             [
                 "",
                 " ",
@@ -509,94 +420,48 @@ class TestDevShellExtractor(unittest.TestCase):
 
         for seq in test_sequences:
             with self.subTest(seq=repr(seq)):
-                result = self.extractor.uniq_preserve_order(
-                    seq
-                )
-                self.assertIsInstance(
-                    result, list
-                )
+                result = self.extractor.uniq_preserve_order(seq)
+                self.assertIsInstance(result, list)
                 # Check that all items are strings (Nones filtered out)
                 for item in result:
-                    self.assertIsInstance(
-                        item, str
-                    )
+                    self.assertIsInstance(item, str)
 
     @patch("subprocess.check_output")
-    def test_get_current_system_failure(
-        self, mock_check_output
-    ):
+    def test_get_current_system_failure(self, mock_check_output):
         """Test get_current_system with subprocess failure."""
-        mock_check_output.side_effect = (
-            subprocess.CalledProcessError(
-                1, "nix"
-            )
-        )
+        mock_check_output.side_effect = subprocess.CalledProcessError(1, "nix")
         with self.assertRaises(NixError):
             self.extractor.get_current_system()
 
-    @patch.object(
-        DevShellExtractor, "nix_eval_json"
-    )
-    def test_discover_devshells_with_malformed_json(
-        self, mock_nix_eval
-    ):
+    @patch.object(DevShellExtractor, "nix_eval_json")
+    def test_discover_devshells_with_malformed_json(self, mock_nix_eval):
         """Test discover_devshells with malformed JSON responses."""
-        for (
-            malformed_json
-        ) in FuzzTestGenerator.malformed_json():
-            with self.subTest(
-                json_str=repr(malformed_json)
-            ):
-                mock_nix_eval.return_value = (
-                    malformed_json
-                )
+        for malformed_json in FuzzTestGenerator.malformed_json():
+            with self.subTest(json_str=repr(malformed_json)):
+                mock_nix_eval.return_value = malformed_json
                 # Should handle JSON decode errors gracefully
                 try:
-                    result = self.extractor.discover_devshells(
-                        "test"
-                    )
-                    self.assertIsInstance(
-                        result, dict
-                    )
+                    result = self.extractor.discover_devshells("test")
+                    self.assertIsInstance(result, dict)
                 except json.JSONDecodeError:
                     # This is acceptable behavior
                     pass
 
-    @patch.object(
-        DevShellExtractor, "nix_eval_json"
-    )
-    def test_find_devshell_attr_with_fuzz_inputs(
-        self, mock_nix_eval
-    ):
+    @patch.object(DevShellExtractor, "nix_eval_json")
+    def test_find_devshell_attr_with_fuzz_inputs(self, mock_nix_eval):
         """Test find_devshell_attr with various inputs."""
         # Mock nix_eval_json to always fail (no devShell found)
-        mock_nix_eval.side_effect = NixError(
-            "not found"
-        )
+        mock_nix_eval.side_effect = NixError("not found")
 
-        for (
-            flake
-        ) in FuzzTestGenerator.malformed_paths():
-            for (
-                system
-            ) in (
-                FuzzTestGenerator.system_strings()
-            ):
-                for (
-                    shell_name
-                ) in (
-                    FuzzTestGenerator.shell_names()
-                ):
+        for flake in FuzzTestGenerator.malformed_paths():
+            for system in FuzzTestGenerator.system_strings():
+                for shell_name in FuzzTestGenerator.shell_names():
                     with self.subTest(
                         flake=repr(flake),
                         system=repr(system),
-                        shell_name=repr(
-                            shell_name
-                        ),
+                        shell_name=repr(shell_name),
                     ):
-                        with self.assertRaises(
-                            NixError
-                        ):
+                        with self.assertRaises(NixError):
                             self.extractor.find_devshell_attr(
                                 flake,
                                 system,
@@ -611,49 +476,27 @@ class TestDevShellExtractor(unittest.TestCase):
             # Generate random DevShellData
             data = DevShellData(
                 build_inputs=[
-                    FuzzTestGenerator.random_string(
-                        20
-                    )
-                    for _ in range(
-                        random.randint(0, 10)
-                    )
+                    FuzzTestGenerator.random_string(20)
+                    for _ in range(random.randint(0, 10))
                 ],
                 native_build_inputs=[
-                    FuzzTestGenerator.random_string(
-                        20
-                    )
-                    for _ in range(
-                        random.randint(0, 10)
-                    )
+                    FuzzTestGenerator.random_string(20)
+                    for _ in range(random.randint(0, 10))
                 ],
                 propagated_build_inputs=[
-                    FuzzTestGenerator.random_string(
-                        20
-                    )
-                    for _ in range(
-                        random.randint(0, 10)
-                    )
+                    FuzzTestGenerator.random_string(20)
+                    for _ in range(random.randint(0, 10))
                 ],
-                shell_hook=FuzzTestGenerator.random_string(
-                    100
-                ),
-                system=FuzzTestGenerator.random_string(
-                    20
-                ),
-                flake_path=FuzzTestGenerator.random_string(
-                    50
-                ),
+                shell_hook=FuzzTestGenerator.random_string(100),
+                system=FuzzTestGenerator.random_string(20),
+                flake_path=FuzzTestGenerator.random_string(50),
             )
 
             with self.subTest(iteration=_):
                 # Should not raise exception
-                result = self.extractor.format_nix_output(
-                    data
-                )
+                result = self.extractor.format_nix_output(data)
                 self.assertIsInstance(result, str)
-                self.assertIn(
-                    "pkgs.mkShell", result
-                )
+                self.assertIn("pkgs.mkShell", result)
 
     def test_format_json_output_with_fuzz_data(
         self,
@@ -663,9 +506,7 @@ class TestDevShellExtractor(unittest.TestCase):
             data = DevShellData(
                 build_inputs=[
                     FuzzTestGenerator.random_string()
-                    for _ in range(
-                        random.randint(0, 5)
-                    )
+                    for _ in range(random.randint(0, 5))
                 ],
                 native_build_inputs=[],
                 propagated_build_inputs=[],
@@ -675,14 +516,10 @@ class TestDevShellExtractor(unittest.TestCase):
             )
 
             with self.subTest(iteration=_):
-                result = self.extractor.format_json_output(
-                    data
-                )
+                result = self.extractor.format_json_output(data)
                 # Should be valid JSON
                 parsed = json.loads(result)
-                self.assertIsInstance(
-                    parsed, dict
-                )
+                self.assertIsInstance(parsed, dict)
 
     def test_format_yaml_output_availability(
         self,
@@ -698,11 +535,7 @@ class TestDevShellExtractor(unittest.TestCase):
         )
 
         try:
-            result = (
-                self.extractor.format_yaml_output(
-                    data
-                )
-            )
+            result = self.extractor.format_yaml_output(data)
             self.assertIsInstance(result, str)
         except NixError as e:
             # YAML not available is acceptable
@@ -731,9 +564,7 @@ class TestArgumentParsing(unittest.TestCase):
                 "invalid",
             ],  # Invalid format
             ["--output"],  # Missing output file
-            [
-                "--shell-name"
-            ],  # Missing shell name
+            ["--shell-name"],  # Missing shell name
             [
                 "flake",
                 "system",
@@ -743,9 +574,7 @@ class TestArgumentParsing(unittest.TestCase):
 
         for args in malformed_args:
             with self.subTest(args=args):
-                with self.assertRaises(
-                    SystemExit
-                ):
+                with self.assertRaises(SystemExit):
                     self.parser.parse_args(args)
 
     def test_parser_with_edge_case_arguments(
@@ -753,18 +582,10 @@ class TestArgumentParsing(unittest.TestCase):
     ):
         """Test parser with edge case arguments that should be accepted."""
         edge_case_args = [
-            [
-                ""
-            ],  # Empty string argument (valid flake path)
-            [
-                " "
-            ],  # Whitespace argument (valid flake path)
-            [
-                "\x00"
-            ],  # Null byte (valid flake path)
-            [
-                "a" * 1000
-            ],  # Very long argument (valid flake path)
+            [""],  # Empty string argument (valid flake path)
+            [" "],  # Whitespace argument (valid flake path)
+            ["\x00"],  # Null byte (valid flake path)
+            ["a" * 1000],  # Very long argument (valid flake path)
             [
                 "-q",
                 "-v",
@@ -775,17 +596,9 @@ class TestArgumentParsing(unittest.TestCase):
         for args in edge_case_args:
             with self.subTest(args=args):
                 try:
-                    result = (
-                        self.parser.parse_args(
-                            args
-                        )
-                    )
+                    result = self.parser.parse_args(args)
                     # If parsing succeeds, verify basic structure
-                    self.assertTrue(
-                        hasattr(
-                            result, "flake_path"
-                        )
-                    )
+                    self.assertTrue(hasattr(result, "flake_path"))
                 except SystemExit:
                     # Some combinations may still be invalid, which is acceptable
                     pass
@@ -794,11 +607,9 @@ class TestArgumentParsing(unittest.TestCase):
         """Test parser with valid but unusual inputs."""
         # Generate valid argument combinations
         for _ in range(100):
-            flake_path = (
-                FuzzTestGenerator.random_string(
-                    50,
-                    string.ascii_letters + "./",
-                )
+            flake_path = FuzzTestGenerator.random_string(
+                50,
+                string.ascii_letters + "./",
             )
             args = [flake_path]
 
@@ -819,19 +630,13 @@ class TestArgumentParsing(unittest.TestCase):
                 args.extend(
                     [
                         "--format",
-                        random.choice(
-                            ["nix", "json"]
-                        ),
+                        random.choice(["nix", "json"]),
                     ]
                 )
 
             with self.subTest(args=args):
                 try:
-                    parsed = (
-                        self.parser.parse_args(
-                            args
-                        )
-                    )
+                    parsed = self.parser.parse_args(args)
                     self.assertEqual(
                         parsed.flake_path,
                         flake_path,
@@ -845,16 +650,10 @@ class TestMainFunction(unittest.TestCase):
     """Test main function with comprehensive scenarios."""
 
     @patch("sys.argv")
-    @patch.object(
-        DevShellExtractor, "extract_and_format"
-    )
-    def test_main_with_successful_extraction(
-        self, mock_extract, mock_argv
-    ):
+    @patch.object(DevShellExtractor, "extract_and_format")
+    def test_main_with_successful_extraction(self, mock_extract, mock_argv):
         """Test main function with successful extraction."""
-        mock_argv.__getitem__ = (
-            lambda self, key: ["run.py", "."][key]
-        )
+        mock_argv.__getitem__ = lambda self, key: ["run.py", "."][key]
         mock_argv.__len__ = lambda self: 2
         mock_extract.return_value = "test output"
 
@@ -863,39 +662,23 @@ class TestMainFunction(unittest.TestCase):
             self.assertEqual(result, 0)
 
     @patch("sys.argv")
-    @patch.object(
-        DevShellExtractor, "extract_and_format"
-    )
-    def test_main_with_nix_error(
-        self, mock_extract, mock_argv
-    ):
+    @patch.object(DevShellExtractor, "extract_and_format")
+    def test_main_with_nix_error(self, mock_extract, mock_argv):
         """Test main function with NixError."""
-        mock_argv.__getitem__ = (
-            lambda self, key: ["run.py", "."][key]
-        )
+        mock_argv.__getitem__ = lambda self, key: ["run.py", "."][key]
         mock_argv.__len__ = lambda self: 2
-        mock_extract.side_effect = NixError(
-            "test error"
-        )
+        mock_extract.side_effect = NixError("test error")
 
         result = main()
         self.assertEqual(result, 1)
 
     @patch("sys.argv")
-    @patch.object(
-        DevShellExtractor, "extract_and_format"
-    )
-    def test_main_with_keyboard_interrupt(
-        self, mock_extract, mock_argv
-    ):
+    @patch.object(DevShellExtractor, "extract_and_format")
+    def test_main_with_keyboard_interrupt(self, mock_extract, mock_argv):
         """Test main function with KeyboardInterrupt."""
-        mock_argv.__getitem__ = (
-            lambda self, key: ["run.py", "."][key]
-        )
+        mock_argv.__getitem__ = lambda self, key: ["run.py", "."][key]
         mock_argv.__len__ = lambda self: 2
-        mock_extract.side_effect = (
-            KeyboardInterrupt()
-        )
+        mock_extract.side_effect = KeyboardInterrupt()
 
         result = main()
         self.assertEqual(result, 130)
@@ -958,20 +741,12 @@ class TestRegexPatterns(unittest.TestCase):
         ]
 
         # Test valid hash
-        self.assertIsNotNone(
-            RE_HASH.fullmatch(valid_hash)
-        )
+        self.assertIsNotNone(RE_HASH.fullmatch(valid_hash))
 
         # Test invalid hashes
         for invalid_hash in invalid_hashes:
-            with self.subTest(
-                hash=repr(invalid_hash)
-            ):
-                self.assertIsNone(
-                    RE_HASH.fullmatch(
-                        invalid_hash
-                    )
-                )
+            with self.subTest(hash=repr(invalid_hash)):
+                self.assertIsNone(RE_HASH.fullmatch(invalid_hash))
 
 
 class TestPackageMappings(unittest.TestCase):
@@ -987,29 +762,17 @@ class TestPackageMappings(unittest.TestCase):
                 pattern=pattern,
                 replacement=replacement,
             ):
-                self.assertIsInstance(
-                    pattern, str
-                )
-                self.assertIsInstance(
-                    replacement, str
-                )
-                self.assertGreater(
-                    len(pattern), 0
-                )
-                self.assertGreater(
-                    len(replacement), 0
-                )
+                self.assertIsInstance(pattern, str)
+                self.assertIsInstance(replacement, str)
+                self.assertGreater(len(pattern), 0)
+                self.assertGreater(len(replacement), 0)
 
     def test_skip_packages_consistency(self):
         """Test that skip packages set is consistent."""
         for package in SKIP_PACKAGES:
             with self.subTest(package=package):
-                self.assertIsInstance(
-                    package, str
-                )
-                self.assertGreater(
-                    len(package), 0
-                )
+                self.assertIsInstance(package, str)
+                self.assertGreater(len(package), 0)
 
 
 class TestFileOperations(unittest.TestCase):
@@ -1020,9 +783,7 @@ class TestFileOperations(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             config = DevShellConfig(
                 flake_path=".",
-                output_file=os.path.join(
-                    temp_dir, "test.nix"
-                ),
+                output_file=os.path.join(temp_dir, "test.nix"),
                 quiet=True,
             )
 
@@ -1035,12 +796,8 @@ class TestFileOperations(unittest.TestCase):
             ]
 
             for invalid_path in invalid_paths:
-                with self.subTest(
-                    path=repr(invalid_path)
-                ):
-                    config.output_file = (
-                        invalid_path
-                    )
+                with self.subTest(path=repr(invalid_path)):
+                    config.output_file = invalid_path
                     # The actual file writing happens in main(),
                     # so we just verify the config accepts it
                     self.assertEqual(
@@ -1054,17 +811,9 @@ class TestConcurrencyAndStress(unittest.TestCase):
 
     def test_multiple_extractor_instances(self):
         """Test creating multiple extractor instances simultaneously."""
-        configs = [
-            DevShellConfig(
-                flake_path=".", quiet=True
-            )
-            for _ in range(100)
-        ]
+        configs = [DevShellConfig(flake_path=".", quiet=True) for _ in range(100)]
 
-        extractors = [
-            DevShellExtractor(config)
-            for config in configs
-        ]
+        extractors = [DevShellExtractor(config) for config in configs]
 
         # Verify all instances are independent
         for i, extractor in enumerate(extractors):
@@ -1080,23 +829,15 @@ class TestConcurrencyAndStress(unittest.TestCase):
 
     def test_stress_package_name_conversion(self):
         """Stress test package name conversion with many inputs."""
-        extractor = DevShellExtractor(
-            DevShellConfig(
-                flake_path=".", quiet=True
-            )
-        )
+        extractor = DevShellExtractor(DevShellConfig(flake_path=".", quiet=True))
 
         # Generate many derivation paths
         for _ in range(1000):
             drv_path = f"/nix/store/{''.join(random.choices('0123456789abcdef', k=32))}-{FuzzTestGenerator.random_string(20, string.ascii_lowercase)}"
             with self.subTest(path=drv_path):
-                result = extractor.drv_to_pkgname(
-                    drv_path
-                )
+                result = extractor.drv_to_pkgname(drv_path)
                 if result is not None:
-                    self.assertIsInstance(
-                        result, str
-                    )
+                    self.assertIsInstance(result, str)
 
 
 if __name__ == "__main__":

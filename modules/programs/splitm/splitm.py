@@ -47,32 +47,22 @@ def split_file(
 
     try:
         # Read the entire file
-        with open(
-            input_filename, "r", encoding="utf-8"
-        ) as file:
+        with open(input_filename, "r", encoding="utf-8") as file:
             content = file.read()
 
         # Split the content by the delimiter
         sections = content.split(delimiter)
 
         # Remove empty sections (in case file starts/ends with delimiter)
-        sections = [
-            section.strip()
-            for section in sections
-            if section.strip()
-        ]
+        sections = [section.strip() for section in sections if section.strip()]
 
         if not sections:
-            print(
-                f"No content found in {input_filename} or no sections to split."
-            )
+            print(f"No content found in {input_filename} or no sections to split.")
             return
 
         # Save each section to a new file
         for i, section in enumerate(sections, 1):
-            output_filename = (
-                f"{output_prefix}{i}.txt"
-            )
+            output_filename = f"{output_prefix}{i}.txt"
 
             with open(
                 output_filename,
@@ -81,22 +71,14 @@ def split_file(
             ) as output_file:
                 _ = output_file.write(section)
 
-            print(
-                f"Created {output_filename} ({len(section)} characters)"
-            )
+            print(f"Created {output_filename} ({len(section)} characters)")
 
-        print(
-            f"\nSuccessfully split {input_filename} into {len(sections)} sections."
-        )
+        print(f"\nSuccessfully split {input_filename} into {len(sections)} sections.")
 
     except FileNotFoundError:
-        print(
-            f"Error: File '{input_filename}' not found."
-        )
+        print(f"Error: File '{input_filename}' not found.")
     except PermissionError:
-        print(
-            f"Error: Permission denied when accessing '{input_filename}'."
-        )
+        print(f"Error: Permission denied when accessing '{input_filename}'.")
     except Exception as e:
         print(f"Error: {e}")
 

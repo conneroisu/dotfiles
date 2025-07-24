@@ -74,7 +74,7 @@ in
 
       # Deploy platform-specific configuration file
       xdg.configFile."ghostty/config" = {
-        source = 
+        source =
           if isLinux
           then ../../../.config/ghostty/ghostty.linux
           else if isDarwin

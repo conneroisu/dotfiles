@@ -74,6 +74,7 @@ development across multiple platforms and languages.
   ...
 }: let
   inherit (delib) singleEnableOption;
+  packages = import ../packages { inherit pkgs; };
 in
   delib.module {
     name = "features.engineer";
@@ -102,116 +103,16 @@ in
         vistafonts
       ];
       environment = {
-        systemPackages = with pkgs;
+        systemPackages = 
+          packages.cliTools.nixos ++
+          packages.development.nixos ++
+          packages.editors.nixos ++
+          packages.networking.nixos ++
+          packages.containers.nixos ++
+          packages.languages.nixos ++
+          packages.applications.nixos ++
           [
-            # Shell
-
-            ## Editor
-            neovim
-            jq
-            yq
-            tree-sitter
-            sad
-
-            ## Env
-            zsh
-            nushell
-            dbus
-            upower
-            upower-notify
-            lsof
-            carapace
-            stow
-            age
-            kubectl
-            ktailctl
-            doppler
-            bun
-            file
-            nix-index
-            zinit
-            starship
-            direnv
-            nix-direnv
-            bat
-            fd
-            fzf
-            zellij
-            vscode-langservers-extracted
-            yaml-language-server
-            gcc
-            atuin
-            zoxide
-            pkg-config
-            lshw
-            gdb
-            gnupg
-            procps
-            unzip
-            uv
-            eza
-            delta
-            htop
-            tealdeer
-            sleek
-            unixtools.xxd
-            ffmpeg
-            tree
-            ripgrep
-            fd
-            fdtools
-            vscode-langservers-extracted
-
-            # VCS
-            git
-            git-lfs
-            jujutsu
-
-            # Apps
-            obsidian
-            zathura
-            brave
-            spotify
-            discord
-            telegram-desktop
-            obs-studio
-            eog
-            nemo-with-extensions
-
-            # Communication
-            tailscale
-            dnsutils
-            minicom
-            openvpn
-            cacert
-            arp-scan
-            vdhcoapp
-            usbutils
-            ethtool
-            curl
-            wget
-
-            # Platforms
-            fh
-            doppler
-            gh
-            tea
-
-            # Emulation
-            docker
-            docker-compose
-            docker-buildx
-            lazydocker
-            nixos-shell
-
-            # Languages (Base for when shell from project is not available)
-            nixd
-            statix
-            nodejs
-            lua-language-server
-            squirreldisk
-          ]
-          ++ [
+            # External inputs from flake
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
@@ -266,62 +167,18 @@ in
         cccleaner.enable = true;
       };
       environment = {
-        systemPackages = with pkgs; [
-          zinit
-          starship
-          direnv
-          nix-direnv
-          bat
-          wget
-          fd
-          jq
-          yq
-          graphite-cli
-          spicetify-cli
-          fzf
-          zed-editor
-          python313Packages.huggingface-hub
-          zellij
-          atuin
-          zoxide
-          eza
-          delta
-          unzip
-          htop
-          tealdeer
-          sleek
-          tree-sitter
-          unixtools.xxd
-          tree
-          sad
-          ripgrep
-          stow
-          carapace
-          neovim
-          cmake
-          gnumake
-          uv
-          vscode-langservers-extracted
-          bun
-          git
-          podman
-          rancher
-          openssl
-
-          # Platforms
-          flyctl
-          fh
-          gh
-          tea
-
-          # Languages
-          nixd
-          nodejs
-          lua-language-server
-
-          # Nix tools
-          inputs.nix-auth.packages."${pkgs.system}".default
-        ];
+        systemPackages = 
+          packages.cliTools.darwin ++
+          packages.development.darwin ++
+          packages.editors.darwin ++
+          packages.networking.darwin ++
+          packages.containers.darwin ++
+          packages.languages.darwin ++
+          packages.applications.darwin ++
+          [
+            # External inputs from flake
+            inputs.nix-auth.packages."${pkgs.system}".default
+          ];
         variables = {
           EDITOR = "nvim";
           VISUAL = "nvim";

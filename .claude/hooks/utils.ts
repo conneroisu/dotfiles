@@ -106,7 +106,7 @@ export class SecurityValidator {
     /\.env\.template$/
   ];
 
-  static validateEnvFileAccess(toolName: string, toolInput: any): { allowed: boolean; reason?: string } {
+  static validateEnvFileAccess(toolName: string, toolInput: Record<string, unknown>): { allowed: boolean; reason?: string } {
     if (!['Read', 'Edit', 'MultiEdit', 'Write'].includes(toolName)) {
       return { allowed: true };
     }
@@ -130,7 +130,7 @@ export class SecurityValidator {
     return { allowed: true };
   }
 
-  static validateDangerousCommands(toolName: string, toolInput: any): { allowed: boolean; reason?: string } {
+  static validateDangerousCommands(toolName: string, toolInput: Record<string, unknown>): { allowed: boolean; reason?: string } {
     if (toolName !== 'Bash') {
       return { allowed: true };
     }
@@ -177,7 +177,15 @@ export function handleError(error: unknown, context: string): HookResult {
 }
 
 export async function executeShellCommand(command: string): Promise<{ stdout: string; stderr: string; exitCode: number }> {
-  const proc = Bun.spawn(command.split(' '), {
+  // Validate command before execution
+  const validation = validateCommandString(command);
+  if (!validation.valid) {
+    Logger.error('Command validation failed', { command, reason: validation.reason });
+    throw new Error(`Command validation failed: ${validation.reason}`);
+  }
+
+  // Use shell mode for complex commands with pipes, but be careful about injection
+  const proc = Bun.spawn(['sh', '-c', command], {
     stdout: 'pipe',
     stderr: 'pipe'
   });
@@ -187,4 +195,69 @@ export async function executeShellCommand(command: string): Promise<{ stdout: st
   const exitCode = await proc.exited;
 
   return { stdout, stderr, exitCode };
+}
+
+export async function executeShellCommandSafe(command: string, args: string[] = []): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  // Safer version that executes command with separate arguments
+  const proc = Bun.spawn([command, ...args], {
+    stdout: 'pipe',
+    stderr: 'pipe'
+  });
+
+  const stdout = await new Response(proc.stdout).text();
+  const stderr = await new Response(proc.stderr).text();
+  const exitCode = await proc.exited;
+
+  return { stdout, stderr, exitCode };
+}
+
+export function escapeShellArg(arg: string): string {
+  // Escape shell arguments to prevent injection
+  return `'${arg.replace(/'/g, "'\\''")}'`;
+}
+
+export function validateCommandString(command: string): { valid: boolean; reason?: string } {
+  // Basic validation for shell commands
+  if (!command || typeof command !== 'string') {
+    return { valid: false, reason: 'Command must be a non-empty string' };
+  }
+
+  if (command.length > 1000) {
+    return { valid: false, reason: 'Command too long (max 1000 characters)' };
+  }
+
+  // Check for suspicious patterns
+  const suspiciousPatterns = [
+    /;\s*rm\s+-rf/,
+    /&&\s*rm\s+-rf/,
+    /\|\s*rm\s+-rf/,
+    /`.*rm.*`/,
+    /\$\(.*rm.*\)/
+  ];
+
+  for (const pattern of suspiciousPatterns) {
+    if (pattern.test(command)) {
+      return { valid: false, reason: `Potentially dangerous command pattern detected: ${pattern.toString()}` };
+    }
+  }
+
+  return { valid: true };
+}
+
+export function validateFilePath(filePath: string): { valid: boolean; reason?: string } {
+  // Basic validation for file paths
+  if (!filePath || typeof filePath !== 'string') {
+    return { valid: false, reason: 'File path must be a non-empty string' };
+  }
+
+  if (filePath.length > 500) {
+    return { valid: false, reason: 'File path too long (max 500 characters)' };
+  }
+
+  // Check for path traversal attempts
+  if (filePath.includes('../') || filePath.includes('..\\')) {
+    return { valid: false, reason: 'Path traversal detected in file path' };
+  }
+
+  return { valid: true };
 }

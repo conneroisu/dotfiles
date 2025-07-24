@@ -6,7 +6,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { parseArgs } from 'util';
 import type { SubagentStopHookInput, HookResult } from '../types.ts';
-import { Logger, InputReader, createHookResult, handleError, executeShellCommand } from '../utils.ts';
+import { Logger, InputReader, createHookResult, handleError, executeShellCommand, escapeShellArg } from '../utils.ts';
 
 export class SubagentStopHook {
   private static readonly SUBAGENT_COMPLETION_MESSAGE = "Subagent Complete";
@@ -63,7 +63,15 @@ export class SubagentStopHook {
       
       // Ensure logs directory exists
       Logger.ensureLogsDirectory();
-      writeFileSync(chatLogPath, transcriptContent);
+      
+      // Append to existing logs instead of overwriting
+      Logger.appendToLog('subagent_chat.json', {
+        timestamp: new Date().toISOString(),
+        session_id: 'unknown',
+        subagent_id: 'unknown',
+        transcript_content: transcriptContent,
+        source_path: transcriptPath
+      });
       Logger.info('Subagent transcript copied to logs', { 
         from: transcriptPath, 
         to: chatLogPath,
@@ -91,7 +99,7 @@ export class SubagentStopHook {
       try {
         Logger.debug(`Trying ${provider.name} for subagent TTS`);
         
-        const result = await executeShellCommand(`echo "${message}" | ${provider.command}`);
+        const result = await executeShellCommand(`echo ${escapeShellArg(message)} | ${provider.command}`);
         
         if (result.exitCode === 0) {
           Logger.info(`Subagent TTS announcement successful via ${provider.name}`, { message });

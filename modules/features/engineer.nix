@@ -276,6 +276,7 @@ in
           fd
           jq
           yq
+          graphite-cli
           spicetify-cli
           fzf
           zed-editor

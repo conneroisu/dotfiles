@@ -8,8 +8,8 @@ desktop environment for when GUI access is needed.
 
 ## Host Type
 - Type: server
-- System: x86_64-linux (assumed, imports AMD module)
-- Rice: dark theme
+- System: x86_64-linux
+- Rice: empty theme
 
 ## Key Features
 - **Full desktop server**: Hyprland Wayland compositor
@@ -21,12 +21,9 @@ desktop environment for when GUI access is needed.
 
 ## Hardware Support
 - AMD GPU drivers and optimizations
-- Audio subsystem with PipeWire (assumed via audio feature)
-- Bluetooth connectivity
 - Hardware configuration imported from ./hardware.nix
 
 ## System Configuration
-- Systemd-boot with Plymouth boot splash
 - Locale: en_US.UTF-8 (Chicago timezone)
 - RTKit for real-time audio
 - libinput for input device handling
@@ -52,7 +49,7 @@ delib.host {
     imports = [
       inputs.determinate.darwinModules.default
     ];
-    nixpkgs.hostPlatform = "aarch64-darwin";
+    nixpkgs.hostPlatform = "x86_64-darwin";
     system.stateVersion = "24.11";
   };
 
@@ -70,7 +67,9 @@ delib.host {
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;
-        kde.enable = false;
+        kde.enable = true;
+        k3sServer.enable = true;
+        k3sAgent.enable = true;
       };
     };
 

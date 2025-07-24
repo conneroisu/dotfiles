@@ -158,6 +158,7 @@ in
           inkscape
           audacity
           obs-studio
+          qt6ct
         ];
       in
         coreDesktop

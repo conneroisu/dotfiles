@@ -3,7 +3,7 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
 [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
-export ANTHROPIC_LOG=debug
+export ANTHROPIC_LOG=info
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$HOME/.cargo/bin:$PATH"
 export CLAUDE_CODE_ENABLE_TELEMETRY="0"

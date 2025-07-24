@@ -1,0 +1,12 @@
+shell-integration = zsh
+command=zsh
+
+font-family = "CodeNewRoman Nerd Font"
+
+window-decoration = false
+
+background = #000000
+
+bold-is-bright = true
+keybind = shift+enter=text:\n
+working-directory=inherit

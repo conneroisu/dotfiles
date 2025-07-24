@@ -20,9 +20,7 @@ except ImportError as e:
 try:
     import convert_img
 
-    print(
-        "✓ convert_img module imports successfully"
-    )
+    print("✓ convert_img module imports successfully")
 except ImportError as e:
     print(f"✗ convert_img import failed: {e}")
     sys.exit(1)
@@ -48,13 +46,9 @@ def test_format_detection():
     ]
 
     for path, format_arg, expected in test_cases:
-        result = convert_img.detect_output_format(
-            path, format_arg
-        )
+        result = convert_img.detect_output_format(path, format_arg)
         if result == expected:
-            print(
-                f"✓ Format detection: {path.suffix} -> {result}"
-            )
+            print(f"✓ Format detection: {path.suffix} -> {result}")
         else:
             print(
                 f"✗ Format detection failed: {path.suffix} expected {expected}, got {result}"
@@ -75,13 +69,9 @@ def test_pillow_format_mapping():
     ]
 
     for input_format, expected in test_cases:
-        result = convert_img.get_pillow_format(
-            input_format
-        )
+        result = convert_img.get_pillow_format(input_format)
         if result == expected:
-            print(
-                f"✓ Pillow format: {input_format} -> {result}"
-            )
+            print(f"✓ Pillow format: {input_format} -> {result}")
         else:
             print(
                 f"✗ Pillow format failed: {input_format} expected {expected}, got {result}"
@@ -97,38 +87,24 @@ def test_image_preparation():
 
         # Create test RGBA image
         rgba_path = tmpdir / "test_rgba.png"
-        rgba_img = Image.new(
-            "RGBA", (50, 50), (255, 0, 0, 128)
-        )
+        rgba_img = Image.new("RGBA", (50, 50), (255, 0, 0, 128))
         rgba_img.save(rgba_path, "PNG")
 
         with Image.open(rgba_path) as img:
             # Test JPEG preparation (should remove alpha)
-            jpeg_img = convert_img.prepare_image_for_format(
-                img, "jpeg"
-            )
+            jpeg_img = convert_img.prepare_image_for_format(img, "jpeg")
             if jpeg_img.mode == "RGB":
-                print(
-                    "✓ JPEG transparency removal works"
-                )
+                print("✓ JPEG transparency removal works")
             else:
-                print(
-                    f"✗ JPEG preparation failed: expected RGB, got {jpeg_img.mode}"
-                )
+                print(f"✗ JPEG preparation failed: expected RGB, got {jpeg_img.mode}")
                 return False
 
             # Test PNG preparation (should keep alpha)
-            png_img = convert_img.prepare_image_for_format(
-                img, "png"
-            )
+            png_img = convert_img.prepare_image_for_format(img, "png")
             if png_img.mode == "RGBA":
-                print(
-                    "✓ PNG transparency preservation works"
-                )
+                print("✓ PNG transparency preservation works")
             else:
-                print(
-                    f"✗ PNG preparation failed: expected RGBA, got {png_img.mode}"
-                )
+                print(f"✗ PNG preparation failed: expected RGBA, got {png_img.mode}")
                 return False
 
     return True
@@ -141,34 +117,24 @@ def test_image_resizing():
 
         # Create test image
         test_path = tmpdir / "test.png"
-        test_img = Image.new(
-            "RGB", (100, 100), "red"
-        )
+        test_img = Image.new("RGB", (100, 100), "red")
         test_img.save(test_path, "PNG")
 
         with Image.open(test_path) as img:
             # Test width-only resize
-            resized = convert_img.resize_image(
-                img, width=50
-            )
+            resized = convert_img.resize_image(img, width=50)
             if resized.size == (50, 50):
                 print("✓ Width-only resize works")
             else:
-                print(
-                    f"✗ Width resize failed: expected (50, 50), got {resized.size}"
-                )
+                print(f"✗ Width resize failed: expected (50, 50), got {resized.size}")
                 return False
 
             # Test max_size resize
-            resized = convert_img.resize_image(
-                img, max_size=25
-            )
+            resized = convert_img.resize_image(img, max_size=25)
             if max(resized.size) == 25:
                 print("✓ Max-size resize works")
             else:
-                print(
-                    f"✗ Max-size resize failed: expected max 25, got {resized.size}"
-                )
+                print(f"✗ Max-size resize failed: expected max 25, got {resized.size}")
                 return False
 
     return True
@@ -181,9 +147,7 @@ def test_basic_conversion():
 
         # Create test image
         input_path = tmpdir / "input.png"
-        test_img = Image.new(
-            "RGB", (50, 50), "blue"
-        )
+        test_img = Image.new("RGB", (50, 50), "blue")
         test_img.save(input_path, "PNG")
 
         # Test PNG to JPEG conversion
@@ -197,17 +161,9 @@ def test_basic_conversion():
             )
 
             if output_path.exists():
-                with Image.open(
-                    output_path
-                ) as result:
-                    if (
-                        result.format == "JPEG"
-                        and result.size
-                        == (50, 50)
-                    ):
-                        print(
-                            "✓ Basic PNG to JPEG conversion works"
-                        )
+                with Image.open(output_path) as result:
+                    if result.format == "JPEG" and result.size == (50, 50):
+                        print("✓ Basic PNG to JPEG conversion works")
                         return True
                     else:
                         print(
@@ -218,9 +174,7 @@ def test_basic_conversion():
                 print("✗ Output file not created")
                 return False
         except Exception as e:
-            print(
-                f"✗ Conversion failed with error: {e}"
-            )
+            print(f"✗ Conversion failed with error: {e}")
             return False
 
 
@@ -231,15 +185,11 @@ def test_input_validation():
 
         # Test valid image
         valid_path = tmpdir / "valid.png"
-        Image.new("RGB", (10, 10), "red").save(
-            valid_path, "PNG"
-        )
+        Image.new("RGB", (10, 10), "red").save(valid_path, "PNG")
 
         try:
             convert_img.validate_input(valid_path)
-            print(
-                "✓ Valid image validation works"
-            )
+            print("✓ Valid image validation works")
         except SystemExit:
             print("✗ Valid image rejected")
             return False
@@ -249,15 +199,11 @@ def test_input_validation():
         invalid_path.write_text("not an image")
 
         try:
-            convert_img.validate_input(
-                invalid_path
-            )
+            convert_img.validate_input(invalid_path)
             print("✗ Invalid file accepted")
             return False
         except SystemExit:
-            print(
-                "✓ Invalid file properly rejected"
-            )
+            print("✓ Invalid file properly rejected")
 
     return True
 
@@ -301,9 +247,7 @@ def main():
             else:
                 failed += 1
         except Exception as e:
-            print(
-                f"✗ {test_name} failed with exception: {e}"
-            )
+            print(f"✗ {test_name} failed with exception: {e}")
             failed += 1
 
     print(f"\n--- Test Results ---")

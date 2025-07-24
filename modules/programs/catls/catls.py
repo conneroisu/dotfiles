@@ -51,9 +51,7 @@ class Args:
             "static",
         ]
     )
-    include_regex: list[str] = field(
-        default_factory=list
-    )
+    include_regex: list[str] = field(default_factory=list)
     directory: str = "."
     files: list[str] = field(default_factory=list)
     content_pattern: str = ""
@@ -63,9 +61,7 @@ class Args:
 def wildcard_to_regex(pattern: str) -> str:
     """Convert shell-style wildcard pattern to regex pattern."""
     result = re.escape(pattern)
-    result = result.replace(r"\*", ".*").replace(
-        r"\?", "."
-    )
+    result = result.replace(r"\*", ".*").replace(r"\?", ".")
     return result
 
 
@@ -92,9 +88,7 @@ def is_binary(file_path: str) -> bool:
 
 def guess_filetype(file_path: str) -> str:
     """Guess file type based on extension."""
-    ext = (
-        Path(file_path).suffix.lower().lstrip(".")
-    )
+    ext = Path(file_path).suffix.lower().lstrip(".")
 
     filetypes = {
         "sh": "bash",
@@ -127,9 +121,7 @@ def guess_filetype(file_path: str) -> str:
     return filetypes.get(ext, "")
 
 
-def should_include(
-    file_path: str, include_patterns: list[str]
-) -> bool:
+def should_include(file_path: str, include_patterns: list[str]) -> bool:
     """Check if a file should be included based on patterns."""
     if not include_patterns:
         return True
@@ -138,19 +130,13 @@ def should_include(
 
     for pattern in include_patterns:
         if "*" in pattern or "?" in pattern:
-            regex_pattern = wildcard_to_regex(
-                pattern
-            )
+            regex_pattern = wildcard_to_regex(pattern)
             regex = re.compile(regex_pattern)
-            if regex.search(
-                filename
-            ) or regex.search(file_path):
+            if regex.search(filename) or regex.search(file_path):
                 return True
         else:
             try:
-                if re.compile(pattern).search(
-                    file_path
-                ):
+                if re.compile(pattern).search(file_path):
                     return True
             except re.error:
                 continue
@@ -175,25 +161,15 @@ def should_ignore(
     real_file_path = get_real_path(file_path)
 
     for ignore_dir in ignore_dirs:
-        if (
-            os.sep not in ignore_dir
-            and ignore_dir
-            in file_path.split(os.sep)
-        ):
+        if os.sep not in ignore_dir and ignore_dir in file_path.split(os.sep):
             return True
 
-        if os.path.dirname(file_path).endswith(
-            os.sep + ignore_dir
-        ):
+        if os.path.dirname(file_path).endswith(os.sep + ignore_dir):
             return True
 
         if os.sep in ignore_dir:
-            real_ignore_dir = get_real_path(
-                ignore_dir.rstrip("/")
-            )
-            if real_file_path.startswith(
-                real_ignore_dir
-            ):
+            real_ignore_dir = get_real_path(ignore_dir.rstrip("/"))
+            if real_file_path.startswith(real_ignore_dir):
                 return True
 
             dir_path = os.path.dirname(file_path)
@@ -283,28 +259,16 @@ def parse_args() -> Args:
         bool,
         parsed_args.debug,
     )
-    args.directory = cast(
-        str, parsed_args.directory
-    )
-    args.files = cast(
-        list[str], parsed_args.files or []
-    )
-    args.content_pattern = cast(
-        str, parsed_args.pattern or ""
-    )
-    args.show_line_numbers = cast(
-        bool, parsed_args.line_numbers
-    )
+    args.directory = cast(str, parsed_args.directory)
+    args.files = cast(list[str], parsed_args.files or [])
+    args.content_pattern = cast(str, parsed_args.pattern or "")
+    args.show_line_numbers = cast(bool, parsed_args.line_numbers)
 
-    ignore_regex_list = cast(
-        list[str] | None, parsed_args.ignore_regex
-    )
+    ignore_regex_list = cast(list[str] | None, parsed_args.ignore_regex)
     if ignore_regex_list:
         for pattern in ignore_regex_list:
             try:
-                args.ignore_regex.append(
-                    re.compile(pattern)
-                )
+                args.ignore_regex.append(re.compile(pattern))
             except re.error as e:
                 print(
                     f"Error: Invalid regex pattern '{pattern}': {e}",
@@ -312,15 +276,11 @@ def parse_args() -> Args:
                 )
                 sys.exit(1)
 
-    ignore_dir_list = cast(
-        list[str] | None, parsed_args.ignore_dir
-    )
+    ignore_dir_list = cast(list[str] | None, parsed_args.ignore_dir)
     if ignore_dir_list:
         args.ignore_dir.extend(ignore_dir_list)
 
-    regex_list = cast(
-        list[str] | None, parsed_args.regex
-    )
+    regex_list = cast(list[str] | None, parsed_args.regex)
     if regex_list:
         args.include_regex.extend(regex_list)
 
@@ -328,9 +288,7 @@ def parse_args() -> Args:
     for file in args.files:
         if os.path.isfile(file):
             basename = os.path.basename(file)
-            args.include_regex.append(
-                f"^{re.escape(basename)}$"
-            )
+            args.include_regex.append(f"^{re.escape(basename)}$")
         else:
             args.include_regex.append(file)
 
@@ -340,40 +298,27 @@ def parse_args() -> Args:
 def find_files(args: Args) -> list[str]:
     """Find all files in the directory based on the provided arguments."""
     files: list[str] = []
-    maxdepth = (
-        float("inf") if args.recursive else 1
-    )
+    maxdepth = float("inf") if args.recursive else 1
 
     # Walk directory structure
-    dir_stack: list[tuple[str, int]] = [
-        (args.directory, 0)
-    ]
+    dir_stack: list[tuple[str, int]] = [(args.directory, 0)]
     while dir_stack:
-        current_dir, current_depth = (
-            dir_stack.pop()
-        )
+        current_dir, current_depth = dir_stack.pop()
 
         if current_depth >= maxdepth:
             continue
 
         try:
-            entries = sorted(
-                os.listdir(current_dir)
-            )
+            entries = sorted(os.listdir(current_dir))
 
             for entry in entries:
                 if entry in (".", ".."):
                     continue
 
-                if (
-                    not args.show_all
-                    and entry.startswith(".")
-                ):
+                if not args.show_all and entry.startswith("."):
                     continue
 
-                full_path = os.path.join(
-                    current_dir, entry
-                )
+                full_path = os.path.join(current_dir, entry)
 
                 if os.path.isdir(full_path):
                     if not should_ignore(
@@ -405,25 +350,17 @@ def find_files(args: Args) -> list[str]:
     return files
 
 
-def process_file(
-    file_path: str, args: Args
-) -> None:
+def process_file(file_path: str, args: Args) -> None:
     """Process a single file and output its contents."""
     if args.directory == ".":
         rel_path: str = file_path
     else:
         try:
-            rel_path = str(
-                Path(file_path).relative_to(
-                    Path(args.directory)
-                )
-            )
+            rel_path = str(Path(file_path).relative_to(Path(args.directory)))
         except ValueError:
             rel_path = file_path
 
-    if not should_include(
-        rel_path, args.include_regex
-    ):
+    if not should_include(rel_path, args.include_regex):
         return
 
     if should_ignore(
@@ -460,54 +397,25 @@ def process_file(
                 content = f.readlines()
 
             line_count = len(content)
-            filtered_content: list[
-                tuple[int, str]
-            ] = []
+            filtered_content: list[tuple[int, str]] = []
 
             if args.content_pattern:
                 try:
-                    regex_pattern = (
-                        wildcard_to_regex(
-                            args.content_pattern
-                        )
-                    )
-                    pattern = re.compile(
-                        regex_pattern
-                    )
-                    for i, line in enumerate(
-                        content
-                    ):
+                    regex_pattern = wildcard_to_regex(args.content_pattern)
+                    pattern = re.compile(regex_pattern)
+                    for i, line in enumerate(content):
                         if pattern.search(line):
-                            filtered_content.append(
-                                (i + 1, line)
-                            )
+                            filtered_content.append((i + 1, line))
                 except re.error as e:
-                    print(
-                        f"<error>Error in pattern: {escape(str(e))}</error>"
-                    )
-                    filtered_content = [
-                        (i + 1, line)
-                        for i, line in enumerate(
-                            content
-                        )
-                    ]
+                    print(f"<error>Error in pattern: {escape(str(e))}</error>")
+                    filtered_content = [(i + 1, line) for i, line in enumerate(content)]
             else:
-                filtered_content = [
-                    (i + 1, line)
-                    for i, line in enumerate(
-                        content
-                    )
-                ]
+                filtered_content = [(i + 1, line) for i, line in enumerate(content)]
 
             filtered_count = len(filtered_content)
 
-            if (
-                filtered_count > 1000
-                and not args.content_pattern
-            ):
-                to_display = filtered_content[
-                    :100
-                ]
+            if filtered_count > 1000 and not args.content_pattern:
+                to_display = filtered_content[:100]
                 print_trailing_message = True
             else:
                 to_display = filtered_content
@@ -524,16 +432,12 @@ def process_file(
                     print(line, end="")
 
             if print_trailing_message:
-                print(
-                    f"... ({line_count - 100} more lines)"
-                )
+                print(f"... ({line_count - 100} more lines)")
 
             print("</content>")
 
         except Exception as e:
-            print(
-                f"<error>{escape(str(e))}</error>"
-            )
+            print(f"<error>{escape(str(e))}</error>")
 
     print("</file>")
 
@@ -553,9 +457,7 @@ def main():
         sys.exit(1)
 
     # Clean up ignore directories
-    args.ignore_dir = [
-        d.rstrip("/") for d in args.ignore_dir
-    ]
+    args.ignore_dir = [d.rstrip("/") for d in args.ignore_dir]
 
     if args.debug:
         print(
@@ -567,9 +469,7 @@ def main():
     files = find_files(args)
 
     if not files:
-        print(
-            f"No files found in directory: {args.directory}"
-        )
+        print(f"No files found in directory: {args.directory}")
         return
 
     print("<files>")

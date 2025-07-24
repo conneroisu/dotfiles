@@ -13,16 +13,13 @@ on:
 jobs:
   claude-review:
     # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
-    
+    if: |
+      github.event.pull_request.user.login == 'conneroisu' 
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
-      issues: read
+      issues: write
       id-token: write
     steps:
       - name: Checkout repository
@@ -54,8 +51,12 @@ jobs:
             
             Be constructive and helpful in your feedback.
 
+            Provide Suggestive Edits. You should also create an entirely new branch and pr with your suggested changes from that new branch to this branch that you are reviewing if you make any changes.
+
+            Additionally, you should create entensive prompts as gh pr comments on the original pr review with context for ai agents to fix smaller miniscule issues and changes if you find any.
+
           # Optional: Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
-          # use_sticky_comment: true
+          use_sticky_comment: true
           
           # Optional: Customize review based on file types
           # direct_prompt: |
@@ -72,7 +73,7 @@ jobs:
           #   'Please provide a thorough code review focusing on our coding standards and best practices.' }}
           
           # Optional: Add specific tools for running tests or linting
-          # allowed_tools: "Bash(npm run test),Bash(npm run lint),Bash(npm run typecheck)"
+          allowed_tools: "Bash(npm run test),Bash(npm run lint),Bash(npm run typecheck),Bash(nix:*),Bash(git:*),Bash(jq:*),Bash(yq:*),Bash(uv:*),Bash(gh:*)"
           
           # Optional: Skip review for certain conditions
           # if: |

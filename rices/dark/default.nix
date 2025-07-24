@@ -92,6 +92,7 @@ Works seamlessly with:
   delib,
   inputs,
   pkgs,
+  lib,
   moduleSystem,
   ...
 }:
@@ -124,10 +125,7 @@ delib.rice {
       };
       targets = {
         grub.enable = false;
-        qt = {
-          enable = true;
-          platform = "qtct";
-        };
+        qt.enable = false;
         plymouth.enable = false;
         gnome.enable = true;
         gtk.enable = true;

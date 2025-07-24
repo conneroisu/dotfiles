@@ -1,25 +1,65 @@
 /**
  * Utility functions for Claude Code hook system
- * Provides logging, file operations, and error handling
+ * 
+ * Tiger Style implementation focused on:
+ * - Safety: Input validation, assertions, bounded operations
+ * - Performance: Efficient I/O, minimal allocations
+ * - Developer Experience: Clear naming, simple interfaces
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import type { LogEntry, LogLevel, HookResult } from './types.ts';
 
-export class Logger {
-  private static logsDir = 'logs';
+// Tiger Style: Fixed limits prevent unbounded resource usage
+const MAX_LOG_ENTRIES_PER_FILE = 1000;
+const MAX_LOG_ENTRY_SIZE_BYTES = 64 * 1024; // 64KB per entry
+const MAX_COMMAND_EXECUTION_TIME_MS = 30 * 1000; // 30 seconds
+const MAX_STDIN_SIZE_BYTES = 1024 * 1024; // 1MB
 
+/**
+ * Logger class following Tiger Style principles:
+ * - Assertions validate all inputs and state
+ * - Fixed limits prevent unbounded log growth
+ * - Simple, predictable control flow
+ */
+export class Logger {
+  private static readonly LOGS_DIRECTORY_NAME = 'logs';
+
+  /**
+   * Ensures log directory exists with proper error handling
+   * Tiger Style: Fail-fast on filesystem errors
+   */
   static ensureLogsDirectory(): void {
-    if (!existsSync(this.logsDir)) {
-      mkdirSync(this.logsDir, { recursive: true });
+    try {
+      if (!existsSync(this.LOGS_DIRECTORY_NAME)) {
+        mkdirSync(this.LOGS_DIRECTORY_NAME, { recursive: true });
+      }
+    } catch (error) {
+      // Tiger Style: Fail fast on programmer errors
+      throw new Error(`Failed to create logs directory: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
+  /**
+   * Appends entry to log file with bounded growth
+   * Tiger Style: Input validation, fixed limits, simple control flow
+   */
   static appendToLog(filename: string, data: unknown): void {
+    // Tiger Style: Assert function arguments
+    if (!filename || typeof filename !== 'string') {
+      throw new Error('Filename must be a non-empty string');
+    }
+
+    // Tiger Style: Validate data size to prevent memory issues
+    const serializedData = JSON.stringify(data);
+    if (serializedData.length > MAX_LOG_ENTRY_SIZE_BYTES) {
+      throw new Error(`Log entry too large: ${serializedData.length} bytes exceeds ${MAX_LOG_ENTRY_SIZE_BYTES} limit`);
+    }
+
     this.ensureLogsDirectory();
     
-    const logPath = join(this.logsDir, filename);
+    const logPath = join(this.LOGS_DIRECTORY_NAME, filename);
     const entry: LogEntry = {
       timestamp: new Date().toISOString(),
       data
@@ -32,9 +72,15 @@ export class Logger {
         const content = readFileSync(logPath, 'utf-8');
         existingLogs = content ? JSON.parse(content) : [];
       } catch (error) {
-        console.error(`Failed to read existing log ${filename}:`, error);
+        Logger.error(`Failed to read existing log ${filename}`, { error });
         existingLogs = [];
       }
+    }
+
+    // Tiger Style: Bounded log growth prevents unbounded memory usage
+    if (existingLogs.length >= MAX_LOG_ENTRIES_PER_FILE) {
+      // Remove oldest entries to maintain fixed size
+      existingLogs = existingLogs.slice(-MAX_LOG_ENTRIES_PER_FILE + 1);
     }
 
     existingLogs.push(entry);
@@ -42,6 +88,7 @@ export class Logger {
     try {
       writeFileSync(logPath, JSON.stringify(existingLogs, null, 2));
     } catch (error) {
+      // Tiger Style: Log errors but don't throw to prevent cascading failures
       console.error(`Failed to write log ${filename}:`, error);
     }
   }
@@ -70,16 +117,42 @@ export class Logger {
   }
 }
 
+/**
+ * Input reader with Tiger Style safety principles
+ * Bounded operations and input validation prevent resource exhaustion
+ */
 export class InputReader {
+  /**
+   * Reads and parses JSON from stdin with safety limits
+   * Tiger Style: Bounded input size, timeout protection, input validation
+   */
   static async readStdinJson<T>(): Promise<T> {
     const chunks: Buffer[] = [];
+    let totalSize = 0;
     
-    for await (const chunk of process.stdin) {
-      chunks.push(chunk);
+    // Tiger Style: Set up timeout protection
+    const timeoutId = setTimeout(() => {
+      throw new Error(`Stdin read timeout after ${MAX_COMMAND_EXECUTION_TIME_MS}ms`);
+    }, MAX_COMMAND_EXECUTION_TIME_MS);
+
+    try {
+      for await (const chunk of process.stdin) {
+        totalSize += chunk.length;
+        
+        // Tiger Style: Prevent memory exhaustion from large inputs
+        if (totalSize > MAX_STDIN_SIZE_BYTES) {
+          throw new Error(`Input too large: ${totalSize} bytes exceeds ${MAX_STDIN_SIZE_BYTES} limit`);
+        }
+        
+        chunks.push(chunk);
+      }
+    } finally {
+      clearTimeout(timeoutId);
     }
     
     const input = Buffer.concat(chunks).toString('utf-8');
     
+    // Tiger Style: Validate input presence
     if (!input.trim()) {
       throw new Error('No input received from stdin');
     }
@@ -130,6 +203,10 @@ export class SecurityValidator {
     return { allowed: true };
   }
 
+  /**
+   * Validates dangerous commands with Tiger Style safety
+   * Tiger Style: Block actually dangerous operations, clear patterns
+   */
   static validateDangerousCommands(toolName: string, toolInput: any): { allowed: boolean; reason?: string } {
     if (toolName !== 'Bash') {
       return { allowed: true };
@@ -140,20 +217,29 @@ export class SecurityValidator {
       return { allowed: true };
     }
 
-    // Comprehensive dangerous rm command patterns (currently informational only)
+    // Tiger Style: Comprehensive dangerous command patterns with blocking enabled
     const dangerousPatterns = [
-      /rm\s+(-[rf]*[rf]+[^;]*|[^;]*-[rf]*[rf]+)/,
-      /rm\s+.*\*/,
-      /rm\s+.*\/\*/,
-      /rm\s+-rf?\s+\/(?!tmp|var\/tmp)/,
-      /sudo\s+rm/
+      { pattern: /rm\s+(-[rf]*[rf]+[^;]*|[^;]*-[rf]*[rf]+)/, description: 'recursive rm command' },
+      { pattern: /rm\s+.*\*/, description: 'rm with wildcard' },
+      { pattern: /rm\s+.*\/\*/, description: 'rm with directory wildcard' },
+      { pattern: /rm\s+-rf?\s+\/(?!tmp\/|var\/tmp\/|home\/.*\/\.cache\/|home\/.*\/\.local\/tmp\/)/, description: 'rm targeting system directories' },
+      { pattern: /sudo\s+rm/, description: 'sudo rm command' },
+      { pattern: />\s*\/dev\/(?!null|zero|urandom)/, description: 'writing to system devices' },
+      { pattern: /curl.*\|\s*sh/, description: 'piping remote content to shell' },
+      { pattern: /wget.*\|\s*sh/, description: 'piping remote content to shell' },
+      { pattern: /chmod\s+777/, description: 'overly permissive chmod' }
     ];
 
-    for (const pattern of dangerousPatterns) {
+    for (const { pattern, description } of dangerousPatterns) {
       if (pattern.test(command)) {
-        Logger.warn('Potentially dangerous rm command detected', { command, pattern: pattern.toString() });
-        // Currently only logging, not blocking
-        break;
+        const reason = `Dangerous command blocked: ${description}. Command: ${command}`;
+        Logger.error('Security violation: dangerous command blocked', { 
+          command, 
+          pattern: pattern.toString(),
+          reason 
+        });
+        
+        return { allowed: false, reason };
       }
     }
 
@@ -176,15 +262,38 @@ export function handleError(error: unknown, context: string): HookResult {
   return createHookResult(false, `${context}: ${message}`);
 }
 
-export async function executeShellCommand(command: string): Promise<{ stdout: string; stderr: string; exitCode: number }> {
-  const proc = Bun.spawn(command.split(' '), {
+/**
+ * Executes shell command with Tiger Style safety principles
+ * Tiger Style: Bounded execution time, proper error handling, resource cleanup
+ */
+export async function executeShellCommand(
+  command: string, 
+  timeoutMs: number = MAX_COMMAND_EXECUTION_TIME_MS
+): Promise<{ stdout: string; stderr: string; exitCode: number }> {
+  // Tiger Style: Validate inputs
+  if (!command || typeof command !== 'string') {
+    throw new Error('Command must be a non-empty string');
+  }
+
+  // Tiger Style: Safer command parsing - use shell to handle complex commands properly
+  const proc = Bun.spawn(['sh', '-c', command], {
     stdout: 'pipe',
     stderr: 'pipe'
   });
 
-  const stdout = await new Response(proc.stdout).text();
-  const stderr = await new Response(proc.stderr).text();
-  const exitCode = await proc.exited;
+  // Tiger Style: Implement timeout protection
+  const timeoutId = setTimeout(() => {
+    proc.kill();
+  }, timeoutMs);
 
-  return { stdout, stderr, exitCode };
+  try {
+    const stdout = await new Response(proc.stdout).text();
+    const stderr = await new Response(proc.stderr).text();
+    const exitCode = await proc.exited;
+
+    return { stdout, stderr, exitCode };
+  } finally {
+    // Tiger Style: Always clean up resources
+    clearTimeout(timeoutId);
+  }
 }

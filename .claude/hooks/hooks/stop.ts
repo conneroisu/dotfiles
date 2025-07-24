@@ -7,7 +7,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { parseArgs } from 'util';
 import type { StopHookInput, HookResult } from '../types.ts';
-import { Logger, InputReader, createHookResult, handleError, executeShellCommand } from '../utils.ts';
+import { Logger, InputReader, createHookResult, handleError, executeShellCommand, escapeShellArg } from '../utils.ts';
 
 export class StopHook {
   private static readonly COMPLETION_MESSAGES = [
@@ -75,7 +75,14 @@ export class StopHook {
       
       // Ensure logs directory exists
       Logger.ensureLogsDirectory();
-      writeFileSync(chatLogPath, transcriptContent);
+      
+      // Append to existing logs instead of overwriting
+      Logger.appendToLog('chat.json', {
+        timestamp: new Date().toISOString(),
+        session_id: 'unknown',
+        transcript_content: transcriptContent,
+        source_path: transcriptPath
+      });
       Logger.info('Transcript copied to logs', { 
         from: transcriptPath, 
         to: chatLogPath,
@@ -147,7 +154,7 @@ export class StopHook {
       try {
         Logger.debug(`Trying ${provider.name} for completion message`);
         
-        const result = await executeShellCommand(`echo "${prompt}" | ${provider.command}`);
+        const result = await executeShellCommand(`echo ${escapeShellArg(prompt)} | ${provider.command}`);
         
         if (result.exitCode === 0 && result.stdout.trim()) {
           const message = result.stdout.trim();
@@ -176,7 +183,7 @@ export class StopHook {
       try {
         Logger.debug(`Trying ${provider.name} for TTS`);
         
-        const result = await executeShellCommand(`echo "${message}" | ${provider.command}`);
+        const result = await executeShellCommand(`echo ${escapeShellArg(message)} | ${provider.command}`);
         
         if (result.exitCode === 0) {
           Logger.info(`TTS announcement successful via ${provider.name}`, { message });

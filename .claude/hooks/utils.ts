@@ -4,11 +4,11 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import type { LogEntry, LogLevel, HookResult } from './types.ts';
 
 export class Logger {
-  private static logsDir = 'logs';
+  private static logsDir = join(dirname(import.meta.path), 'logs');
 
   static ensureLogsDirectory(): void {
     if (!existsSync(this.logsDir)) {

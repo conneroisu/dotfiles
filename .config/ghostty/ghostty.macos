@@ -1,12 +1,27 @@
+# Ghostty Configuration for macOS
+# This configuration is optimized for macOS desktop environments,
+# using native window decorations and system integration.
+
+# Shell Configuration
 shell-integration = zsh
 command=zsh
 
+# Font Settings
+# Using CodeNewRoman Nerd Font for programming with ligature support
 font-family = "CodeNewRoman Nerd Font"
 
+# Window Configuration
+# Window decorations enabled for native macOS experience
+# (commented out means using default, which is true on macOS)
 #window-decoration = false
 
+# Theme Settings
+# Pure black background for OLED displays and better contrast
 background = #000000
 
+# Terminal Behavior
 bold-is-bright = true
+# Allow shift+enter to insert newlines in terminal
 keybind = shift+enter=text:\n
+# Inherit working directory from parent process
 working-directory=inherit

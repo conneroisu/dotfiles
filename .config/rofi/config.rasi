@@ -152,4 +152,6 @@ configuration {
 
 /* @theme "/usr/share/rofi/themes/gruvbox-dark-hard.rasi" */
 
-@theme "/home/connerohnesorge/.local/share/rofi/themes/spotlight-dark.rasi"
+//@theme "/home/connerohnesorge/.local/share/rofi/themes/spotlight-dark.rasi"
+
+@theme "/home/connerohnesorge/.config/rofi/themes/spotlight-dark.rasi"

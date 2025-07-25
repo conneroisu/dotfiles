@@ -94,6 +94,8 @@ Works seamlessly with:
   pkgs,
   lib,
   moduleSystem,
+  lib,
+  config,
   ...
 }:
 delib.rice {
@@ -110,6 +112,7 @@ delib.rice {
           zathura.enable = true;
         };
       };
+      myconfig.programs.ghostty.enable = true;
     }
     else {};
   nixos = {

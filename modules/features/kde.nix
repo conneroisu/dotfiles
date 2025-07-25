@@ -386,40 +386,43 @@ in
     };
 
     home.ifEnabled = {
-      imports = [inputs.plasma-manager.homeManagerModules.plasma-manager];
-
+      # Note: Plasma-manager import temporarily disabled due to Denix framework compatibility issues
+      # TODO: Re-enable plasma-manager integration once Denix import handling is resolved
+      
       # Simplified plasma configuration to resolve CI issues with unsupported options
-      programs.plasma = {
-        enable = true;
-      };
+      # programs.plasma = {
+      #   enable = true;
+      # };
 
       # KDE application configurations
-      programs = {
-        # Text editor with LSP support
-        kate = {
-          enable = true;
-        };
-
-        # Terminal emulator
-        konsole = {
-          enable = true;
-        };
-
-        # Document viewer
-        okular = {
-          enable = true;
-        };
-
-        # Music player
-        elisa = {
-          enable = true;
-        };
-
-        # Markdown editor
-        ghostwriter = {
-          enable = true;
-        };
-      };
+      # Note: KDE-specific Home Manager program modules don't exist in current nixpkgs
+      # These applications are installed via system packages above
+      # programs = {
+      #   # Text editor with LSP support
+      #   kate = {
+      #     enable = true;
+      #   };
+      #
+      #   # Terminal emulator
+      #   konsole = {
+      #     enable = true;
+      #   };
+      #
+      #   # Document viewer
+      #   okular = {
+      #     enable = true;
+      #   };
+      #
+      #   # Music player
+      #   elisa = {
+      #     enable = true;
+      #   };
+      #
+      #   # Markdown editor
+      #   ghostwriter = {
+      #     enable = true;
+      #   };
+      # };
 
       # Additional KDE packages for Home Manager
       home.packages = with pkgs.kdePackages; [

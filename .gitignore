@@ -25,3 +25,4 @@ devenv.local.nix
 __pycache__/
 *.pyc
 *.so
+logs/

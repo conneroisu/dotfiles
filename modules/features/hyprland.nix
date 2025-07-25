@@ -98,6 +98,9 @@ in
     options = singleEnableOption false;
 
     nixos.ifEnabled = {
+      myconfig.programs = {
+        ghostty.enable = true;
+      };
       environment = {
         systemPackages =
           [

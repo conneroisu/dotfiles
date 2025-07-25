@@ -94,7 +94,6 @@ Works seamlessly with:
   pkgs,
   lib,
   moduleSystem,
-  lib,
   config,
   ...
 }:

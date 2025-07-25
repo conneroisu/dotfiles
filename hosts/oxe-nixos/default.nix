@@ -68,8 +68,9 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         kde.enable = true;
+
         k3sServer.enable = true;
-        k3sAgent.enable = true;
+        
       };
     };
 
@@ -86,6 +87,7 @@ delib.host {
       rtkit.enable = true;
       pam.services.login.enableGnomeKeyring = true;
     };
+    virtualisation.docker.enable = true;
 
     time.timeZone = "America/Chicago";
     i18n = {

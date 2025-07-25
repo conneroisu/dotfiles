@@ -76,4 +76,20 @@ in
           else throw "Unsupported platform for Ghostty configuration";
       };
     };
+
+    # Also deploy at system level for NixOS
+    nixos.ifEnabled = {
+      environment.etc."skel/.config/ghostty/config" = {
+        source =
+          if isLinux
+          then ../../../.config/ghostty/ghostty.linux
+          else ../../../.config/ghostty/ghostty.macos;
+      };
+      
+      # Create symlink in user's home directory
+      system.activationScripts.ghosttyConfig = ''
+        mkdir -p /home/connerohnesorge/.config/ghostty
+        ln -sf ${../../../.config/ghostty/ghostty.linux} /home/connerohnesorge/.config/ghostty/config
+      '';
+    };
   }

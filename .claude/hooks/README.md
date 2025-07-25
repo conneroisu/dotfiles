@@ -1,16 +1,16 @@
-# Claude Code Hook System 🚀
+# Claude Code Hook System
 
-A comprehensive TypeScript-based hook implementation for Claude Code with security validation, logging, TTS announcements, and AI-powered completion messages.
+A production-ready TypeScript hook system for Claude Code with comprehensive logging, security validation, and performance monitoring following **Tiger Style principles**.
 
-## ✨ Features
+## 🎯 Features
 
-- 🔒 **Security-first**: Environment file protection, dangerous command detection
-- 📊 **Comprehensive logging**: Structured JSON logs with audit trails
-- 🎯 **AI-powered completions**: Dynamic session completion messages
-- 🔊 **TTS announcements**: Multi-provider text-to-speech integration
-- ⚡ **Performance optimized**: Smart timeouts and resource limits
-- 🛡️ **Type-safe**: Full TypeScript implementation with strict typing
-- 🧪 **Well-tested**: Comprehensive test suite with coverage
+- **Strict TypeScript**: Full type safety with `exactOptionalPropertyTypes` and comprehensive type checking
+- **Security-First**: Environment file protection, command validation, and security audit integration  
+- **Performance Monitoring**: Built-in metrics collection and performance threshold warnings
+- **Configuration Management**: Environment-based configuration with validation
+- **Pre-commit Hooks**: Automated code quality checks following Tiger Style principles
+- **Comprehensive Logging**: Structured JSON logging with rotation and size limits
+- **Zero Compromise Code Quality**: ESLint with strict rules, NO `any` types allowed
 
 ## 🚀 Quick Start
 
@@ -27,18 +27,48 @@ bun index.ts --help
 ### Basic Usage
 
 ```bash
-# Session completion with transcript copying
+# Install dependencies
+bun install
+
+# Set up Git hooks (optional)
+bun run setup-hooks
+
+# Run a hook
 bun index.ts stop --chat
+bun index.ts pre_tool_use < input.json
+```
 
-# Security validation for tool usage
-bun index.ts pre_tool_use
+## 📋 Available Commands
 
-# User notification handling
-bun index.ts notification
+```bash
+# Development
+bun run dev              # Start development server with hot reload
+bun run build            # Build for production
 
-# Get help and available options
-bun index.ts --help
-bun index.ts --list
+# Code Quality (Strict - NO COMPROMISES)
+bun run typecheck        # TypeScript type checking
+bun run lint             # ESLint with strict rules
+bun run lint:fix         # Auto-fix ESLint issues
+bun run format           # Format code with Prettier
+bun run format:check     # Check code formatting
+bun run check:all        # Run all checks
+bun run fix:all          # Fix all auto-fixable issues
+
+# Git Hooks
+bun run setup-hooks      # Install Git pre-commit hooks
+bun run pre-commit       # Run pre-commit checks manually
+
+# Testing
+bun test                 # Run tests
+bun test --watch         # Watch mode
+bun test --coverage      # With coverage
+
+# Performance Monitoring
+bun index.ts --stats     # Show performance statistics
+bun index.ts --config    # Show current configuration
+
+# Utilities
+bun run clean            # Clean build artifacts
 ```
 
 ## 📋 Available Hooks
@@ -54,23 +84,29 @@ bun index.ts --list
 
 ## 🔧 Configuration
 
-### Environment Variables
+Configure the hook system via environment variables:
 
-Create `.env` file for optional features:
-
+### Security Configuration
 ```bash
-# TTS Configuration (optional)
-ELEVENLABS_API_KEY=your_elevenlabs_key
-OPENAI_API_KEY=your_openai_key
+CLAUDE_HOOKS_BLOCK_DANGEROUS=true       # Block dangerous commands
+CLAUDE_HOOKS_PROTECT_ENV=true           # Protect .env file access
+CLAUDE_HOOKS_MAX_INPUT_SIZE=1048576     # Max input size (1MB)
+CLAUDE_HOOKS_MAX_OUTPUT_SIZE=1048576    # Max output size (1MB)
+```
 
-# LLM Configuration for AI completion messages (optional)
-LLM_DEFAULT_MODEL=gpt-4o-mini
-ANTHROPIC_API_KEY=your_anthropic_key
+### Timeout Configuration
+```bash
+CLAUDE_HOOKS_TIMEOUT_GENERAL=60000      # General timeout (60s)
+CLAUDE_HOOKS_TIMEOUT_LINTING=120000     # Linting timeout (120s)
+CLAUDE_HOOKS_TIMEOUT_AI=15000           # AI completion timeout (15s)
+CLAUDE_HOOKS_TIMEOUT_TTS=10000          # TTS timeout (10s)
+```
 
-# Logging Configuration
-LOG_LEVEL=info              # debug, info, warn, error
-MAX_LOG_SIZE=1048576        # 1MB default
-HOOK_TIMEOUT=60000          # 60s default timeout
+### Provider Configuration
+```bash
+CLAUDE_HOOKS_TTS_PROVIDER=elevenlabs    # TTS provider
+CLAUDE_HOOKS_LLM_PROVIDER=openai        # LLM provider
+CLAUDE_HOOKS_LOG_LEVEL=info             # Log level
 ```
 
 ### Claude Code Integration

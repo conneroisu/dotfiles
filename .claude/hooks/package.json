@@ -13,11 +13,13 @@
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bun x tsc --noEmit",
     "check:all": "bun run typecheck && bun run lint && bun run format:check",
     "fix:all": "bun run format && bun run lint:fix",
     "dev": "bun --hot index.ts",
     "build": "bun build index.ts --outdir ./dist --target bun",
+    "setup-hooks": "./setup-git-hooks.sh",
+    "pre-commit": "./pre-commit.sh",
     "clean": "rm -rf dist node_modules"
   },
   "devDependencies": {

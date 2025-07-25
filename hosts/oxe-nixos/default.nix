@@ -70,7 +70,6 @@ delib.host {
         kde.enable = true;
 
         k3sServer.enable = true;
-        
       };
     };
 

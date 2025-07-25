@@ -14,10 +14,23 @@ echo -e "\n3. DRM Devices:"
 ls -la /sys/class/drm/
 
 echo -e "\n4. GPU Driver in Use:"
-if [ -e /sys/class/drm/card1/device/driver ]; then
-    readlink -f /sys/class/drm/card1/device/driver
+# Find the first card device that's not virtual
+GPU_CARD=""
+for card in /sys/class/drm/card*; do
+    if [ -e "$card/device/driver" ] && [ -e "$card/device/vendor" ]; then
+        vendor=$(cat "$card/device/vendor" 2>/dev/null)
+        if [ "$vendor" = "0x1002" ]; then  # AMD vendor ID
+            GPU_CARD=$(basename "$card")
+            break
+        fi
+    fi
+done
+
+if [ -n "$GPU_CARD" ]; then
+    echo "Found AMD GPU: $GPU_CARD"
+    readlink -f "/sys/class/drm/$GPU_CARD/device/driver"
 else
-    echo "No driver info found"
+    echo "No AMD GPU driver found"
 fi
 
 echo -e "\n5. OpenCL Support:"
@@ -31,19 +44,24 @@ else
 fi
 
 echo -e "\n7. GPU Memory Info:"
-if [ -e /sys/class/drm/card1/device/mem_info_vram_total ]; then
-    echo "VRAM Total: $(cat /sys/class/drm/card1/device/mem_info_vram_total 2>/dev/null || echo 'N/A')"
-    echo "VRAM Used: $(cat /sys/class/drm/card1/device/mem_info_vram_used 2>/dev/null || echo 'N/A')"
+if [ -n "$GPU_CARD" ] && [ -e "/sys/class/drm/$GPU_CARD/device/mem_info_vram_total" ]; then
+    echo "VRAM Total: $(cat "/sys/class/drm/$GPU_CARD/device/mem_info_vram_total" 2>/dev/null || echo 'N/A')"
+    echo "VRAM Used: $(cat "/sys/class/drm/$GPU_CARD/device/mem_info_vram_used" 2>/dev/null || echo 'N/A')"
 else
-    echo "Memory info not available (older GPU or driver)"
+    echo "Memory info not available (older GPU or driver, or GPU not detected)"
 fi
 
 echo -e "\n8. Hardware Acceleration Status:"
-if [ -e /dev/dri/card1 ]; then
-    echo "DRI device present: /dev/dri/card1"
-    ls -la /dev/dri/card1
+if [ -n "$GPU_CARD" ] && [ -e "/dev/dri/$GPU_CARD" ]; then
+    echo "DRI device present: /dev/dri/$GPU_CARD"
+    ls -la "/dev/dri/$GPU_CARD"
 else
-    echo "No DRI device found"
+    echo "No AMD DRI device found"
+    # Show all available DRI devices for reference
+    if ls /dev/dri/card* >/dev/null 2>&1; then
+        echo "Available DRI devices:"
+        ls -la /dev/dri/card*
+    fi
 fi
 
 echo -e "\n=== Analysis ==="
@@ -51,14 +69,23 @@ LOADED_MODULES=$(lsmod | awk '{print $1}')
 if echo "$LOADED_MODULES" | grep -q "^radeon$"; then
     echo "✅ Your AMD GPU is using the 'radeon' driver (for older AMD GPUs)"
     echo "✅ This is correct for Radeon HD 4000/5000/6000/7000 series cards"
-    echo "✅ Your Radeon HD 4350/4550 (RV710) is properly configured"
+    if [ -n "$GPU_CARD" ]; then
+        echo "✅ GPU detected as $GPU_CARD and properly configured"
+        echo "✅ Hardware acceleration is available via /dev/dri/$GPU_CARD"
+    fi
     echo "✅ OpenCL support is enabled for compute workloads"
-    echo "✅ Hardware acceleration is available via /dev/dri/card1"
 elif echo "$LOADED_MODULES" | grep -q "^amdgpu$"; then
-    echo "Your AMD GPU is using the 'amdgpu' driver (for newer AMD GPUs)"
-    echo "This is correct for GCN 1.0+ (HD 7700+) cards"
+    echo "✅ Your AMD GPU is using the 'amdgpu' driver (for newer AMD GPUs)"
+    echo "✅ This is correct for GCN 1.0+ (HD 7700+) cards"
+    if [ -n "$GPU_CARD" ]; then
+        echo "✅ GPU detected as $GPU_CARD and properly configured"
+        echo "✅ Hardware acceleration is available via /dev/dri/$GPU_CARD"
+    fi
 else
-    echo "WARNING: No AMD GPU driver loaded!"
+    echo "⚠️  WARNING: No AMD GPU driver loaded!"
+    if [ -z "$GPU_CARD" ]; then
+        echo "⚠️  No AMD GPU device detected"
+    fi
 fi
 
 echo -e "\n=== Status Complete ==="

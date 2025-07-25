@@ -275,6 +275,7 @@ in
           wget
           fd
           jq
+          cmake
           yq
           graphite-cli
           spicetify-cli

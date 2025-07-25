@@ -12,6 +12,7 @@ export interface SecurityConfig {
   maxOutputSize: number;
   maxCommandLength: number;
   maxFilePathLength: number;
+  maxMemoryThreshold: number;
   enableEnvFileProtection: boolean;
   logSecurityViolations: boolean;
 }
@@ -87,6 +88,7 @@ const DEFAULT_CONFIG: HookConfig = {
     maxOutputSize: 1048576, // 1MB - Memory protection
     maxCommandLength: 1000, // Reasonable command limit
     maxFilePathLength: 500, // Path traversal protection
+    maxMemoryThreshold: 104857600, // 100MB - Memory usage warning threshold
     enableEnvFileProtection: true,
     logSecurityViolations: true,
   },
@@ -147,6 +149,7 @@ const ENV_MAPPINGS = {
   CLAUDE_HOOKS_MAX_INPUT_SIZE: 'security.maxInputSize',
   CLAUDE_HOOKS_MAX_OUTPUT_SIZE: 'security.maxOutputSize',
   CLAUDE_HOOKS_MAX_COMMAND_LENGTH: 'security.maxCommandLength',
+  CLAUDE_HOOKS_MAX_MEMORY_THRESHOLD: 'security.maxMemoryThreshold',
   CLAUDE_HOOKS_PROTECT_ENV: 'security.enableEnvFileProtection',
 
   // Timeout configuration

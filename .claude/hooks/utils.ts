@@ -116,8 +116,8 @@ export class PerformanceMonitor {
       });
     }
 
-    // Memory usage warning (>100MB)
-    if (metrics.memoryUsage.heapUsed > 100 * 1024 * 1024) {
+    // Memory usage warning (configurable threshold)
+    if (metrics.memoryUsage.heapUsed > config.security.maxMemoryThreshold) {
       Logger.warn('High memory usage detected', {
         hookType: metrics.hookType,
         memoryUsage: `${Math.round(metrics.memoryUsage.heapUsed / 1024 / 1024)}MB`,
@@ -435,10 +435,22 @@ export function validateCommandString(command: string): { valid: boolean; reason
     /;\s*rm\s+-rf/,
     /&&\s*rm\s+-rf/,
     /\|\s*rm\s+-rf/,
-    /`.*rm.*`/,
+    /`.*rm.*`/, // Backtick command substitution
     /\$\(.*rm.*\)/,
     /eval\s+.*["'`]/,
     />\s*\/dev\/sd[a-z]/,
+    // Additional injection patterns
+    /\<\(.*rm.*\)/, // Process substitution
+    /<<.*rm/, // Here-doc
+    /<<<.*rm/, // Here-string
+    // General dangerous patterns
+    /curl\s+.*\|\s*sh/,
+    /wget\s+.*\|\s*sh/,
+    /\|\s*bash/,
+    /\|\s*sh/,
+    // Path traversal in commands
+    /\.\.\/.*rm/,
+    /\.\.\\.*rm/,
   ];
 
   for (const pattern of suspiciousPatterns) {
@@ -465,8 +477,23 @@ export function validateFilePath(filePath: string): { valid: boolean; reason?: s
   }
 
   // Check for path traversal attempts
-  if (filePath.includes('../') || filePath.includes('..\\')) {
-    return { valid: false, reason: 'Path traversal detected in file path' };
+  const pathTraversalPatterns = [
+    '../',        // Unix path traversal
+    '..\\',       // Windows path traversal
+    '%2e%2e%2f',  // URL-encoded Unix traversal
+    '%2e%2e%5c',  // URL-encoded Windows traversal
+    '%2e%2e/',    // Mixed encoding
+    '%2e%2e\\',   // Mixed encoding
+    '..%2f',      // Partial encoding
+    '..%5c',      // Partial encoding
+    '\u002e\u002e\u002f', // Unicode traversal
+    '\u002e\u002e\u005c', // Unicode traversal
+  ];
+
+  for (const pattern of pathTraversalPatterns) {
+    if (filePath.toLowerCase().includes(pattern.toLowerCase())) {
+      return { valid: false, reason: 'Path traversal detected in file path' };
+    }
   }
 
   return { valid: true };

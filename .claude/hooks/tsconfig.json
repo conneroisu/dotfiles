@@ -1,29 +1,65 @@
 {
   "compilerOptions": {
     // Environment setup & latest features
-    "lib": ["ESNext"],
-    "target": "ESNext",
-    "module": "Preserve",
+    "lib": ["ES2022", "DOM"],
+    "target": "ES2022",
+    "module": "ESNext",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "allowJs": true,
-
-    // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    "isolatedModules": true,
+    "allowJs": false,
 
-    // Best practices
+    // Strict type checking - Maximum safety
     "strict": true,
-    "skipLibCheck": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
 
-    // Some stricter flags (disabled by default)
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
-  }
+    // Strict unused code detection
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    // Code quality
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "importHelpers": true,
+    "downlevelIteration": true,
+
+    // Bun-specific
+    "types": ["bun-types"],
+
+    // Path mapping for clean imports
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@/types": ["./types.ts"],
+      "@/utils": ["./utils.ts"],
+      "@/hooks/*": ["./hooks/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "logs",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "node_modules/bun-types/experimental.d.ts"
+  ]
 }

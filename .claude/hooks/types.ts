@@ -42,8 +42,8 @@ export interface SubagentStopHookInput {
 
 export interface HookResult {
   success: boolean;
-  message?: string;
-  blocked?: boolean;
+  message: string | undefined;
+  blocked: boolean | undefined;
   exit_code: number;
 }
 
@@ -70,9 +70,9 @@ export interface LLMConfig {
   max_tokens?: number;
 }
 
-export type HookType = 
+export type HookType =
   | 'notification'
-  | 'pre_tool_use' 
+  | 'pre_tool_use'
   | 'post_tool_use'
   | 'user_prompt_submit'
   | 'stop'

@@ -10,19 +10,19 @@ export class PostToolUseHook {
   static async execute(): Promise<HookResult> {
     try {
       const input = await InputReader.readStdinJson<ToolUseHookInput>();
-      
+
       Logger.info('Processing post-tool-use hook', {
         tool_name: input.tool_name,
-        has_tool_input: !!input.tool_input
+        has_tool_input: !!input.tool_input,
       });
 
       Logger.appendToLog('post_tool_use.json', input);
-      
+
       Logger.debug('Tool execution logged', {
         tool_name: input.tool_name,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
-      
+
       return createHookResult(true, 'Tool execution logged successfully');
     } catch (error) {
       return handleError(error, 'post-tool-use hook');

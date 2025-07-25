@@ -3,40 +3,53 @@
  * Handles subagent completion events with transcript processing and TTS announcements
  */
 
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { parseArgs } from 'util';
 import type { SubagentStopHookInput, HookResult } from '../types.ts';
-import { Logger, InputReader, createHookResult, handleError, executeShellCommand, escapeShellArg } from '../utils.ts';
+import {
+  Logger,
+  InputReader,
+  createHookResult,
+  handleError,
+  executeShellCommand,
+  escapeShellArg,
+} from '../utils.ts';
 
 export class SubagentStopHook {
-  private static readonly SUBAGENT_COMPLETION_MESSAGE = "Subagent Complete";
+  private static readonly SUBAGENT_COMPLETION_MESSAGE = 'Subagent Complete';
 
   static async execute(): Promise<HookResult> {
     try {
       const { values: args } = parseArgs({
         args: process.argv.slice(2),
         options: {
-          chat: { type: 'boolean', default: false }
+          chat: { type: 'boolean', default: false },
         },
         allowPositionals: true,
-        strict: false
+        strict: false,
       });
 
       const input = await InputReader.readStdinJson<SubagentStopHookInput>();
-      
+
       Logger.info('Processing subagent stop hook', {
         session_id: input.session_id,
-        subagent_id: input.subagent_id,
+        subagent_id: input.subagent_id || 'unknown',
         has_transcript: !!input.transcript_path,
-        copy_chat: args.chat
+        copy_chat: args.chat,
       });
 
-      // Log subagent completion
-      Logger.appendToLog('subagent_stop.json', input);
+      // Log subagent completion with enriched data
+      const enrichedInput = {
+        ...input,
+        hook_event_name: 'SubagentStop',
+        subagent_id: input.subagent_id || 'unknown',
+        timestamp: new Date().toISOString(),
+      };
+      Logger.appendToLog('subagent_stop.json', enrichedInput);
 
       // Handle transcript copying if requested
       if (args.chat && input.transcript_path) {
-        await this.copyTranscriptToLogs(input.transcript_path);
+        await this.copyTranscriptToChat(input.transcript_path);
       }
 
       // Announce subagent completion
@@ -44,7 +57,7 @@ export class SubagentStopHook {
 
       Logger.info('Subagent stop hook completed successfully', {
         session_id: input.session_id,
-        subagent_id: input.subagent_id
+        subagent_id: input.subagent_id || 'unknown',
       });
 
       return createHookResult(true, 'Subagent completed successfully');
@@ -53,7 +66,7 @@ export class SubagentStopHook {
     }
   }
 
-  private static async copyTranscriptToLogs(transcriptPath: string): Promise<void> {
+  private static async copyTranscriptToChat(transcriptPath: string): Promise<void> {
     try {
       if (!existsSync(transcriptPath)) {
         Logger.warn('Subagent transcript file not found', { path: transcriptPath });
@@ -61,55 +74,69 @@ export class SubagentStopHook {
       }
 
       const transcriptContent = readFileSync(transcriptPath, 'utf-8');
-      const chatLogPath = 'logs/chat.json';
-      
-      // Ensure logs directory exists
-      Logger.ensureLogsDirectory();
-      
-      // Append to existing logs instead of overwriting
+
+      // Validate transcript content size
+      const maxSize = 1048576; // 1MB
+      const actualSize = transcriptContent.length;
+      if (actualSize > maxSize) {
+        Logger.warn('Subagent transcript too large, truncating', {
+          actualSize,
+          maxSize,
+        });
+      }
+
+      // Log to subagent-specific chat log with better metadata
       Logger.appendToLog('subagent_chat.json', {
         timestamp: new Date().toISOString(),
-        session_id: 'unknown',
+        session_id: 'unknown', // Will be filled by parent context if available
         subagent_id: 'unknown',
-        transcript_content: transcriptContent,
-        source_path: transcriptPath
+        transcript_content:
+          actualSize > maxSize ? transcriptContent.substring(0, maxSize) : transcriptContent,
+        source_path: transcriptPath,
+        original_size: actualSize,
+        truncated: actualSize > maxSize,
       });
-      Logger.info('Subagent transcript copied to logs', { 
-        from: transcriptPath, 
-        to: chatLogPath,
-        size: transcriptContent.length 
+
+      Logger.info('Subagent transcript copied to chat log', {
+        from: transcriptPath,
+        original_size: actualSize,
+        truncated: actualSize > maxSize,
       });
     } catch (error) {
-      Logger.error('Failed to copy subagent transcript', { 
+      Logger.error('Failed to copy subagent transcript', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        path: transcriptPath 
+        path: transcriptPath,
       });
     }
   }
 
   private static async announceSubagentCompletion(): Promise<void> {
     const message = this.SUBAGENT_COMPLETION_MESSAGE;
-    
+
     // Priority: ElevenLabs > OpenAI TTS > pyttsx3
     const ttsProviders = [
       { name: 'elevenlabs', command: 'tts_elevenlabs' },
       { name: 'openai', command: 'tts_openai' },
-      { name: 'pyttsx3', command: 'tts_pyttsx3' }
+      { name: 'pyttsx3', command: 'tts_pyttsx3' },
     ];
 
     for (const provider of ttsProviders) {
       try {
         Logger.debug(`Trying ${provider.name} for subagent TTS`);
-        
-        const result = await executeShellCommand(`echo ${escapeShellArg(message)} | ${provider.command}`);
-        
+
+        // Use shorter timeout for TTS operations
+        const result = await executeShellCommand(
+          `echo ${escapeShellArg(message)} | ${provider.command}`,
+          { timeout: 10000 }
+        );
+
         if (result.exitCode === 0) {
           Logger.info(`Subagent TTS announcement successful via ${provider.name}`, { message });
           return;
         }
       } catch (error) {
-        Logger.debug(`${provider.name} subagent TTS failed`, { 
-          error: error instanceof Error ? error.message : 'Unknown error' 
+        Logger.debug(`${provider.name} subagent TTS failed`, {
+          error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     }

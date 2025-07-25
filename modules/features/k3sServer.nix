@@ -56,8 +56,14 @@ delib.module {
       kubernetes-helm
     ];
 
-    systemd.services.k3s.after = [ "network-online.target" ];
-    systemd.services.k3s.wants = [ "network-online.target" ];
+    systemd.services.k3s = {
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      serviceConfig = {
+        RestartSec = "5s";
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 30";
+      };
+    };
 
     environment.variables = {
       KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";

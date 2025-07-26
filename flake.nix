@@ -164,14 +164,14 @@
           # Available commands section
           commands_header=$(${pkgs.gum}/bin/gum style \
             --foreground 99 --bold --underline "📋 Available Commands:")
-          
+
           commands_content=""
           ${pkgs.lib.concatStringsSep "\n" (pkgs.lib.mapAttrsToList (name: script: ''commands_content="$commands_content$(${pkgs.gum}/bin/gum style --foreground 51 "▶ ${name}") $(${pkgs.gum}/bin/gum style --foreground 246 "${script.description}")\n"'') scripts)}
-          
+
           commands_box=$(printf "$commands_content" | ${pkgs.gum}/bin/gum style \
             --border rounded --border-foreground 99 \
             --padding "0 2" --margin "0 2")
-          
+
           ${pkgs.gum}/bin/gum join --vertical "$commands_header" "$commands_box"
 
           # Repository status section with enhanced visuals
@@ -182,15 +182,15 @@
           branch=$(git branch --show-current 2>/dev/null || echo "unknown")
           commit_count=$(git rev-list --count HEAD 2>/dev/null || echo "0")
           last_commit=$(git log -1 --format="%h - %s" 2>/dev/null || echo "No commits")
-          
+
           # Branch info with icon
           branch_info=$(${pkgs.gum}/bin/gum style \
             --foreground 51 --bold "🌿 Branch: $branch")
-          
+
           # Commit info
           commit_info=$(${pkgs.gum}/bin/gum style \
             --foreground 99 "📝 Commits: $commit_count")
-          
+
           # Last commit info (truncated for readability)
           last_commit_short="''${last_commit:0:60}$([ ''${#last_commit} -gt 60 ] && echo "...")"
           last_commit_info=$(${pkgs.gum}/bin/gum style \
@@ -201,7 +201,7 @@
             change_count=$(git status --porcelain | wc -l | tr -d ' ')
             status_header=$(${pkgs.gum}/bin/gum style \
               --foreground 214 --bold "⚠️  $change_count file(s) changed:")
-            
+
             # Create a table of changes using gum format
             changes_table=""
             while IFS= read -r line; do
@@ -209,29 +209,29 @@
                 status="''${line:0:2}"
                 file="''${line:3}"
                 case "$status" in
-                  "M "|" M"|"MM") 
+                  "M "|" M"|"MM")
                     changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 214 "│ 📝 Modified  │ $file")\n" ;;
-                  "A "|" A") 
+                  "A "|" A")
                     changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 46 "│ ➕ Added     │ $file")\n" ;;
-                  "D "|" D") 
+                  "D "|" D")
                     changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 196 "│ 🗑️  Deleted   │ $file")\n" ;;
-                  "R "|" R") 
+                  "R "|" R")
                     changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 51 "│ 📁 Renamed   │ $file")\n" ;;
-                  "??") 
+                  "??")
                     changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 99 "│ ❓ Untracked │ $file")\n" ;;
-                  *) 
+                  *)
                     changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 246 "│ 📄 $status      │ $file")\n" ;;
                 esac
               fi
             done < <(git status --porcelain)
-            
+
             # Format the changes table
             table_header=$(${pkgs.gum}/bin/gum style --foreground 246 --bold "┌─────────────┬────────────────────────────────────────┐")
             table_separator=$(${pkgs.gum}/bin/gum style --foreground 246 "└─────────────┴────────────────────────────────────────┘")
-            
+
             changes_display=$(printf "$changes_table" | ${pkgs.gum}/bin/gum style \
               --border rounded --border-foreground 214 --padding "0 1")
-            
+
             status_info="$status_header\n$changes_display"
           else
             status_info=$(${pkgs.gum}/bin/gum style \
@@ -242,13 +242,13 @@
           # Combine all repository info
           repo_info=$(${pkgs.gum}/bin/gum join --vertical \
             "$branch_info" "$commit_info" "$last_commit_info")
-          
+
           repo_box=$(echo "$repo_info" | ${pkgs.gum}/bin/gum style \
             --border rounded --border-foreground 212 \
             --padding "0 2" --margin "0 2")
-          
+
           ${pkgs.gum}/bin/gum join --vertical "$repo_header" "$repo_box"
-          
+
           # Display status info
           printf "$status_info\n"
 
@@ -256,7 +256,7 @@
           tip=$(${pkgs.gum}/bin/gum style \
             --foreground 99 --italic \
             "💡 Tip: Use 'dx' to edit flake.nix, 'lint' to check code quality")
-          
+
           ${pkgs.gum}/bin/gum style \
             --border rounded --border-foreground 99 \
             --padding "1 2" --margin "1 0" --align center \
@@ -273,6 +273,8 @@
             isort
             basedpyright
             luajitPackages.luacheck
+            biome
+            oxlint
 
             go_1_24 # Go
             air

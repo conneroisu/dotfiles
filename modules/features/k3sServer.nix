@@ -55,7 +55,7 @@ delib.module {
       role = "server";
       extraFlags = toString (
         [
-          "--write-kubeconfig-mode 644"
+          "--write-kubeconfig-mode 600"
           "--cluster-init"
           "--disable servicelb"
           "--disable traefik" 

@@ -120,7 +120,7 @@ nix fmt
             statix
             deadnix
 
-            go_1_23 # Go Tools
+            go_1_24 # Go Tools
             air
             golangci-lint
             gopls

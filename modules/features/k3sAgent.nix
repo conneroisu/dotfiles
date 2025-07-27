@@ -69,7 +69,7 @@ delib.module {
       role = "agent";  
       serverAddr = "https://127.0.0.1:6443";
       extraFlags = toString [
-        "--write-kubeconfig-mode 644"
+        "--write-kubeconfig-mode 600"
         "--flannel-backend=vxlan"
       ];
     };

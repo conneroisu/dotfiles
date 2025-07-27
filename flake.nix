@@ -1,3 +1,50 @@
+/**
+# Main Flake Configuration - Denix-based Dotfiles
+
+## Description
+Sophisticated NixOS/Home Manager dotfiles repository using the Denix framework for 
+modular configuration management. Provides unified, cross-platform configuration 
+for NixOS, macOS (via nix-darwin), and standalone Home Manager setups.
+
+## Platform Support
+- ✅ NixOS (Linux) - Full system and user configuration
+- ✅ macOS - Via nix-darwin with Home Manager integration  
+- ✅ Home Manager - Standalone user environment management
+- ✅ Multi-architecture: x86_64, aarch64 (Apple Silicon, ARM)
+
+## What This Provides
+- **Modular Configuration**: Feature-based modules for desktop environments, development tools
+- **Multi-Host Support**: Desktop, laptop, server configurations with host-specific features
+- **Theme Management**: Stylix-based theming with Base16 color schemes
+- **Development Environment**: Rich devShell with custom scripts and tools
+- **Custom Programs**: Self-contained applications (dx, cmbd, convert_img, etc.)
+- **Templates**: Ready-to-use development environments for various languages/frameworks
+
+## Core Components
+- **Denix Framework**: Type-safe, composable module system with auto-discovery
+- **Feature System**: Granular capability enablement (audio, bluetooth, nvidia, etc.)
+- **Host Types**: Desktop/laptop/server classifications with appropriate defaults
+- **Rice System**: Consistent theming across all applications and environments
+
+## Usage
+```bash
+# macOS rebuild
+darwin-rebuild switch --flake .
+
+# NixOS rebuild  
+sudo nixos-rebuild switch --flake .
+
+# Home Manager only
+home-manager switch --flake .
+```
+
+## Development
+```bash
+nix develop        # Enter development shell
+nix develop -c dx  # Edit this flake
+nix develop -c lint # Run quality checks
+```
+*/
 {
   description = "Modular configuration of Home Manager and NixOS with Denix";
 

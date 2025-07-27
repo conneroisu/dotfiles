@@ -1,3 +1,49 @@
+/**
+# Go Development Shell Template
+
+## Description
+Complete Go development environment with modern tooling for building, testing,
+and maintaining Go applications. Includes the Go toolchain, linting, formatting,
+live reloading, and testing utilities for productive Go development.
+
+## Platform Support
+- ✅ x86_64-linux
+- ✅ aarch64-linux (ARM64 Linux)
+- ✅ x86_64-darwin (Intel macOS)
+- ✅ aarch64-darwin (Apple Silicon macOS)
+
+## What This Provides
+- **Go Toolchain**: Go 1.24 compiler and runtime
+- **Development Tools**: air (live reload), delve (debugger), gopls (language server)
+- **Code Quality**: golangci-lint, revive, gofmt, goimports
+- **Testing**: gotestfmt for enhanced test output
+- **Documentation**: gomarkdoc for generating markdown from Go code
+- **Formatting**: gofumpt for stricter Go formatting
+
+## Usage
+```bash
+# Create new project from template
+nix flake init -t github:conneroisu/dotfiles#go-shell
+
+# Enter development shell
+nix develop
+
+# Start live reload development
+air
+
+# Run tests with formatting
+go test ./... | gotestfmt
+
+# Format code
+nix fmt
+```
+
+## Development Workflow
+- Use air for automatic recompilation during development
+- golangci-lint provides comprehensive linting
+- gopls enables rich IDE integration
+- All tools configured for optimal Go development experience
+*/
 {
   description = "A development shell for go";
   inputs = {

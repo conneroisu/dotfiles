@@ -1,0 +1,23 @@
+Files Missing Comprehensive Headers
+========================================
+
+Main Configuration Files:
+- /home/connerohnesorge/dotfiles/flake.nix
+
+Feature Modules:
+- /home/connerohnesorge/dotfiles/modules/features/gnome.nix
+- /home/connerohnesorge/dotfiles/modules/features/k3sAgent.nix
+- /home/connerohnesorge/dotfiles/modules/features/k3sServer.nix
+
+Program Modules:
+- /home/connerohnesorge/dotfiles/modules/programs/splitm/splitm.nix
+
+Rice Configurations:
+- /home/connerohnesorge/dotfiles/rices/dark/empty.nix
+
+Template Files:
+- /home/connerohnesorge/dotfiles/templates/devshell/flake.nix
+- /home/connerohnesorge/dotfiles/templates/go-shell/flake.nix
+- /home/connerohnesorge/dotfiles/templates/rust-shell/flake.nix
+
+Total: 9 files need comprehensive headers

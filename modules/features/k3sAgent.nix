@@ -1,3 +1,34 @@
+/**
+# Feature Module: K3s Kubernetes Agent Node
+
+## Description
+Lightweight Kubernetes agent node configuration using K3s. Provides worker node
+capabilities for joining existing K3s clusters or running as a standalone agent.
+Includes networking configuration and tooling for container orchestration.
+
+## Platform Support
+- ✅ NixOS
+- ❌ Darwin (K3s agent requires Linux kernel features)
+
+## What This Enables
+- **K3s Agent**: Lightweight Kubernetes worker node
+- **Network Configuration**: NodePort service access (ports 30000-32767)
+- **Container Runtime**: Containerd with K3s optimizations
+- **Kubernetes Tools**: kubectl, helm for cluster management
+- **Service Mesh Ready**: Flannel VXLAN backend for pod networking
+
+## Usage Notes
+- Automatically detects if k3sServer module is enabled to avoid conflicts
+- Standalone mode: Connects to local server at 127.0.0.1:6443
+- Worker mode: Additional networking and tooling without conflicting services
+- Kubeconfig automatically configured at /etc/rancher/k3s/k3s.yaml
+- Requires network connectivity to K3s server for cluster joining
+
+## Dependencies
+- Network connectivity for cluster communication
+- Sufficient resources for container workloads
+- Firewall configuration for NodePort services
+*/
 {
   config,
   delib,
@@ -38,7 +69,7 @@ delib.module {
       role = "agent";  
       serverAddr = "https://127.0.0.1:6443";
       extraFlags = toString [
-        "--write-kubeconfig-mode 644"
+        "--write-kubeconfig-mode 600"
         "--flannel-backend=vxlan"
       ];
     };

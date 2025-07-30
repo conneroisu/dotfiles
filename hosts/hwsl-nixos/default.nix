@@ -1,33 +1,35 @@
 /**
-# Host Configuration: oxe-nixos
+# Host Configuration: hwsl-nixos
 
 ## Description
-Server/workstation configuration running NixOS.
-This host is configured as a server type.
+WSL2 NixOS environment for development and containerization.
+This host is configured as a server type running inside WSL2.
 
 ## Host Type
 - Type: server
 - System: x86_64-linux
-- Rice: empty theme
+- Rice: dark theme
 
 ## Key Features
-- **Full desktop server**: Hyprland Wayland compositor
-- **AMD graphics**: Optimized for AMD GPUs
+- **WSL2 integration**: Windows Subsystem for Linux v2
+- **Development environment**: Engineer role enabled
+- **Container support**: k3s agent for Kubernetes clusters
+- **Privacy tools**: Darknet features enabled
 - **Secrets management**: Secure credential handling
 
 ## Hardware Support
-- AMD GPU drivers and optimizations
-- Hardware configuration imported from ./hardware.nix
+- WSL2 virtual hardware
+- No traditional boot loader (managed by WSL)
 
 ## System Configuration
 - Locale: en_US.UTF-8 (Chicago timezone)
 - RTKit for real-time audio
-- libinput for input device handling
+- No Plymouth boot splash
 
 ## Security
 - Determinate Systems hardening
 - Secrets management enabled
-- Limited boot history (4 generations)
+- k3s agent for cluster participation
 */
 {
   delib,
@@ -54,14 +56,11 @@ delib.host {
     imports = [
       inputs.determinate.nixosModules.default
       inputs.nixos-wsl.nixosModules.default
-      inputs.disko.nixosModules.disko
       ./hardware.nix
-      ./disko.nix
     ];
 
     myconfig = {
       features = {
-        amd.enable = true;
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;
@@ -73,12 +72,7 @@ delib.host {
     wsl.enable = true;
 
     boot = {
-      plymouth.enable = true;
-      loader = {
-        systemd-boot.enable = true;
-        efi.canTouchEfiVariables = true;
-        systemd-boot.configurationLimit = 4;
-      };
+      plymouth.enable = false;
     };
 
     security = {

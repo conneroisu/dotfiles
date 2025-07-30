@@ -54,7 +54,9 @@ delib.host {
     imports = [
       inputs.determinate.nixosModules.default
       inputs.nixos-wsl.nixosModules.default
+      inputs.disko.nixosModules.disko
       ./hardware.nix
+      ./disko.nix
     ];
 
     myconfig = {

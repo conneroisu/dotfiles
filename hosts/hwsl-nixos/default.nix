@@ -43,13 +43,6 @@ delib.host {
   type = "server";
   home.home.stateVersion = "24.11";
 
-  darwin = {
-    imports = [
-      inputs.determinate.darwinModules.default
-    ];
-    nixpkgs.hostPlatform = "x86_64-darwin";
-    system.stateVersion = "24.11";
-  };
 
   nixos = {
     nixpkgs.config.allowUnfree = true;
@@ -65,6 +58,9 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
 
+        # NOTE: k3s agent requires token configuration for cluster joining
+        # Configure via: myconfig.features.k3sAgent.tokenFile = "/path/to/token";
+        # or: myconfig.features.k3sAgent.token = "your-token-here";
         k3sAgent.enable = true;
       };
     };

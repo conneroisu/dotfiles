@@ -1,33 +1,35 @@
 /**
-# Host Configuration: oxe-nixos
+# Host Configuration: hwsl-nixos
 
 ## Description
-Server/workstation configuration running NixOS.
-This host is configured as a server type.
+WSL (Windows Subsystem for Linux) configuration running NixOS.
+This host is configured for development in a WSL environment.
 
 ## Host Type
-- Type: server
+- Type: server (headless WSL)
 - System: x86_64-linux
-- Rice: empty theme
+- Rice: dark theme
 
 ## Key Features
-- **Full desktop server**: Hyprland Wayland compositor
-- **AMD graphics**: Optimized for AMD GPUs
+- **WSL integration**: Native Windows Subsystem for Linux support
+- **Development environment**: Full engineering toolchain
+- **Container support**: K3s agent for Kubernetes development
 - **Secrets management**: Secure credential handling
 
-## Hardware Support
-- AMD GPU drivers and optimizations
-- Hardware configuration imported from ./hardware.nix
+## WSL Configuration
+- NixOS-WSL module for WSL integration
+- Minimal hardware configuration (virtual environment)
+- No boot loader configuration (managed by WSL)
 
 ## System Configuration
 - Locale: en_US.UTF-8 (Chicago timezone)
-- RTKit for real-time audio
-- libinput for input device handling
+- RTKit for real-time audio processing
+- Container runtime support
 
 ## Security
 - Determinate Systems hardening
 - Secrets management enabled
-- Limited boot history (4 generations)
+- WSL-specific security considerations
 */
 {
   delib,
@@ -41,13 +43,6 @@ delib.host {
   type = "server";
   home.home.stateVersion = "24.11";
 
-  darwin = {
-    imports = [
-      inputs.determinate.darwinModules.default
-    ];
-    nixpkgs.hostPlatform = "x86_64-darwin";
-    system.stateVersion = "24.11";
-  };
 
   nixos = {
     nixpkgs.config.allowUnfree = true;
@@ -59,7 +54,6 @@ delib.host {
 
     myconfig = {
       features = {
-        amd.enable = true;
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;
@@ -70,14 +64,8 @@ delib.host {
 
     wsl.enable = true;
 
-    boot = {
-      plymouth.enable = true;
-      loader = {
-        systemd-boot.enable = true;
-        efi.canTouchEfiVariables = true;
-        systemd-boot.configurationLimit = 4;
-      };
-    };
+    # WSL doesn't use traditional boot loaders
+    # Boot configuration is managed by the WSL environment
 
     security = {
       rtkit.enable = true;

@@ -43,13 +43,6 @@ delib.host {
   type = "server";
   home.home.stateVersion = "24.11";
 
-  darwin = {
-    imports = [
-      inputs.determinate.darwinModules.default
-    ];
-    nixpkgs.hostPlatform = "x86_64-darwin";
-    system.stateVersion = "24.11";
-  };
 
   nixos = {
     nixpkgs.config.allowUnfree = true;

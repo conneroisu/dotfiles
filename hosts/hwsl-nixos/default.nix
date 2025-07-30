@@ -43,16 +43,13 @@ delib.host {
   type = "server";
   home.home.stateVersion = "24.11";
 
-  darwin = {
-    imports = [
-      inputs.determinate.darwinModules.default
-    ];
-    nixpkgs.hostPlatform = "x86_64-darwin";
-    system.stateVersion = "24.11";
-  };
+  darwin = {};
 
   nixos = {
-    nixpkgs.config.allowUnfree = true;
+    nixpkgs = {
+      config.allowUnfree = true;
+      hostPlatform = "x86_64-linux";
+    };
     imports = [
       inputs.determinate.nixosModules.default
       inputs.nixos-wsl.nixosModules.default
@@ -65,7 +62,7 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
 
-        k3sAgent.enable = true;
+        # k3sAgent.enable = true; # TODO: Configure k3s token/tokenFile before enabling
       };
     };
 

@@ -23,6 +23,9 @@
 --ignore homes/
 --ignore lib/
 --ignore modules/
+--ignore modules
+--ignore hosts/
+--ignore hosts
 --ignore systems/
 --ignore packages/
 --ignore shells/

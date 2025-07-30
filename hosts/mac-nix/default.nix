@@ -3,8 +3,7 @@
 
 ## Description
 Primary development machine configuration for macOS (Apple Silicon).
-This host runs nix-darwin for package management and includes a VMware
-guest configuration for running NixOS VMs locally.
+This host runs nix-darwin for package management.
 
 ## Host Type
 - Type: laptop
@@ -14,21 +13,14 @@ guest configuration for running NixOS VMs locally.
 ## Key Features
 - **Engineer role**: Development tools and environments
 - **macOS integration**: Native macOS apps (Aerospace, Raycast, Xcodes)
-- **VMware support**: Configured for NixOS VM development
 - **Blink shell**: Terminal emulator with fuzzy search
 
 ## Platform-specific Configurations
-### Darwin (Primary)
+### Darwin
 - Touch ID for sudo authentication
 - Custom dock and trackpad settings
 - Nix Apps integration in /Applications
 - Container support via gvproxy
-
-### NixOS (VM Guest)
-- VMware guest tools and drivers
-- Shared folder mounting at /mnt/hgfs
-- Basic development environment
-- SSH access enabled
 
 ## Enabled Programs
 - dx: Flake.nix editor
@@ -68,73 +60,19 @@ in
       imports = [
         inputs.determinate.nixosModules.default
       ];
-      nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
+      nixpkgs.hostPlatform = "x86_64-linux";
       nixpkgs.config.allowUnfree = true;
-      myconfig.features.engineer.enable = lib.mkForce false;
+      nixpkgs.config.allowUnsupportedSystem = true;
       system.stateVersion = "24.11";
-      virtualisation.vmware.guest.enable = true;
-      boot = {
-        loader = {
-          systemd-boot.enable = true;
-          efi.canTouchEfiVariables = true;
-        };
-        initrd.availableKernelModules = [
-          "ata_piix"
-          "mptspi"
-          "uhci_hcd"
-          "ehci_pci"
-          "sd_mod"
-          "sr_mod"
-        ];
-        kernelModules = ["vmw_vsock_vmci_transport" "vmw_balloon" "vmw_vmci" "vmw_pvscsi"];
+      
+      # Minimal file system configuration to prevent assertion failures
+      fileSystems."/" = {
+        device = "/dev/disk/by-label/nixos";
+        fsType = "ext4";
       };
-      fileSystems = {
-        "/" = {
-          device = "/dev/disk/by-label/nixos";
-          fsType = "ext4";
-        };
-        "/boot" = {
-          device = "/dev/disk/by-label/boot";
-          fsType = "vfat";
-          options = ["fmask=0077" "dmask=0077"];
-        };
-        "/mnt/hgfs" = {
-          device = ".host:/";
-          fsType = "fuse./run/current-system/sw/bin/vmhgfs-fuse";
-          options = [
-            "umask=022"
-            "uid=1000"
-            "gid=1000"
-            "allow_other"
-            "auto_unmount"
-            "defaults"
-          ];
-        };
-      };
-      networking = {
-        hostName = "mac-nix-vm";
-        networkmanager.enable = true;
-        useDHCP = lib.mkForce true;
-        interfaces.ens33.useDHCP = true; # VMware default network interface
-      };
-      users.users.connerohnesorge = {
-        home = "/home/connerohnesorge";
-      };
-      services.openssh = {
-        enable = true;
-        settings = {
-          PermitRootLogin = "no";
-          PasswordAuthentication = true;
-        };
-      };
-      environment.systemPackages = [
-        pkgs.vim
-        pkgs.git
-        pkgs.wget
-        pkgs.curl
-        pkgs.htop
-      ];
-      programs.zsh.enable = true;
+      
+      boot.loader.systemd-boot.enable = true;
+      boot.loader.efi.canTouchEfiVariables = true;
     };
 
     darwin = {

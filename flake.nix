@@ -73,6 +73,8 @@ nix develop -c lint # Run quality checks
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
+
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-utils.url = "github:numtide/flake-utils";
     systems.url = "github:nix-systems/default";
@@ -114,6 +116,11 @@ nix develop -c lint # Run quality checks
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
     sops = {
       url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    disko = {
+      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

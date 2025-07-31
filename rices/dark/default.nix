@@ -113,7 +113,16 @@ delib.rice {
       };
       myconfig.programs.ghostty.enable = true;
     }
-    else {};
+    else {
+      stylix = {
+        targets = {
+          dunst.enable = true;
+          zellij.enable = true;
+          fzf.enable = true;
+          k9s.enable = true;
+        };
+      };
+    };
   nixos = {
     stylix = {
       enable = true;

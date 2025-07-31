@@ -13,9 +13,14 @@ This host is configured as a server type running inside WSL2.
 ## Key Features
 - **WSL2 integration**: Windows Subsystem for Linux v2
 - **Development environment**: Engineer role enabled
-- **Container support**: k3s agent for Kubernetes clusters
+- **Container support**: k3s agent for Kubernetes clusters (requires authentication token)
 - **Privacy tools**: Darknet features enabled
 - **Secrets management**: Secure credential handling
+
+## k3s Configuration
+- Agent mode connecting to local k3s server
+- **Security Note**: Replace example token with actual cluster token
+- **Production**: Use `tokenFile` with secrets management instead of plain token
 
 ## Hardware Support
 - WSL2 virtual hardware
@@ -66,6 +71,15 @@ delib.host {
         secrets.enable = true;
 
         k3sAgent.enable = true;
+      };
+      
+      # k3s agent configuration
+      k3s = {
+        serverAddr = "https://127.0.0.1:6443";
+        # IMPORTANT: Set tokenFile for production use
+        # tokenFile = config.sops.secrets.k3s-token.path;
+        # For testing/development only - use tokenFile in production
+        token = "K10831EXAMPLE-TOKEN-FOR-CLUSTER-JOIN";
       };
     };
 

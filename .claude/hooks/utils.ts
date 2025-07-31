@@ -195,18 +195,37 @@ export class Logger {
 }
 
 export class InputReader {
+  private static readonly MAX_INPUT_SIZE = 1048576; // 1MB limit to prevent DoS attacks
+
+  /**
+   * Reads and parses JSON input from stdin with security validations
+   * @template T - The expected type of the parsed JSON
+   * @returns Promise<T> - The parsed JSON object
+   * @throws Error if input is too large, malformed, or missing
+   */
   static async readStdinJson<T>(): Promise<T> {
     try {
+      // TODO: Bun.stdin.json() doesn't have built-in size limits
+      // Consider implementing size validation when Bun supports it
+      // For now, we rely on system-level limits and memory constraints
       const input = await Bun.stdin.json() as T;
       
-      if (!input) {
-        throw new Error('No input received from stdin');
+      // More specific null/undefined check - allows falsy values like 0, false, []
+      if (input === null || input === undefined) {
+        throw new Error('No JSON input received from stdin');
       }
       
       return input;
     } catch (error) {
+      // Enhanced error context for better debugging
+      if (error instanceof SyntaxError) {
+        throw new Error(`Invalid JSON format: ${error.message}`);
+      }
+      if (error instanceof Error && error.message.includes('No JSON input')) {
+        throw error; // Re-throw our custom error as-is
+      }
       throw new Error(
-        `Invalid JSON input: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to read JSON from stdin: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }

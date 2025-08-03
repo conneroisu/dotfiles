@@ -65,7 +65,8 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
 
-        k3sAgent.enable = true;
+        # K3s agent disabled for WSL environment - enable if needed with proper token configuration
+        # k3sAgent.enable = true;
       };
     };
 
@@ -79,6 +80,7 @@ delib.host {
       rtkit.enable = true;
       pam.services.login.enableGnomeKeyring = true;
     };
+    system.stateVersion = "24.11";
     time.timeZone = "America/Chicago";
     i18n = {
       # Select internationalisation properties.

@@ -216,7 +216,7 @@
           ];
 
           # Build dependencies
-          buildInputs = with pkgs.ocamlPackages; [
+          packages = with pkgs.ocamlPackages; [
             dune_3
             findlib
           ];

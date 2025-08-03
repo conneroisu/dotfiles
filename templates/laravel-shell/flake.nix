@@ -25,7 +25,7 @@
       };
       devShells.default = pkgs.mkShellNoCC {
           name = "php-devshell";
-          buildInputs = [
+          packages = [
             php
             php.packages.composer
             php.packages.phpstan
@@ -69,7 +69,7 @@
           contents = let
             caddyFile = pkgs.writeText "Caddyfile" ''
               {
-                  email youremail@domain.com
+                  email {env.CADDY_EMAIL}
               }
               :80 {
                   root * /app/public
@@ -102,7 +102,7 @@
           extraCommands = ''
             ln -s ${self.packages.${system}.symfony-demo}/share/php/${self.packages.${system}.symfony-demo.pname}/ app
             mkdir -p tmp
-            chmod -R 777 tmp
+            chmod -R 755 tmp
             cp ${self.packages.${system}.symfony-demo}/share/php/${self.packages.${system}.symfony-demo.pname}/data/database.sqlite tmp/database.sqlite
             chmod +w tmp/database.sqlite
           '';

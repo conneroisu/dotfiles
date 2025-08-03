@@ -79,7 +79,7 @@
         # Available packages on https://search.nixos.org/packages
         env = {
         };
-        buildInputs =
+        packages =
           [
             pkgs.alejandra # Nix
             pkgs.nixd

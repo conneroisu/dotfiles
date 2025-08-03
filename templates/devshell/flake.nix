@@ -52,7 +52,7 @@ nix fmt
         name = "dev";
 
         # Available packages on https://search.nixos.org/packages
-        buildInputs = with pkgs; [
+        packages = with pkgs; [
           just
         ];
 

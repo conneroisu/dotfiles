@@ -24,7 +24,7 @@
       devShells.default = pkgs.mkShell {
         name = "dev";
         # Available packages on https://search.nixos.org/packages
-        buildInputs = [
+        packages = [
           pkgs.alejandra # Nix
           pkgs.nixd
           pkgs.statix

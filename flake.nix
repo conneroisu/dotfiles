@@ -371,9 +371,9 @@ nix develop -c lint # Run quality checks
         description = "A go shell for developing with nix";
         path = ./templates/go-shell;
       };
-      go-templ-shell = {
+      templ-shell = {
         description = "A go + templ shell for developing with nix";
-        path = ./templates/go-templ-shell;
+        path = ./templates/templ-shell;
       };
       rust-shell = {
         description = "A rust shell for developing with nix";

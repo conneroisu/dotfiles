@@ -1,3 +1,3 @@
-module go-shell
+module example
 
 go 1.24.3

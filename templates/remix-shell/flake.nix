@@ -73,19 +73,14 @@
           echo "Welcome to the remix-js devshell!"
         '';
       };
-    });
 
-    # Uncomment to build packages with bun2nix
-    # packages = forAllSystems (system: let
-    #   pkgs = import nixpkgs {
-    #     inherit system;
-    #   };
-    # in {
-    #   # Example package using mkBunDerivation
-    #   # my-remix-app = pkgs.callPackage ./default.nix {
-    #   #   inherit (bun2nix.lib.${system}) mkBunDerivation;
-    #   # };
-    # });
+      # Uncomment to build packages with bun2nix
+      # packages = {
+      #   # Example package using mkBunDerivation
+      #   # my-remix-app = pkgs.callPackage ./default.nix {
+      #   #   inherit (bun2nix.lib.${system}) mkBunDerivation;
+      #   # };
+      # };
 
       formatter = let
         treefmtModule = {
@@ -97,7 +92,6 @@
       in
         treefmt-nix.lib.mkWrapper pkgs treefmtModule;
     });
-}
 # To use bun2nix:
 # 1. Uncomment the bun2nix input and binary cache configuration
 # 2. Uncomment the bun2nix package in devShells.default.packages
@@ -108,4 +102,4 @@
 # 4. Run 'bun install' to generate bun.nix
 # 5. Uncomment and configure the packages section to build your app
 # 6. Modify default.nix for your specific build requirements
-
+}

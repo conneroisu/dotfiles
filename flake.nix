@@ -134,6 +134,11 @@ nix develop -c lint # Run quality checks
         home-manager.follows = "home-manager";
       };
     };
+
+    locker = {
+      url = "github:tgirlcloud/locker";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {

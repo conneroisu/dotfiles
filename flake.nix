@@ -371,13 +371,29 @@ nix develop -c lint # Run quality checks
         description = "A go shell for developing with nix";
         path = ./templates/go-shell;
       };
+      go-templ-shell = {
+        description = "A go + templ shell for developing with nix";
+        path = ./templates/go-templ-shell;
+      };
       rust-shell = {
         description = "A rust shell for developing with nix";
         path = ./templates/rust-shell;
       };
+      rust-web-shell = {
+        description = "A rust web shell for developing with nix";
+        path = ./templates/rust-web-shell;
+      };
+      typescript-shell = {
+        description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs)";
+        path = ./templates/typescript-shell;
+      };
       remix-js-shell = {
         description = "A Remix JS shell for developing with bun";
         path = ./templates/remix-js-shell;
+      };
+      tanstack-shell = {
+        description = "A tanstack shell for developing with nix";
+        path = ./templates/tanstack-shell;
       };
       phoenix-shell = {
         description = "An Elixir Phoenix Framework shell for developing with nix";
@@ -387,6 +403,14 @@ nix develop -c lint # Run quality checks
         description = "A Laravel shell for developing with nix";
         path = ./templates/laravel-shell;
       };
+      lua-shell = {
+        description = "A lua shell for developing with nix";
+        path = ./templates/lua-shell;
+      };
+      ocaml-shell = {
+        description = "An OCaml shell with modern tooling and best practices";
+        path = ./templates/ocaml-shell;
+      };
       cuda-shell = {
         description = "A cuda shell for developing with nix";
         path = ./templates/cuda-shell;
@@ -394,14 +418,6 @@ nix develop -c lint # Run quality checks
       zig-shell = {
         description = "A zig shell for developing with nix";
         path = ./templates/zig-shell;
-      };
-      rust-web-shell = {
-        description = "A rust web shell for developing with nix";
-        path = ./templates/rust-web-shell;
-      };
-      tanstack-shell = {
-        description = "A tanstack shell for developing with nix";
-        path = ./templates/tanstack-shell;
       };
     };
   };

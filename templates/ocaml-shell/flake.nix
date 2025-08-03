@@ -2,35 +2,36 @@
   description = "A development shell for OCaml";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = {
     nixpkgs,
+    flake-utils,
     treefmt-nix,
     ...
-  }: let
-    supportedSystems = [
-      "x86_64-linux"
-      "x86_64-darwin"
-      "aarch64-linux"
-      "aarch64-darwin"
-    ];
-    forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-
-    perSystem = forAllSystems (system: let
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
         overlays = [];
       };
 
+      rooted = exec:
+        builtins.concatStringsSep "\n"
+        [
+          ''REPO_ROOT="$(git rev-parse --show-toplevel)"''
+          exec
+        ];
+
       scripts = {
         dx = {
-          exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
+          exec = rooted ''$EDITOR "$REPO_ROOT"/flake.nix'';
           description = "Edit flake.nix";
         };
         ox = {
-          exec = ''$EDITOR "$REPO_ROOT"/dune-project'';
+          exec = rooted ''$EDITOR "$REPO_ROOT"/dune-project'';
           description = "Edit dune-project";
         };
         run-example = {
@@ -83,7 +84,7 @@
         };
       };
     in {
-      devShell = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
         name = "ocaml-dev";
 
         # Available packages on https://search.nixos.org/packages
@@ -138,11 +139,9 @@
           ++ builtins.attrValues scriptPackages;
 
         shellHook = ''
-                    export REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-
                     # Create .ocamlformat if it doesn't exist
-                    if [ ! -f "$REPO_ROOT"/.ocamlformat ]; then
-                      cat > "$REPO_ROOT"/.ocamlformat << 'EOF'
+                    if [ ! -f .ocamlformat ]; then
+                      cat > .ocamlformat << 'EOF'
           version = 0.27.0
           profile = default
           margin = 100
@@ -341,19 +340,4 @@
 
       formatter = treefmt-nix.lib.mkWrapper pkgs treefmtModule;
     });
-  in {
-    devShells = forAllSystems (system: {
-      default = perSystem.${system}.devShell;
-    });
-
-    packages = forAllSystems (
-      system:
-        perSystem.${system}.packages
-    );
-
-    formatter = forAllSystems (
-      system:
-        perSystem.${system}.formatter
-    );
-  };
 }

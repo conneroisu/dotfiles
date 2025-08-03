@@ -2,6 +2,7 @@
   description = "A development shell for zig";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     zig-overlay.url = "github:mitchellh/zig-overlay";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -9,27 +10,18 @@
   outputs = {
     self,
     nixpkgs,
+    flake-utils,
     treefmt-nix,
     zig-overlay,
     ...
-  }: let
-    # Helper function to generate per-system attributes
-    forAllSystems = f:
-      nixpkgs.lib.genAttrs [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-        "x86_64-darwin"
-      ]
-      f;
-  in {
-    devShells = forAllSystems (system: let
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
         overlays = [zig-overlay.overlays.default];
       };
     in {
-      default = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
         name = "dev";
         # Available packages on https://search.nixos.org/packages
         buildInputs = [
@@ -43,21 +35,16 @@
           echo "Welcome to the zig devshell!"
         '';
       };
-    });
 
-    formatter = forAllSystems (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [zig-overlay.overlays.default];
-      };
-      treefmtModule = {
-        projectRootFile = "flake.nix";
-        programs = {
-          alejandra.enable = true; # Nix formatter
-          zig.enable = true; # Zig formatter
+      formatter = let
+        treefmtModule = {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true; # Nix formatter
+            zig.enable = true; # Zig formatter
+          };
         };
-      };
-    in
-      treefmt-nix.lib.mkWrapper pkgs treefmtModule);
-  };
+      in
+        treefmt-nix.lib.mkWrapper pkgs treefmtModule;
+    });
 }

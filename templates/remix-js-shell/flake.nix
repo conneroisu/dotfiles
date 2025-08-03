@@ -97,7 +97,6 @@
       in
         treefmt-nix.lib.mkWrapper pkgs treefmtModule;
     });
-}
 # To use bun2nix:
 # 1. Uncomment the bun2nix input and binary cache configuration
 # 2. Uncomment the bun2nix package in devShells.default.packages

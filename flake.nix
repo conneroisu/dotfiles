@@ -371,9 +371,9 @@ nix develop -c lint # Run quality checks
         description = "A go shell for developing with nix";
         path = ./templates/go-shell;
       };
-      go-templ-shell = {
+      templ-shell = {
         description = "A go + templ shell for developing with nix";
-        path = ./templates/go-templ-shell;
+        path = ./templates/templ-shell;
       };
       rust-shell = {
         description = "A rust shell for developing with nix";
@@ -387,9 +387,9 @@ nix develop -c lint # Run quality checks
         description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs)";
         path = ./templates/typescript-shell;
       };
-      remix-js-shell = {
+      remix-shell = {
         description = "A Remix JS shell for developing with bun";
-        path = ./templates/remix-js-shell;
+        path = ./templates/remix-shell;
       };
       tanstack-shell = {
         description = "A tanstack shell for developing with nix";
@@ -410,6 +410,14 @@ nix develop -c lint # Run quality checks
       ocaml-shell = {
         description = "An OCaml shell with modern tooling and best practices";
         path = ./templates/ocaml-shell;
+      };
+      python-shell = {
+        description = "A Python shell with modern tooling (basedpyright, ruff, black, pytest)";
+        path = ./templates/python-shell;
+      };
+      cpp-shell = {
+        description = "A C++ shell with modern tooling (GCC, Clang, CMake, static analysis)";
+        path = ./templates/cpp-shell;
       };
       cuda-shell = {
         description = "A cuda shell for developing with nix";

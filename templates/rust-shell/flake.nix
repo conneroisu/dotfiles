@@ -101,7 +101,7 @@ nix fmt
       devShells.default = pkgs.mkShell {
         name = "dev";
         # Available packages on https://search.nixos.org/packages
-        buildInputs = with pkgs; [
+        packages = with pkgs; [
           alejandra # Nix
           nixd
           statix

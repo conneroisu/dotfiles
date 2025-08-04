@@ -31,7 +31,7 @@ nix fmt
 ```
 
 ## Customization
-- Add packages to buildInputs array
+- Add packages to packages array
 - Modify shellHook for custom initialization
 - Add language-specific formatters to treefmtModule
 - Extend with additional development tools as needed
@@ -52,7 +52,7 @@ nix fmt
         name = "dev";
 
         # Available packages on https://search.nixos.org/packages
-        buildInputs = with pkgs; [
+        packages = with pkgs; [
           just
         ];
 

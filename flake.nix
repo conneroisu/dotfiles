@@ -2,13 +2,13 @@
 # Main Flake Configuration - Denix-based Dotfiles
 
 ## Description
-Sophisticated NixOS/Home Manager dotfiles repository using the Denix framework for 
-modular configuration management. Provides unified, cross-platform configuration 
+Sophisticated NixOS/Home Manager dotfiles repository using the Denix framework for
+modular configuration management. Provides unified, cross-platform configuration
 for NixOS, macOS (via nix-darwin), and standalone Home Manager setups.
 
 ## Platform Support
 - ✅ NixOS (Linux) - Full system and user configuration
-- ✅ macOS - Via nix-darwin with Home Manager integration  
+- ✅ macOS - Via nix-darwin with Home Manager integration
 - ✅ Home Manager - Standalone user environment management
 - ✅ Multi-architecture: x86_64, aarch64 (Apple Silicon, ARM)
 
@@ -31,7 +31,7 @@ for NixOS, macOS (via nix-darwin), and standalone Home Manager setups.
 # macOS rebuild
 darwin-rebuild switch --flake .
 
-# NixOS rebuild  
+# NixOS rebuild
 sudo nixos-rebuild switch --flake .
 
 # Home Manager only
@@ -51,7 +51,7 @@ nix develop -c lint # Run quality checks
   inputs = {
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.14.9b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
-    ashell.url = "github:MalpenZibo/ashell";
+    ashell.url = "github:MalpenZibo/ashell?ref=1b57fbcba87f48ca1075dca48021ec55586caeea";
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";
     };
@@ -134,6 +134,11 @@ nix develop -c lint # Run quality checks
         home-manager.follows = "home-manager";
       };
     };
+
+    locker = {
+      url = "github:tgirlcloud/locker";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -180,9 +185,10 @@ nix develop -c lint # Run quality checks
             statix check "$REPO_ROOT"/flake.nix
             deadnix "$REPO_ROOT"/flake.nix
             nix flake check "$REPO_ROOT"
+            locker check "$REPO_ROOT"/flake.lock
           '';
-          deps = with pkgs; [git statix deadnix];
-          description = "Run golangci-lint";
+          deps = with pkgs; [git statix deadnix inputs.locker.packages."${system}".default];
+          description = "Run linting tools (statix, deadnix, nix flake check, locker)";
         };
       };
 

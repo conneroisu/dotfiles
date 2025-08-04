@@ -196,28 +196,14 @@ export class Logger {
 
 export class InputReader {
   static async readStdinJson<T>(): Promise<T> {
-    const chunks: Buffer[] = [];
-    let totalSize = 0;
-    const maxInputSize = 1048576; // 1MB limit to prevent DoS
-
-    for await (const chunk of process.stdin) {
-      totalSize += chunk.length;
-      if (totalSize > maxInputSize) {
-        throw new Error(
-          `Input too large: ${totalSize} bytes exceeds limit of ${maxInputSize} bytes`
-        );
-      }
-      chunks.push(chunk);
-    }
-
-    const input = Buffer.concat(chunks).toString('utf-8');
-
-    if (!input.trim()) {
-      throw new Error('No input received from stdin');
-    }
-
     try {
-      return JSON.parse(input) as T;
+      const input = await Bun.stdin.json() as T;
+      
+      if (!input) {
+        throw new Error('No input received from stdin');
+      }
+      
+      return input;
     } catch (error) {
       throw new Error(
         `Invalid JSON input: ${error instanceof Error ? error.message : 'Unknown error'}`

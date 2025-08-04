@@ -971,6 +971,26 @@
         "type": "github"
       }
     },
+    "locker": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1754085461,
+        "narHash": "sha256-fjDqsReDxW+8wdkco9RKWaCXyYzay3J3/BzjgZtF7z4=",
+        "owner": "tgirlcloud",
+        "repo": "locker",
+        "rev": "1f922929528463c622d52435471a50f9dd4b63ac",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tgirlcloud",
+        "repo": "locker",
+        "type": "github"
+      }
+    },
     "nix": {
       "inputs": {
         "flake-parts": "flake-parts_2",
@@ -1449,6 +1469,7 @@
         "ghostty": "ghostty",
         "home-manager": "home-manager",
         "hyprland": "hyprland",
+        "locker": "locker",
         "nix-auth": "nix-auth",
         "nix-darwin": "nix-darwin",
         "nix-index-database": "nix-index-database",

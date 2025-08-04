@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
     crane.url = "github:ipetkov/crane";
     treefmt-nix.url = "github:numtide/treefmt-nix";
@@ -11,24 +12,13 @@
 
   outputs = {
     nixpkgs,
+    flake-utils,
     rust-overlay,
     crane,
     treefmt-nix,
     ...
-  }: let
-    # Define systems
-    systems = [
-      "x86_64-linux"
-      "aarch64-linux"
-      "aarch64-darwin"
-      "x86_64-darwin"
-    ];
-
-    # Helper function to generate per-system attributes
-    forAllSystems = f: nixpkgs.lib.genAttrs systems f;
-  in {
-    # Define devShells for all systems
-    devShells = forAllSystems (system: let
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
@@ -84,7 +74,7 @@
         )
         scripts;
     in {
-      default = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
         name = "dev";
         # Available packages on https://search.nixos.org/packages
         env = {
@@ -123,14 +113,8 @@
         shellHook = ''
         '';
       };
-    });
 
-    packages = forAllSystems (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [rust-overlay.overlays.default];
-      };
-    in {
+      packages = {
       default = pkgs.stdenv.mkDerivation {
         pname = "connix-api";
         version = "0.1.0";
@@ -201,24 +185,19 @@
           maintainers = [];
         };
       };
-    });
 
-    formatter = forAllSystems (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [rust-overlay.overlays.default];
-      };
-      treefmtModule = {
-        projectRootFile = "flake.nix";
-        programs = {
-          alejandra.enable = true; # Nix formatter
-          rustfmt.enable = true; # Rust formatter
-          prettier.enable = true; # Prettier formatter
-          gofmt.enable = true; # Go formatter
-          golines.enable = true; # Golines formatter
+      formatter = let
+        treefmtModule = {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true; # Nix formatter
+            rustfmt.enable = true; # Rust formatter
+            prettier.enable = true; # Prettier formatter
+            gofmt.enable = true; # Go formatter
+            golines.enable = true; # Golines formatter
+          };
         };
-      };
-    in
-      treefmt-nix.lib.mkWrapper pkgs treefmtModule);
-  };
+      in
+        treefmt-nix.lib.mkWrapper pkgs treefmtModule;
+    });
 }

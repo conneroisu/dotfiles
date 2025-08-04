@@ -185,9 +185,10 @@ nix develop -c lint # Run quality checks
             statix check "$REPO_ROOT"/flake.nix
             deadnix "$REPO_ROOT"/flake.nix
             nix flake check "$REPO_ROOT"
+            locker check "$REPO_ROOT"/flake.lock
           '';
-          deps = with pkgs; [git statix deadnix];
-          description = "Run golangci-lint";
+          deps = with pkgs; [git statix deadnix inputs.locker.packages."${system}".default];
+          description = "Run linting tools (statix, deadnix, nix flake check, locker)";
         };
       };
 

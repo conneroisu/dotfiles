@@ -2,34 +2,35 @@
   description = "A development shell for Elixir Phoenix Framework";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = inputs @ {
     nixpkgs,
+    flake-utils,
     treefmt-nix,
     ...
-  }: let
-    supportedSystems = [
-      "x86_64-linux"
-      "x86_64-darwin"
-      "aarch64-linux"
-      "aarch64-darwin"
-    ];
-    forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-  in {
-    devShells = forAllSystems (system: let
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
       };
 
+      rooted = exec:
+        builtins.concatStringsSep "\n"
+        [
+          ''REPO_ROOT="$(git rev-parse --show-toplevel)"''
+          exec
+        ];
+
       scripts = {
         dx = {
-          exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
+          exec = rooted ''$EDITOR "$REPO_ROOT"/flake.nix'';
           description = "Edit flake.nix";
         };
         ex = {
-          exec = ''$EDITOR "$REPO_ROOT"/mix.exs'';
+          exec = rooted ''$EDITOR "$REPO_ROOT"/mix.exs'';
           description = "Edit mix.exs";
         };
       };
@@ -46,7 +47,7 @@
         )
         scripts;
     in {
-      default = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
         name = "dev";
 
         # Available packages on https://search.nixos.org/packages
@@ -65,20 +66,18 @@
           ++ builtins.attrValues scriptPackages;
 
         shellHook = ''
-          export REPO_ROOT=$(git rev-parse --show-toplevel)
+          echo "Welcome to the phoenix devshell!"
         '';
       };
-    });
 
-    formatter = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      treefmtModule = {
-        projectRootFile = "flake.nix";
-        programs = {
-          alejandra.enable = true; # Nix formatter
+      formatter = let
+        treefmtModule = {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true; # Nix formatter
+          };
         };
-      };
-    in
-      treefmt-nix.lib.mkWrapper pkgs treefmtModule);
-  };
+      in
+        treefmt-nix.lib.mkWrapper pkgs treefmtModule;
+    });
 }

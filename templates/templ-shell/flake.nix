@@ -1,5 +1,51 @@
+/**
+# Go + Templ Development Shell Template
+
+## Description
+Development environment for Go applications using the Templ template engine.
+Provides Go toolchain with Templ-specific tools for building modern web
+applications with type-safe HTML templating in Go.
+
+## Platform Support
+- ✅ x86_64-linux
+- ✅ aarch64-linux (ARM64 Linux) 
+- ✅ x86_64-darwin (Intel macOS)
+- ✅ aarch64-darwin (Apple Silicon macOS)
+
+## What This Provides
+- **Go Toolchain**: Go 1.24 compiler and runtime
+- **Templ Tools**: Templ compiler for Go HTML templates
+- **Development Tools**: air (live reload), gopls (language server)
+- **Code Quality**: golangci-lint, revive, gofmt formatting
+- **Testing**: Go testing tools and gotests for test generation
+- **Documentation**: gomarkdoc for generating documentation
+
+## Usage
+```bash
+# Create new project from template
+nix flake init -t github:conneroisu/dotfiles#templ-shell
+
+# Enter development shell  
+nix develop
+
+# Generate templ files
+templ generate
+
+# Start live reload development
+air
+
+# Format code
+nix fmt
+```
+
+## Development Workflow
+- Use templ for type-safe HTML templates
+- air provides automatic recompilation
+- Rich IDE integration with gopls
+- Comprehensive linting with golangci-lint
+*/
 {
-  description = "A development shell for go";
+  description = "A development shell for go + templ";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
@@ -15,6 +61,7 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
+      };
 
       rooted = exec:
         builtins.concatStringsSep "\n"

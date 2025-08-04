@@ -2,39 +2,28 @@
   description = "Example flake for PHP development";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     nix-shell.url = "github:loophp/nix-shell";
-    systems.url = "github:nix-systems/default";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
   outputs = inputs @ {
     self,
-    systems,
+    flake-utils,
     ...
-  }: let
-    eachSystem = f:
-      builtins.listToAttrs (
-        map (system: {
-          name = system;
-          value = f system;
-        })
-        (import inputs.systems)
-      );
-  in {
-    devShells = eachSystem (
-      system: let
-        pkgs = import inputs.nixpkgs {
-          inherit system;
-          overlays = [inputs.nix-shell.overlays.default];
-          config.allowUnfree = true;
-        };
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
+      pkgs = import inputs.nixpkgs {
+        inherit system;
+        overlays = [inputs.nix-shell.overlays.default];
+        config.allowUnfree = true;
+      };
 
-        php = pkgs.api.buildPhpFromComposer {
-          src = inputs.self;
-          php = pkgs.php81; # Change to php56, php70, ..., php81, php82, php83 etc.
-        };
-      in {
-        default = pkgs.mkShellNoCC {
+      php = pkgs.api.buildPhpFromComposer {
+        src = inputs.self;
+        php = pkgs.php81; # Change to php56, php70, ..., php81, php82, php83 etc.
+      };
+      devShells.default = pkgs.mkShellNoCC {
           name = "php-devshell";
           buildInputs = [
             php
@@ -45,26 +34,12 @@
             self.packages.${system}.satis
           ];
         };
-      }
-    );
 
-    checks = eachSystem (system: {
-      inherit (self.packages.${system}) drupal satis symfony-demo;
-    });
+      checks = {
+        inherit (self.packages.${system}) drupal satis symfony-demo;
+      };
 
-    packages = eachSystem (
-      system: let
-        pkgs = import inputs.nixpkgs {
-          inherit system;
-          overlays = [inputs.nix-shell.overlays.default];
-          config.allowUnfree = true;
-        };
-
-        php = pkgs.api.buildPhpFromComposer {
-          src = inputs.self;
-          php = pkgs.php81;
-        };
-      in {
+      packages = {
         satis = php.buildComposerProject {
           pname = "satis";
           version = "3.0.0-dev";
@@ -155,22 +130,9 @@
           '';
           vendorHash = "sha256-Nv9pRQJ2Iij1IxPNcCk732Q79FWB/ARJRvjPVVyLMEc=";
         };
-      }
-    );
+      };
 
-    apps = eachSystem (
-      system: let
-        pkgs = import inputs.nixpkgs {
-          inherit system;
-          overlays = [inputs.nix-shell.overlays.default];
-          config.allowUnfree = true;
-        };
-
-        php = pkgs.api.buildPhpFromComposer {
-          src = inputs.self;
-          php = pkgs.php81;
-        };
-
+      apps = let
         lib = pkgs.lib;
       in {
         mezzio-skeleton = {
@@ -293,20 +255,16 @@
             }
           );
         };
-      }
-    );
+      };
 
-    formatter = eachSystem (system: let
-      pkgs = import inputs.nixpkgs {
-        inherit system;
-      };
-      treefmtModule = {
-        projectRootFile = "flake.nix";
-        programs = {
-          alejandra.enable = true; # Nix formatter
+      formatter = let
+        treefmtModule = {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true; # Nix formatter
+          };
         };
-      };
-    in
-      inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule);
-  };
+      in
+        inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule;
+    });
 }

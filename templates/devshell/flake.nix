@@ -40,22 +40,15 @@ nix fmt
   description = "A development shell";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = inputs @ {nixpkgs, treefmt-nix, ...}: let
-    systems = [
-      "x86_64-linux"
-      "aarch64-linux"
-      "aarch64-darwin"
-      "x86_64-darwin"
-    ];
-    forAllSystems = nixpkgs.lib.genAttrs systems;
-  in {
-    devShells = forAllSystems (system: let
+  outputs = inputs @ {nixpkgs, flake-utils, treefmt-nix, ...}:
+    flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {
-      default = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
         name = "dev";
 
         # Available packages on https://search.nixos.org/packages
@@ -67,17 +60,15 @@ nix fmt
           echo "Welcome to the devshell!"
         '';
       };
-    });
 
-    formatter = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      treefmtModule = {
-        projectRootFile = "flake.nix";
-        programs = {
-          alejandra.enable = true; # Nix formatter
+      formatter = let
+        treefmtModule = {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true; # Nix formatter
+          };
         };
-      };
-    in
-      treefmt-nix.lib.mkWrapper pkgs treefmtModule);
-  };
+      in
+        treefmt-nix.lib.mkWrapper pkgs treefmtModule;
+    });
 }

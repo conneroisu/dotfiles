@@ -30,6 +30,27 @@ This host is configured as a server type running inside WSL2.
 - Determinate Systems hardening
 - Secrets management enabled
 - k3s agent for cluster participation
+
+## Installation/Generation of the tarball
+You can use the following command to build your own tarball instead of relying on a prebuilt one:
+
+```bash
+sudo nix run github:nix-community/NixOS-WSL#nixosConfigurations.default.config.system.build.tarballBuilder
+```
+
+Or, if you want to build with local changes, run inside your checkout:
+
+```bash
+sudo nix run .#nixosConfigurations.your-hostname.config.system.build.tarballBuilder
+```
+
+Without a flakes-enabled Nix, you can build a tarball using:
+
+```bash
+nix-build -A nixosConfigurations.default.config.system.build.tarballBuilder && sudo ./result/bin/nixos-wsl-tarball-builder
+```
+
+The resulting tarball can then be found under nixos.wsl.
 */
 {
   delib,

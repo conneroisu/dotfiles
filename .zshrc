@@ -35,7 +35,7 @@ alias git-reset='git checkout main && git pull'
 
 alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
 # nvimfi is find all files ignoring .git
-alias nvimfi='nvim $(find . -type f -path "./.git" -prune -o -type f -not -path "*/\.*" -print | fzf --preview "bat --color=always {}")'
+alias nvimfi='nvim "$(find . -type f -path "./.git" -prune -o -type f -not -path "*/\.*" -print | fzf --preview "bat --color=always {}")"'
 
 alias latest='git add . && git commit -m "latest" && git push'
 alias nxi='nix'
@@ -92,3 +92,6 @@ export PATH="$PATH:/home/connerohnesorge/.turso"
 export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# opencode
+export PATH=/home/connerohnesorge/.opencode/bin:$PATH

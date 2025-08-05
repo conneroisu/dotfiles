@@ -203,7 +203,6 @@ in
             docker-buildx
             lazydocker
             nixos-shell
-            protonvpn-cli
 
             # Languages (Base for when shell from project is not available)
             nixd
@@ -213,7 +212,6 @@ in
             squirreldisk
           ]
           ++ [
-            inputs.proton-authenticator.packages."${pkgs.system}".default
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib

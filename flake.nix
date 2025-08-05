@@ -51,6 +51,9 @@ nix develop -c lint # Run quality checks
   inputs = {
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.14.9b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
+    proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?tag=v1.0.1";
+    proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
+
     ashell.url = "github:MalpenZibo/ashell?ref=1b57fbcba87f48ca1075dca48021ec55586caeea";
     ashell.inputs = {
       nixpkgs.follows = "nixpkgs";

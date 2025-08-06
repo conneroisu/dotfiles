@@ -1,4 +1,4 @@
 #!/bin/sh
 
-ashell &
+# ashell &
 determinate-nixd init

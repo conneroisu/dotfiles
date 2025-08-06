@@ -49,7 +49,7 @@ nix develop -c lint # Run quality checks
   description = "Modular configuration of Home Manager and NixOS with Denix";
 
   inputs = {
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.14.9b";
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.14.10b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?tag=v1.0.1";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";

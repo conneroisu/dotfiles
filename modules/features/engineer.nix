@@ -212,6 +212,7 @@ in
             squirreldisk
           ]
           ++ [
+            inputs.crush.packages."${pkgs.system}".default
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib

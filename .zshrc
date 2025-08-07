@@ -12,7 +12,7 @@ path=(
     $BUN_INSTALL/bin
     $path
 )
-export PATH=$PATH:path
+export PATH=$PATH:$path
 
 HISTFILE=~/.zsh_history
 HISTSIZE=10000

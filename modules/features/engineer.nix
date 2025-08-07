@@ -142,7 +142,6 @@ in
             ffmpeg
             tree
             fdtools
-            vscode-langservers-extracted
 
             # VCS
             git-lfs
@@ -264,7 +263,6 @@ in
           tree
           sad
           neovim
-          cmake
           gnumake
           vscode-langservers-extracted
           bun

@@ -33,7 +33,7 @@ alias cfi='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.
 alias cf='cd $(fd --type d --hidden --exclude .git | fzf --reverse --preview "ls --color {}")'
 alias git-reset='git checkout main && git pull'
 
-alias nvimf='nvim $(fzf --preview "bat --color=always {}")'
+alias nvimf='nvim "$(fzf --preview "bat --color=always {}")"'
 # nvimfi is find all files ignoring .git
 alias nvimfi='nvim "$(find . -type f -path "./.git" -prune -o -type f -not -path "*/\.*" -print | fzf --preview "bat --color=always {}")"'
 

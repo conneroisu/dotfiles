@@ -70,7 +70,6 @@ delib.host {
         kde.enable = true;
 
         k3sServer.enable = true;
-        
       };
     };
 
@@ -88,6 +87,17 @@ delib.host {
       pam.services.login.enableGnomeKeyring = true;
     };
     virtualisation.docker.enable = true;
+
+    services = {
+      openssh = {
+        enable = true;
+        PermitRootLogin = "prohibit-password";
+        passwordAuthentication = false;
+        authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKkl3bfwNy75UX9kAGk9WLMTVW0lKKZ8r4OV36VRcd42 connerohnesorge@xps-nixos"
+        ];
+      };
+    };
 
     time.timeZone = "America/Chicago";
     i18n = {

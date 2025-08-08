@@ -20,9 +20,7 @@
   pkgs,
   ...
 }: let
-  keys = ''
-    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKkl3bfwNy75UX9kAGk9WLMTVW0lKKZ8r4OV36VRcd42 connerohnesorge@xps-nixos
-  '';
+  keys = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKkl3bfwNy75UX9kAGk9WLMTVW0lKKZ8r4OV36VRcd42 connerohnesorge@xps-nixos";
 in
   delib.module {
     name = "connerohnesorge";

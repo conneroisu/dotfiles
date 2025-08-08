@@ -145,7 +145,7 @@ in
           # Set default shell to zsh
           shell = pkgs.zsh;
         };
-        root = {
+        users.root = {
           home = "/root";
           isNormalUser = true;
           openssh.authorizedKeys = {

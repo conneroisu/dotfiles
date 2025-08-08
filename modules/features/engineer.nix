@@ -86,7 +86,9 @@ in
     options = singleEnableOption false;
 
     nixos.ifEnabled = {
-      myconfig.programs = {
+      myconfig = {
+        features.zshell.enable = true;
+        programs = {
         dx.enable = true;
         md2pdf.enable = true;
         convert_img.enable = true;
@@ -95,6 +97,7 @@ in
         splitm.enable = true;
         nviml.enable = true;
         cccleaner.enable = true;
+        };
       };
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman
@@ -108,7 +111,6 @@ in
 
             ## Editor
             neovim
-            jq
             yq
             tree-sitter
             sad
@@ -120,8 +122,6 @@ in
             upower
             upower-notify
             lsof
-            carapace
-            stow
             age
             kubectl
             ktailctl
@@ -129,41 +129,21 @@ in
             bun
             file
             nix-index
-            zinit
-            starship
-            direnv
-            nix-direnv
-            bat
-            fd
-            fzf
-            zellij
             vscode-langservers-extracted
             yaml-language-server
             gcc
-            atuin
-            zoxide
             pkg-config
             lshw
             gdb
             gnupg
             procps
-            unzip
-            uv
-            eza
-            delta
-            htop
-            tealdeer
             sleek
             unixtools.xxd
             ffmpeg
             tree
-            ripgrep
-            fd
             fdtools
-            vscode-langservers-extracted
 
             # VCS
-            git
             git-lfs
             jujutsu
 
@@ -189,7 +169,6 @@ in
             usbutils
             ethtool
             curl
-            wget
 
             # Platforms
             fh
@@ -212,6 +191,7 @@ in
             squirreldisk
           ]
           ++ [
+            inputs.crush.packages."${pkgs.system}".default
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
@@ -261,51 +241,31 @@ in
     };
 
     darwin.ifEnabled = {
-      myconfig.programs = {
+      myconfig = {
+        features.zshell.enable = true;
+        programs = {
         dx.enable = true;
         splitm.enable = true;
         cccleaner.enable = true;
+        };
       };
       environment = {
         systemPackages = with pkgs; [
-          zinit
-          starship
-          direnv
-          nix-direnv
-          bat
-          wget
-          fd
-          jq
           cmake
           yq
           graphite-cli
           spicetify-cli
-          fzf
           zed-editor
           python313Packages.huggingface-hub
-          zellij
-          atuin
-          zoxide
-          eza
-          delta
-          unzip
-          htop
-          tealdeer
           sleek
           tree-sitter
           unixtools.xxd
           tree
           sad
-          ripgrep
-          stow
-          carapace
           neovim
-          cmake
           gnumake
-          uv
           vscode-langservers-extracted
           bun
-          git
           podman
           rancher
           openssl

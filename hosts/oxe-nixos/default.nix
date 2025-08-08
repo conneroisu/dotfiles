@@ -70,7 +70,6 @@ delib.host {
         kde.enable = true;
 
         k3sServer.enable = true;
-        
       };
     };
 
@@ -88,6 +87,13 @@ delib.host {
       pam.services.login.enableGnomeKeyring = true;
     };
     virtualisation.docker.enable = true;
+
+    services = {
+      openssh = {
+        enable = true;
+        passwordAuthentication = false;
+      };
+    };
 
     time.timeZone = "America/Chicago";
     i18n = {

@@ -110,8 +110,6 @@ in
             # Shell
 
             ## Editor
-            neovim
-            yq
             tree-sitter
             sad
 
@@ -129,7 +127,6 @@ in
             bun
             file
             nix-index
-            vscode-langservers-extracted
             yaml-language-server
             gcc
             pkg-config
@@ -216,11 +213,9 @@ in
           extraConfig = ''
             SetEnv TERM=xterm-256color
           '';
-        };
-        zsh.enable = true;
-        ssh = {
           askPassword = pkgs.lib.mkForce "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
         };
+        zsh.enable = true;
         nh = {
           enable = true;
           package = pkgs.nh;
@@ -252,7 +247,6 @@ in
       environment = {
         systemPackages = with pkgs; [
           cmake
-          yq
           graphite-cli
           spicetify-cli
           zed-editor
@@ -262,9 +256,7 @@ in
           unixtools.xxd
           tree
           sad
-          neovim
           gnumake
-          vscode-langservers-extracted
           bun
           podman
           rancher

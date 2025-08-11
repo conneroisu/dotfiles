@@ -144,11 +144,22 @@ nix develop -c lint # Run quality checks
       url = "github:tgirlcloud/locker";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hercules-ci-effects = {
+      url = "github:hercules-ci/hercules-ci-effects";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
     denix,
     nixpkgs,
+    flake-parts,
     ...
   } @ inputs: let
     supportedSystems = [
@@ -171,273 +182,287 @@ nix develop -c lint # Run quality checks
           inherit inputs;
         };
       };
-  in {
-    nixosConfigurations = mkConfigurations "nixos";
-    homeConfigurations = mkConfigurations "home";
-    darwinConfigurations = mkConfigurations "darwin";
+  in
+    {
+      nixosConfigurations = mkConfigurations "nixos";
+      homeConfigurations = mkConfigurations "home";
+      darwinConfigurations = mkConfigurations "darwin";
 
-    devShells = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      scripts = {
-        dx = {
-          exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
-          description = "Edit the flake.nix";
-          deps = [];
+      devShells = forAllSystems (system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+        scripts = {
+          dx = {
+            exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
+            description = "Edit the flake.nix";
+            deps = [];
+          };
+          lint = {
+            exec = ''
+              REPO_ROOT="$(git rev-parse --show-toplevel)"
+              statix check "$REPO_ROOT"/flake.nix
+              deadnix "$REPO_ROOT"/flake.nix
+              nix flake check "$REPO_ROOT"
+              locker check "$REPO_ROOT"/flake.lock
+            '';
+            deps = with pkgs; [git statix deadnix inputs.locker.packages."${system}".default];
+            description = "Run linting tools (statix, deadnix, nix flake check, locker)";
+          };
         };
-        lint = {
-          exec = ''
-            REPO_ROOT="$(git rev-parse --show-toplevel)"
-            statix check "$REPO_ROOT"/flake.nix
-            deadnix "$REPO_ROOT"/flake.nix
-            nix flake check "$REPO_ROOT"
-            locker check "$REPO_ROOT"/flake.lock
+
+        scriptPackages =
+          pkgs.lib.mapAttrs
+          (
+            name: script:
+              pkgs.writeShellApplication {
+                inherit name;
+                text = script.exec;
+                runtimeInputs = script.deps or [];
+              }
+          )
+          scripts;
+
+        buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
+      in {
+        default = pkgs.mkShell {
+          shellHook = ''
+            export REPO_ROOT="$(git rev-parse --show-toplevel)"
+            export CGO_CFLAGS="-O2"
+
+            # Welcome header with gradient effect
+            ${pkgs.gum}/bin/gum style \
+              --foreground 212 --background 235 \
+              --border thick --border-foreground 212 \
+              --align center --width 60 --margin "1 0" --padding "1 2" \
+              --bold "🚀 Dotfiles Development Environment"
+
+            # Available commands section
+            commands_header=$(${pkgs.gum}/bin/gum style \
+              --foreground 99 --bold --underline "📋 Available Commands:")
+
+            commands_content=""
+            ${pkgs.lib.concatStringsSep "\n" (pkgs.lib.mapAttrsToList (name: script: ''commands_content="$commands_content$(${pkgs.gum}/bin/gum style --foreground 51 "▶ ${name}") $(${pkgs.gum}/bin/gum style --foreground 246 "${script.description}")\n"'') scripts)}
+
+            commands_box=$(printf "$commands_content" | ${pkgs.gum}/bin/gum style \
+              --border rounded --border-foreground 99 \
+              --padding "0 2" --margin "0 2")
+
+            ${pkgs.gum}/bin/gum join --vertical "$commands_header" "$commands_box"
+
+            # Repository status section with enhanced visuals
+            repo_header=$(${pkgs.gum}/bin/gum style \
+              --foreground 212 --bold --underline "📊 Repository Status:")
+
+            # Get repository info
+            branch=$(git branch --show-current 2>/dev/null || echo "unknown")
+            commit_count=$(git rev-list --count HEAD 2>/dev/null || echo "0")
+            last_commit=$(git log -1 --format="%h - %s" 2>/dev/null || echo "No commits")
+
+            # Branch info with icon
+            branch_info=$(${pkgs.gum}/bin/gum style \
+              --foreground 51 --bold "🌿 Branch: $branch")
+
+            # Commit info
+            commit_info=$(${pkgs.gum}/bin/gum style \
+              --foreground 99 "📝 Commits: $commit_count")
+
+            # Last commit info (truncated for readability)
+            last_commit_short="''${last_commit:0:60}$([ ''${#last_commit} -gt 60 ] && echo "...")"
+            last_commit_info=$(${pkgs.gum}/bin/gum style \
+              --foreground 246 "🕐 Latest: $last_commit_short")
+
+            # Check if there are any changes and create status display
+            if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+              change_count=$(git status --porcelain | wc -l | tr -d ' ')
+              status_header=$(${pkgs.gum}/bin/gum style \
+                --foreground 214 --bold "⚠️  $change_count file(s) changed:")
+
+              # Create a table of changes using gum format
+              changes_table=""
+              while IFS= read -r line; do
+                if [ -n "$line" ]; then
+                  status="''${line:0:2}"
+                  file="''${line:3}"
+                  case "$status" in
+                    "M "|" M"|"MM")
+                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 214 "│ 📝 Modified  │ $file")\n" ;;
+                    "A "|" A")
+                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 46 "│ ➕ Added     │ $file")\n" ;;
+                    "D "|" D")
+                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 196 "│ 🗑️  Deleted   │ $file")\n" ;;
+                    "R "|" R")
+                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 51 "│ 📁 Renamed   │ $file")\n" ;;
+                    "??")
+                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 99 "│ ❓ Untracked │ $file")\n" ;;
+                    *)
+                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 246 "│ 📄 $status      │ $file")\n" ;;
+                  esac
+                fi
+              done < <(git status --porcelain)
+
+              # Format the changes table
+              table_header=$(${pkgs.gum}/bin/gum style --foreground 246 --bold "┌─────────────┬────────────────────────────────────────┐")
+              table_separator=$(${pkgs.gum}/bin/gum style --foreground 246 "└─────────────┴────────────────────────────────────────┘")
+
+              changes_display=$(printf "$changes_table" | ${pkgs.gum}/bin/gum style \
+                --border rounded --border-foreground 214 --padding "0 1")
+
+              status_info="$status_header\n$changes_display"
+            else
+              status_info=$(${pkgs.gum}/bin/gum style \
+                --foreground 46 --bold --border rounded --border-foreground 46 \
+                --padding "1 2" --align center "✅ Repository is clean")
+            fi
+
+            # Combine all repository info
+            repo_info=$(${pkgs.gum}/bin/gum join --vertical \
+              "$branch_info" "$commit_info" "$last_commit_info")
+
+            repo_box=$(echo "$repo_info" | ${pkgs.gum}/bin/gum style \
+              --border rounded --border-foreground 212 \
+              --padding "0 2" --margin "0 2")
+
+            ${pkgs.gum}/bin/gum join --vertical "$repo_header" "$repo_box"
+
+            # Display status info
+            printf "$status_info\n"
+
+            # Add a helpful tip
+            tip=$(${pkgs.gum}/bin/gum style \
+              --foreground 99 --italic \
+              "💡 Tip: Use 'dx' to edit flake.nix, 'lint' to check code quality")
+
+            ${pkgs.gum}/bin/gum style \
+              --border rounded --border-foreground 99 \
+              --padding "1 2" --margin "1 0" --align center \
+              "$tip"
           '';
-          deps = with pkgs; [git statix deadnix inputs.locker.packages."${system}".default];
-          description = "Run linting tools (statix, deadnix, nix flake check, locker)";
+          packages = with pkgs;
+            [
+              alejandra # Nix
+              nixd
+              gum # Terminal UI toolkit
+
+              ruff # Python
+              black
+              isort
+              basedpyright
+              luajitPackages.luacheck
+              biome
+              oxlint
+
+              go_1_24 # Go
+              air
+              golangci-lint
+              gopls
+              (buildWithSpecificGo revive)
+              (buildWithSpecificGo templ)
+              (buildWithSpecificGo golines)
+              (buildWithSpecificGo golangci-lint-langserver)
+              (buildWithSpecificGo gomarkdoc)
+              (buildWithSpecificGo gotests)
+              (buildWithSpecificGo gotools)
+              (buildWithSpecificGo reftools)
+              pprof
+              graphviz
+
+              geesefs
+              sops
+            ]
+            ++ builtins.attrValues scriptPackages;
+        };
+      });
+
+      formatter = forAllSystems (system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+        treefmtModule = {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true; # Nix formatter
+            rustfmt.enable = true; # Rust formatter
+            black.enable = true; # Python formatter
+          };
+        };
+      in
+        inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule);
+
+      templates = {
+        devshell = {
+          description = "A devshell for developing with nix";
+          path = ./templates/devshell;
+        };
+        go-shell = {
+          description = "A go shell for developing with nix";
+          path = ./templates/go-shell;
+        };
+        templ-shell = {
+          description = "A go + templ shell for developing with nix";
+          path = ./templates/templ-shell;
+        };
+        rust-shell = {
+          description = "A rust shell for developing with nix";
+          path = ./templates/rust-shell;
+        };
+        rust-web-shell = {
+          description = "A rust web shell for developing with nix";
+          path = ./templates/rust-web-shell;
+        };
+        typescript-shell = {
+          description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs)";
+          path = ./templates/typescript-shell;
+        };
+        remix-shell = {
+          description = "A Remix JS shell for developing with bun";
+          path = ./templates/remix-shell;
+        };
+        tanstack-shell = {
+          description = "A tanstack shell for developing with nix";
+          path = ./templates/tanstack-shell;
+        };
+        phoenix-shell = {
+          description = "An Elixir Phoenix Framework shell for developing with nix";
+          path = ./templates/phoenix-shell;
+        };
+        laravel-shell = {
+          description = "A Laravel shell for developing with nix";
+          path = ./templates/laravel-shell;
+        };
+        lua-shell = {
+          description = "A lua shell for developing with nix";
+          path = ./templates/lua-shell;
+        };
+        ocaml-shell = {
+          description = "An OCaml shell with modern tooling and best practices";
+          path = ./templates/ocaml-shell;
+        };
+        python-shell = {
+          description = "A Python shell with modern tooling (basedpyright, ruff, black, pytest)";
+          path = ./templates/python-shell;
+        };
+        cpp-shell = {
+          description = "A C++ shell with modern tooling (GCC, Clang, CMake, static analysis)";
+          path = ./templates/cpp-shell;
+        };
+        cuda-shell = {
+          description = "A cuda shell for developing with nix";
+          path = ./templates/cuda-shell;
+        };
+        zig-shell = {
+          description = "A zig shell for developing with nix";
+          path = ./templates/zig-shell;
         };
       };
-
-      scriptPackages =
-        pkgs.lib.mapAttrs
-        (
-          name: script:
-            pkgs.writeShellApplication {
-              inherit name;
-              text = script.exec;
-              runtimeInputs = script.deps or [];
-            }
-        )
-        scripts;
-
-      buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
-    in {
-      default = pkgs.mkShell {
-        shellHook = ''
-          export REPO_ROOT="$(git rev-parse --show-toplevel)"
-          export CGO_CFLAGS="-O2"
-
-          # Welcome header with gradient effect
-          ${pkgs.gum}/bin/gum style \
-            --foreground 212 --background 235 \
-            --border thick --border-foreground 212 \
-            --align center --width 60 --margin "1 0" --padding "1 2" \
-            --bold "🚀 Dotfiles Development Environment"
-
-          # Available commands section
-          commands_header=$(${pkgs.gum}/bin/gum style \
-            --foreground 99 --bold --underline "📋 Available Commands:")
-
-          commands_content=""
-          ${pkgs.lib.concatStringsSep "\n" (pkgs.lib.mapAttrsToList (name: script: ''commands_content="$commands_content$(${pkgs.gum}/bin/gum style --foreground 51 "▶ ${name}") $(${pkgs.gum}/bin/gum style --foreground 246 "${script.description}")\n"'') scripts)}
-
-          commands_box=$(printf "$commands_content" | ${pkgs.gum}/bin/gum style \
-            --border rounded --border-foreground 99 \
-            --padding "0 2" --margin "0 2")
-
-          ${pkgs.gum}/bin/gum join --vertical "$commands_header" "$commands_box"
-
-          # Repository status section with enhanced visuals
-          repo_header=$(${pkgs.gum}/bin/gum style \
-            --foreground 212 --bold --underline "📊 Repository Status:")
-
-          # Get repository info
-          branch=$(git branch --show-current 2>/dev/null || echo "unknown")
-          commit_count=$(git rev-list --count HEAD 2>/dev/null || echo "0")
-          last_commit=$(git log -1 --format="%h - %s" 2>/dev/null || echo "No commits")
-
-          # Branch info with icon
-          branch_info=$(${pkgs.gum}/bin/gum style \
-            --foreground 51 --bold "🌿 Branch: $branch")
-
-          # Commit info
-          commit_info=$(${pkgs.gum}/bin/gum style \
-            --foreground 99 "📝 Commits: $commit_count")
-
-          # Last commit info (truncated for readability)
-          last_commit_short="''${last_commit:0:60}$([ ''${#last_commit} -gt 60 ] && echo "...")"
-          last_commit_info=$(${pkgs.gum}/bin/gum style \
-            --foreground 246 "🕐 Latest: $last_commit_short")
-
-          # Check if there are any changes and create status display
-          if ! git diff-index --quiet HEAD -- 2>/dev/null; then
-            change_count=$(git status --porcelain | wc -l | tr -d ' ')
-            status_header=$(${pkgs.gum}/bin/gum style \
-              --foreground 214 --bold "⚠️  $change_count file(s) changed:")
-
-            # Create a table of changes using gum format
-            changes_table=""
-            while IFS= read -r line; do
-              if [ -n "$line" ]; then
-                status="''${line:0:2}"
-                file="''${line:3}"
-                case "$status" in
-                  "M "|" M"|"MM")
-                    changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 214 "│ 📝 Modified  │ $file")\n" ;;
-                  "A "|" A")
-                    changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 46 "│ ➕ Added     │ $file")\n" ;;
-                  "D "|" D")
-                    changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 196 "│ 🗑️  Deleted   │ $file")\n" ;;
-                  "R "|" R")
-                    changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 51 "│ 📁 Renamed   │ $file")\n" ;;
-                  "??")
-                    changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 99 "│ ❓ Untracked │ $file")\n" ;;
-                  *)
-                    changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 246 "│ 📄 $status      │ $file")\n" ;;
-                esac
-              fi
-            done < <(git status --porcelain)
-
-            # Format the changes table
-            table_header=$(${pkgs.gum}/bin/gum style --foreground 246 --bold "┌─────────────┬────────────────────────────────────────┐")
-            table_separator=$(${pkgs.gum}/bin/gum style --foreground 246 "└─────────────┴────────────────────────────────────────┘")
-
-            changes_display=$(printf "$changes_table" | ${pkgs.gum}/bin/gum style \
-              --border rounded --border-foreground 214 --padding "0 1")
-
-            status_info="$status_header\n$changes_display"
-          else
-            status_info=$(${pkgs.gum}/bin/gum style \
-              --foreground 46 --bold --border rounded --border-foreground 46 \
-              --padding "1 2" --align center "✅ Repository is clean")
-          fi
-
-          # Combine all repository info
-          repo_info=$(${pkgs.gum}/bin/gum join --vertical \
-            "$branch_info" "$commit_info" "$last_commit_info")
-
-          repo_box=$(echo "$repo_info" | ${pkgs.gum}/bin/gum style \
-            --border rounded --border-foreground 212 \
-            --padding "0 2" --margin "0 2")
-
-          ${pkgs.gum}/bin/gum join --vertical "$repo_header" "$repo_box"
-
-          # Display status info
-          printf "$status_info\n"
-
-          # Add a helpful tip
-          tip=$(${pkgs.gum}/bin/gum style \
-            --foreground 99 --italic \
-            "💡 Tip: Use 'dx' to edit flake.nix, 'lint' to check code quality")
-
-          ${pkgs.gum}/bin/gum style \
-            --border rounded --border-foreground 99 \
-            --padding "1 2" --margin "1 0" --align center \
-            "$tip"
-        '';
-        packages = with pkgs;
-          [
-            alejandra # Nix
-            nixd
-            gum # Terminal UI toolkit
-
-            ruff # Python
-            black
-            isort
-            basedpyright
-            luajitPackages.luacheck
-            biome
-            oxlint
-
-            go_1_24 # Go
-            air
-            golangci-lint
-            gopls
-            (buildWithSpecificGo revive)
-            (buildWithSpecificGo templ)
-            (buildWithSpecificGo golines)
-            (buildWithSpecificGo golangci-lint-langserver)
-            (buildWithSpecificGo gomarkdoc)
-            (buildWithSpecificGo gotests)
-            (buildWithSpecificGo gotools)
-            (buildWithSpecificGo reftools)
-            pprof
-            graphviz
-
-            geesefs
-            sops
-          ]
-          ++ builtins.attrValues scriptPackages;
-      };
-    });
-
-    formatter = forAllSystems (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
-      treefmtModule = {
-        projectRootFile = "flake.nix";
-        programs = {
-          alejandra.enable = true; # Nix formatter
-          rustfmt.enable = true; # Rust formatter
-          black.enable = true; # Python formatter
+    }
+    // flake-parts.lib.mkFlake {inherit inputs;} {
+      imports = [
+        inputs.hercules-ci-effects.flakeModule
+      ];
+      systems = ["x86_64-linux"];
+      hercules-ci.flake-update = {
+        enable = true;
+        when = {
+          hour = [23];
+          dayOfWeek = ["Fri"];
         };
-      };
-    in
-      inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule);
-
-    templates = {
-      devshell = {
-        description = "A devshell for developing with nix";
-        path = ./templates/devshell;
-      };
-      go-shell = {
-        description = "A go shell for developing with nix";
-        path = ./templates/go-shell;
-      };
-      templ-shell = {
-        description = "A go + templ shell for developing with nix";
-        path = ./templates/templ-shell;
-      };
-      rust-shell = {
-        description = "A rust shell for developing with nix";
-        path = ./templates/rust-shell;
-      };
-      rust-web-shell = {
-        description = "A rust web shell for developing with nix";
-        path = ./templates/rust-web-shell;
-      };
-      typescript-shell = {
-        description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs)";
-        path = ./templates/typescript-shell;
-      };
-      remix-shell = {
-        description = "A Remix JS shell for developing with bun";
-        path = ./templates/remix-shell;
-      };
-      tanstack-shell = {
-        description = "A tanstack shell for developing with nix";
-        path = ./templates/tanstack-shell;
-      };
-      phoenix-shell = {
-        description = "An Elixir Phoenix Framework shell for developing with nix";
-        path = ./templates/phoenix-shell;
-      };
-      laravel-shell = {
-        description = "A Laravel shell for developing with nix";
-        path = ./templates/laravel-shell;
-      };
-      lua-shell = {
-        description = "A lua shell for developing with nix";
-        path = ./templates/lua-shell;
-      };
-      ocaml-shell = {
-        description = "An OCaml shell with modern tooling and best practices";
-        path = ./templates/ocaml-shell;
-      };
-      python-shell = {
-        description = "A Python shell with modern tooling (basedpyright, ruff, black, pytest)";
-        path = ./templates/python-shell;
-      };
-      cpp-shell = {
-        description = "A C++ shell with modern tooling (GCC, Clang, CMake, static analysis)";
-        path = ./templates/cpp-shell;
-      };
-      cuda-shell = {
-        description = "A cuda shell for developing with nix";
-        path = ./templates/cuda-shell;
-      };
-      zig-shell = {
-        description = "A zig shell for developing with nix";
-        path = ./templates/zig-shell;
       };
     };
-  };
 }

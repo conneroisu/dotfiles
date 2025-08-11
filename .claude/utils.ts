@@ -25,7 +25,7 @@ export class PerformanceMonitor {
   private static metrics: PerformanceMetrics[] = [];
   private static readonly MAX_METRICS = 100; // Keep last 100 executions
 
-  static startTiming(hookType: string): number {
+  static startTiming(_: string): number {
     return Date.now();
   }
 
@@ -36,20 +36,20 @@ export class PerformanceMonitor {
     errorMessage?: string
   ): PerformanceMetrics {
     const endTime = Date.now();
-    const metrics: PerformanceMetrics = {
-      hookType,
-      startTime,
-      endTime,
+    const metrics = {
+      hookType: hookType,
+      startTime: startTime,
+      endTime: endTime,
       duration: endTime - startTime,
       memoryUsage: process.memoryUsage(),
-      success,
-      errorMessage,
+      success: success,
+      errorMessage: errorMessage,
     };
 
     // Store metrics if monitoring is enabled
     const config = getConfig();
     if (config.execution.enablePerformanceMonitoring) {
-      this.metrics.push(metrics);
+      this.metrics.push(metrics as PerformanceMetrics);
 
       // Keep only recent metrics
       if (this.metrics.length > this.MAX_METRICS) {
@@ -57,10 +57,10 @@ export class PerformanceMonitor {
       }
 
       // Log performance warnings
-      this.checkPerformanceThresholds(metrics);
+      this.checkPerformanceThresholds(metrics as PerformanceMetrics);
     }
 
-    return metrics;
+    return metrics as PerformanceMetrics;
   }
 
   static getMetrics(): PerformanceMetrics[] {
@@ -196,14 +196,28 @@ export class Logger {
 
 export class InputReader {
   static async readStdinJson<T>(): Promise<T> {
-    try {
-      const input = await Bun.stdin.json() as T;
-      
-      if (!input) {
-        throw new Error('No input received from stdin');
+    const chunks: Buffer[] = [];
+    let totalSize = 0;
+    const maxInputSize = 1048576; // 1MB limit to prevent DoS
+
+    for await (const chunk of process.stdin) {
+      totalSize += chunk.length;
+      if (totalSize > maxInputSize) {
+        throw new Error(
+          `Input too large: ${totalSize} bytes exceeds limit of ${maxInputSize} bytes`
+        );
       }
-      
-      return input;
+      chunks.push(chunk);
+    }
+
+    const input = Buffer.concat(chunks).toString('utf-8');
+
+    if (!input.trim()) {
+      throw new Error('No input received from stdin');
+    }
+
+    try {
+      return JSON.parse(input) as T;
     } catch (error) {
       throw new Error(
         `Invalid JSON input: ${error instanceof Error ? error.message : 'Unknown error'}`

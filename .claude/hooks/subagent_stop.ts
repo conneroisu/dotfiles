@@ -142,7 +142,7 @@ export class SubagentStopHook {
     }
 
     Logger.warn('All TTS providers failed for subagent announcement', { message });
-    console.log(`🤖 ${message}`);
+    Logger.info('Subagent completion message fallback', { message: `🤖 ${message}` });
   }
 }
 

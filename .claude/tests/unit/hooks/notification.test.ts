@@ -7,7 +7,7 @@ describe('NotificationHook', () => {
     const mockInput: NotificationHookInput = {
       tool_name: 'TestTool',
       tool_input: { test: 'data' },
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Mock stdin
@@ -15,17 +15,17 @@ describe('NotificationHook', () => {
     const mockStdin = {
       [Symbol.asyncIterator]: async function* () {
         yield Buffer.from(JSON.stringify(mockInput));
-      }
+      },
     } as any;
-    
+
     Object.defineProperty(process, 'stdin', {
       value: mockStdin,
-      configurable: true
+      configurable: true,
     });
 
     try {
       const result = await NotificationHook.execute();
-      
+
       expect(result.success).toBe(true);
       expect(result.message).toBe('Notification logged successfully');
       expect(result.exit_code).toBe(0);
@@ -33,7 +33,7 @@ describe('NotificationHook', () => {
       // Restore original stdin
       Object.defineProperty(process, 'stdin', {
         value: originalStdin,
-        configurable: true
+        configurable: true,
       });
     }
   });
@@ -43,16 +43,16 @@ describe('NotificationHook', () => {
     const mockStdin = {
       [Symbol.asyncIterator]: async function* () {
         yield Buffer.from('invalid json');
-      }
+      },
     } as any;
-    
+
     Object.defineProperty(process, 'stdin', {
       value: mockStdin,
-      configurable: true
+      configurable: true,
     });
 
     const result = await NotificationHook.execute();
-    
+
     expect(result.success).toBe(false);
     expect(result.message).toContain('Invalid JSON input');
     expect(result.exit_code).toBe(1);
@@ -63,16 +63,16 @@ describe('NotificationHook', () => {
     const mockStdin = {
       [Symbol.asyncIterator]: async function* () {
         yield Buffer.from('');
-      }
+      },
     } as any;
-    
+
     Object.defineProperty(process, 'stdin', {
       value: mockStdin,
-      configurable: true
+      configurable: true,
     });
 
     const result = await NotificationHook.execute();
-    
+
     expect(result.success).toBe(false);
     expect(result.message).toContain('No input received');
     expect(result.exit_code).toBe(1);

@@ -89,6 +89,7 @@ designed to be enabled by higher-level feature modules like `engineer.nix`.
     carapace
     uv
     git
+    man
   ];
 in
   delib.module {

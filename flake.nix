@@ -456,7 +456,7 @@ nix develop -c lint # Run quality checks
       imports = [
         inputs.hercules-ci-effects.flakeModule
       ];
-      systems = ["x86_64-linux"];
+      systems = supportedSystems;
       hercules-ci.flake-update = {
         enable = true;
         when = {

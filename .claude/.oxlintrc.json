@@ -1,0 +1,60 @@
+{
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/.direnv/**",
+    "build",
+    "coverage",
+    "public",
+    ".cache",
+    ".tanstack",
+    ".content-collections"
+  ],
+  "rules": {
+    "no-alert": "error",
+    "oxc/approx-constant": "warn",
+    "no-plusplus": "off"
+  },
+  "plugins": [
+    "react",
+    "react-perf",
+    "oxc",
+    "typescript",
+    "import",
+    "jsx-a11y",
+    "vitest",
+    "unicorn"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "globals": [
+    "window",
+    "console",
+    "Headers",
+    "document",
+    "performance",
+    "setInterval",
+    "__dirname",
+    "exports",
+    "RequestInit",
+    "fetch",
+    "clearTimeout",
+    "setTimeout",
+    "require",
+    "clearInterval",
+    "__filename",
+    "global",
+    "module",
+    "process",
+    "Buffer",
+    "globalThis",
+    "navigator",
+    "location",
+    "NodeJS",
+    "Response",
+    "Request",
+    "Image"
+  ]
+}

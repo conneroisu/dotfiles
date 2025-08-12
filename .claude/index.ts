@@ -112,7 +112,8 @@ async function main(): Promise<void> {
 
     if (args.help) {
       const config = getConfig();
-      console.log(`
+      // Use process.stdout.write for CLI help output
+      process.stdout.write(`
 Claude Code Hook System - TypeScript Implementation
 
 Usage: bun index.ts <hook-type> [options]
@@ -141,31 +142,31 @@ Examples:
   bun index.ts pre_tool_use    # Pre-tool execution security validation
   bun index.ts subagent_stop   # Subagent completion processing
   bun index.ts --stats         # Show performance statistics
-      `);
+`);
       process.exit(0);
     }
 
     if (args.list) {
-      console.log('Available hooks:');
+      process.stdout.write('Available hooks:\n');
       HookRouter.getAvailableHooks().forEach((hook) => {
-        console.log(`  - ${hook}`);
+        process.stdout.write(`  - ${hook}\n`);
       });
       process.exit(0);
     }
 
     if (args.stats) {
-      console.log('\n📊 Performance Statistics');
-      console.log('========================');
+      process.stdout.write('\n📊 Performance Statistics\n');
+      process.stdout.write('========================\n');
       const overallStats = PerformanceMonitor.getAverageMetrics();
-      console.log(JSON.stringify(overallStats, null, 2));
+      process.stdout.write(JSON.stringify(overallStats, null, 2) + '\n');
 
-      console.log('\n📈 Per-Hook Statistics');
-      console.log('======================');
+      process.stdout.write('\n📈 Per-Hook Statistics\n');
+      process.stdout.write('======================\n');
       HookRouter.getAvailableHooks().forEach((hookType) => {
         const hookStats = PerformanceMonitor.getAverageMetrics(hookType);
         if (hookStats.totalExecutions) {
-          console.log(`\n${hookType}:`);
-          console.log(JSON.stringify(hookStats, null, 2));
+          process.stdout.write(`\n${hookType}:\n`);
+          process.stdout.write(JSON.stringify(hookStats, null, 2) + '\n');
         }
       });
       process.exit(0);
@@ -173,21 +174,23 @@ Examples:
 
     if (args.config) {
       const configManager = getConfig();
-      console.log('\n⚙️  Current Configuration');
-      console.log('=========================');
-      console.log(JSON.stringify(configManager, null, 2));
+      process.stdout.write('\n⚙️  Current Configuration\n');
+      process.stdout.write('=========================\n');
+      process.stdout.write(JSON.stringify(configManager, null, 2) + '\n');
       process.exit(0);
     }
 
     const hookType = positionals[0] as HookType;
 
     if (!hookType) {
-      console.error('Error: Hook type is required. Use --help for usage information.');
+      process.stderr.write('Error: Hook type is required. Use --help for usage information.\n');
       process.exit(1);
     }
 
     if (!HookRouter.getAvailableHooks().includes(hookType)) {
-      console.error(`Error: Unknown hook type '${hookType}'. Use --list to see available hooks.`);
+      process.stderr.write(
+        `Error: Unknown hook type '${hookType}'. Use --list to see available hooks.\n`
+      );
       process.exit(1);
     }
 
@@ -195,9 +198,9 @@ Examples:
     const result = await HookRouter.route(hookType);
 
     if (result.blocked) {
-      console.error(`🚫 Hook blocked: ${result.message}`);
+      process.stderr.write(`🚫 Hook blocked: ${result.message}\n`);
     } else if (!result.success && result.message) {
-      console.error(`❌ Hook failed: ${result.message}`);
+      process.stderr.write(`❌ Hook failed: ${result.message}\n`);
     } else if (result.success) {
       Logger.debug('Hook execution successful', { hookType });
     }
@@ -207,7 +210,7 @@ Examples:
     Logger.error('Main execution failed', {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
-    console.error('Fatal error:', error);
+    process.stderr.write(`Fatal error: ${error}\n`);
     process.exit(1);
   }
 }

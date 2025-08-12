@@ -20,7 +20,9 @@ describe('SecurityValidator', () => {
     });
 
     test('should allow access to .env.template files', () => {
-      const result = SecurityValidator.validateEnvFileAccess('Read', { file_path: '.env.template' });
+      const result = SecurityValidator.validateEnvFileAccess('Read', {
+        file_path: '.env.template',
+      });
       expect(result.allowed).toBe(true);
     });
 
@@ -37,7 +39,9 @@ describe('SecurityValidator', () => {
 
   describe('validateDangerousCommands', () => {
     test('should log but allow rm -rf commands (current behavior)', () => {
-      const result = SecurityValidator.validateDangerousCommands('Bash', { command: 'rm -rf /tmp/test' });
+      const result = SecurityValidator.validateDangerousCommands('Bash', {
+        command: 'rm -rf /tmp/test',
+      });
       expect(result.allowed).toBe(true); // Currently only logging, not blocking
     });
 

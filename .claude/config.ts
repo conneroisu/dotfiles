@@ -2,7 +2,7 @@
  * Configuration Management for Claude Code Hook System
  *
  * Provides centralized configuration with environment variable support,
- * validation, and type-safe defaults.
+ * validation, and type-safe defaults following Tiger Style principles.
  */
 
 export interface SecurityConfig {

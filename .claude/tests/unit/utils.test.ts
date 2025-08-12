@@ -1,5 +1,10 @@
 import { test, expect, describe } from 'bun:test';
-import { validateCommandString, validateFilePath, escapeShellArg, createHookResult } from '../../utils.ts';
+import {
+  validateCommandString,
+  validateFilePath,
+  escapeShellArg,
+  createHookResult,
+} from '../../utils.ts';
 
 describe('Utility Functions', () => {
   describe('validateCommandString', () => {
@@ -27,10 +32,10 @@ describe('Utility Functions', () => {
         '&& rm -rf /',
         '| rm -rf /',
         '`rm -rf /`',
-        '$(rm -rf /)'
+        '$(rm -rf /)',
       ];
 
-      dangerousCommands.forEach(cmd => {
+      dangerousCommands.forEach((cmd) => {
         const result = validateCommandString(cmd);
         expect(result.valid).toBe(false);
         expect(result.reason).toContain('dangerous command pattern');
@@ -66,7 +71,7 @@ describe('Utility Functions', () => {
   describe('escapeShellArg', () => {
     test('should properly escape shell arguments', () => {
       expect(escapeShellArg('simple')).toBe("'simple'");
-      expect(escapeShellArg("arg with spaces")).toBe("'arg with spaces'");
+      expect(escapeShellArg('arg with spaces')).toBe("'arg with spaces'");
       expect(escapeShellArg("arg'with'quotes")).toBe("'arg'\\''with'\\''quotes'");
     });
   });

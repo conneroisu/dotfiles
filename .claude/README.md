@@ -5,7 +5,7 @@ A production-ready TypeScript hook system for Claude Code with comprehensive log
 ## 🎯 Features
 
 - **Strict TypeScript**: Full type safety with `exactOptionalPropertyTypes` and comprehensive type checking
-- **Security-First**: Environment file protection, command validation, and security audit integration  
+- **Security-First**: Environment file protection, command validation, and security audit integration
 - **Performance Monitoring**: Built-in metrics collection and performance threshold warnings
 - **Configuration Management**: Environment-based configuration with validation
 - **Pre-commit Hooks**: Automated code quality checks following Tiger Style principles
@@ -73,20 +73,21 @@ bun run clean            # Clean build artifacts
 
 ## 📋 Available Hooks
 
-| Hook Type | Description | Key Features |
-|-----------|-------------|--------------|
-| `notification` | User input waiting notifications | Terminal notifications, structured logging |
-| `pre_tool_use` | Pre-tool execution security validation | .env protection, dangerous command detection |
-| `post_tool_use` | Post-tool execution logging and analysis | Comprehensive usage analytics, performance tracking |
-| `user_prompt_submit` | User prompt submission processing | Input validation, submission logging |
-| `stop` | Session completion handler | Linting integration, TTS, AI completion messages |
-| `subagent_stop` | Subagent completion processing | Transcript copying, specialized announcements |
+| Hook Type            | Description                              | Key Features                                        |
+| -------------------- | ---------------------------------------- | --------------------------------------------------- |
+| `notification`       | User input waiting notifications         | Terminal notifications, structured logging          |
+| `pre_tool_use`       | Pre-tool execution security validation   | .env protection, dangerous command detection        |
+| `post_tool_use`      | Post-tool execution logging and analysis | Comprehensive usage analytics, performance tracking |
+| `user_prompt_submit` | User prompt submission processing        | Input validation, submission logging                |
+| `stop`               | Session completion handler               | Linting integration, TTS, AI completion messages    |
+| `subagent_stop`      | Subagent completion processing           | Transcript copying, specialized announcements       |
 
 ## 🔧 Configuration
 
 Configure the hook system via environment variables:
 
 ### Security Configuration
+
 ```bash
 CLAUDE_HOOKS_BLOCK_DANGEROUS=true       # Block dangerous commands
 CLAUDE_HOOKS_PROTECT_ENV=true           # Protect .env file access
@@ -95,6 +96,7 @@ CLAUDE_HOOKS_MAX_OUTPUT_SIZE=1048576    # Max output size (1MB)
 ```
 
 ### Timeout Configuration
+
 ```bash
 CLAUDE_HOOKS_TIMEOUT_GENERAL=60000      # General timeout (60s)
 CLAUDE_HOOKS_TIMEOUT_LINTING=120000     # Linting timeout (120s)
@@ -103,6 +105,7 @@ CLAUDE_HOOKS_TIMEOUT_TTS=10000          # TTS timeout (10s)
 ```
 
 ### Provider Configuration
+
 ```bash
 CLAUDE_HOOKS_TTS_PROVIDER=elevenlabs    # TTS provider
 CLAUDE_HOOKS_LLM_PROVIDER=openai        # LLM provider
@@ -184,6 +187,7 @@ graph TD
    - Configurable patterns and exclusions
 
 2. **Dangerous Command Detection**
+
    ```typescript
    // Detected patterns
    - rm -rf commands
@@ -225,21 +229,22 @@ All logs use consistent JSON structure:
 
 ### Log Files
 
-| File | Purpose | Hook Types |
-|------|---------|------------|
-| `notification.json` | User notifications and waiting states | notification |
-| `pre_tool_use.json` | Security validations and blocks | pre_tool_use |
-| `post_tool_use.json` | Tool usage analytics | post_tool_use |
-| `user_prompt_submit.json` | Prompt submissions | user_prompt_submit |
-| `stop.json` | Session completions | stop |
-| `subagent_stop.json` | Subagent completions | subagent_stop |
-| `subagent_chat.json` | Transcript copies | subagent_stop (--chat) |
+| File                      | Purpose                               | Hook Types             |
+| ------------------------- | ------------------------------------- | ---------------------- |
+| `notification.json`       | User notifications and waiting states | notification           |
+| `pre_tool_use.json`       | Security validations and blocks       | pre_tool_use           |
+| `post_tool_use.json`      | Tool usage analytics                  | post_tool_use          |
+| `user_prompt_submit.json` | Prompt submissions                    | user_prompt_submit     |
+| `stop.json`               | Session completions                   | stop                   |
+| `subagent_stop.json`      | Subagent completions                  | subagent_stop          |
+| `subagent_chat.json`      | Transcript copies                     | subagent_stop (--chat) |
 
 ## 🎯 Stop Hook Deep Dive
 
 The crown jewel of the hook system with advanced features:
 
 ### 🔍 Linting Integration
+
 ```bash
 # Runs with extended timeout (120s)
 nix develop -c lint
@@ -252,10 +257,11 @@ nix develop -c lint
 ```
 
 ### 🤖 AI Completion Messages
+
 ```typescript
 // Provider priority chain
 1. OpenAI GPT-4o-mini (15s timeout)
-2. Anthropic Claude Haiku (15s timeout)  
+2. Anthropic Claude Haiku (15s timeout)
 3. Fallback to predefined messages
 
 // Features:
@@ -265,6 +271,7 @@ nix develop -c lint
 ```
 
 ### 🔊 TTS Announcements
+
 ```typescript
 // Provider priority chain
 1. ElevenLabs API (10s timeout)
@@ -279,6 +286,7 @@ nix develop -c lint
 ```
 
 ### 📄 Transcript Management
+
 ```bash
 # Activated with --chat flag
 bun index.ts stop --chat
@@ -293,12 +301,14 @@ bun index.ts stop --chat
 ## 🤖 Subagent Integration
 
 ### Specialized Processing
+
 - **Enhanced metadata**: Enriched logging with subagent IDs
 - **Transcript copying**: Dedicated `subagent_chat.json` logging
 - **Size validation**: 1MB limits with truncation warnings
 - **TTS integration**: Specialized "Subagent Complete" announcements
 
 ### Usage Examples
+
 ```bash
 # Basic subagent completion
 echo '{"session_id":"test","subagent_id":"agent-1"}' | bun index.ts subagent_stop
@@ -310,6 +320,7 @@ echo '{"session_id":"test","transcript_path":"/path/to/transcript"}' | bun index
 ## 🧪 Testing & Development
 
 ### Test Suite
+
 ```bash
 # Run all tests
 bun test
@@ -325,6 +336,7 @@ bun test --watch
 ```
 
 ### Test Structure
+
 ```
 tests/
 ├── unit/
@@ -338,6 +350,7 @@ tests/
 ### Adding New Hooks
 
 1. **Create hook file**: `hooks/my_hook.ts`
+
 ```typescript
 export class MyHook {
   static async execute(): Promise<HookResult> {
@@ -354,25 +367,28 @@ export class MyHook {
 ## 📈 Performance & Monitoring
 
 ### Optimized Timeouts
+
 - **Linting operations**: 120 seconds (complex projects)
 - **AI completion**: 15 seconds (quick fallback)
 - **TTS operations**: 10 seconds (immediate feedback)
 - **General commands**: 60 seconds (balanced performance)
 
 ### Resource Management
+
 - **Memory limits**: 1MB input/output with truncation
 - **Process cleanup**: Automatic cleanup on timeouts
 - **Concurrent safety**: Single execution per hook type
 - **Log rotation**: Automatic cleanup of oversized logs
 
 ### Performance Monitoring
+
 ```typescript
 // Built-in execution timing
 Logger.info('Hook execution completed', {
   hookType: 'stop',
   success: true,
   duration_ms: 1234,
-  memory_used: '45MB'
+  memory_used: '45MB',
 });
 ```
 
@@ -381,6 +397,7 @@ Logger.info('Hook execution completed', {
 ### Common Issues
 
 #### Hook Not Executing
+
 ```bash
 # Check Claude Code configuration
 claude settings get hooks
@@ -393,6 +410,7 @@ cd /path/to/hooks && echo '{}' | bun index.ts notification
 ```
 
 #### TTS Not Working
+
 ```bash
 # Check if TTS commands exist
 which tts_elevenlabs tts_openai tts_pyttsx3
@@ -402,6 +420,7 @@ echo "test message" | tts_elevenlabs
 ```
 
 #### Linting Timeouts
+
 ```bash
 # Test linting command directly
 nix develop -c lint
@@ -414,17 +433,19 @@ export HOOK_TIMEOUT=180000  # 3 minutes
 ```
 
 #### Permission Errors
+
 ```bash
 # Fix log directory permissions
 chmod -R 755 /path/to/hooks/logs
 
-# Fix hook execution permissions  
+# Fix hook execution permissions
 chmod +x /path/to/hooks/index.ts
 ```
 
 ### Debug Mode
 
 Enable comprehensive debugging:
+
 ```bash
 # Environment variable
 LOG_LEVEL=debug bun index.ts stop --chat
@@ -434,6 +455,7 @@ DEBUG=1 LOG_LEVEL=debug bun index.ts stop --chat
 ```
 
 ### Health Check
+
 ```bash
 # Verify all components
 bun index.ts --help
@@ -447,7 +469,7 @@ ls -la logs/
 
 1. **Follow Tiger Style principles**
    - Safety first with comprehensive validation
-   - Performance optimization with smart timeouts  
+   - Performance optimization with smart timeouts
    - Developer experience with clear documentation
 
 2. **Code Quality Standards**
@@ -463,6 +485,7 @@ ls -la logs/
    - Add integration tests for new features
 
 ### Development Setup
+
 ```bash
 # Clone and setup
 git clone <repository>
@@ -483,6 +506,7 @@ bun test --watch
 Part of the [conneroisu/dotfiles](https://github.com/conneroisu/dotfiles) repository.
 
 **Built with:**
+
 - 🧠 **Claude Code** - AI-powered development
 - ⚡ **Bun Runtime** - Fast JavaScript/TypeScript runtime
 - 🎯 **Tiger Style** - Safety, performance, developer experience

@@ -221,7 +221,12 @@ alias search="nviml"        # Descriptive alias
     name = "nviml";
     src = ./.;
 
-    nativeBuildInputs = [pkgs.makeWrapper];
+    nativeBuildInputs = with pkgs; [
+      makeWrapper
+      ripgrep
+      fzf
+      bat
+    ];
 
     installPhase = ''
       mkdir -p $out/bin
@@ -238,15 +243,11 @@ in
 
     options = singleEnableOption false;
 
-    nixos.ifEnabled = {myconfig, ...}: {
-      environment.systemPackages = [
-        program
-      ];
+    nixos.ifEnabled = {
+      environment.systemPackages = [program];
     };
 
-    darwin.ifEnabled = {myconfig, ...}: {
-      environment.systemPackages = [
-        program
-      ];
+    darwin.ifEnabled = {
+      environment.systemPackages = [program];
     };
   }

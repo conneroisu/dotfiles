@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# nviml - Neovim Live Search
+# nviml - Neovim Terminal Live Search
 # A terminal-based live grep tool with preview that opens files in editor
 #
 # Author: Conner Ohnesorge
@@ -23,13 +23,13 @@ readonly NC='\033[0m' # No Color
 # Function to display usage information
 show_usage() {
     cat << EOF
-${BLUE}${SCRIPT_NAME}${NC} v${VERSION} - Neovim Live Search
+${BLUE}${SCRIPT_NAME}${NC} v${VERSION} - Neovim Terminal Live Search
 
 ${GREEN}USAGE:${NC}
     ${SCRIPT_NAME} [DIRECTORY] [RIPGREP_OPTIONS...]
 
 ${GREEN}DESCRIPTION:${NC}
-    Interactive live search through codebases with real-time preview.
+    Interactive live search through codebases with real-time preview without having to open neovim.
     Uses ripgrep for fast searching, fzf for selection, and opens
     files in your editor at the exact line.
 
@@ -152,40 +152,30 @@ main() {
     echo -e "${YELLOW}Press Ctrl-C to exit, Enter to open file${NC}"
     echo
 
-    # Execute live grep with enhanced fzf configuration
-    rg --line-number \
-       --no-heading \
-       --color=always \
-       --smart-case \
-       --hidden \
-       --follow \
-       --glob='!.git/*' \
-       --glob='!node_modules/*' \
-       --glob='!*.min.js' \
-       --glob='!*.map' \
-       "${rg_args[@]}" \
-       "$search_dir" \
-    | fzf --ansi \
-          --height=100% \
-          --reverse \
-          --border \
-          --color "hl:-1:underline,hl+:-1:underline:reverse" \
-          --color "border:#1e1e2e,header:#f38ba8" \
-          --delimiter : \
-          --header="🔍 Live Search | Enter: Open | Ctrl-C: Exit" \
-          --header-first \
-          --info=inline \
-          --prompt="Search❯ " \
-          --pointer="▶" \
-          --marker="✓" \
-          --preview 'bat --color=always --style=numbers,changes --highlight-line {2} {1}' \
-          --preview-window 'right,60%,border-left,+{2}+3/3,~3' \
-          --preview-label="Preview" \
-          --bind 'enter:become('"$editor"' {1} +{2})' \
-          --bind 'ctrl-/:toggle-preview' \
-          --bind 'ctrl-u:preview-page-up' \
-          --bind 'ctrl-d:preview-page-down' \
-          --bind 'ctrl-r:reload(rg --line-number --no-heading --color=always --smart-case --hidden --follow --glob="!.git/*" --glob="!node_modules/*" --glob="!*.min.js" --glob="!*.map" '"${rg_args[*]}"' '"$search_dir"')' \
+    # Execute interactive live grep with enhanced fzf configuration
+    fzf --ansi \
+        --disabled \
+        --height=100% \
+        --reverse \
+        --border \
+        --color "hl:-1:underline,hl+:-1:underline:reverse" \
+        --color "border:#1e1e2e,header:#f38ba8" \
+        --delimiter : \
+        --header="🔍 Live Search | Enter: Open | Ctrl-C: Exit | Type to search" \
+        --header-first \
+        --info=inline \
+        --prompt="Search❯ " \
+        --pointer="▶" \
+        --marker="✓" \
+        --preview 'bat --color=always --style=numbers,changes --highlight-line {2} {1}' \
+        --preview-window 'right,60%,border-left,+{2}+3/3,~3' \
+        --preview-label="Preview" \
+        --bind 'enter:become('"$editor"' {1} +{2})' \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-u:preview-page-up' \
+        --bind 'ctrl-d:preview-page-down' \
+        --bind "change:reload:sleep 0.1; rg --line-number --no-heading --color=always --smart-case --hidden --follow --glob='!.git/*' --glob='!node_modules/*' --glob='!*.min.js' --glob='!*.map' ${rg_args[*]} {q} '$search_dir' || true" \
+        --bind 'start:reload:rg --line-number --no-heading --color=always --smart-case --hidden --follow --glob="!.git/*" --glob="!node_modules/*" --glob="!*.min.js" --glob="!*.map" '"${rg_args[*]}"' . '"$search_dir"'' \
     || {
         local exit_code=$?
         if [[ $exit_code -eq 130 ]]; then

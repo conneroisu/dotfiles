@@ -4,22 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a sophisticated NixOS/Home Manager dotfiles repository using the **Denix** framework for modular configuration management. It supports multiple platforms (NixOS, macOS via nix-darwin, Home Manager) with unified configuration.
+This is a NixOS/Home Manager dotfiles repository using the **Denix** framework for modular configuration management. It supports multiple platforms (NixOS, macOS via nix-darwin, Home Manager) with unified configuration.
 
-## Common Commands
+## Common Tools
 
+Use the nixos and context7 mcp for background info (both of these should be used atleast 3 times anytime you edit a nix file)
+
+### Development Commands
 All commands should be run using `nix develop -c <command>` to ensure the proper shell environment is loaded.
-
-### Development
 - `nix develop -c lint` - Run linting tools (statix, deadnix, nix flake check) (if on nixos, should run `nixos-rebuild build --flake .` for better results)
 - `nix develop -c dx` - Edit the flake.nix file
-- `nix fmt` - Format code using treefmt (alejandra for Nix, rustfmt, black for Python)
+- `nix fmt` - Format code using treefmt
 
-### Testing
+#### Testing
 - Individual program tests: `cd modules/programs/<program-name> && nix build` to test custom program builds
-- Convert_img tests: `cd modules/programs/convert_img && python -m pytest tests/`
+- convert_img tests: `cd modules/programs/convert_img && python -m pytest tests/`
 
-### Installation/Rebuild
+#### Installation/Rebuild
+
 ```bash
 # macOS
 darwin-rebuild switch --flake . --show-trace
@@ -28,10 +30,11 @@ darwin-rebuild switch --flake . --show-trace
 nix build .#homeConfigurations.x86_64-linux.activationPackage
 
 # NixOS
-sudo nixos-rebuild switch --flake .
+nixos-rebuild build --flake .
 ```
 
 ### Templates
+
 Create development shells with:
 ```bash
 nix flake init -t github:conneroisu/dotfiles#<template-name>
@@ -39,6 +42,7 @@ nix flake init -t github:conneroisu/dotfiles#<template-name>
 Available templates: devshell, rust-shell, go-shell, go-templ-shell, remix-js-shell, laravel-shell, phoenix-shell
 
 ### Debugging and Troubleshooting
+
 - `nix flake check` - Validate flake outputs and check for errors
 - `nix eval .#nixosConfigurations.<hostname>.config.system.build.toplevel` - Check NixOS configuration evaluation
 - `nix show-derivation` - Inspect derivation details for debugging builds

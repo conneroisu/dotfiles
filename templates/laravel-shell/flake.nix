@@ -21,7 +21,7 @@
 
       php = pkgs.api.buildPhpFromComposer {
         src = inputs.self;
-        php = pkgs.php81; # Change to php56, php70, ..., php81, php82, php83 etc.
+        php = pkgs.php82; # Updated to php82 for compatibility with Satis requirements
       };
     in {
       devShells.default = pkgs.mkShellNoCC {
@@ -50,7 +50,7 @@
             rev = "5c2456800f331d2895996bb681fd96acafe5f031";
             hash = "sha256-BYNpJpzBN6iBpesvdrgvpyYs0+MjhmKzDEz5CUH7xlI=";
           };
-          vendorHash = "sha256-YA5UIlGhRVdkz+NFiujGRkb9Zx8Up4IEOmco1rEOkGk=";
+          vendorHash = "sha256-SpKS2GLxh829MceZTsmOBAZikDkARHg1koKk9cUazxM=";
           meta.mainProgram = "satis";
         };
         drupal = php.buildComposerProject {

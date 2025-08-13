@@ -392,7 +392,7 @@ nix develop -c lint # Run quality checks
       };
       askama-shell = {
         description = "A rust web shell for developing with nix and askama.";
-        path = ./templates/rust-web-shell;
+        path = ./templates/askama-shell;
       };
       typescript-shell = {
         description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs).";

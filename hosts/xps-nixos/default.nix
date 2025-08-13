@@ -138,8 +138,6 @@ delib.host {
       printing.enable = true;
       libinput.enable = true;
       gnome.gnome-keyring.enable = true;
-      gvfs.enable = true; # Mount, trash, and other functionalities
-      tumbler.enable = true; # Thumbnails
     };
 
     time.timeZone = "America/Chicago";

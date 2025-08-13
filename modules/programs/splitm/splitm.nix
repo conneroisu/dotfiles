@@ -22,7 +22,7 @@ structured text data with clear separators.
 # Split file using default delimiter (---)
 splitm input.txt
 
-# Custom delimiter and output prefix  
+# Custom delimiter and output prefix
 splitm -d "===" -p "part_" document.txt
 
 # Help information

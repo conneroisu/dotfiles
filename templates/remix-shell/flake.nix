@@ -73,19 +73,18 @@
           echo "Welcome to the remix-js devshell!"
         '';
       };
-    });
 
-    # Uncomment to build packages with bun2nix
-    # packages = forAllSystems (system: let
-    #   pkgs = import nixpkgs {
-    #     inherit system;
-    #   };
-    # in {
-    #   # Example package using mkBunDerivation
-    #   # my-remix-app = pkgs.callPackage ./default.nix {
-    #   #   inherit (bun2nix.lib.${system}) mkBunDerivation;
-    #   # };
-    # });
+      # Uncomment to build packages with bun2nix
+      # packages = forAllSystems (system: let
+      #   pkgs = import nixpkgs {
+      #     inherit system;
+      #   };
+      # in {
+      #   # Example package using mkBunDerivation
+      #   # my-remix-app = pkgs.callPackage ./default.nix {
+      #   #   inherit (bun2nix.lib.${system}) mkBunDerivation;
+      #   # };
+      # });
 
       formatter = let
         treefmtModule = {

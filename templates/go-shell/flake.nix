@@ -108,6 +108,9 @@ nix fmt
         projectRootFile = "flake.nix";
         programs = {
           alejandra.enable = true; # Nix formatter
+          gofmt.enable = true; # Go formatter
+          golines.enable = true; # Go formatter (Shorter lines)
+          goimports.enable = true; # Go formatter (Organize/Clean imports)
         };
       };
     in {

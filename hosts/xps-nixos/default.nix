@@ -79,6 +79,7 @@ delib.host {
         audio.enable = true;
         bluetooth.enable = true;
         hyprland.enable = true;
+        kde.enable = true;
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;
@@ -137,6 +138,8 @@ delib.host {
       printing.enable = true;
       libinput.enable = true;
       gnome.gnome-keyring.enable = true;
+      gvfs.enable = true; # Mount, trash, and other functionalities
+      tumbler.enable = true; # Thumbnails
     };
 
     time.timeZone = "America/Chicago";

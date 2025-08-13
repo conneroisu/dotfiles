@@ -375,67 +375,67 @@ nix develop -c lint # Run quality checks
 
     templates = {
       devshell = {
-        description = "A devshell for developing with nix";
+        description = "A devshell for developing with nix.";
         path = ./templates/devshell;
       };
       go-shell = {
-        description = "A go shell for developing with nix";
+        description = "A go shell for developing with nix.";
         path = ./templates/go-shell;
       };
       templ-shell = {
-        description = "A go + templ shell for developing with nix";
+        description = "A go + templ shell for developing with nix.";
         path = ./templates/templ-shell;
       };
       rust-shell = {
-        description = "A rust shell for developing with nix";
+        description = "A rust shell for developing with nix.";
         path = ./templates/rust-shell;
       };
-      rust-web-shell = {
-        description = "A rust web shell for developing with nix";
+      askama-shell = {
+        description = "A rust web shell for developing with nix and askama.";
         path = ./templates/rust-web-shell;
       };
       typescript-shell = {
-        description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs)";
+        description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs).";
         path = ./templates/typescript-shell;
       };
       remix-shell = {
-        description = "A Remix JS shell for developing with bun";
+        description = "A Remix JS shell for developing with bun.";
         path = ./templates/remix-shell;
       };
       tanstack-shell = {
-        description = "A tanstack shell for developing with nix";
+        description = "A tanstack shell for developing with nix.";
         path = ./templates/tanstack-shell;
       };
       phoenix-shell = {
-        description = "An Elixir Phoenix Framework shell for developing with nix";
+        description = "An Elixir Phoenix Framework shell for developing with nix.";
         path = ./templates/phoenix-shell;
       };
       laravel-shell = {
-        description = "A Laravel shell for developing with nix";
+        description = "A Laravel shell for developing with nix.";
         path = ./templates/laravel-shell;
       };
       lua-shell = {
-        description = "A lua shell for developing with nix";
+        description = "A lua shell for developing with nix.";
         path = ./templates/lua-shell;
       };
       ocaml-shell = {
-        description = "An OCaml shell with modern tooling and best practices";
+        description = "An OCaml shell with modern tooling and best practices.";
         path = ./templates/ocaml-shell;
       };
       python-shell = {
-        description = "A Python shell with modern tooling (basedpyright, ruff, black, pytest)";
+        description = "A Python shell with modern tooling (basedpyright, ruff, black, pytest).";
         path = ./templates/python-shell;
       };
       cpp-shell = {
-        description = "A C++ shell with modern tooling (GCC, Clang, CMake, static analysis)";
+        description = "A C++ shell with modern tooling (GCC, Clang, CMake, static analysis).";
         path = ./templates/cpp-shell;
       };
       cuda-shell = {
-        description = "A cuda shell for developing with nix";
+        description = "A cuda shell for developing with nix.";
         path = ./templates/cuda-shell;
       };
       zig-shell = {
-        description = "A zig shell for developing with nix";
+        description = "A zig shell for developing with nix.";
         path = ./templates/zig-shell;
       };
     };

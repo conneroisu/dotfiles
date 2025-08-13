@@ -82,7 +82,7 @@ in
     nixos.ifEnabled = {myconfig, ...}: let
       # Get username from the constants module for consistency
       inherit (myconfig.constants) username;
-      
+
       # Select the appropriate config file based on platform
       ghosttyConfigFile = ../../../.config/ghostty/ghostty.linux;
     in {
@@ -96,12 +96,12 @@ in
             mkdir -p "$TARGET_DIR"
             chown "${username}:users" "$TARGET_DIR"
           fi
-          
+
           # Create or update the config symlink
           # Using -f to force update if it already exists
           CONFIG_LINK="$TARGET_DIR/config"
           CONFIG_SOURCE="${ghosttyConfigFile}"
-          
+
           if ln -sf "$CONFIG_SOURCE" "$CONFIG_LINK"; then
             chown -h "${username}:users" "$CONFIG_LINK"
           else

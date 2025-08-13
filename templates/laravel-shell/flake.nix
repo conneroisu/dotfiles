@@ -23,17 +23,18 @@
         src = inputs.self;
         php = pkgs.php81; # Change to php56, php70, ..., php81, php82, php83 etc.
       };
+    in {
       devShells.default = pkgs.mkShellNoCC {
-          name = "php-devshell";
-          buildInputs = [
-            php
-            php.packages.composer
-            php.packages.phpstan
-            php.packages.psalm
-            pkgs.phpunit
-            self.packages.${system}.satis
-          ];
-        };
+        name = "php-devshell";
+        buildInputs = [
+          php
+          php.packages.composer
+          php.packages.phpstan
+          # php.packages.psalm # Temporarily disabled as it's marked broken in current nixpkgs
+          pkgs.phpunit
+          self.packages.${system}.satis
+        ];
+      };
 
       checks = {
         inherit (self.packages.${system}) drupal satis symfony-demo;
@@ -46,8 +47,8 @@
           src = pkgs.fetchFromGitHub {
             owner = "composer";
             repo = "satis";
-            rev = "23fdf4c1893567c6e46a2cc7fcc868b913f03b28";
-            hash = "sha256-UMf9/UQl7lK+AG58lBBFkJMpklooWJ4vpAX5ibciFJI=";
+            rev = "5c2456800f331d2895996bb681fd96acafe5f031";
+            hash = "sha256-BYNpJpzBN6iBpesvdrgvpyYs0+MjhmKzDEz5CUH7xlI=";
           };
           vendorHash = "sha256-YA5UIlGhRVdkz+NFiujGRkb9Zx8Up4IEOmco1rEOkGk=";
           meta.mainProgram = "satis";
@@ -58,8 +59,8 @@
           src = pkgs.fetchFromGitHub {
             owner = "drupal";
             repo = "drupal";
-            rev = "72e7c019993f7d8491de277c66f40354a0967b00";
-            hash = "sha256-nrR+jj8wCTN2RLWxik19emEGyVqzoBiUo6aAfNQZG8Q=";
+            rev = "967e3af639f380d7524c1551ac207339cb16eaa4";
+            hash = "sha256-88Lks6DGaiHvt4561PCfbg9brcW7OQQmBiPFOUeaq6Y=";
           };
           vendorHash = "sha256-39cCLG4x8/C9XZG2sOCpxO1HUsqt3DduCMMIxPCursw=";
         };
@@ -120,8 +121,8 @@
           src = pkgs.fetchFromGitHub {
             owner = "symfony";
             repo = "demo";
-            rev = "e8a754777bd400ecf87e8c6eeea8569d4846d357";
-            hash = "sha256-ZG0O8O4X5t/GkAVKhcedd3P7WXYiZ0asMddX1XfUVR4=";
+            rev = "143bba24480ad28e911c18e879a1d17623b447fb";
+            hash = "sha256-8VJyidkuU/JKNES58NtPHNpOLR6iGGsFp6VaDozoRe0=";
           };
           composerNoDev = false;
           composerNoPlugins = false;
@@ -240,21 +241,21 @@
           );
         };
         # nix run .#psalm -- --version
-        psalm = {
-          type = "app";
-          program = lib.getExe (
-            pkgs.writeShellApplication {
-              name = "psalm";
-              runtimeInputs = [
-                php
-                php.packages.psalm
-              ];
-              text = ''
-                ${lib.getExe php.packages.psalm} "$@"
-              '';
-            }
-          );
-        };
+        # psalm = {
+        #   type = "app";
+        #   program = lib.getExe (
+        #     pkgs.writeShellApplication {
+        #       name = "psalm";
+        #       runtimeInputs = [
+        #         php
+        #         php.packages.psalm
+        #       ];
+        #       text = ''
+        #         ${lib.getExe php.packages.psalm} "$@"
+        #       '';
+        #     }
+        #   );
+        # }; # Temporarily disabled as psalm is marked broken in current nixpkgs
       };
 
       formatter = let

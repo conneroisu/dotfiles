@@ -8,7 +8,7 @@ applications with type-safe HTML templating in Go.
 
 ## Platform Support
 - ✅ x86_64-linux
-- ✅ aarch64-linux (ARM64 Linux) 
+- ✅ aarch64-linux (ARM64 Linux)
 - ✅ x86_64-darwin (Intel macOS)
 - ✅ aarch64-darwin (Apple Silicon macOS)
 
@@ -25,7 +25,7 @@ applications with type-safe HTML templating in Go.
 # Create new project from template
 nix flake init -t github:conneroisu/dotfiles#templ-shell
 
-# Enter development shell  
+# Enter development shell
 nix develop
 
 # Generate templ files

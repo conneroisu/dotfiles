@@ -89,14 +89,14 @@ in
       myconfig = {
         features.zshell.enable = true;
         programs = {
-        dx.enable = true;
-        md2pdf.enable = true;
-        convert_img.enable = true;
-        catls.enable = true;
-        cmbd.enable = true;
-        splitm.enable = true;
-        nviml.enable = true;
-        cccleaner.enable = true;
+          dx.enable = true;
+          md2pdf.enable = true;
+          convert_img.enable = true;
+          catls.enable = true;
+          cmbd.enable = true;
+          splitm.enable = true;
+          nviml.enable = true;
+          cccleaner.enable = true;
         };
       };
       fonts.packages = with pkgs; [
@@ -244,9 +244,9 @@ in
       myconfig = {
         features.zshell.enable = true;
         programs = {
-        dx.enable = true;
-        splitm.enable = true;
-        cccleaner.enable = true;
+          dx.enable = true;
+          splitm.enable = true;
+          cccleaner.enable = true;
         };
       };
       environment = {

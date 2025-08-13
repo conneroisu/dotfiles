@@ -84,19 +84,19 @@ nix fmt
       #   strictDeps = true;
       # };
     in {
-    # Optional: Define packages if using crane to build (uncomment to use)
-    # packages = forAllSystems (system: let
-    #   pkgs = import nixpkgs {
-    #     inherit system;
-    #     overlays = [rust-overlay.overlays.default];
-    #   };
-    #   craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
-    # in {
-    #   default = craneLib.buildPackage {
-    #     src = craneLib.cleanCargoSource ./.;
-    #     strictDeps = true;
-    #   };
-    # });
+      # Optional: Define packages if using crane to build (uncomment to use)
+      # packages = forAllSystems (system: let
+      #   pkgs = import nixpkgs {
+      #     inherit system;
+      #     overlays = [rust-overlay.overlays.default];
+      #   };
+      #   craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
+      # in {
+      #   default = craneLib.buildPackage {
+      #     src = craneLib.cleanCargoSource ./.;
+      #     strictDeps = true;
+      #   };
+      # });
 
       devShells.default = pkgs.mkShell {
         name = "dev";

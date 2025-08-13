@@ -10,9 +10,14 @@
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, flake-utils, treefmt-nix, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-    let
+  outputs = {
+    self,
+    nixpkgs,
+    flake-utils,
+    treefmt-nix,
+    ...
+  }:
+    flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
@@ -24,14 +29,15 @@
       };
 
       # Helper to make scripts repo-root aware and exec the payload
-      rooted = exec: builtins.concatStringsSep "\n" [
-        ''REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"''
-        exec
-      ];
+      rooted = exec:
+        builtins.concatStringsSep "\n" [
+          ''REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"''
+          exec
+        ];
 
       # Common deps for scripts
       jdk = pkgs.jdk17;
-        inherit (pkgs) tlaplusToolbox tlaplus alloy ;
+      inherit (pkgs) tlaplusToolbox tlaplus alloy;
 
       # Repo-focused scripts for TLA+ / Alloy projects
       scripts = {
@@ -39,27 +45,26 @@
         dx = {
           description = "Edit flake.nix";
           exec = rooted ''"$EDITOR" "$REPO_ROOT"/flake.nix'';
-          deps = [ pkgs.bash ];
+          deps = [pkgs.bash];
         };
       };
 
       # Turn the scripts attrset into actual packages
       scriptPackages =
         pkgs.lib.mapAttrs
-          (name: script:
-            pkgs.writeShellApplication {
-              inherit name;
-              text = script.exec;
-              runtimeInputs = (script.deps or []);
-            })
-          scripts;
+        (name: script:
+          pkgs.writeShellApplication {
+            inherit name;
+            text = script.exec;
+            runtimeInputs = script.deps or [];
+          })
+        scripts;
 
       treefmtModule = {
         projectRootFile = "flake.nix";
         programs.alejandra.enable = true;
       };
-    in
-    {
+    in {
       devShells.default = pkgs.mkShell {
         name = "tla-alloy-dev";
         packages =
@@ -98,7 +103,12 @@
       };
 
       # Expose scripts as `nix run .#tla:tlc` etc.
-      apps = pkgs.lib.mapAttrs (n: p: { type = "app"; program = "${p}/bin/${n}"; }) scriptPackages;
+      apps =
+        pkgs.lib.mapAttrs (n: p: {
+          type = "app";
+          program = "${p}/bin/${n}";
+        })
+        scriptPackages;
 
       # Formatter (treefmt wrapper)
       formatter = treefmt-nix.lib.mkWrapper pkgs treefmtModule;

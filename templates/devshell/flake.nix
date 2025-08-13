@@ -44,7 +44,12 @@ nix fmt
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = inputs @ {nixpkgs, flake-utils, treefmt-nix, ...}:
+  outputs = inputs @ {
+    nixpkgs,
+    flake-utils,
+    treefmt-nix,
+    ...
+  }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {

@@ -100,185 +100,185 @@ nix fmt
         };
         init-cmake = {
           exec = rooted ''
-            cd "$REPO_ROOT"
-            if [ ! -f CMakeLists.txt ]; then
-              cat > CMakeLists.txt << 'EOF'
-cmake_minimum_required(VERSION 3.20)
-project(MyProject VERSION 1.0.0 LANGUAGES CXX)
+                        cd "$REPO_ROOT"
+                        if [ ! -f CMakeLists.txt ]; then
+                          cat > CMakeLists.txt << 'EOF'
+            cmake_minimum_required(VERSION 3.20)
+            project(MyProject VERSION 1.0.0 LANGUAGES CXX)
 
-# Set C++ standard
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+            # Set C++ standard
+            set(CMAKE_CXX_STANDARD 20)
+            set(CMAKE_CXX_STANDARD_REQUIRED ON)
+            set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Compiler-specific options
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
-    set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
-endif()
+            # Compiler-specific options
+            if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+                set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
+                set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined")
+                set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+            elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+                set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic")
+                set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -fsanitize=address,undefined")
+                set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+            endif()
 
-# Create directories
-file(MAKE_DIRECTORY src include tests)
+            # Create directories
+            file(MAKE_DIRECTORY src include tests)
 
-# Main executable
-add_executable(main src/main.cpp)
-target_include_directories(main PRIVATE include)
+            # Main executable
+            add_executable(main src/main.cpp)
+            target_include_directories(main PRIVATE include)
 
-# Enable testing
-enable_testing()
-add_subdirectory(tests)
-EOF
+            # Enable testing
+            enable_testing()
+            add_subdirectory(tests)
+            EOF
 
-              mkdir -p src include tests
-              
-              cat > src/main.cpp << 'EOF'
-#include <iostream>
-#include <vector>
-#include <string>
+                          mkdir -p src include tests
 
-int main() {
-    std::cout << "Hello, Modern C++!" << std::endl;
-    
-    // C++20 features example
-    std::vector<std::string> items = {"C++", "is", "awesome"};
-    
-    for (const auto& item : items) {
-        std::cout << item << " ";
-    }
-    std::cout << std::endl;
-    
-    return 0;
-}
-EOF
+                          cat > src/main.cpp << 'EOF'
+            #include <iostream>
+            #include <vector>
+            #include <string>
 
-              cat > tests/CMakeLists.txt << 'EOF'
-# Find required packages for testing
-find_package(GTest QUIET)
+            int main() {
+                std::cout << "Hello, Modern C++!" << std::endl;
 
-if(GTest_FOUND)
-    add_executable(tests test_main.cpp)
-    target_link_libraries(tests GTest::gtest_main)
-    target_include_directories(tests PRIVATE ../include)
-    
-    include(GoogleTest)
-    gtest_discover_tests(tests)
-else()
-    message(WARNING "Google Test not found. Skipping tests.")
-endif()
-EOF
+                // C++20 features example
+                std::vector<std::string> items = {"C++", "is", "awesome"};
 
-              cat > tests/test_main.cpp << 'EOF'
-#include <gtest/gtest.h>
+                for (const auto& item : items) {
+                    std::cout << item << " ";
+                }
+                std::cout << std::endl;
 
-TEST(BasicTest, TruthTest) {
-    EXPECT_TRUE(true);
-}
+                return 0;
+            }
+            EOF
 
-TEST(BasicTest, ArithmeticTest) {
-    EXPECT_EQ(2 + 2, 4);
-    EXPECT_NE(2 + 2, 5);
-}
+                          cat > tests/CMakeLists.txt << 'EOF'
+            # Find required packages for testing
+            find_package(GTest QUIET)
 
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
-EOF
+            if(GTest_FOUND)
+                add_executable(tests test_main.cpp)
+                target_link_libraries(tests GTest::gtest_main)
+                target_include_directories(tests PRIVATE ../include)
 
-              echo "CMake project initialized with C++20 support!"
-              echo "Files created:"
-              echo "  - CMakeLists.txt (main build file)"
-              echo "  - src/main.cpp (example main file)"
-              echo "  - tests/ (test directory with Google Test setup)"
-            else
-              echo "CMakeLists.txt already exists"
-            fi
+                include(GoogleTest)
+                gtest_discover_tests(tests)
+            else()
+                message(WARNING "Google Test not found. Skipping tests.")
+            endif()
+            EOF
+
+                          cat > tests/test_main.cpp << 'EOF'
+            #include <gtest/gtest.h>
+
+            TEST(BasicTest, TruthTest) {
+                EXPECT_TRUE(true);
+            }
+
+            TEST(BasicTest, ArithmeticTest) {
+                EXPECT_EQ(2 + 2, 4);
+                EXPECT_NE(2 + 2, 5);
+            }
+
+            int main(int argc, char **argv) {
+                ::testing::InitGoogleTest(&argc, argv);
+                return RUN_ALL_TESTS();
+            }
+            EOF
+
+                          echo "CMake project initialized with C++20 support!"
+                          echo "Files created:"
+                          echo "  - CMakeLists.txt (main build file)"
+                          echo "  - src/main.cpp (example main file)"
+                          echo "  - tests/ (test directory with Google Test setup)"
+                        else
+                          echo "CMakeLists.txt already exists"
+                        fi
           '';
           deps = with pkgs; [cmake];
           description = "Initialize CMake project with modern C++";
         };
         init-meson = {
           exec = rooted ''
-            cd "$REPO_ROOT"
-            if [ ! -f meson.build ]; then
-              cat > meson.build << 'EOF'
-project('myproject', 'cpp',
-  version : '0.1.0',
-  default_options : [
-    'warning_level=3',
-    'cpp_std=c++20',
-    'buildtype=debugoptimized'
-  ])
+                        cd "$REPO_ROOT"
+                        if [ ! -f meson.build ]; then
+                          cat > meson.build << 'EOF'
+            project('myproject', 'cpp',
+              version : '0.1.0',
+              default_options : [
+                'warning_level=3',
+                'cpp_std=c++20',
+                'buildtype=debugoptimized'
+              ])
 
-# Compiler setup
-cpp = meson.get_compiler('cpp')
+            # Compiler setup
+            cpp = meson.get_compiler('cpp')
 
-# Add compiler flags
-add_project_arguments(['-Wall', '-Wextra', '-Wpedantic'], language : 'cpp')
+            # Add compiler flags
+            add_project_arguments(['-Wall', '-Wextra', '-Wpedantic'], language : 'cpp')
 
-if get_option('buildtype') == 'debug'
-  add_project_arguments(['-fsanitize=address,undefined'], language : 'cpp')
-  add_project_link_arguments(['-fsanitize=address,undefined'], language : 'cpp')
-endif
+            if get_option('buildtype') == 'debug'
+              add_project_arguments(['-fsanitize=address,undefined'], language : 'cpp')
+              add_project_link_arguments(['-fsanitize=address,undefined'], language : 'cpp')
+            endif
 
-# Create directories
-run_command('mkdir', '-p', 'src', 'include', 'tests', check: false)
+            # Create directories
+            run_command('mkdir', '-p', 'src', 'include', 'tests', check: false)
 
-# Include directories
-inc = include_directories('include')
+            # Include directories
+            inc = include_directories('include')
 
-# Main executable
-sources = files('src/main.cpp')
-executable('main', sources, include_directories : inc, install : true)
+            # Main executable
+            sources = files('src/main.cpp')
+            executable('main', sources, include_directories : inc, install : true)
 
-# Testing
-if get_option('tests')
-  gtest_dep = dependency('gtest', main : true, required : false)
-  if gtest_dep.found()
-    test_sources = files('tests/test_main.cpp')
-    test_exe = executable('tests', test_sources,
-                         dependencies : gtest_dep,
-                         include_directories : inc)
-    test('basic_test', test_exe)
-  endif
-endif
-EOF
+            # Testing
+            if get_option('tests')
+              gtest_dep = dependency('gtest', main : true, required : false)
+              if gtest_dep.found()
+                test_sources = files('tests/test_main.cpp')
+                test_exe = executable('tests', test_sources,
+                                     dependencies : gtest_dep,
+                                     include_directories : inc)
+                test('basic_test', test_exe)
+              endif
+            endif
+            EOF
 
-              mkdir -p src include tests
-              
-              cat > src/main.cpp << 'EOF'
-#include <iostream>
-#include <vector>
-#include <string>
+                          mkdir -p src include tests
 
-int main() {
-    std::cout << "Hello, Modern C++ with Meson!" << std::endl;
-    
-    // C++20 features example
-    std::vector<std::string> items = {"Meson", "build", "system"};
-    
-    for (const auto& item : items) {
-        std::cout << item << " ";
-    }
-    std::cout << std::endl;
-    
-    return 0;
-}
-EOF
+                          cat > src/main.cpp << 'EOF'
+            #include <iostream>
+            #include <vector>
+            #include <string>
 
-              cat > meson_options.txt << 'EOF'
-option('tests', type : 'boolean', value : true, description : 'Build tests')
-EOF
+            int main() {
+                std::cout << "Hello, Modern C++ with Meson!" << std::endl;
 
-              echo "Meson project initialized with C++20 support!"
-            else
-              echo "meson.build already exists"
-            fi
+                // C++20 features example
+                std::vector<std::string> items = {"Meson", "build", "system"};
+
+                for (const auto& item : items) {
+                    std::cout << item << " ";
+                }
+                std::cout << std::endl;
+
+                return 0;
+            }
+            EOF
+
+                          cat > meson_options.txt << 'EOF'
+            option('tests', type : 'boolean', value : true, description : 'Build tests')
+            EOF
+
+                          echo "Meson project initialized with C++20 support!"
+                        else
+                          echo "meson.build already exists"
+                        fi
           '';
           deps = with pkgs; [meson];
           description = "Initialize Meson project with modern C++";
@@ -614,7 +614,7 @@ EOF
           echo ""
           echo "💡 Try: 'init-cmake && build-gcc' to set up and build a C++ project!"
           echo "💡 Try: 'nix fmt' to format Nix code!"
-          
+
           # Set up environment variables
           export CC=gcc
           export CXX=g++

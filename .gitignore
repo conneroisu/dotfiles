@@ -27,3 +27,4 @@ __pycache__/
 *.so
 logs/
 .crush
+result

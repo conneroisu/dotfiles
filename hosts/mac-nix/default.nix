@@ -64,13 +64,13 @@ in
       nixpkgs.config.allowUnfree = true;
       nixpkgs.config.allowUnsupportedSystem = true;
       system.stateVersion = "24.11";
-      
+
       # Minimal file system configuration to prevent assertion failures
       fileSystems."/" = {
         device = "/dev/disk/by-label/nixos";
         fsType = "ext4";
       };
-      
+
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
     };

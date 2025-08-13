@@ -79,17 +79,18 @@ test
       };
 
       # Python with common packages
-      pythonEnv = pkgs.python312.withPackages (ps: with ps; [
-        pip
-        setuptools
-        wheel
-        virtualenv
-        # Development tools that need to be in Python env
-        ipython
-        jupyter
-        notebook
-        jupyterlab
-      ]);
+      pythonEnv = pkgs.python312.withPackages (ps:
+        with ps; [
+          pip
+          setuptools
+          wheel
+          virtualenv
+          # Development tools that need to be in Python env
+          ipython
+          jupyter
+          notebook
+          jupyterlab
+        ]);
 
       rooted = exec:
         builtins.concatStringsSep "\n"
@@ -114,397 +115,397 @@ test
         };
         init-poetry = {
           exec = rooted ''
-            cd "$REPO_ROOT"
-            if [ ! -f pyproject.toml ]; then
-              poetry init --no-interaction \
-                --name "$(basename "$REPO_ROOT")" \
-                --version "0.1.0" \
-                --description "A Python project" \
-                --author "$(git config user.name) <$(git config user.email)>" \
-                --python "^3.11"
-              
-              # Add common development dependencies
-              poetry add --group dev pytest pytest-cov pytest-mock pytest-asyncio
-              poetry add --group dev black isort ruff mypy
-              poetry add --group dev pre-commit
-              
-              # Create basic project structure
-              mkdir -p src tests docs
-              
-              cat > src/__init__.py << 'EOF'
-"""Main package module."""
+                        cd "$REPO_ROOT"
+                        if [ ! -f pyproject.toml ]; then
+                          poetry init --no-interaction \
+                            --name "$(basename "$REPO_ROOT")" \
+                            --version "0.1.0" \
+                            --description "A Python project" \
+                            --author "$(git config user.name) <$(git config user.email)>" \
+                            --python "^3.11"
 
-__version__ = "0.1.0"
-EOF
+                          # Add common development dependencies
+                          poetry add --group dev pytest pytest-cov pytest-mock pytest-asyncio
+                          poetry add --group dev black isort ruff mypy
+                          poetry add --group dev pre-commit
 
-              cat > src/main.py << 'EOF'
-"""Main application module."""
+                          # Create basic project structure
+                          mkdir -p src tests docs
 
-import sys
-from typing import List
+                          cat > src/__init__.py << 'EOF'
+            """Main package module."""
 
+            __version__ = "0.1.0"
+            EOF
 
-def main(args: List[str] | None = None) -> int:
-    """Main entry point for the application.
-    
-    Args:
-        args: Command line arguments (defaults to sys.argv[1:])
-        
-    Returns:
-        Exit code (0 for success)
-    """
-    if args is None:
-        args = sys.argv[1:]
-    
-    print("Hello, Python!")
-    print(f"Arguments: {args}")
-    
-    return 0
+                          cat > src/main.py << 'EOF'
+            """Main application module."""
+
+            import sys
+            from typing import List
 
 
-if __name__ == "__main__":
-    sys.exit(main())
-EOF
+            def main(args: List[str] | None = None) -> int:
+                """Main entry point for the application.
 
-              cat > tests/__init__.py << 'EOF'
-"""Test package."""
-EOF
+                Args:
+                    args: Command line arguments (defaults to sys.argv[1:])
 
-              cat > tests/test_main.py << 'EOF'
-"""Tests for main module."""
+                Returns:
+                    Exit code (0 for success)
+                """
+                if args is None:
+                    args = sys.argv[1:]
 
-import pytest
-from src.main import main
+                print("Hello, Python!")
+                print(f"Arguments: {args}")
 
-
-def test_main_no_args():
-    """Test main function with no arguments."""
-    result = main([])
-    assert result == 0
+                return 0
 
 
-def test_main_with_args():
-    """Test main function with arguments."""
-    result = main(["arg1", "arg2"])
-    assert result == 0
+            if __name__ == "__main__":
+                sys.exit(main())
+            EOF
+
+                          cat > tests/__init__.py << 'EOF'
+            """Test package."""
+            EOF
+
+                          cat > tests/test_main.py << 'EOF'
+            """Tests for main module."""
+
+            import pytest
+            from src.main import main
 
 
-@pytest.mark.parametrize("args,expected", [
-    ([], 0),
-    (["test"], 0),
-    (["arg1", "arg2"], 0),
-])
-def test_main_parametrized(args, expected):
-    """Parametrized test for main function."""
-    assert main(args) == expected
-EOF
+            def test_main_no_args():
+                """Test main function with no arguments."""
+                result = main([])
+                assert result == 0
 
-              cat > .pre-commit-config.yaml << 'EOF'
-repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
-      - id: check-added-large-files
-      - id: check-toml
-      - id: check-json
 
-  - repo: https://github.com/psf/black
-    rev: 23.9.1
-    hooks:
-      - id: black
-        language_version: python3
+            def test_main_with_args():
+                """Test main function with arguments."""
+                result = main(["arg1", "arg2"])
+                assert result == 0
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        args: ["--profile", "black"]
 
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.292
-    hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix]
+            @pytest.mark.parametrize("args,expected", [
+                ([], 0),
+                (["test"], 0),
+                (["arg1", "arg2"], 0),
+            ])
+            def test_main_parametrized(args, expected):
+                """Parametrized test for main function."""
+                assert main(args) == expected
+            EOF
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
-    hooks:
-      - id: mypy
-        additional_dependencies: [types-all]
-EOF
+                          cat > .pre-commit-config.yaml << 'EOF'
+            repos:
+              - repo: https://github.com/pre-commit/pre-commit-hooks
+                rev: v4.4.0
+                hooks:
+                  - id: trailing-whitespace
+                  - id: end-of-file-fixer
+                  - id: check-yaml
+                  - id: check-added-large-files
+                  - id: check-toml
+                  - id: check-json
 
-              cat > .gitignore << 'EOF'
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+              - repo: https://github.com/psf/black
+                rev: 23.9.1
+                hooks:
+                  - id: black
+                    language_version: python3
 
-# C extensions
-*.so
+              - repo: https://github.com/pycqa/isort
+                rev: 5.12.0
+                hooks:
+                  - id: isort
+                    args: ["--profile", "black"]
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+              - repo: https://github.com/charliermarsh/ruff-pre-commit
+                rev: v0.0.292
+                hooks:
+                  - id: ruff
+                    args: [--fix, --exit-non-zero-on-fix]
 
-# PyInstaller
-*.manifest
-*.spec
+              - repo: https://github.com/pre-commit/mirrors-mypy
+                rev: v1.5.1
+                hooks:
+                  - id: mypy
+                    additional_dependencies: [types-all]
+            EOF
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+                          cat > .gitignore << 'EOF'
+            # Byte-compiled / optimized / DLL files
+            __pycache__/
+            *.py[cod]
+            *$py.class
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
+            # C extensions
+            *.so
 
-# Jupyter Notebook
-.ipynb_checkpoints
+            # Distribution / packaging
+            .Python
+            build/
+            develop-eggs/
+            dist/
+            downloads/
+            eggs/
+            .eggs/
+            lib/
+            lib64/
+            parts/
+            sdist/
+            var/
+            wheels/
+            *.egg-info/
+            .installed.cfg
+            *.egg
 
-# pyenv
-.python-version
+            # PyInstaller
+            *.manifest
+            *.spec
 
-# pipenv
-Pipfile.lock
+            # Installer logs
+            pip-log.txt
+            pip-delete-this-directory.txt
 
-# poetry
-poetry.lock
+            # Unit test / coverage reports
+            htmlcov/
+            .tox/
+            .coverage
+            .coverage.*
+            .cache
+            nosetests.xml
+            coverage.xml
+            *.cover
+            .hypothesis/
+            .pytest_cache/
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+            # Jupyter Notebook
+            .ipynb_checkpoints
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+            # pyenv
+            .python-version
 
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+            # pipenv
+            Pipfile.lock
 
-# OS
-.DS_Store
-Thumbs.db
-EOF
+            # poetry
+            poetry.lock
 
-              echo "Poetry project initialized with modern Python setup!"
-              echo "Project structure created:"
-              echo "  - pyproject.toml (Poetry configuration)"
-              echo "  - src/ (source code directory)"
-              echo "  - tests/ (test directory with pytest examples)"
-              echo "  - .pre-commit-config.yaml (pre-commit hooks)"
-              echo "  - .gitignore (comprehensive Python gitignore)"
-              echo ""
-              echo "Next steps:"
-              echo "  1. Run 'poetry install' to install dependencies"
-              echo "  2. Run 'pre-commit install' to set up git hooks"
-              echo "  3. Run 'test' to run the example tests"
-            else
-              echo "pyproject.toml already exists"
-            fi
+            # Environments
+            .env
+            .venv
+            env/
+            venv/
+            ENV/
+            env.bak/
+            venv.bak/
+
+            # mypy
+            .mypy_cache/
+            .dmypy.json
+            dmypy.json
+
+            # IDEs
+            .vscode/
+            .idea/
+            *.swp
+            *.swo
+            *~
+
+            # OS
+            .DS_Store
+            Thumbs.db
+            EOF
+
+                          echo "Poetry project initialized with modern Python setup!"
+                          echo "Project structure created:"
+                          echo "  - pyproject.toml (Poetry configuration)"
+                          echo "  - src/ (source code directory)"
+                          echo "  - tests/ (test directory with pytest examples)"
+                          echo "  - .pre-commit-config.yaml (pre-commit hooks)"
+                          echo "  - .gitignore (comprehensive Python gitignore)"
+                          echo ""
+                          echo "Next steps:"
+                          echo "  1. Run 'poetry install' to install dependencies"
+                          echo "  2. Run 'pre-commit install' to set up git hooks"
+                          echo "  3. Run 'test' to run the example tests"
+                        else
+                          echo "pyproject.toml already exists"
+                        fi
           '';
           deps = with pkgs; [poetry git];
           description = "Initialize Poetry project with modern Python setup";
         };
         init-pip = {
           exec = rooted ''
-            cd "$REPO_ROOT"
-            if [ ! -f requirements.txt ]; then
-              cat > requirements.txt << 'EOF'
-# Production dependencies
-requests>=2.31.0
-click>=8.1.0
+                        cd "$REPO_ROOT"
+                        if [ ! -f requirements.txt ]; then
+                          cat > requirements.txt << 'EOF'
+            # Production dependencies
+            requests>=2.31.0
+            click>=8.1.0
 
-# Development dependencies (install with: pip install -r requirements-dev.txt)
-EOF
+            # Development dependencies (install with: pip install -r requirements-dev.txt)
+            EOF
 
-              cat > requirements-dev.txt << 'EOF'
-# Testing
-pytest>=7.4.0
-pytest-cov>=4.1.0
-pytest-mock>=3.11.0
-pytest-asyncio>=0.21.0
-hypothesis>=6.82.0
+                          cat > requirements-dev.txt << 'EOF'
+            # Testing
+            pytest>=7.4.0
+            pytest-cov>=4.1.0
+            pytest-mock>=3.11.0
+            pytest-asyncio>=0.21.0
+            hypothesis>=6.82.0
 
-# Linting and formatting
-ruff>=0.0.292
-black>=23.9.0
-isort>=5.12.0
-mypy>=1.5.0
+            # Linting and formatting
+            ruff>=0.0.292
+            black>=23.9.0
+            isort>=5.12.0
+            mypy>=1.5.0
 
-# Type checking
-basedpyright>=1.10.0
+            # Type checking
+            basedpyright>=1.10.0
 
-# Development tools
-pre-commit>=3.4.0
-ipython>=8.15.0
-jupyterlab>=4.0.0
+            # Development tools
+            pre-commit>=3.4.0
+            ipython>=8.15.0
+            jupyterlab>=4.0.0
 
-# Profiling
-py-spy>=0.3.14
-memory-profiler>=0.61.0
-line-profiler>=4.1.0
-EOF
+            # Profiling
+            py-spy>=0.3.14
+            memory-profiler>=0.61.0
+            line-profiler>=4.1.0
+            EOF
 
-              cat > setup.py << 'EOF'
-"""Setup script for the project."""
+                          cat > setup.py << 'EOF'
+            """Setup script for the project."""
 
-from setuptools import setup, find_packages
+            from setuptools import setup, find_packages
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+            with open("README.md", "r", encoding="utf-8") as fh:
+                long_description = fh.read()
 
-with open("requirements.txt", "r", encoding="utf-8") as fh:
-    requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
+            with open("requirements.txt", "r", encoding="utf-8") as fh:
+                requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
-setup(
-    name="my-python-project",
-    version="0.1.0",
-    author="Your Name",
-    author_email="your.email@example.com",
-    description="A Python project",
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    packages=find_packages(),
-    classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
-    ],
-    python_requires=">=3.11",
-    install_requires=requirements,
-    entry_points={
-        "console_scripts": [
-            "my-app=src.main:main",
-        ],
-    },
-)
-EOF
+            setup(
+                name="my-python-project",
+                version="0.1.0",
+                author="Your Name",
+                author_email="your.email@example.com",
+                description="A Python project",
+                long_description=long_description,
+                long_description_content_type="text/markdown",
+                packages=find_packages(),
+                classifiers=[
+                    "Development Status :: 3 - Alpha",
+                    "Intended Audience :: Developers",
+                    "License :: OSI Approved :: MIT License",
+                    "Operating System :: OS Independent",
+                    "Programming Language :: Python :: 3",
+                    "Programming Language :: Python :: 3.11",
+                    "Programming Language :: Python :: 3.12",
+                ],
+                python_requires=">=3.11",
+                install_requires=requirements,
+                entry_points={
+                    "console_scripts": [
+                        "my-app=src.main:main",
+                    ],
+                },
+            )
+            EOF
 
-              # Create basic project structure
-              mkdir -p src tests docs
-              
-              cat > src/__init__.py << 'EOF'
-"""Main package module."""
+                          # Create basic project structure
+                          mkdir -p src tests docs
 
-__version__ = "0.1.0"
-EOF
+                          cat > src/__init__.py << 'EOF'
+            """Main package module."""
 
-              cat > src/main.py << 'EOF'
-"""Main application module."""
+            __version__ = "0.1.0"
+            EOF
 
-import sys
-from typing import List
+                          cat > src/main.py << 'EOF'
+            """Main application module."""
 
-
-def main(args: List[str] | None = None) -> int:
-    """Main entry point for the application.
-    
-    Args:
-        args: Command line arguments (defaults to sys.argv[1:])
-        
-    Returns:
-        Exit code (0 for success)
-    """
-    if args is None:
-        args = sys.argv[1:]
-    
-    print("Hello, Python!")
-    print(f"Arguments: {args}")
-    
-    return 0
+            import sys
+            from typing import List
 
 
-if __name__ == "__main__":
-    sys.exit(main())
-EOF
+            def main(args: List[str] | None = None) -> int:
+                """Main entry point for the application.
 
-              cat > tests/__init__.py << 'EOF'
-"""Test package."""
-EOF
+                Args:
+                    args: Command line arguments (defaults to sys.argv[1:])
 
-              cat > tests/test_main.py << 'EOF'
-"""Tests for main module."""
+                Returns:
+                    Exit code (0 for success)
+                """
+                if args is None:
+                    args = sys.argv[1:]
 
-import pytest
-from src.main import main
+                print("Hello, Python!")
+                print(f"Arguments: {args}")
 
-
-def test_main_no_args():
-    """Test main function with no arguments."""
-    result = main([])
-    assert result == 0
+                return 0
 
 
-def test_main_with_args():
-    """Test main function with arguments."""
-    result = main(["arg1", "arg2"])
-    assert result == 0
+            if __name__ == "__main__":
+                sys.exit(main())
+            EOF
+
+                          cat > tests/__init__.py << 'EOF'
+            """Test package."""
+            EOF
+
+                          cat > tests/test_main.py << 'EOF'
+            """Tests for main module."""
+
+            import pytest
+            from src.main import main
 
 
-@pytest.mark.parametrize("args,expected", [
-    ([], 0),
-    (["test"], 0),
-    (["arg1", "arg2"], 0),
-])
-def test_main_parametrized(args, expected):
-    """Parametrized test for main function."""
-    assert main(args) == expected
-EOF
+            def test_main_no_args():
+                """Test main function with no arguments."""
+                result = main([])
+                assert result == 0
 
-              echo "Pip-based project initialized!"
-              echo "Files created:"
-              echo "  - requirements.txt (production dependencies)"
-              echo "  - requirements-dev.txt (development dependencies)"
-              echo "  - setup.py (package configuration)"
-              echo "  - src/ (source code directory)"
-              echo "  - tests/ (test directory)"
-              echo ""
-              echo "Next steps:"
-              echo "  1. Run 'pip install -r requirements-dev.txt' to install dependencies"
-              echo "  2. Run 'pip install -e .' to install package in development mode"
-              echo "  3. Run 'test' to run the example tests"
-            else
-              echo "requirements.txt already exists"
-            fi
+
+            def test_main_with_args():
+                """Test main function with arguments."""
+                result = main(["arg1", "arg2"])
+                assert result == 0
+
+
+            @pytest.mark.parametrize("args,expected", [
+                ([], 0),
+                (["test"], 0),
+                (["arg1", "arg2"], 0),
+            ])
+            def test_main_parametrized(args, expected):
+                """Parametrized test for main function."""
+                assert main(args) == expected
+            EOF
+
+                          echo "Pip-based project initialized!"
+                          echo "Files created:"
+                          echo "  - requirements.txt (production dependencies)"
+                          echo "  - requirements-dev.txt (development dependencies)"
+                          echo "  - setup.py (package configuration)"
+                          echo "  - src/ (source code directory)"
+                          echo "  - tests/ (test directory)"
+                          echo ""
+                          echo "Next steps:"
+                          echo "  1. Run 'pip install -r requirements-dev.txt' to install dependencies"
+                          echo "  2. Run 'pip install -e .' to install package in development mode"
+                          echo "  3. Run 'test' to run the example tests"
+                        else
+                          echo "requirements.txt already exists"
+                        fi
           '';
           deps = with pkgs; [pythonEnv];
           description = "Initialize pip-based project";
@@ -547,11 +548,11 @@ EOF
             echo "🔍 Running ruff..."
             ruff check . --fix
             echo "✅ Ruff completed"
-            
+
             echo "🔍 Running mypy..."
             mypy src/ || true
             echo "✅ Mypy completed"
-            
+
             echo "🔍 Running basedpyright..."
             basedpyright src/ || true
             echo "✅ basedpyright completed"
@@ -589,7 +590,7 @@ EOF
             echo "🎨 Running isort..."
             isort .
             echo "✅ isort completed"
-            
+
             echo "🎨 Running black..."
             black .
             echo "✅ black completed"
@@ -754,7 +755,7 @@ EOF
             pythonPackages.memory-profiler # Memory profiler
             pythonPackages.line-profiler # Line-by-line profiler
             pythonPackages.pyflame # Profiling tool
-            
+
             # Documentation
             pythonPackages.sphinx # Documentation generator
             pythonPackages.mkdocs # Modern documentation
@@ -842,7 +843,7 @@ EOF
           echo ""
           echo "💡 Try: 'init-poetry && deps-install && test' to set up a Python project!"
           echo "💡 Try: 'nix fmt' to format Nix code!"
-          
+
           # Set up Python environment
           export PYTHONPATH="$PWD/src:$PYTHONPATH"
           export PYTHONDONTWRITEBYTECODE=1

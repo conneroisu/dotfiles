@@ -8,6 +8,12 @@
         "@upstash/context7-mcp"
       ],
       "env": {}
+    },
+    "nixos": {
+      "command": "uvx",
+      "args": [
+        "mcp-nixos"
+      ]
     }
   }
 }

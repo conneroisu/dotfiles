@@ -409,7 +409,7 @@ def test_process_file_omit_bins_debug(mock_print, fake_filesystem, mock_args):
 
     # Should print debug message to stderr
     calls = [call for call in mock_print.call_args_list]
-    debug_calls = [call for call in calls if call.kwargs.get('file') == sys.stderr]
+    debug_calls = [call for call in calls if call.kwargs.get("file") == sys.stderr]
     assert len(debug_calls) == 1
     assert "Debug: Skipping binary file: binary.bin" in debug_calls[0].args[0]
 
@@ -433,7 +433,7 @@ def test_process_file_text_with_omit_bins(mock_print, fake_filesystem, mock_args
     # Should process the text file normally
     calls = [call.args[0] for call in mock_print.call_args_list]
     assert '<file path="text.py">' in calls
-    assert '<type>python</type>' in calls
+    assert "<type>python</type>" in calls
     assert "</file>" in calls
 
 

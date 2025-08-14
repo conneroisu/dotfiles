@@ -15,24 +15,24 @@ class Args:
     show_all: bool = False
     recursive: bool = False
     debug: bool = False
-    ignore_regex: list[re.Pattern[str]] = field(
+    default_ignore_globs: list[str] = field(
         default_factory=lambda: [
-            re.compile(r"\.git/"),
-            re.compile(r"\.svn/"),
-            re.compile(r"\.hg/"),
-            re.compile(r"__pycache__/"),
-            re.compile(r"\.pytest_cache/"),
-            re.compile(r"\.mypy_cache/"),
-            re.compile(r"\.tox/"),
-            re.compile(r"\.venv/"),
-            re.compile(r"\.coverage"),
-            re.compile(r"\.DS_Store"),
-            re.compile(r"\.idea/"),
-            re.compile(r"\.vscode/"),
-            re.compile(r".*_templ\.go$"),
-            re.compile(r"LICENSE$"),
-            re.compile(r"LICENSE\.md$"),
-            re.compile(r"LICENSE\.txt$"),
+            ".git/*",
+            ".svn/*",
+            ".hg/*",
+            "__pycache__/*",
+            ".pytest_cache/*",
+            ".mypy_cache/*",
+            ".tox/*",
+            ".venv/*",
+            ".coverage",
+            ".DS_Store",
+            ".idea/*",
+            ".vscode/*",
+            "*_templ.go",
+            "LICENSE",
+            "LICENSE.md",
+            "LICENSE.txt",
         ]
     )
     ignore_dir: list[str] = field(
@@ -51,7 +51,8 @@ class Args:
             "static",
         ]
     )
-    include_regex: list[str] = field(default_factory=list)
+    globs: list[str] = field(default_factory=list)
+    ignore_globs: list[str] = field(default_factory=list)
     directory: str = "."
     files: list[str] = field(default_factory=list)
     content_pattern: str = ""
@@ -122,25 +123,35 @@ def guess_filetype(file_path: str) -> str:
     return filetypes.get(ext, "")
 
 
-def should_include(file_path: str, include_patterns: list[str]) -> bool:
-    """Check if a file should be included based on patterns."""
-    if not include_patterns:
-        return True
-
+def matches_glob_pattern(file_path: str, pattern: str) -> bool:
+    """Check if a file matches a glob pattern."""
     filename = os.path.basename(file_path)
 
-    for pattern in include_patterns:
-        if "*" in pattern or "?" in pattern:
-            regex_pattern = wildcard_to_regex(pattern)
-            regex = re.compile(regex_pattern)
-            if regex.search(filename) or regex.search(file_path):
-                return True
-        else:
-            try:
-                if re.compile(pattern).search(file_path):
-                    return True
-            except re.error:
-                continue
+    # Convert glob pattern to regex
+    regex_pattern = wildcard_to_regex(pattern)
+    regex = re.compile(regex_pattern)
+
+    # Check both filename and full path
+    return bool(regex.search(filename) or regex.search(file_path))
+
+
+def should_include(
+    file_path: str, glob_patterns: list[str], ignore_glob_patterns: list[str]
+) -> bool:
+    """Check if a file should be included based on glob patterns."""
+    # If ignore patterns match, exclude the file
+    for pattern in ignore_glob_patterns:
+        if matches_glob_pattern(file_path, pattern):
+            return False
+
+    # If no include patterns specified, include by default (unless ignored above)
+    if not glob_patterns:
+        return True
+
+    # Check if file matches any include pattern
+    for pattern in glob_patterns:
+        if matches_glob_pattern(file_path, pattern):
+            return True
 
     return False
 
@@ -155,7 +166,7 @@ def get_real_path(path: str) -> str:
 
 def should_ignore(
     file_path: str,
-    ignore_patterns: list[re.Pattern[str]],
+    ignore_glob_patterns: list[str],
     ignore_dirs: list[str],
 ) -> bool:
     """Check if a file matches any ignore pattern or is in an ignored directory."""
@@ -177,8 +188,8 @@ def should_ignore(
             if ignore_dir.rstrip("/") in dir_path:
                 return True
 
-    for pattern in ignore_patterns:
-        if pattern.search(file_path):
+    for pattern in ignore_glob_patterns:
+        if matches_glob_pattern(file_path, pattern):
             return True
 
     return False
@@ -204,19 +215,19 @@ def parse_args() -> Args:
         help="Recursively list files in subdirectories",
     )
     _ = parser.add_argument(
-        "--ignore-regex",
-        action="append",
-        help="Ignore files matching PATTERN (can be used multiple times)",
-    )
-    _ = parser.add_argument(
         "--ignore-dir",
         action="append",
         help="Ignore directory DIR (can be used multiple times)",
     )
     _ = parser.add_argument(
-        "--regex",
+        "--globs",
         action="append",
-        help="Only include files matching PATTERN (can be used multiple times)",
+        help="Only include files matching glob pattern (can be used multiple times)",
+    )
+    _ = parser.add_argument(
+        "--ignore-globs",
+        action="append",
+        help="Ignore files matching glob pattern (can be used multiple times)",
     )
     _ = parser.add_argument(
         "--pattern",
@@ -271,33 +282,25 @@ def parse_args() -> Args:
     args.show_line_numbers = cast(bool, parsed_args.line_numbers)
     args.omit_bins = cast(bool, parsed_args.omit_bins)
 
-    ignore_regex_list = cast(list[str] | None, parsed_args.ignore_regex)
-    if ignore_regex_list:
-        for pattern in ignore_regex_list:
-            try:
-                args.ignore_regex.append(re.compile(pattern))
-            except re.error as e:
-                print(
-                    f"Error: Invalid regex pattern '{pattern}': {e}",
-                    file=sys.stderr,
-                )
-                sys.exit(1)
-
     ignore_dir_list = cast(list[str] | None, parsed_args.ignore_dir)
     if ignore_dir_list:
         args.ignore_dir.extend(ignore_dir_list)
 
-    regex_list = cast(list[str] | None, parsed_args.regex)
-    if regex_list:
-        args.include_regex.extend(regex_list)
+    globs_list = cast(list[str] | None, parsed_args.globs)
+    if globs_list:
+        args.globs.extend(globs_list)
+
+    ignore_globs_list = cast(list[str] | None, parsed_args.ignore_globs)
+    if ignore_globs_list:
+        args.ignore_globs.extend(ignore_globs_list)
 
     # Process files
     for file in args.files:
         if os.path.isfile(file):
             basename = os.path.basename(file)
-            args.include_regex.append(f"^{re.escape(basename)}$")
+            args.globs.append(basename)
         else:
-            args.include_regex.append(file)
+            args.globs.append(file)
 
     return args
 
@@ -330,7 +333,7 @@ def find_files(args: Args) -> list[str]:
                 if os.path.isdir(full_path):
                     if not should_ignore(
                         full_path,
-                        args.ignore_regex,
+                        args.default_ignore_globs + args.ignore_globs,
                         args.ignore_dir,
                     ):
                         dir_stack.append(
@@ -367,12 +370,12 @@ def process_file(file_path: str, args: Args) -> None:
         except ValueError:
             rel_path = file_path
 
-    if not should_include(rel_path, args.include_regex):
+    if not should_include(rel_path, args.globs, args.ignore_globs):
         return
 
     if should_ignore(
         rel_path,
-        args.ignore_regex,
+        args.default_ignore_globs + args.ignore_globs,
         args.ignore_dir,
     ):
         if args.debug:

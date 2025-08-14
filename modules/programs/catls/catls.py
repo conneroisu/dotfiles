@@ -56,6 +56,7 @@ class Args:
     files: list[str] = field(default_factory=list)
     content_pattern: str = ""
     show_line_numbers: bool = False
+    omit_bins: bool = False
 
 
 def wildcard_to_regex(pattern: str) -> str:
@@ -233,6 +234,11 @@ def parse_args() -> Args:
         help="Enable debug output",
     )
     _ = parser.add_argument(
+        "--omit-bins",
+        action="store_true",
+        help="Skip binary files in output",
+    )
+    _ = parser.add_argument(
         "directory",
         nargs="?",
         default=".",
@@ -263,6 +269,7 @@ def parse_args() -> Args:
     args.files = cast(list[str], parsed_args.files or [])
     args.content_pattern = cast(str, parsed_args.pattern or "")
     args.show_line_numbers = cast(bool, parsed_args.line_numbers)
+    args.omit_bins = cast(bool, parsed_args.omit_bins)
 
     ignore_regex_list = cast(list[str] | None, parsed_args.ignore_regex)
     if ignore_regex_list:
@@ -371,6 +378,14 @@ def process_file(file_path: str, args: Args) -> None:
         if args.debug:
             print(
                 f"Debug: Ignoring file: {rel_path}",
+                file=sys.stderr,
+            )
+        return
+
+    if args.omit_bins and is_binary(file_path):
+        if args.debug:
+            print(
+                f"Debug: Skipping binary file: {rel_path}",
                 file=sys.stderr,
             )
         return

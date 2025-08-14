@@ -74,6 +74,7 @@ development across multiple platforms and languages.
   ...
 }: let
   inherit (delib) singleEnableOption;
+
 in
   delib.module {
     name = "features.engineer";
@@ -191,7 +192,7 @@ in
             squirreldisk
           ]
           ++ [
-            inputs.crush.packages."${pkgs.system}".default
+            inputs.nix-ai-tools.packages."${pkgs.system}".crush
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib

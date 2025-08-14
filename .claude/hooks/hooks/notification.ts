@@ -9,14 +9,14 @@ import { Logger, InputReader, createHookResult, handleError } from '../utils.ts'
 export class NotificationHook {
   static async execute(): Promise<HookResult> {
     try {
-      const input = await InputReader.readStdinJson<NotificationHookInput>();
+      // const _ = await InputReader.readStdinJson<NotificationHookInput>();
 
-      Logger.info('Processing notification hook', {
-        tool_name: input.tool_name,
-        has_tool_input: !!input.tool_input,
-      });
-
-      Logger.appendToLog('notification.json', input);
+      // Logger.info('Processing notification hook', {
+      //   tool_name: input.tool_name,
+      //   has_tool_input: !!input.tool_input,
+      // });
+      //
+      // Logger.appendToLog('notification.json', input);
 
       return createHookResult(true, 'Notification logged successfully');
     } catch (error) {

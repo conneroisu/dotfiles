@@ -120,8 +120,8 @@ Usage: bun index.ts <hook-type> [options]
 
 Available hooks:
 ${HookRouter.getAvailableHooks()
-  .map((hook) => `  ${hook.padEnd(18)} - Hook for ${hook.replace('_', ' ')} events`)
-  .join('\n')}
+          .map((hook) => `  ${hook.padEnd(18)} - Hook for ${hook.replace('_', ' ')} events`)
+          .join('\n')}
 
 Options:
   -h, --help    Show this help message
@@ -164,7 +164,7 @@ Examples:
       process.stdout.write('======================\n');
       HookRouter.getAvailableHooks().forEach((hookType) => {
         const hookStats = PerformanceMonitor.getAverageMetrics(hookType);
-        if (hookStats.totalExecutions) {
+        if (hookStats['totalExecutions']) {
           process.stdout.write(`\n${hookType}:\n`);
           process.stdout.write(JSON.stringify(hookStats, null, 2) + '\n');
         }

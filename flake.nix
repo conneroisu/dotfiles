@@ -53,13 +53,11 @@ nix develop -c lint # Run quality checks
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?tag=v1.0.1";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
-    crush.url = "github:conneroisu/crush-flake?tag=v0.4.0";
-    crush.inputs.nixpkgs.follows = "nixpkgs";
+    nix-ai-tools.url = "github:numtide/nix-ai-tools";
 
     ashell.url = "github:MalpenZibo/ashell?ref=1b57fbcba87f48ca1075dca48021ec55586caeea";
-    ashell.inputs = {
-      nixpkgs.follows = "nixpkgs";
-    };
+    ashell.inputs.nixpkgs.follows = "nixpkgs";
+
     nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
     claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
     claude-desktop.inputs = {
@@ -155,40 +153,117 @@ nix develop -c lint # Run quality checks
     };
   };
 
-  outputs = {
+  outputs = inputs@{
     denix,
     nixpkgs,
     flake-parts,
     ...
-  } @ inputs: let
-    supportedSystems = [
-      "x86_64-linux"
-      "x86_64-darwin"
-      "aarch64-linux"
-      "aarch64-darwin"
-    ];
+  }:
+    flake-parts.lib.mkFlake {inherit inputs;} {
+      systems = [
+        "x86_64-linux"
+        "x86_64-darwin"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
 
-    forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+      imports = [
+        inputs.hercules-ci-effects.flakeModule
+      ];
 
-    mkConfigurations = moduleSystem:
-      denix.lib.configurations {
-        homeManagerUser = "connerohnesorge";
-        inherit moduleSystem;
+      flake = let
+        mkConfigurations = moduleSystem:
+          denix.lib.configurations {
+            homeManagerUser = "connerohnesorge";
+            inherit moduleSystem;
 
-        paths = [./hosts ./modules ./rices];
+            paths = [./hosts ./modules ./rices];
 
-        specialArgs = {
-          inherit inputs;
+            specialArgs = {
+              inherit inputs;
+            };
+          };
+      in {
+        nixosConfigurations = mkConfigurations "nixos";
+        homeConfigurations = mkConfigurations "home";
+        darwinConfigurations = mkConfigurations "darwin";
+
+        templates = {
+          devshell = {
+            description = "A devshell for developing with nix.";
+            path = ./templates/devshell;
+          };
+          go-shell = {
+            description = "A go shell for developing with nix.";
+            path = ./templates/go-shell;
+          };
+          templ-shell = {
+            description = "A go + templ shell for developing with nix.";
+            path = ./templates/templ-shell;
+          };
+          rust-shell = {
+            description = "A rust shell for developing with nix.";
+            path = ./templates/rust-shell;
+          };
+          askama-shell = {
+            description = "A rust web shell for developing with nix and askama.";
+            path = ./templates/askama-shell;
+          };
+          typescript-shell = {
+            description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs).";
+            path = ./templates/typescript-shell;
+          };
+          remix-shell = {
+            description = "A Remix JS shell for developing with bun.";
+            path = ./templates/remix-shell;
+          };
+          tanstack-shell = {
+            description = "A tanstack shell for developing with nix.";
+            path = ./templates/tanstack-shell;
+          };
+          phoenix-shell = {
+            description = "An Elixir Phoenix Framework shell for developing with nix.";
+            path = ./templates/phoenix-shell;
+          };
+          laravel-shell = {
+            description = "A Laravel shell for developing with nix.";
+            path = ./templates/laravel-shell;
+          };
+          lua-shell = {
+            description = "A lua shell for developing with nix.";
+            path = ./templates/lua-shell;
+          };
+          ocaml-shell = {
+            description = "An OCaml shell with modern tooling and best practices.";
+            path = ./templates/ocaml-shell;
+          };
+          python-shell = {
+            description = "A Python shell with modern tooling (basedpyright, ruff, black, pytest).";
+            path = ./templates/python-shell;
+          };
+          cpp-shell = {
+            description = "A C++ shell with modern tooling (GCC, Clang, CMake, static analysis).";
+            path = ./templates/cpp-shell;
+          };
+          cuda-shell = {
+            description = "A cuda shell for developing with nix.";
+            path = ./templates/cuda-shell;
+          };
+          zig-shell = {
+            description = "A zig shell for developing with nix.";
+            path = ./templates/zig-shell;
+          };
         };
       };
-  in
-    {
-      nixosConfigurations = mkConfigurations "nixos";
-      homeConfigurations = mkConfigurations "home";
-      darwinConfigurations = mkConfigurations "darwin";
 
-      devShells = forAllSystems (system: let
-        pkgs = nixpkgs.legacyPackages.${system};
+      perSystem = {
+        config,
+        self',
+        inputs',
+        pkgs,
+        system,
+        ...
+      }: let
         scripts = {
           dx = {
             exec = ''$EDITOR "$REPO_ROOT"/flake.nix'';
@@ -220,8 +295,17 @@ nix develop -c lint # Run quality checks
           scripts;
 
         buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
+
+        treefmtModule = {
+          projectRootFile = "flake.nix";
+          programs = {
+            alejandra.enable = true; # Nix formatter
+            rustfmt.enable = true; # Rust formatter
+            black.enable = true; # Python formatter
+          };
+        };
       in {
-        default = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           shellHook = ''
             export REPO_ROOT="$(git rev-parse --show-toplevel)"
             export CGO_CFLAGS="-O2"
@@ -368,93 +452,10 @@ nix develop -c lint # Run quality checks
             ]
             ++ builtins.attrValues scriptPackages;
         };
-      });
 
-      formatter = forAllSystems (system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-        treefmtModule = {
-          projectRootFile = "flake.nix";
-          programs = {
-            alejandra.enable = true; # Nix formatter
-            rustfmt.enable = true; # Rust formatter
-            black.enable = true; # Python formatter
-          };
-        };
-      in
-        inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule);
-
-      templates = {
-        devshell = {
-          description = "A devshell for developing with nix.";
-          path = ./templates/devshell;
-        };
-        go-shell = {
-          description = "A go shell for developing with nix.";
-          path = ./templates/go-shell;
-        };
-        templ-shell = {
-          description = "A go + templ shell for developing with nix.";
-          path = ./templates/templ-shell;
-        };
-        rust-shell = {
-          description = "A rust shell for developing with nix.";
-          path = ./templates/rust-shell;
-        };
-        askama-shell = {
-          description = "A rust web shell for developing with nix and askama.";
-          path = ./templates/askama-shell;
-        };
-        typescript-shell = {
-          description = "A TypeScript shell with modern tooling (ESLint, oxlint, Biome, LSPs).";
-          path = ./templates/typescript-shell;
-        };
-        remix-shell = {
-          description = "A Remix JS shell for developing with bun.";
-          path = ./templates/remix-shell;
-        };
-        tanstack-shell = {
-          description = "A tanstack shell for developing with nix.";
-          path = ./templates/tanstack-shell;
-        };
-        phoenix-shell = {
-          description = "An Elixir Phoenix Framework shell for developing with nix.";
-          path = ./templates/phoenix-shell;
-        };
-        laravel-shell = {
-          description = "A Laravel shell for developing with nix.";
-          path = ./templates/laravel-shell;
-        };
-        lua-shell = {
-          description = "A lua shell for developing with nix.";
-          path = ./templates/lua-shell;
-        };
-        ocaml-shell = {
-          description = "An OCaml shell with modern tooling and best practices.";
-          path = ./templates/ocaml-shell;
-        };
-        python-shell = {
-          description = "A Python shell with modern tooling (basedpyright, ruff, black, pytest).";
-          path = ./templates/python-shell;
-        };
-        cpp-shell = {
-          description = "A C++ shell with modern tooling (GCC, Clang, CMake, static analysis).";
-          path = ./templates/cpp-shell;
-        };
-        cuda-shell = {
-          description = "A cuda shell for developing with nix.";
-          path = ./templates/cuda-shell;
-        };
-        zig-shell = {
-          description = "A zig shell for developing with nix.";
-          path = ./templates/zig-shell;
-        };
+        formatter = inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule;
       };
-    }
-    // flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = [
-        inputs.hercules-ci-effects.flakeModule
-      ];
-      systems = supportedSystems;
+
       hercules-ci.flake-update = {
         enable = true;
         when = {

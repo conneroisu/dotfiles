@@ -84,6 +84,7 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         student.enable = true;
+        protonvpn.enable = true;
       };
       programs = {
         proton-x.enable = true;

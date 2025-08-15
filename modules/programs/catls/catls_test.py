@@ -46,6 +46,7 @@ def mock_args():
     args.include_regex = []
     args.content_pattern = ""
     args.show_line_numbers = False
+    args.omit_bins = False
     return args
 
 
@@ -367,3 +368,90 @@ def test_parse_args():
         assert args.show_all is True
         assert args.debug is True
         assert args.show_line_numbers is True
+
+
+@patch("builtins.print")
+def test_process_file_omit_bins(mock_print, fake_filesystem, mock_args):
+    """Test that binary files are omitted when --omit-bins is used."""
+    # Create binary file
+    fake_filesystem.create_file(
+        "/test/binary.bin",
+        contents="\x00\x01\x02\x03",
+    )
+
+    mock_args.directory = "/test"
+    mock_args.omit_bins = True
+
+    # Mock is_binary to return True
+    with patch("catls.is_binary", return_value=True):
+        process_file("/test/binary.bin", mock_args)
+
+    # Should not print anything (binary file is omitted)
+    assert len(mock_print.call_args_list) == 0
+
+
+@patch("builtins.print")
+def test_process_file_omit_bins_debug(mock_print, fake_filesystem, mock_args):
+    """Test that binary files show debug message when omitted."""
+    # Create binary file
+    fake_filesystem.create_file(
+        "/test/binary.bin",
+        contents="\x00\x01\x02\x03",
+    )
+
+    mock_args.directory = "/test"
+    mock_args.omit_bins = True
+    mock_args.debug = True
+
+    # Mock is_binary to return True
+    with patch("catls.is_binary", return_value=True):
+        process_file("/test/binary.bin", mock_args)
+
+    # Should print debug message to stderr
+    calls = [call for call in mock_print.call_args_list]
+    debug_calls = [call for call in calls if call.kwargs.get("file") == sys.stderr]
+    assert len(debug_calls) == 1
+    assert "Debug: Skipping binary file: binary.bin" in debug_calls[0].args[0]
+
+
+@patch("builtins.print")
+def test_process_file_text_with_omit_bins(mock_print, fake_filesystem, mock_args):
+    """Test that text files are still processed when --omit-bins is used."""
+    # Create text file
+    fake_filesystem.create_file(
+        "/test/text.py",
+        contents="print('hello world')",
+    )
+
+    mock_args.directory = "/test"
+    mock_args.omit_bins = True
+
+    # Mock is_binary to return False
+    with patch("catls.is_binary", return_value=False):
+        process_file("/test/text.py", mock_args)
+
+    # Should process the text file normally
+    calls = [call.args[0] for call in mock_print.call_args_list]
+    assert '<file path="text.py">' in calls
+    assert "<type>python</type>" in calls
+    assert "</file>" in calls
+
+
+def test_parse_args_omit_bins():
+    """Test parsing --omit-bins argument."""
+    # Test with --omit-bins flag
+    with patch(
+        "sys.argv",
+        [
+            "catls.py",
+            "/test/dir",
+            "--omit-bins",
+        ],
+    ):
+        args = parse_args()
+        assert args.omit_bins is True
+
+    # Test without --omit-bins flag
+    with patch("sys.argv", ["catls.py", "/test/dir"]):
+        args = parse_args()
+        assert args.omit_bins is False

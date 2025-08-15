@@ -31,7 +31,6 @@ keyboard-driven workflows.
 ### Desktop Utilities
 - **hyprcursor**: Cursor theme support
 - **hyprpaper**: Wallpaper manager
-- **hypridle**: Idle management daemon
 - **hyprsunset**: Blue light filter
 - **hyprnotify**: Native notifications
 
@@ -113,7 +112,6 @@ in
             pkgs.hyprkeys
             pkgs.hyprpaper
             pkgs.playerctl
-            pkgs.hypridle
             pkgs.hyprsunset
             pkgs.hyprwayland-scanner
             pkgs.hyprutils
@@ -167,7 +165,6 @@ in
         gnome.gnome-keyring.enable = true;
         gvfs.enable = true; # Mount, trash, and other functionalities
         tumbler.enable = true; # Thumbnails
-        hypridle.enable = true;
         dbus = {
           enable = true;
           implementation = "broker";

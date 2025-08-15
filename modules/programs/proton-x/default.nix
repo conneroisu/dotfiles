@@ -82,7 +82,7 @@ the Proton gaming compatibility layer.
 */
 {
   delib,
-  # inputs,
+  inputs,
   # system,
   pkgs,
   ...
@@ -98,6 +98,8 @@ in
       environment.systemPackages = [
         pkgs.protonmail-desktop
         pkgs.proton-pass
+
+        inputs.proton-authenticator.packages."${pkgs.system}".default
       ];
     };
     darwin.ifEnabled = {

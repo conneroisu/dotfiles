@@ -47,7 +47,6 @@ environment.
 {
   delib,
   inputs,
-  pkgs,
   ...
 }:
 delib.host {
@@ -84,6 +83,7 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         student.enable = true;
+        protonvpn.enable = true;
       };
       programs = {
         proton-x.enable = true;
@@ -93,10 +93,6 @@ delib.host {
     nixpkgs.config.allowUnfree = true;
     nixpkgs.hostPlatform = "x86_64-linux";
 
-    environment.systemPackages = with pkgs; [
-      protonvpn-cli
-      inputs.proton-authenticator.packages."${pkgs.system}".default
-    ];
     boot = {
       plymouth.enable = true;
       loader = {

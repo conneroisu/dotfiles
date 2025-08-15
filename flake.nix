@@ -153,7 +153,7 @@ nix develop -c lint # Run quality checks
     };
   };
 
-  outputs = inputs@{
+  outputs = inputs @ {
     denix,
     nixpkgs,
     flake-parts,
@@ -253,15 +253,19 @@ nix develop -c lint # Run quality checks
             description = "A zig shell for developing with nix.";
             path = ./templates/zig-shell;
           };
+          starlight-shell = {
+            description = "A astro starlight docs site shell/project for developing with nix.";
+            path = ./templates/starlight-shell;
+          };
         };
       };
 
       perSystem = {
-        config,
-        self',
-        inputs',
+        # config,
+        # self',
+        # inputs',
         pkgs,
-        system,
+        # system,
         ...
       }: let
         scripts = {
@@ -310,7 +314,6 @@ nix develop -c lint # Run quality checks
             export REPO_ROOT="$(git rev-parse --show-toplevel)"
             export CGO_CFLAGS="-O2"
 
-            # Welcome header with gradient effect
             ${pkgs.gum}/bin/gum style \
               --foreground 212 --background 235 \
               --border thick --border-foreground 212 \
@@ -330,29 +333,23 @@ nix develop -c lint # Run quality checks
 
             ${pkgs.gum}/bin/gum join --vertical "$commands_header" "$commands_box"
 
-            # Repository status section with enhanced visuals
             repo_header=$(${pkgs.gum}/bin/gum style \
               --foreground 212 --bold --underline "📊 Repository Status:")
 
-            # Get repository info
             branch=$(git branch --show-current 2>/dev/null || echo "unknown")
             commit_count=$(git rev-list --count HEAD 2>/dev/null || echo "0")
             last_commit=$(git log -1 --format="%h - %s" 2>/dev/null || echo "No commits")
 
-            # Branch info with icon
             branch_info=$(${pkgs.gum}/bin/gum style \
               --foreground 51 --bold "🌿 Branch: $branch")
 
-            # Commit info
             commit_info=$(${pkgs.gum}/bin/gum style \
               --foreground 99 "📝 Commits: $commit_count")
 
-            # Last commit info (truncated for readability)
             last_commit_short="''${last_commit:0:60}$([ ''${#last_commit} -gt 60 ] && echo "...")"
             last_commit_info=$(${pkgs.gum}/bin/gum style \
               --foreground 246 "🕐 Latest: $last_commit_short")
 
-            # Check if there are any changes and create status display
             if ! git diff-index --quiet HEAD -- 2>/dev/null; then
               change_count=$(git status --porcelain | wc -l | tr -d ' ')
               status_header=$(${pkgs.gum}/bin/gum style \

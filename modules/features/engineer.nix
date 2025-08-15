@@ -50,7 +50,6 @@ development across multiple platforms and languages.
 - CI/CD tools
 
 ## Integrations
-- NordVPN for secure connections
 - nix-ld for running dynamic binaries
 - Tailscale for development networks
 
@@ -74,14 +73,12 @@ development across multiple platforms and languages.
   ...
 }: let
   inherit (delib) singleEnableOption;
-
 in
   delib.module {
     name = "features.engineer";
 
     nixos.always.imports = [
       inputs.nix-ld.nixosModules.nix-ld
-      inputs.nordvpn.nixosModules.nordvpn
     ];
 
     options = singleEnableOption false;
@@ -108,21 +105,11 @@ in
       environment = {
         systemPackages = with pkgs;
           [
-            # Shell
-
-            ## Editor
-            neovim
-            yq
-            tree-sitter
-            sad
-
             ## Env
-            zsh
             nushell
             dbus
             upower
             upower-notify
-            lsof
             age
             kubectl
             ktailctl
@@ -158,6 +145,7 @@ in
             obs-studio
             eog
             nemo-with-extensions
+            google-chrome
 
             # Communication
             tailscale
@@ -196,7 +184,6 @@ in
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
-            inputs.nordvpn.packages."${pkgs.system}".default
             inputs.nix-auth.packages."${pkgs.system}".default
             inputs.nix-tree-rs.packages."${pkgs.system}".default
             inputs.locker.packages."${pkgs.system}".default
@@ -232,13 +219,6 @@ in
       };
 
       security.rtkit.enable = true;
-
-      services = {
-        # k3s.enable = true;
-        gnome.gnome-keyring.enable = true;
-        nordvpn.enable = true;
-        upower.enable = true;
-      };
     };
 
     darwin.ifEnabled = {
@@ -252,9 +232,6 @@ in
       };
       environment = {
         systemPackages = with pkgs; [
-          cmake
-          yq
-          graphite-cli
           spicetify-cli
           zed-editor
           python313Packages.huggingface-hub
@@ -263,12 +240,10 @@ in
           unixtools.xxd
           tree
           sad
-          neovim
           gnumake
           vscode-langservers-extracted
           bun
           podman
-          rancher
           openssl
 
           # Platforms

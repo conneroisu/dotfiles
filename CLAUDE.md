@@ -19,6 +19,7 @@ All commands should be run using `nix develop -c <command>` to ensure the proper
 #### Testing
 - Individual program tests: `cd modules/programs/<program-name> && nix build` to test custom program builds
 - convert_img tests: `cd modules/programs/convert_img && python -m pytest tests/`
+- if you edit any program in `modules/programs/`, you should run the edited program manually to ensure it works in addition to the tests.
 
 #### Installation/Rebuild
 

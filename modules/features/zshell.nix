@@ -90,6 +90,14 @@ designed to be enabled by higher-level feature modules like `engineer.nix`.
     uv
     git
     man
+    cmake
+    yq
+    graphite-cli
+    lsof
+    # Editor
+    neovim
+    tree-sitter
+    sad
   ];
 in
   delib.module {

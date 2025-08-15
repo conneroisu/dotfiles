@@ -169,6 +169,7 @@ in
           enable = true;
           implementation = "broker";
         };
+        upower.enable = true;
         xserver = {
           enable = true;
         };

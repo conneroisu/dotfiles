@@ -155,7 +155,6 @@ nix develop -c lint # Run quality checks
 
   outputs = inputs @ {
     denix,
-    nixpkgs,
     flake-parts,
     ...
   }:
@@ -279,9 +278,14 @@ nix develop -c lint # Run quality checks
               REPO_ROOT="$(git rev-parse --show-toplevel)"
               statix check "$REPO_ROOT"/flake.nix
               deadnix "$REPO_ROOT"/flake.nix
+              find . -name "go.mod" -type f | while read -r modfile; do
+                  DIR=$(dirname "$modfile")
+                  echo "Linting: $DIR"
+                  (cd "$DIR" && golangci-lint run ./...) || echo "Go linting completed with warnings"
+              done
               nix flake check "$REPO_ROOT"
             '';
-            deps = with pkgs; [git statix deadnix];
+            deps = with pkgs; [git statix deadnix golangci-lint];
             description = "Run linting tools (statix, deadnix, nix flake check, locker)";
           };
         };
@@ -443,6 +447,7 @@ nix develop -c lint # Run quality checks
               (buildWithSpecificGo reftools)
               pprof
               graphviz
+              cobra-cli
 
               geesefs
               sops

@@ -73,6 +73,7 @@ in
         systemPackages = with pkgs; [
           libreoffice
           anki-bin
+          teams-for-linux
         ];
       };
     };

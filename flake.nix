@@ -53,17 +53,18 @@ nix develop -c lint # Run quality checks
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?tag=v1.0.1";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
-    nix-ai-tools.url = "github:numtide/nix-ai-tools";
+
+    nix-ai-tools = {
+      url = "github:numtide/nix-ai-tools";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
 
     ashell.url = "github:MalpenZibo/ashell?ref=1b57fbcba87f48ca1075dca48021ec55586caeea";
     ashell.inputs.nixpkgs.follows = "nixpkgs";
 
-    nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
-    claude-desktop.url = "github:k3d3/claude-desktop-linux-flake";
-    claude-desktop.inputs = {
-      nixpkgs.follows = "nixpkgs";
-      flake-utils.follows = "flake-utils";
-    };
+    # nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
+    # nordvpn.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -106,6 +107,7 @@ nix develop -c lint # Run quality checks
 
     ghostty.url = "github:ghostty-org/ghostty/main";
     ghostty.inputs = {
+      nixpkgs.follows = "nixpkgs";
       flake-utils.follows = "flake-utils";
     };
 

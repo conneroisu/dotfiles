@@ -12,19 +12,19 @@ import (
 
 // FileInfo represents information about a discovered file.
 type FileInfo struct {
-	Path     string
-	RelPath  string
-	IsBinary bool
+	Path     string // Path to the file
+	RelPath  string // Relative path to the file
+	IsBinary bool   // Whether the file is a binary file.
 }
 
 // Config holds scanner configuration.
 type Config struct {
-	Directory   string
-	ShowAll     bool
-	Recursive   bool
-	IgnoreDir   []string
-	IgnoreGlobs []string
-	Debug       bool
+	Directory   string   // Directory to scan
+	ShowAll     bool     // ShowAll option
+	Recursive   bool     // Recursive option
+	IgnoreDir   []string // IgnoreDir option
+	IgnoreGlobs []string // IgnoreGlobs option
+	Debug       bool     // Debug logging
 }
 
 // Scanner handles file discovery and filtering.
@@ -93,7 +93,7 @@ func (s *Scanner) Scan(ctx context.Context, cfg Config) ([]FileInfo, error) {
 			}
 
 			fullPath := filepath.Join(current.path, entryName)
-			
+
 			info, err := os.Stat(fullPath)
 			if err != nil {
 				continue
@@ -112,7 +112,7 @@ func (s *Scanner) Scan(ctx context.Context, cfg Config) ([]FileInfo, error) {
 				}
 
 				isBinary := s.binaryDetector.IsBinary(fullPath)
-				
+
 				files = append(files, FileInfo{
 					Path:     fullPath,
 					RelPath:  relPath,
@@ -134,6 +134,6 @@ func (s *Scanner) getRelativePath(fullPath, baseDir string) (string, error) {
 	if baseDir == "." {
 		return fullPath, nil
 	}
-	
+
 	return filepath.Rel(baseDir, fullPath)
 }

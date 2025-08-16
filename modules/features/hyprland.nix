@@ -149,6 +149,14 @@ in
         };
       };
 
+      hardware = {
+        graphics = {
+          extraPackages = with pkgs; [
+            mesa
+          ];
+        };
+      };
+
       programs = {
         dconf.enable = true;
         hyprland = {
@@ -160,7 +168,10 @@ in
         };
       };
 
-      security.pam.services.sddm.enableGnomeKeyring = true;
+      security = {
+        pam.services.sddm.enableGnomeKeyring = true;
+      };
+
       services = {
         gnome.gnome-keyring.enable = true;
         gvfs.enable = true; # Mount, trash, and other functionalities

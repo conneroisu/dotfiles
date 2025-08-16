@@ -177,7 +177,6 @@ in
             statix
             nodejs
             lua-language-server
-            squirreldisk
           ]
           ++ [
             inputs.nix-ai-tools.packages."${pkgs.system}".crush

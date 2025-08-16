@@ -119,7 +119,7 @@ in
         groups.${username} = {};
 
         # Create NordVPN group for VPN access
-        groups.nordvpn = {};
+        # groups.nordvpn = {};
 
         # Main user account configuration
         users.${username} = {

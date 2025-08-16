@@ -18,6 +18,7 @@ desktop environment for when GUI access is needed.
 - **Development environment**: Engineer role enabled
 - **Privacy tools**: Darknet features enabled
 - **Secrets management**: Secure credential handling
+- **Ollama**: Go based AI LLM Runner
 
 ## Hardware Support
 - AMD GPU drivers and optimizations
@@ -68,6 +69,7 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         kde.enable = true;
+        ollama.enable = true;
 
         k3sServer.enable = true;
       };

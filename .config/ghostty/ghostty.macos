@@ -20,7 +20,7 @@ font-family = "CodeNewRoman Nerd Font"
 background = #000000
 
 # Terminal Behavior
-bold-is-bright = true
+# bold-is-bright = true
 # Allow shift+enter to insert newlines in terminal
 keybind = shift+enter=text:\n
 # Inherit working directory from parent process

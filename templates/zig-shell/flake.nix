@@ -6,6 +6,11 @@
     zig-overlay.url = "github:mitchellh/zig-overlay";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+    zls = {
+      url = "github:zigtools/zls";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.zig-overlay.follows = "zig-overlay";
+    };
   };
   outputs = {
     self,
@@ -13,6 +18,7 @@
     flake-utils,
     treefmt-nix,
     zig-overlay,
+    zls,
     ...
   }:
     flake-utils.lib.eachDefaultSystem (system: let
@@ -30,6 +36,7 @@
           pkgs.statix
           pkgs.deadnix
           pkgs.zigpkgs.master
+          zls.packages.${system}.zls
         ];
         shellHook = ''
           echo "Welcome to the zig devshell!"

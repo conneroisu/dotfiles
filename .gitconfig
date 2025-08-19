@@ -24,3 +24,5 @@
 	defaultBranch = main
 [safe]
 	directory = /home/connerohnesorge/dotfiles
+[core]
+	editor = nvim

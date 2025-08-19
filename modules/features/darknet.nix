@@ -45,11 +45,7 @@ Provides VPN connectivity and automated threat response.
 - Fail2ban: `fail2ban-client status`
 - Check banned IPs: `fail2ban-client status sshd`
 */
-{
-  delib,
-  pkgs,
-  ...
-}: let
+{delib, ...}: let
   inherit (delib) singleEnableOption;
 in
   delib.module {
@@ -59,7 +55,7 @@ in
 
     nixos.ifEnabled = {myconfig, ...}: {
       services = {
-        # tailscale.enable = true;
+        tailscale.enable = true;
         fail2ban.enable = true;
       };
     };

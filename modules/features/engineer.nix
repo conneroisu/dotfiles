@@ -146,6 +146,7 @@ in
             eog
             nemo-with-extensions
             google-chrome
+            whatsapp-for-linux
 
             # Communication
             tailscale
@@ -180,6 +181,8 @@ in
           ]
           ++ [
             inputs.nix-ai-tools.packages."${pkgs.system}".crush
+            inputs.nix-ai-tools.packages."${pkgs.system}".claude-code-router
+            inputs.nix-ai-tools.packages."${pkgs.system}".groq-code-cli
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib

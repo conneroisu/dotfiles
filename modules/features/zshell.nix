@@ -94,6 +94,7 @@ designed to be enabled by higher-level feature modules like `engineer.nix`.
     yq
     graphite-cli
     lsof
+    gdu
     # Editor
     neovim
     tree-sitter

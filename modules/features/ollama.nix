@@ -1,6 +1,19 @@
 /**
-TODO: Add documentation
-*/
+ * Ollama Feature Module
+ *
+ * Enables Ollama, a local LLM inference server, with automatic hardware acceleration
+ * detection and Open WebUI integration for a complete local AI development experience.
+ *
+ * Features:
+ * - Automatic hardware acceleration (NVIDIA CUDA, AMD ROCm, or CPU fallback)
+ * - Pre-configured with gpt-oss:20b model loading
+ * - Open WebUI web interface for model interaction
+ * - NixOS service integration with proper systemd management
+ *
+ * Dependencies:
+ * - Automatically detects myconfig.features.nvidia or myconfig.features.amd for acceleration
+ * - Only available on NixOS (requires systemd services)
+ */
 {
   delib,
   pkgs,

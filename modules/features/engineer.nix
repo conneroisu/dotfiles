@@ -147,7 +147,6 @@ in
             nemo-with-extensions
             google-chrome
             whatsapp-for-linux
-            gitbutler
 
             # Communication
             tailscale

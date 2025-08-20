@@ -1927,11 +1927,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1754497879,
-        "narHash": "sha256-VsduPN5AFt/GjhYw235zRklbFfq7QTGBxHIlSG6XMMk=",
+        "lastModified": 1755689132,
+        "narHash": "sha256-1XTP085qTeT+yEsdyJTI3qgAl0FxZmCwkuUsBl/2LJU=",
         "owner": "conneroisu",
         "repo": "zen-browser-flake",
-        "rev": "5ed184a14630d53adffb754c8e0af4babf15c071",
+        "rev": "338ea6e00aaf74efec69c6a037f06d3af591a94d",
         "type": "github"
       },
       "original": {

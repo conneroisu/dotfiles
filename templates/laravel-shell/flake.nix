@@ -23,17 +23,65 @@
         src = inputs.self;
         php = pkgs.php84; # Updated to php84 for latest features and compatibility
       };
+
+      rooted = exec:
+        builtins.concatStringsSep "\n"
+        [
+          ''REPO_ROOT="$(git rev-parse --show-toplevel)"''
+          exec
+        ];
+
+      scripts = {
+        dx = {
+          exec = rooted ''$EDITOR "$REPO_ROOT"/flake.nix'';
+          description = "Edit flake.nix";
+        };
+        cx = {
+          exec = rooted ''$EDITOR "$REPO_ROOT"/composer.json'';
+          description = "Edit composer.json";
+        };
+        ax = {
+          exec = rooted ''$EDITOR "$REPO_ROOT"/artisan'';
+          description = "Edit artisan";
+        };
+        lx = {
+          exec = rooted ''$EDITOR "$REPO_ROOT"/.env'';
+          description = "Edit .env file";
+        };
+        lint = {
+          exec = rooted ''cd "$REPO_ROOT" && ./vendor/bin/pint'';
+          description = "Run Laravel Pint linting";
+        };
+        tests = {
+          exec = rooted ''cd "$REPO_ROOT" && ./vendor/bin/pest'';
+          description = "Run Pest tests";
+        };
+      };
+
+      scriptPackages =
+        pkgs.lib.mapAttrs
+        (
+          name: script:
+            pkgs.writeShellApplication {
+              inherit name;
+              text = script.exec;
+              runtimeInputs = script.deps or [];
+            }
+        )
+        scripts;
     in {
       devShells.default = pkgs.mkShellNoCC {
         name = "php-devshell";
-        buildInputs = [
-          php
-          php.packages.composer
-          php.packages.phpstan
-          pkgs.phpunit
-          pkgs.laravel
-          self.packages.${system}.satis
-        ];
+        buildInputs =
+          [
+            php
+            php.packages.composer
+            php.packages.phpstan
+            pkgs.phpunit
+            pkgs.laravel
+            self.packages.${system}.satis
+          ]
+          ++ builtins.attrValues scriptPackages;
       };
 
       checks = {

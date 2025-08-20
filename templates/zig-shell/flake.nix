@@ -1,3 +1,49 @@
+/**
+# Zig Development Shell Template
+
+## Description
+Complete Zig development environment with modern tooling for building, testing,
+and maintaining Zig applications. Includes the Zig compiler, ZLS language server,
+formatting utilities, and development scripts for productive Zig development.
+
+## Platform Support
+- ✅ x86_64-linux
+- ✅ aarch64-linux (ARM64 Linux)
+- ✅ x86_64-darwin (Intel macOS)
+- ✅ aarch64-darwin (Apple Silicon macOS)
+
+## What This Provides
+- **Zig Toolchain**: Latest Zig master compiler and runtime
+- **Language Server**: ZLS for rich IDE integration
+- **Development Tools**: Build automation and project management
+- **Code Quality**: Formatting with zig fmt integration
+- **Documentation**: Built-in documentation generation
+- **Nix Tools**: Formatting and linting for Nix files
+
+## Usage
+```bash
+# Create new project from template
+nix flake init -t github:conneroisu/dotfiles#zig-shell
+
+# Enter development shell
+nix develop
+
+# Build project
+zig build
+
+# Run tests
+zig test src/main.zig
+
+# Format code
+nix fmt
+```
+
+## Development Workflow
+- Use `zig build` for compilation and linking
+- ZLS provides comprehensive IDE integration
+- Built-in formatter ensures consistent code style
+- All tools configured for optimal Zig development experience
+*/
 {
   description = "A development shell for zig";
   inputs = {
@@ -24,34 +70,114 @@
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [zig-overlay.overlays.default];
+        overlays = [
+          zig-overlay.overlays.default
+          (final: prev: {
+            # Add your overlays here
+            # Example:
+            # my-overlay = final: prev: {
+            #   my-package = prev.callPackage ./my-package { };
+            # };
+          })
+        ];
+      };
+
+      rooted = exec:
+        builtins.concatStringsSep "\n"
+        [
+          ''REPO_ROOT="$(git rev-parse --show-toplevel)"''
+          exec
+        ];
+
+      scripts = {
+        dx = {
+          exec = rooted ''$EDITOR "$REPO_ROOT"/flake.nix'';
+          description = "Edit flake.nix";
+        };
+        zx = {
+          exec = rooted ''$EDITOR "$REPO_ROOT"/build.zig'';
+          description = "Edit build.zig";
+        };
+      };
+
+      scriptPackages =
+        pkgs.lib.mapAttrs
+        (
+          name: script:
+            pkgs.writeShellApplication {
+              inherit name;
+              text = script.exec;
+              runtimeInputs = script.deps or [];
+            }
+        )
+        scripts;
+
+      treefmtModule = {
+        projectRootFile = "flake.nix";
+        programs = {
+          alejandra.enable = true; # Nix formatter
+          zig.enable = true; # Zig formatter
+        };
       };
     in {
       devShells.default = pkgs.mkShell {
         name = "dev";
+
         # Available packages on https://search.nixos.org/packages
-        buildInputs = [
-          pkgs.alejandra # Nix
-          pkgs.nixd
-          pkgs.statix
-          pkgs.deadnix
-          pkgs.zigpkgs.master
-          zls.packages.${system}.zls
-        ];
+        packages = with pkgs;
+          [
+            alejandra # Nix
+            nixd
+            statix
+            deadnix
+
+            zigpkgs.master # Zig Tools
+            lldb # Debugger
+            gdb # Alternative debugger
+            valgrind # Memory debugging
+          ]
+          ++ [
+            zls.packages.${system}.zls # Zig Language Server
+          ]
+          ++ builtins.attrValues scriptPackages;
+
         shellHook = ''
-          echo "Welcome to the zig devshell!"
+          echo "Welcome to the Zig development shell!"
+          echo "Available commands:"
+          echo "  dx - Edit flake.nix"
+          echo "  zx - Edit build.zig"
+          echo "  zig build - Build the project"
+          echo "  zig test - Run tests"
+          echo "  nix fmt - Format code"
         '';
       };
 
-      formatter = let
-        treefmtModule = {
-          projectRootFile = "flake.nix";
-          programs = {
-            alejandra.enable = true; # Nix formatter
-            zig.enable = true; # Zig formatter
+      packages = {
+        default = pkgs.stdenv.mkDerivation {
+          pname = "my-zig-project";
+          version = "0.0.1";
+          src = self;
+          nativeBuildInputs = [ pkgs.zigpkgs.master ];
+          buildPhase = ''
+            zig build
+          '';
+          installPhase = ''
+            mkdir -p $out/bin
+            # Copy built executables to $out/bin
+            # Adjust this based on your project structure
+            if [ -d "zig-out/bin" ]; then
+              cp -r zig-out/bin/* $out/bin/
+            fi
+          '';
+          meta = with pkgs.lib; {
+            description = "My Zig project";
+            homepage = "https://github.com/conneroisu/my-zig-project";
+            license = licenses.mit;
+            maintainers = with maintainers; [connerohnesorge];
           };
         };
-      in
-        treefmt-nix.lib.mkWrapper pkgs treefmtModule;
+      };
+
+      formatter = treefmt-nix.lib.mkWrapper pkgs treefmtModule;
     });
 }

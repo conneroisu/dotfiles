@@ -1,0 +1,131 @@
+{
+  "audioFx": {
+    "delay": 0,
+    "eq": {
+      "enabled": false,
+      "factor": 1,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "pitch": 0,
+    "volume": 1
+  },
+  "enabled": true,
+  "firstUse": 1747126915923,
+  "freshKeybinds": false,
+  "hideMediaView": null,
+  "keybinds": [
+    {
+      "adjustMode": 2,
+      "command": "speed",
+      "enabled": true,
+      "greedy": true,
+      "id": "615940199",
+      "key": {
+        "altKey": true,
+        "code": "KeyA",
+        "ctrlKey": false,
+        "metaKey": false,
+        "shiftKey": false
+      },
+      "valueNumber": -0.1
+    },
+    {
+      "command": "speed",
+      "enabled": true,
+      "greedy": true,
+      "id": "2770900302",
+      "key": {
+        "altKey": true,
+        "code": "KeyX",
+        "ctrlKey": false,
+        "metaKey": false,
+        "shiftKey": false
+      },
+      "valueNumber": 1
+    },
+    {
+      "adjustMode": 2,
+      "command": "speed",
+      "enabled": true,
+      "greedy": true,
+      "id": "5560836055",
+      "key": {
+        "altKey": true,
+        "code": "KeyD",
+        "ctrlKey": false,
+        "metaKey": false,
+        "shiftKey": false
+      },
+      "spacing": 2,
+      "valueNumber": 0.1
+    }
+  ],
+  "keybindsUrlCondition": {
+    "block": true,
+    "parts": [
+      {
+        "id": "4084986174",
+        "type": "STARTS_WITH",
+        "valueContains": "https://docs.google.com",
+        "valueRegex": "",
+        "valueStartsWith": "https://docs.google.com"
+      },
+      {
+        "id": "1967324930",
+        "type": "STARTS_WITH",
+        "valueContains": "https://play.geforcenow.com",
+        "valueRegex": "",
+        "valueStartsWith": "https://play.geforcenow.com"
+      },
+      {
+        "id": "5248830444",
+        "type": "STARTS_WITH",
+        "valueContains": "https://meet.google.com",
+        "valueRegex": "",
+        "valueStartsWith": "https://meet.google.com"
+      },
+      {
+        "id": "5964064829",
+        "type": "STARTS_WITH",
+        "valueContains": "https://zoom.us",
+        "valueRegex": "",
+        "valueStartsWith": "https://zoom.us"
+      },
+      {
+        "id": "8991863059",
+        "type": "STARTS_WITH",
+        "valueContains": "teams.microsoft.com",
+        "valueRegex": "",
+        "valueStartsWith": "teams.microsoft.com"
+      },
+      {
+        "id": "1062177766",
+        "type": "STARTS_WITH",
+        "valueContains": "https://www.figma.com",
+        "valueRegex": "",
+        "valueStartsWith": "https://www.figma.com"
+      },
+      {
+        "id": "7740158674",
+        "type": "STARTS_WITH",
+        "valueContains": "https://docs.qq.com",
+        "valueRegex": "",
+        "valueStartsWith": "https://docs.qq.com"
+      }
+    ]
+  },
+  "lastSpeed": 1,
+  "speed": 1.1,
+  "version": 12
+}

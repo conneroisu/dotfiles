@@ -63,8 +63,8 @@ nix develop -c lint # Run quality checks
     ashell.url = "github:MalpenZibo/ashell?ref=1b57fbcba87f48ca1075dca48021ec55586caeea";
     ashell.inputs.nixpkgs.follows = "nixpkgs";
 
-    # nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
-    # nordvpn.inputs.nixpkgs.follows = "nixpkgs";
+    nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
+    nordvpn.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";

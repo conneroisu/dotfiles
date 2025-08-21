@@ -79,6 +79,13 @@ in
 
     nixos.always.imports = [
       inputs.nix-ld.nixosModules.nix-ld
+      inputs.nordvpn.nixosModules.default
+      {
+        services.nordvpn = {
+          enable = true;
+          users = ["connerohnesorge"]; # Users to add to nordvpn group
+        };
+      }
     ];
 
     options = singleEnableOption false;
@@ -183,6 +190,7 @@ in
             inputs.nix-ai-tools.packages."${pkgs.system}".crush
             inputs.nix-ai-tools.packages."${pkgs.system}".claude-code-router
             inputs.nix-ai-tools.packages."${pkgs.system}".groq-code-cli
+            inputs.nordvpn.packages."${pkgs.system}".default
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib

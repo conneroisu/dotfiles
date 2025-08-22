@@ -144,8 +144,8 @@ in
 
             # Apps
             obsidian
-            zathura
             brave
+            kdePackages.okular
             spotify
             discord
             telegram-desktop

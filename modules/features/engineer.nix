@@ -153,7 +153,7 @@ in
             eog
             nemo-with-extensions
             google-chrome
-            whatsapp-for-linux
+            whatsie
 
             # Communication
             tailscale

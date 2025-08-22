@@ -9,7 +9,8 @@ grim -g "$(slurp)" - | tee >(wl-copy) > "$ppath" && dunstify "Screenshot of the 
 # Create a notification message
 NOTE="Screenshot @ $ppath"
 
-xdg-open "$ppath"
+open "$ppath"
 # Notify using hyprctl and dunstify
 # hyprctl notify 1 10000 0 "$NOTE"
-dunstify "$NOTE" -t 10000 -A "copy, Copy to clipboard" --action="copy:wl-copy $ppath"
+dunstify "$NOTE" -t 10000 -A "copy, Copy to clipboard" 
+cat $ppath | pbcopy

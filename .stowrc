@@ -34,3 +34,5 @@
 --ignore .github
 --ignore CLAUDE.md
 --ignore AGENTS.md
+--ignore .claude
+--ignore .crush

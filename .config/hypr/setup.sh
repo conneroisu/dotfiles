@@ -2,3 +2,5 @@
 
 # ashell &
 determinate-nixd init
+
+hyprshell run &

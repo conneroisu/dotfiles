@@ -95,6 +95,7 @@ designed to be enabled by higher-level feature modules like `engineer.nix`.
     graphite-cli
     lsof
     gdu
+    timewarrior # .local/share/timewarrior
     # Editor
     neovim
     tree-sitter

@@ -296,28 +296,14 @@ in
           enable = true;
           defaultApplications = {
             # Web
+            "x-scheme-handler/about" = lib.mkDefault "zen.desktop";
+            "x-scheme-handler/unknown" = lib.mkDefault "zen.desktop";
+            "x-scheme-handler" = lib.mkDefault "zen.desktop";
             "x-scheme-handler/http" = lib.mkDefault "zen.desktop";
             "x-scheme-handler/https" = lib.mkDefault "zen.desktop";
             # FS
             "inode/directory" = lib.mkDefault "org.kde.dolphin.desktop";
             # Files
-            "text/plain" = lib.mkDefault "nvim.desktop";
-            "text/javascript" = lib.mkDefault "nvim.desktop";
-            "text/rust" = lib.mkDefault "nvim.desktop";
-            "text/x-python" = lib.mkDefault "nvim.desktop";
-            "text/x-java-source" = lib.mkDefault "nvim.desktop";
-            "text/x-c" = lib.mkDefault "nvim.desktop";
-            "text/x-go" = lib.mkDefault "nvim.desktop";
-            "text/x-nix" = lib.mkDefault "nvim.desktop";
-            "text/x-ocaml" = lib.mkDefault "nvim.desktop";
-            "text/x-scala" = lib.mkDefault "nvim.desktop";
-            "text/x-tex" = lib.mkDefault "nvim.desktop";
-            "text/x-matlab" = lib.mkDefault "nvim.desktop";
-            "text/x-meson" = lib.mkDefault "nvim.desktop";
-            "text/x-dart" = lib.mkDefault "nvim.desktop";
-            "text/x-readme" = lib.mkDefault "nvim.desktop";
-            "text/x-sh" = lib.mkDefault "nvim.desktop";
-            "text/x-nushell" = lib.mkDefault "nvim.desktop";
             "text/calendar" = lib.mkDefault "org.kde.korganizer.desktop";
             "text/html" = lib.mkDefault "zen.desktop";
             # Images

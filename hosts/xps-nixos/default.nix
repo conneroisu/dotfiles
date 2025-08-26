@@ -87,7 +87,6 @@ delib.host {
       };
       programs = {
         proton-x.enable = true;
-        gitbutler.enable = true;
       };
     };
 

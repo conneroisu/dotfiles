@@ -296,19 +296,38 @@ in
           enable = true;
           defaultApplications = {
             # Web
-            "text/html" = lib.mkDefault "firefox.desktop";
-            "x-scheme-handler/http" = lib.mkDefault "firefox.desktop";
-            "x-scheme-handler/https" = lib.mkDefault "firefox.desktop";
-            # Files
+            "x-scheme-handler/http" = lib.mkDefault "zen.desktop";
+            "x-scheme-handler/https" = lib.mkDefault "zen.desktop";
+            # FS
             "inode/directory" = lib.mkDefault "org.kde.dolphin.desktop";
-            "text/plain" = lib.mkDefault "org.kde.kate.desktop";
+            # Files
+            "text/plain" = lib.mkDefault "nvim.desktop";
+            "text/javascript" = lib.mkDefault "nvim.desktop";
+            "text/rust" = lib.mkDefault "nvim.desktop";
+            "text/x-python" = lib.mkDefault "nvim.desktop";
+            "text/x-java-source" = lib.mkDefault "nvim.desktop";
+            "text/x-c" = lib.mkDefault "nvim.desktop";
+            "text/x-go" = lib.mkDefault "nvim.desktop";
+            "text/x-nix" = lib.mkDefault "nvim.desktop";
+            "text/x-ocaml" = lib.mkDefault "nvim.desktop";
+            "text/x-scala" = lib.mkDefault "nvim.desktop";
+            "text/x-tex" = lib.mkDefault "nvim.desktop";
+            "text/x-matlab" = lib.mkDefault "nvim.desktop";
+            "text/x-meson" = lib.mkDefault "nvim.desktop";
+            "text/x-dart" = lib.mkDefault "nvim.desktop";
+            "text/x-readme" = lib.mkDefault "nvim.desktop";
+            "text/x-sh" = lib.mkDefault "nvim.desktop";
+            "text/x-nushell" = lib.mkDefault "nvim.desktop";
+            "text/calendar" = lib.mkDefault "org.kde.korganizer.desktop";
+            "text/html" = lib.mkDefault "zen.desktop";
             # Images
             "image/jpeg" = lib.mkDefault "org.kde.gwenview.desktop";
             "image/png" = lib.mkDefault "org.kde.gwenview.desktop";
             # Documents
             "application/pdf" = lib.mkDefault "org.kde.okular.desktop";
-            # Audio/Video
+            # Audio
             "audio/mpeg" = lib.mkDefault "org.kde.elisa.desktop";
+            # Video
             "video/mp4" = lib.mkDefault "vlc.desktop";
             # Archives
             "application/zip" = lib.mkDefault "org.kde.ark.desktop";

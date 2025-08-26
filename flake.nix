@@ -49,6 +49,7 @@ nix develop -c lint # Run quality checks
   description = "Modular configuration of Home Manager and NixOS with Denix";
 
   inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.14.11b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?tag=v1.0.1";
@@ -74,7 +75,7 @@ nix develop -c lint # Run quality checks
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";

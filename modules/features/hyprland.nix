@@ -113,7 +113,10 @@ in
             pkgs.hyprkeys
             pkgs.hyprpaper
             pkgs.playerctl
-            pkgs.hyprsunset
+
+            pkgs.hyprsunset # Needs cc at runtime
+            pkgs.stdenv.cc
+
             pkgs.hyprwayland-scanner
             pkgs.hyprutils
             pkgs.wl-clipboard
@@ -132,6 +135,7 @@ in
             pkgs.dunst
             pkgs.brightnessctl
             pkgs.hyprls
+            pkgs.swaynotificationcenter
             pkgs.gnome-control-center
             pkgs.hyprpicker
             pkgs.gpu-screen-recorder

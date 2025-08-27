@@ -95,7 +95,6 @@ in
     name = "features.hyprland";
 
     options = singleEnableOption false;
-
     nixos.ifEnabled = {
       myconfig.programs = {
         ghostty.enable = true;
@@ -140,6 +139,7 @@ in
             pkgs.hyprpicker
             pkgs.gpu-screen-recorder
             pkgs.ffmpegthumbnailer
+            pkgs.pipewire
           ];
         variables = {
           XDG_SESSION_TYPE = "wayland";

@@ -78,7 +78,6 @@ delib.host {
         audio.enable = true;
         bluetooth.enable = true;
         hyprland.enable = true;
-        kde.enable = true;
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;

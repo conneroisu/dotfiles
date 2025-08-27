@@ -298,7 +298,6 @@ in
             # Web
             "x-scheme-handler/about" = lib.mkDefault "zen.desktop";
             "x-scheme-handler/unknown" = lib.mkDefault "zen.desktop";
-            "x-scheme-handler" = lib.mkDefault "zen.desktop";
             "x-scheme-handler/http" = lib.mkDefault "zen.desktop";
             "x-scheme-handler/https" = lib.mkDefault "zen.desktop";
             # FS

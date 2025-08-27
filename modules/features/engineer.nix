@@ -168,6 +168,7 @@ in
             usbutils
             ethtool
             curl
+            gimp
 
             # Platforms
             fh

@@ -237,6 +237,7 @@ in
             "text/x-readme" = lib.mkDefault "nvim.desktop";
             "text/x-sh" = lib.mkDefault "nvim.desktop";
             "text/x-nushell" = lib.mkDefault "nvim.desktop";
+            "text/html" = lib.mkDefault "zen.desktop";
             # Directories
             "inode/directory" = "nemo.desktop";
             "x-scheme-handler/file" = "nemo.desktop";

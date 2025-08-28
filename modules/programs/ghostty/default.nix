@@ -76,6 +76,11 @@ in
           then ../../../.config/ghostty/ghostty.macos
           else ../../../.config/ghostty/ghostty.linux; # Default to Linux config for other platforms
       };
+      # Alternative: Use XDG config to ensure directory
+      xdg.configFile."dconf/.keep" = {
+        text = "";
+        force = true;
+      };
     };
 
     # Deploy configuration at system level for NixOS

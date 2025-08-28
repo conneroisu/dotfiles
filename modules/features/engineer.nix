@@ -137,6 +137,7 @@ in
             ffmpeg
             tree
             fdtools
+            stdenv.cc
 
             # VCS
             git-lfs
@@ -154,6 +155,7 @@ in
             nemo-with-extensions
             google-chrome
             whatsie
+            strace
 
             # Communication
             tailscale
@@ -166,6 +168,7 @@ in
             usbutils
             ethtool
             curl
+            gimp
 
             # Platforms
             fh

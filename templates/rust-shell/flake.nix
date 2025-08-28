@@ -98,6 +98,36 @@ nix fmt
       #   };
       # });
 
+      rooted = exec:
+        builtins.concatStringsSep "\n"
+        [
+          ''REPO_ROOT="$(git rev-parse --show-toplevel)"''
+          exec
+        ];
+
+      scripts = {
+        dx = {
+          exec = rooted ''$EDITOR "$REPO_ROOT"/flake.nix'';
+          description = "Edit flake.nix";
+        };
+        rx = {
+          exec = rooted ''$EDITOR "$REPO_ROOT"/Cargo.toml'';
+          description = "Edit Cargo.toml";
+        };
+      };
+
+      scriptPackages =
+        pkgs.lib.mapAttrs
+        (
+          name: script:
+            pkgs.writeShellApplication {
+              inherit name;
+              text = script.exec;
+              runtimeInputs = script.deps or [];
+            }
+        )
+        scripts;
+
       devShells.default = pkgs.mkShell {
         name = "dev";
         # Available packages on https://search.nixos.org/packages
@@ -108,7 +138,8 @@ nix fmt
           deadnix
           just
           rust-bin.stable.latest.default
-        ];
+        ]
+        ++ builtins.attrValues scriptPackages;
         shellHook = ''
           echo "Welcome to the rust devshell!"
         '';

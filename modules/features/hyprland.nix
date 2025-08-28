@@ -95,7 +95,6 @@ in
     name = "features.hyprland";
 
     options = singleEnableOption false;
-
     nixos.ifEnabled = {
       myconfig.programs = {
         ghostty.enable = true;
@@ -113,7 +112,10 @@ in
             pkgs.hyprkeys
             pkgs.hyprpaper
             pkgs.playerctl
-            pkgs.hyprsunset
+
+            pkgs.hyprsunset # Needs cc at runtime
+            pkgs.stdenv.cc
+
             pkgs.hyprwayland-scanner
             pkgs.hyprutils
             pkgs.wl-clipboard
@@ -132,10 +134,12 @@ in
             pkgs.dunst
             pkgs.brightnessctl
             pkgs.hyprls
+            pkgs.swaynotificationcenter
             pkgs.gnome-control-center
             pkgs.hyprpicker
             pkgs.gpu-screen-recorder
             pkgs.ffmpegthumbnailer
+            pkgs.pipewire
           ];
         variables = {
           XDG_SESSION_TYPE = "wayland";
@@ -206,12 +210,34 @@ in
           enable = true;
 
           defaultApplications = {
+            "x-scheme-handler/about" = "zen.desktop";
+            "x-scheme-handler/unknown" = "zen.desktop";
+            "x-scheme-handler/http" = "zen.desktop";
+            "x-scheme-handler/https" = "zen.desktop";
             # PDF
             "application/pdf" = "org.gnome.Evince.desktop";
             # PNG, JPG
             "image/png" = "org.gnome.Loupe.desktop";
             "image/jpeg" = "org.gnome.Loupe.desktop";
             "image/ppm" = "org.gnome.Loupe.desktop";
+            # Text
+            "text/javascript" = lib.mkDefault "nvim.desktop";
+            "text/rust" = lib.mkDefault "nvim.desktop";
+            "text/x-python" = lib.mkDefault "nvim.desktop";
+            "text/x-java-source" = lib.mkDefault "nvim.desktop";
+            "text/x-c" = lib.mkDefault "nvim.desktop";
+            "text/x-go" = lib.mkDefault "nvim.desktop";
+            "text/x-nix" = lib.mkDefault "nvim.desktop";
+            "text/x-ocaml" = lib.mkDefault "nvim.desktop";
+            "text/x-scala" = lib.mkDefault "nvim.desktop";
+            "text/x-tex" = lib.mkDefault "nvim.desktop";
+            "text/x-matlab" = lib.mkDefault "nvim.desktop";
+            "text/x-meson" = lib.mkDefault "nvim.desktop";
+            "text/x-dart" = lib.mkDefault "nvim.desktop";
+            "text/x-readme" = lib.mkDefault "nvim.desktop";
+            "text/x-sh" = lib.mkDefault "nvim.desktop";
+            "text/x-nushell" = lib.mkDefault "nvim.desktop";
+            "text/html" = lib.mkDefault "zen.desktop";
             # Directories
             "inode/directory" = "nemo.desktop";
             "x-scheme-handler/file" = "nemo.desktop";

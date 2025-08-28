@@ -76,28 +76,6 @@ nix fmt
         inherit system;
         overlays = [rust-overlay.overlays.default];
       };
-      # Optional: Initialize crane for building packages
-      # craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
-      # Optional: Example crane package build (uncomment to use)
-      # my-crate = craneLib.buildPackage {
-      #   src = craneLib.cleanCargoSource ./.;
-      #   strictDeps = true;
-      # };
-    in {
-      # Optional: Define packages if using crane to build (uncomment to use)
-      # packages = forAllSystems (system: let
-      #   pkgs = import nixpkgs {
-      #     inherit system;
-      #     overlays = [rust-overlay.overlays.default];
-      #   };
-      #   craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
-      # in {
-      #   default = craneLib.buildPackage {
-      #     src = craneLib.cleanCargoSource ./.;
-      #     strictDeps = true;
-      #   };
-      # });
-
       rooted = exec:
         builtins.concatStringsSep "\n"
         [
@@ -127,6 +105,28 @@ nix fmt
             }
         )
         scripts;
+      # Optional: Initialize crane for building packages
+      # craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
+      # Optional: Example crane package build (uncomment to use)
+      # my-crate = craneLib.buildPackage {
+      #   src = craneLib.cleanCargoSource ./.;
+      #   strictDeps = true;
+      # };
+    in {
+      # Optional: Define packages if using crane to build (uncomment to use)
+      # packages = forAllSystems (system: let
+      #   pkgs = import nixpkgs {
+      #     inherit system;
+      #     overlays = [rust-overlay.overlays.default];
+      #   };
+      #   craneLib = (crane.mkLib pkgs).overrideToolchain (p: p.rust-bin.stable.latest.default);
+      # in {
+      #   default = craneLib.buildPackage {
+      #     src = craneLib.cleanCargoSource ./.;
+      #     strictDeps = true;
+      #   };
+      # });
+
 
       devShells.default = pkgs.mkShell {
         name = "dev";

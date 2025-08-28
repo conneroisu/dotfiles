@@ -155,6 +155,7 @@ in
             nemo-with-extensions
             google-chrome
             strace
+            zapzap
 
             # Communication
             tailscale

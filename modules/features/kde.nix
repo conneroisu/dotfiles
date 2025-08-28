@@ -264,7 +264,6 @@ in
         type = "fcitx5";
         fcitx5 = {
           waylandFrontend = true;
-          plasma6Support = true;
           addons = with pkgs; [
             fcitx5-gtk
           ];

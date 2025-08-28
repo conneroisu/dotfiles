@@ -154,7 +154,6 @@ in
             eog
             nemo-with-extensions
             google-chrome
-            whatsie
             strace
 
             # Communication

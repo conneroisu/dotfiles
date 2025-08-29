@@ -21,7 +21,6 @@ delib.host {
       inputs.nixos-hardware.nixosModules.dell-xps-15-9510
     ];
 
-    virtualisation.docker.enable = true;
     hardware.nvidia-container-toolkit.enable = true;
     boot = {
       initrd.availableKernelModules = [

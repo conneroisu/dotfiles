@@ -13,7 +13,7 @@ live reloading, and testing utilities for productive Go development.
 - ✅ aarch64-darwin (Apple Silicon macOS)
 
 ## What This Provides
-- **Go Toolchain**: Go 1.24 compiler and runtime
+- **Go Toolchain**: Go 1.25 compiler and runtime
 - **Development Tools**: air (live reload), delve (debugger), gopls (language server)
 - **Code Quality**: golangci-lint, revive, gofmt, goimports
 - **Testing**: gotestfmt for enhanced test output
@@ -69,7 +69,8 @@ nix fmt
             # my-overlay = final: prev: {
             #   my-package = prev.callPackage ./my-package { };
             # };
-            final.buildGoModule = prev.buildGo124Module;
+            final.buildGoModule = prev.buildGo125Module;
+            buildGoModule = prev.buildGo125Module;
           })
         ];
       };
@@ -125,7 +126,7 @@ nix fmt
             statix
             deadnix
 
-            go_1_24 # Go Tools
+            go_1_25 # Go Tools
             air
             golangci-lint
             gopls

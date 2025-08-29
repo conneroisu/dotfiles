@@ -56,7 +56,7 @@ func (o *MarkdownOutput) WriteFile(ctx context.Context, file ProcessedFile, cfg 
 
 	// Handle binary files
 	if file.Info.IsBinary {
-		fmt.Println("*Binary file - contents not displayed*\n")
+		fmt.Println("*Binary file - contents not displayed*")
 		return nil
 	}
 

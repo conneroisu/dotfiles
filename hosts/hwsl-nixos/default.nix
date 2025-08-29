@@ -13,7 +13,6 @@ This host is configured as a server type running inside WSL2.
 ## Key Features
 - **WSL2 integration**: Windows Subsystem for Linux v2
 - **Development environment**: Engineer role enabled
-- **Container support**: k3s agent for Kubernetes clusters
 - **Privacy tools**: Darknet features enabled
 - **Secrets management**: Secure credential handling
 
@@ -29,7 +28,6 @@ This host is configured as a server type running inside WSL2.
 ## Security
 - Determinate Systems hardening
 - Secrets management enabled
-- k3s agent for cluster participation
 
 ## Installation/Generation of the tarball
 You can use the following command to build your own tarball instead of relying on a prebuilt one:
@@ -85,8 +83,6 @@ delib.host {
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;
-
-        k3sAgent.enable = true;
       };
     };
 

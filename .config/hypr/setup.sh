@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# ashell &
 determinate-nixd init
-
+ashell &
 hyprshell run &

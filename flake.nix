@@ -186,7 +186,6 @@ nix develop -c lint # Run quality checks
       ];
 
       flake = let
-        nixpkgs.overlays = [nix-snapshotter.overlays.default];
         mkConfigurations = moduleSystem:
           denix.lib.configurations {
             homeManagerUser = "connerohnesorge";

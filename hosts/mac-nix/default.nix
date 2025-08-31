@@ -94,7 +94,6 @@ in
             package = pkgs.nix-direnv;
           };
         };
-        direnv.nix-direnv.enable = true;
         ssh = {
           extraConfig = ''
             SetEnv TERM=xterm-256color

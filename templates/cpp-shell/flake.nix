@@ -520,7 +520,6 @@ nix fmt
             graphviz # For Doxygen diagrams
 
             # Language Servers and IDE Tools
-            clangd
             ccls
 
             # Libraries (commonly used)
@@ -541,7 +540,6 @@ nix fmt
             pre-commit
 
             # Performance Tools
-            linuxPackages.perf-tools
             hotspot # GUI for perf
             heaptrack # Heap profiler
 

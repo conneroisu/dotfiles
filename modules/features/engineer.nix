@@ -234,7 +234,10 @@ in
       };
 
       virtualisation = {
-        docker.enable = true;
+        docker = {
+          enable = true;
+          extraPackages = [pkgs.docker-buildx];
+        };
         containerd = {
           enable = true;
           nixSnapshotterIntegration = true;

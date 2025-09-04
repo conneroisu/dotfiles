@@ -93,7 +93,9 @@ in
 
     nixos.ifEnabled = {
       myconfig = {
-        features.zshell.enable = true;
+        features = {
+          zshell.enable = true;
+        };
         programs = {
           dx.enable = true;
           md2pdf.enable = true;
@@ -158,6 +160,7 @@ in
             google-chrome
             strace
             zapzap
+            vlc
 
             # Communication
             tailscale

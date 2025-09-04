@@ -439,6 +439,8 @@ nix develop -c lint # Run quality checks
               alejandra # Nix
               nixd
               gum # Terminal UI toolkit
+              xmlstarlet
+              xml2
 
               ruff # Python
               black

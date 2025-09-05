@@ -70,8 +70,6 @@ delib.host {
         secrets.enable = true;
         kde.enable = true;
         ollama.enable = true;
-
-        k3sServer.enable = true;
       };
     };
 

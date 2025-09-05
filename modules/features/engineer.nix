@@ -86,13 +86,16 @@ in
           users = ["connerohnesorge"]; # Users to add to nordvpn group
         };
       }
+      inputs.nix-snapshotter.nixosModules.default
     ];
 
     options = singleEnableOption false;
 
     nixos.ifEnabled = {
       myconfig = {
-        features.zshell.enable = true;
+        features = {
+          zshell.enable = true;
+        };
         programs = {
           dx.enable = true;
           md2pdf.enable = true;
@@ -119,6 +122,7 @@ in
             upower-notify
             age
             kubectl
+            nerdctl
             ktailctl
             doppler
             bun
@@ -156,6 +160,7 @@ in
             google-chrome
             strace
             zapzap
+            vlc
 
             # Communication
             tailscale
@@ -229,6 +234,20 @@ in
           clean.extraArgs = "--keep-since 4d --keep 3";
           flake = "/home/connerohnesorge/dotfiles";
         };
+      };
+
+      virtualisation = {
+        docker = {
+          enable = true;
+          extraPackages = [pkgs.docker-buildx];
+        };
+        containerd = {
+          enable = true;
+          nixSnapshotterIntegration = true;
+        };
+      };
+      services.nix-snapshotter = {
+        enable = true;
       };
 
       security.rtkit.enable = true;

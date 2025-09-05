@@ -50,7 +50,7 @@ nix develop -c lint # Run quality checks
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.14.11b";
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.15.2b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?tag=v1.0.1";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
@@ -160,11 +160,17 @@ nix develop -c lint # Run quality checks
       url = "github:hercules-ci/hercules-ci-effects";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-snapshotter = {
+      url = "github:pdtpartners/nix-snapshotter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
     denix,
     flake-parts,
+    nix-snapshotter,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -433,6 +439,8 @@ nix develop -c lint # Run quality checks
               alejandra # Nix
               nixd
               gum # Terminal UI toolkit
+              xmlstarlet
+              xml2
 
               ruff # Python
               black

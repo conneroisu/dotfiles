@@ -87,8 +87,13 @@ in
       nix.enable = false;
       # $ nix-env -qaP | grep wget
       programs = {
-        direnv.enable = true;
-        direnv.nix-direnv.enable = true;
+        direnv = {
+          enable = true;
+          nix-direnv = {
+            enable = true;
+            package = pkgs.nix-direnv;
+          };
+        };
         ssh = {
           extraConfig = ''
             SetEnv TERM=xterm-256color

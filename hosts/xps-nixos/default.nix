@@ -83,6 +83,7 @@ delib.host {
         secrets.enable = true;
         student.enable = true;
         protonvpn.enable = true;
+        ollama.enable = true;
       };
       programs = {
         proton-x.enable = true;

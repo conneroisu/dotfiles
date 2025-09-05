@@ -116,6 +116,7 @@ in
             pkgs.hyprsunset # Needs cc at runtime
             pkgs.stdenv.cc
 
+            pkgs.xmlstarlet
             pkgs.hyprwayland-scanner
             pkgs.hyprutils
             pkgs.wl-clipboard

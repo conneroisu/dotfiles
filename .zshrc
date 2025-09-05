@@ -23,7 +23,24 @@ setopt appendhistory sharehistory hist_ignore_space hist_ignore_all_dups hist_sa
 
 eval "$(fzf --zsh)"
 eval "$(atuin init zsh)"
-eval "$(zoxide init zsh --cmd cd)"
+
+if command -v zoxide &>/dev/null && [[ "$CLAUDECODE" != "1" ]]; then
+  eval "$(zoxide init --cmd cd zsh)"
+  
+  # Ensure __zoxide_z function exists
+  if ! type __zoxide_z &>/dev/null; then
+    function __zoxide_z() {
+      if [[ "$#" -eq 0 ]]; then
+        builtin cd ~
+      elif [[ "$#" -eq 1 ]] && { [[ -d "$1" ]] || [[ "$1" = '-' ]] || [[ "$1" =~ ^[-+][0-9]$ ]]; }; then
+        builtin cd "$1"
+      else
+        local result
+        result="$(command zoxide query --exclude "$(pwd)" -- "$@")" && builtin cd "${result}"
+      fi
+    }
+  fi
+fi
 eval "$(starship init zsh)"
 source <(carapace chmod zsh)
 

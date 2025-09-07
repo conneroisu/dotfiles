@@ -98,6 +98,7 @@ in
     nixos.ifEnabled = {
       myconfig.programs = {
         ghostty.enable = true;
+        explorer.enable = true;
       };
       environment = {
         systemPackages =
@@ -178,6 +179,9 @@ in
         pam.services.sddm.enableGnomeKeyring = true;
       };
 
+      xdg = {
+        menus.enable = true;
+      };
       services = {
         gnome.gnome-keyring.enable = true;
         gvfs.enable = true; # Mount, trash, and other functionalities

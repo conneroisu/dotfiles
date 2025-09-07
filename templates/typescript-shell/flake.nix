@@ -140,7 +140,6 @@ nix fmt
 
             # CSS and styling
             tailwindcss
-            postcss
             nodePackages.autoprefixer
 
             # Utility tools

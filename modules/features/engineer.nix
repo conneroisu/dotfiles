@@ -195,6 +195,7 @@ in
             lua-language-server
           ]
           ++ [
+            inputs.conclaude.packages."${pkgs.system}".default
             inputs.nix-ai-tools.packages."${pkgs.system}".crush
             inputs.nix-ai-tools.packages."${pkgs.system}".claude-code-router
             inputs.nix-ai-tools.packages."${pkgs.system}".groq-code-cli

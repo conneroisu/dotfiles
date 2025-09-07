@@ -55,13 +55,16 @@ nix develop -c lint # Run quality checks
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?tag=v1.0.1";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
 
+    conclaude = {
+      url = "github:connix-io/conclaude";
+    };
     nix-ai-tools = {
       url = "github:numtide/nix-ai-tools";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
-    ashell.url = "github:MalpenZibo/ashell?ref=1b57fbcba87f48ca1075dca48021ec55586caeea";
+    ashell.url = "github:MalpenZibo/ashell";
     ashell.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprshell = {

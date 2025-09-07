@@ -16,7 +16,7 @@ TODO: Add comment
   '';
 
   supporting-pkgs = with pkgs; [
-    lxde.lxmenu-data
+    lxmenu-data
   ];
 
   supporting-kde-pkgs = with pkgs.kdePackages; [

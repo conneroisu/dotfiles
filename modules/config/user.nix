@@ -93,14 +93,14 @@ in
           trusted-users = [
             "root"
             "@wheel"
-            "connerohnesorge"
+            "${myconfig.constants.username}"
           ];
 
           # Allowed user configuration
           allowed-users = [
             "root"
             "@wheel"
-            "connerohnesorge"
+            "${myconfig.constants.username}"
           ];
 
           # Binary cache for faster package installation

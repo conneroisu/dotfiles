@@ -56,7 +56,7 @@ nix develop -c lint # Run quality checks
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
 
     conclaude = {
-      url = "github:connix-io/conclaude";
+      url = "github:connix-io/conclaude/?ref=9ca54676a4c5d1ed4fe2565247781870d2502fd6";
     };
     nix-ai-tools = {
       url = "github:numtide/nix-ai-tools";
@@ -261,6 +261,10 @@ nix develop -c lint # Run quality checks
           cpp-shell = {
             description = "A C++ shell with modern tooling (GCC, Clang, CMake, static analysis).";
             path = ./templates/cpp-shell;
+          };
+          csharp-shell = {
+            description = "A C# development shell with .NET 8 SDK and buildDotnetModule support.";
+            path = ./templates/csharp-shell;
           };
           cuda-shell = {
             description = "A cuda shell for developing with nix.";

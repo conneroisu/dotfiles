@@ -176,15 +176,16 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1757255337,
-        "narHash": "sha256-CvKqbFbK3OZcrXvIAeyctc0SRvu/Wb6o+uBoExBdYLk=",
+        "lastModified": 1757436758,
+        "narHash": "sha256-EFR2QdcRk27xwZGnncVBUEwZqIRlOLJmENinmvpo1sE=",
         "owner": "connix-io",
         "repo": "conclaude",
-        "rev": "1a5565c5b0fe3a54e5b8bca8062c27f7e8ad5b2c",
+        "rev": "9ca54676a4c5d1ed4fe2565247781870d2502fd6",
         "type": "github"
       },
       "original": {
         "owner": "connix-io",
+        "ref": "9ca54676a4c5d1ed4fe2565247781870d2502fd6",
         "repo": "conclaude",
         "type": "github"
       }

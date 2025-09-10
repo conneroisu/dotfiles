@@ -55,12 +55,11 @@ nix develop -c lint # Run quality checks
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?tag=v1.0.1";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
 
-    conclaude = {
-      url = "github:connix-io/conclaude/?ref=0e866f5058e8d48242582aeb78a74d0aa68a95b8";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    conclaude.url = "github:connix-io/conclaude/?ref=0e866f5058e8d48242582aeb78a74d0aa68a95b8";
+    conclaude.inputs.nixpkgs.follows = "nixpkgs";
 
     zeditor.url = "github:zed-industries/zed";
+    zeditor.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-ai-tools = {
       url = "github:numtide/nix-ai-tools";
@@ -110,9 +109,6 @@ nix develop -c lint # Run quality checks
     nix-ld.url = "github:Mic92/nix-ld";
     nix-ld.inputs.nixpkgs.follows = "nixpkgs";
 
-    nix-tree-rs.url = "github:Mic92/nix-tree-rs";
-    nix-tree-rs.inputs.nixpkgs.follows = "nixpkgs";
-
     stylix.url = "https://flakehub.com/f/danth/stylix/0.1.776";
     stylix.inputs = {
       nixpkgs.follows = "nixpkgs";
@@ -146,17 +142,12 @@ nix develop -c lint # Run quality checks
     nix-auth.url = "github:numtide/nix-auth";
     nix-auth.inputs.nixpkgs.follows = "nixpkgs";
 
+    plasma-manager.url = "github:nix-community/plasma-manager";
     plasma-manager = {
-      url = "github:nix-community/plasma-manager";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         home-manager.follows = "home-manager";
       };
-    };
-
-    locker = {
-      url = "github:tgirlcloud/locker";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     flake-parts = {
@@ -312,7 +303,7 @@ nix develop -c lint # Run quality checks
               nix flake check "$REPO_ROOT"
             '';
             deps = with pkgs; [git statix deadnix golangci-lint];
-            description = "Run linting tools (statix, deadnix, nix flake check, locker)";
+            description = "Run linting tools (statix, deadnix, nix flake check)";
           };
         };
 

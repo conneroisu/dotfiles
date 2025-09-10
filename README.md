@@ -5,7 +5,7 @@
 
 ![Pasted image 20250224165002.png](assets/Pasted%20image%2020250224165002.png)
 
-A sophisticated NixOS/Home Manager dotfiles repository using the **Denix** framework for modular configuration management. This repository provides unified configuration across multiple platforms (NixOS, macOS via nix-darwin, Home Manager) with type-safe, composable modules and automatic discovery.
+A NixOS/Home Manager dotfiles repository using the **Denix** framework for modular configuration management. This repository provides unified configuration across multiple platforms (NixOS, macOS via nix-darwin, Home Manager) with type-safe, composable modules and automatic discovery.
 
 ### Key Features
 

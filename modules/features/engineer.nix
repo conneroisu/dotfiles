@@ -142,6 +142,7 @@ in
             tree
             fdtools
             stdenv.cc
+            xdg-utils
 
             # VCS
             git-lfs
@@ -193,6 +194,7 @@ in
             statix
             nodejs
             lua-language-server
+            zed-editor
           ]
           ++ [
             inputs.conclaude.packages."${pkgs.system}".default
@@ -204,8 +206,6 @@ in
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
             inputs.nix-auth.packages."${pkgs.system}".default
-            inputs.nix-tree-rs.packages."${pkgs.system}".default
-            inputs.locker.packages."${pkgs.system}".default
           ];
         variables = {
           EDITOR = "nvim";
@@ -292,7 +292,6 @@ in
 
           # Nix tools
           inputs.nix-auth.packages."${pkgs.system}".default
-          inputs.locker.packages."${pkgs.system}".default
         ];
         variables = {
           EDITOR = "nvim";

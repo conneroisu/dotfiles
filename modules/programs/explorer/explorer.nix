@@ -9,10 +9,18 @@ TODO: Add comment
 }: let
   inherit (delib) singleEnableOption;
 
-  explorer-program = pkgs.kdePackages.dolphin;
-
+  explorer-program = pkgs.kdePackages.dolphin.overrideAttrs (oldAttrs: {
+    nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [pkgs.makeWrapper];
+    postInstall =
+      (oldAttrs.postInstall or "")
+      + ''
+        wrapProgram $out/bin/dolphin \
+            --set XDG_CONFIG_DIRS "${pkgs.libsForQt5.kservice}/etc/xdg:$XDG_CONFIG_DIRS" \
+            --run "${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental ${pkgs.libsForQt5.kservice}/etc/xdg/menus/applications.menu"
+      '';
+  });
   program = pkgs.writeShellScriptBin "explorer" ''
-    ${pkgs.lib.getExe explorer-program}
+    ${pkgs.lib.getExe explorer-program} $@
   '';
 
   supporting-pkgs = with pkgs; [

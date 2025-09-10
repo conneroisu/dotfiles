@@ -142,6 +142,7 @@ in
             tree
             fdtools
             stdenv.cc
+            xdg-utils
 
             # VCS
             git-lfs
@@ -195,6 +196,7 @@ in
             lua-language-server
           ]
           ++ [
+            inputs.zeditor.packages."${pkgs.system}".default
             inputs.conclaude.packages."${pkgs.system}".default
             inputs.nix-ai-tools.packages."${pkgs.system}".crush
             inputs.nix-ai-tools.packages."${pkgs.system}".claude-code-router

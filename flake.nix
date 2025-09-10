@@ -58,9 +58,6 @@ nix develop -c lint # Run quality checks
     conclaude.url = "github:connix-io/conclaude/?ref=0e866f5058e8d48242582aeb78a74d0aa68a95b8";
     conclaude.inputs.nixpkgs.follows = "nixpkgs";
 
-    zeditor.url = "github:zed-industries/zed";
-    zeditor.inputs.nixpkgs.follows = "nixpkgs";
-
     nix-ai-tools = {
       url = "github:numtide/nix-ai-tools";
       inputs.nixpkgs.follows = "nixpkgs";

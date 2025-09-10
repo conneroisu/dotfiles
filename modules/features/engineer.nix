@@ -194,9 +194,9 @@ in
             statix
             nodejs
             lua-language-server
+            zed-editor
           ]
           ++ [
-            inputs.zeditor.packages."${pkgs.system}".default
             inputs.conclaude.packages."${pkgs.system}".default
             inputs.nix-ai-tools.packages."${pkgs.system}".crush
             inputs.nix-ai-tools.packages."${pkgs.system}".claude-code-router

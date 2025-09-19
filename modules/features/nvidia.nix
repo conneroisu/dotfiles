@@ -124,5 +124,9 @@ in
           };
         };
       };
+
+      environment.variables = {
+        LIBVA_DRIVER_NAME = "nvidia";
+      };
     };
   }

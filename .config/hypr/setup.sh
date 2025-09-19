@@ -2,4 +2,4 @@
 
 determinate-nixd init
 ashell &
-hyprshell run &
+hyprshell run -vv &

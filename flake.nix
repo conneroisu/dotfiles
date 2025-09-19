@@ -65,7 +65,6 @@ nix develop -c lint # Run quality checks
     };
 
     ashell.url = "github:MalpenZibo/ashell";
-    ashell.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprshell = {
       url = "github:H3rmt/hyprshell";

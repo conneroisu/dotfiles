@@ -151,11 +151,6 @@ nix develop -c lint # Run quality checks
       url = "github:hercules-ci/flake-parts";
     };
 
-    hercules-ci-effects = {
-      url = "github:hercules-ci/hercules-ci-effects";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-snapshotter = {
       url = "github:pdtpartners/nix-snapshotter";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -176,9 +171,7 @@ nix develop -c lint # Run quality checks
         "aarch64-darwin"
       ];
 
-      imports = [
-        inputs.hercules-ci-effects.flakeModule
-      ];
+      imports = [];
 
       flake = let
         mkConfigurations = moduleSystem:
@@ -473,14 +466,6 @@ nix develop -c lint # Run quality checks
         };
 
         formatter = inputs.treefmt-nix.lib.mkWrapper pkgs treefmtModule;
-      };
-
-      hercules-ci.flake-update = {
-        enable = true;
-        when = {
-          hour = [23];
-          dayOfWeek = ["Fri"];
-        };
       };
     };
 }

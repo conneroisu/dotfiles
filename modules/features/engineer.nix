@@ -36,7 +36,6 @@ in
           cmbd.enable = true;
           splitm.enable = true;
           nviml.enable = true;
-          cccleaner.enable = true;
         };
       };
       fonts.packages = with pkgs; [
@@ -191,7 +190,6 @@ in
         features.zshell.enable = true;
         programs = {
           dx.enable = true;
-          cccleaner.enable = true;
         };
       };
       environment = {

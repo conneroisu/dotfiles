@@ -34,7 +34,6 @@ in
           convert_img.enable = true;
           catls.enable = true;
           cmbd.enable = true;
-          splitm.enable = true;
           nviml.enable = true;
         };
       };

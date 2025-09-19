@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+
+# nviml - Neovim Terminal Live Search
+# A terminal-based live grep tool with preview that opens files in editor
+#
+# Author: Conner Ohnesorge
+# Description: Interactive code search with instant preview and editor integration
+# Dependencies: ripgrep, fzf, bat, neovim (system)
+
+set -euo pipefail
+
+# Script metadata
+readonly SCRIPT_NAME="nviml"
+readonly VERSION="1.0.0"
+
+# Color codes for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly NC='\033[0m' # No Color
+
+# Function to display usage information
+show_usage() {
+    cat << EOF
+${BLUE}${SCRIPT_NAME}${NC} v${VERSION} - Neovim Terminal Live Search
+
+${GREEN}USAGE:${NC}
+    ${SCRIPT_NAME} [DIRECTORY] [RIPGREP_OPTIONS...]
+
+${GREEN}DESCRIPTION:${NC}
+    Interactive live search through codebases with real-time preview without having to open neovim.
+    Uses ripgrep for fast searching, fzf for selection, and opens
+    files in your editor at the exact line.
+
+${GREEN}EXAMPLES:${NC}
+    ${SCRIPT_NAME}                    Search current directory
+    ${SCRIPT_NAME} ~/projects         Search specific directory
+    ${SCRIPT_NAME} -t py              Search only Python files
+    ${SCRIPT_NAME} -g "*.js"          Search only JavaScript files
+    ${SCRIPT_NAME} --type-add 'web:*.{html,css,js}' -t web
+                                     Custom file type search
+
+${GREEN}ENVIRONMENT:${NC}
+    EDITOR                           Editor to open files (default: nvim)
+
+${GREEN}KEYBINDINGS (in fzf):${NC}
+    Enter                            Open file at line in editor
+    Ctrl-C / Esc                     Exit without opening
+    Up/Down                          Navigate results
+    Page Up/Down                     Fast navigation
+
+${GREEN}DEPENDENCIES:${NC}
+    - ripgrep (rg)                   Fast text search
+    - fzf                            Fuzzy finder
+    - bat                            Syntax highlighting for preview
+    - neovim                         Text editor (system installation)
+
+For more ripgrep options, see: rg --help
+EOF
+}
+
+# Function to check if required commands exist
+check_dependencies() {
+    local missing_deps=()
+    
+    for cmd in rg fzf bat; do
+        if ! command -v "$cmd" &> /dev/null; then
+            missing_deps+=("$cmd")
+        fi
+    done
+    
+    if [[ ${#missing_deps[@]} -gt 0 ]]; then
+        echo -e "${RED}Error: Missing required dependencies:${NC}" >&2
+        printf "${RED}  - %s${NC}\n" "${missing_deps[@]}" >&2
+        echo -e "\n${YELLOW}Install via your package manager or enable the nviml module properly.${NC}" >&2
+        return 1
+    fi
+}
+
+# Function to validate search directory
+validate_directory() {
+    local dir="$1"
+    
+    if [[ ! -e "$dir" ]]; then
+        echo -e "${RED}Error: Directory '${dir}' does not exist${NC}" >&2
+        return 1
+    fi
+    
+    if [[ ! -d "$dir" ]]; then
+        echo -e "${RED}Error: '${dir}' is not a directory${NC}" >&2
+        return 1
+    fi
+    
+    if [[ ! -r "$dir" ]]; then
+        echo -e "${RED}Error: Directory '${dir}' is not readable${NC}" >&2
+        return 1
+    fi
+}
+
+main() {
+    if [[ $# -gt 0 ]] && [[ "$1" =~ ^(-h|--help)$ ]]; then
+        show_usage
+        exit 0
+    fi
+    
+    if ! check_dependencies; then
+        exit 1
+    fi
+    
+    local search_dir="${1:-.}"
+    local rg_args=("$@")
+    
+    if [[ $# -gt 0 ]] && [[ -d "$1" ]]; then
+        search_dir="$1"
+        shift
+        rg_args=("$@")
+    fi
+    
+    if ! validate_directory "$search_dir"; then
+        exit 1
+    fi
+    
+    search_dir="$(realpath "$search_dir")"
+    
+    local editor="${EDITOR:-nvim}"
+    
+    if ! command -v "$editor" &> /dev/null; then
+        echo -e "${YELLOW}Warning: Editor '${editor}' not found, falling back to nvim${NC}" >&2
+        editor="nvim"
+        if ! command -v "$editor" &> /dev/null; then
+            echo -e "${RED}Error: No suitable editor found (tried: ${EDITOR:-}, nvim)${NC}" >&2
+            exit 1
+        fi
+    fi
+    
+    echo -e "${BLUE}Searching in:${NC} ${search_dir}"
+    if [[ ${#rg_args[@]} -gt 0 ]]; then
+        echo -e "${BLUE}Ripgrep args:${NC} ${rg_args[*]}"
+    fi
+    echo -e "${BLUE}Editor:${NC} ${editor}"
+    echo -e "${YELLOW}Press Ctrl-C to exit, Enter to open file${NC}"
+    echo
+
+    fzf --ansi \
+        --disabled \
+        --height=100% \
+        --reverse \
+        --border \
+        --color "hl:-1:underline,hl+:-1:underline:reverse" \
+        --color "border:#1e1e2e,header:#f38ba8" \
+        --delimiter : \
+        --header="🔍 Live Search | Enter: Open | Ctrl-C: Exit | Type to search" \
+        --header-first \
+        --info=inline \
+        --prompt="Search❯ " \
+        --pointer="▶" \
+        --marker="✓" \
+        --preview 'bat --color=always --style=numbers,changes --highlight-line {2} {1}' \
+        --preview-window 'right,60%,border-left,+{2}+3/3,~3' \
+        --preview-label="Preview" \
+        --bind 'enter:become('"$editor"' {1} +{2})' \
+        --bind 'ctrl-/:toggle-preview' \
+        --bind 'ctrl-u:preview-page-up' \
+        --bind 'ctrl-d:preview-page-down' \
+        --bind "change:reload:sleep 0.1; rg --line-number --no-heading --color=always --smart-case --hidden --follow --glob='!.git/*' --glob='!node_modules/*' --glob='!*.min.js' --glob='!*.map' ${rg_args[*]} {q} '$search_dir' || true" \
+        --bind 'start:reload:rg --line-number --no-heading --color=always --smart-case --hidden --follow --glob="!.git/*" --glob="!node_modules/*" --glob="!*.min.js" --glob="!*.map" '"${rg_args[*]}"' . '"$search_dir"'' \
+    || {
+        local exit_code=$?
+        if [[ $exit_code -eq 130 ]]; then
+            echo -e "\n${YELLOW}Search cancelled by user${NC}"
+            exit 0
+        else
+            echo -e "\n${RED}Search failed with exit code: $exit_code${NC}" >&2
+            exit $exit_code
+        fi
+    }
+}
+
+# Run main function with all arguments
+main "$@"

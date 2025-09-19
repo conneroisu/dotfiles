@@ -99,6 +99,7 @@ in
       myconfig.programs = {
         ghostty.enable = true;
         explorer.enable = true;
+        hyprss.enable = true;
       };
       environment = {
         systemPackages =

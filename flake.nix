@@ -449,6 +449,7 @@ nix develop -c lint # Run quality checks
               biome
               oxlint
 
+              sqlite
               go_1_24 # Go
               air
               golangci-lint

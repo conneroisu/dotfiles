@@ -1,26 +1,11 @@
-# user.nix - User Account Configuration Module
-#
-# This module manages user account creation and configuration across platforms.
-# It handles both macOS (Darwin) and NixOS user setups with appropriate permissions
-# and system integration.
-#
-# Key responsibilities:
-# - User account creation with proper home directory setup
-# - Nix daemon configuration and permissions
-# - SSH key management and authentication
-# - System group memberships for required services
-# - Cross-platform shell and environment setup
-#
-# Platform-specific behavior:
-# - macOS: Basic user setup with nix-darwin integration
-# - NixOS: Full user account with system service groups and SSH access
-# - Both: Nix flakes support and binary cache configuration
 {
   delib,
   pkgs,
   ...
 }: let
-  keys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKkl3bfwNy75UX9kAGk9WLMTVW0lKKZ8r4OV36VRcd42 connerohnesorge@xps-nixos"];
+  keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKkl3bfwNy75UX9kAGk9WLMTVW0lKKZ8r4OV36VRcd42 connerohnesorge@xps-nixos"
+  ];
 in
   delib.module {
     name = "connerohnesorge";

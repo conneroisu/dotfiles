@@ -160,7 +160,7 @@ in
             nemo-with-extensions
             google-chrome
             strace
-            zapzap
+            altus
             vlc
 
             # Communication

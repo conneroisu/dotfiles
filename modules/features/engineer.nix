@@ -30,7 +30,6 @@ in
         };
         programs = {
           dx.enable = true;
-          md2pdf.enable = true;
           convert_img.enable = true;
           catls.enable = true;
           cmbd.enable = true;

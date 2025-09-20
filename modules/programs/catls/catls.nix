@@ -63,7 +63,7 @@ Enabled via:
     vendorHash = "sha256-m5mBubfbXXqXKsygF5j7cHEY+bXhAMcXUts5KBKoLzM=";
 
     meta = with pkgs.lib; {
-      description = "Enhanced file listing utility with XML output";
+      description = "Enhanced file listing utility with XML, Markdown, and JSON output";
       homepage = "https://github.com/connerosiu/dotfiles";
       license = licenses.mit;
       maintainers = [];

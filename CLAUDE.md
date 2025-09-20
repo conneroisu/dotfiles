@@ -136,7 +136,7 @@ This automatically creates:
 ### Feature Dependencies
 
 Features automatically enable required programs:
-- `engineer.enable = true` → enables development tools (`dx`, `md2pdf`, `convert_img`, etc.)
+- `engineer.enable = true` → enables development tools (`dx`, `convert_img`, etc.)
 - `hyprland.enable = true` → enables Wayland desktop with supporting tools
 - Dependencies resolved through the Denix module system
 

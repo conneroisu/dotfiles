@@ -33,7 +33,6 @@ dotfiles/
 │       ├── catls/            # Ruby file lister
 │       ├── cmbd/             # Go command builder
 │       ├── convert_img/      # Python image converter
-│       ├── md2pdf/           # Markdown to PDF
 │       ├── splitm/           # Screen splitter
 │       └── proton-x/         # Proton launcher
 ├── rices/                     # Theme configurations

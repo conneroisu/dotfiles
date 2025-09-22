@@ -109,6 +109,9 @@ in
             inputs.hyprshell.packages.${pkgs.system}.default
             inputs.ashell.defaultPackage.${pkgs.system}
           ]
+          ++ (with pkgs; [
+            wl-clip-persist
+          ])
           ++ [
             pkgs.hyprcursor
             pkgs.hyprkeys

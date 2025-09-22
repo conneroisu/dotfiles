@@ -230,7 +230,7 @@ alias search="nviml"        # Descriptive alias
 
     installPhase = ''
       mkdir -p $out/bin
-      cp nviml.sh $out/bin/
+      cp nviml $out/bin/
       chmod +x $out/bin/nviml
 
       wrapProgram $out/bin/nviml \

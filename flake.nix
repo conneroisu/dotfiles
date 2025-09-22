@@ -64,8 +64,6 @@ nix develop -c lint # Run quality checks
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
-    ashell.url = "github:MalpenZibo/ashell";
-
     hyprshell = {
       url = "github:H3rmt/hyprshell";
       inputs.nixpkgs.follows = "nixpkgs";

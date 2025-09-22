@@ -107,7 +107,6 @@ in
             inputs.ghostty.packages."${pkgs.system}".default
             inputs.hyprland.packages."${pkgs.system}".default
             inputs.hyprshell.packages.${pkgs.system}.default
-            inputs.ashell.defaultPackage.${pkgs.system}
           ]
           ++ (with pkgs; [
             wl-clip-persist

@@ -109,8 +109,6 @@ in
           ]
           ++ (with pkgs; [
             wl-clip-persist
-            waybar
-            waybar-lyric
             hyprcursor
             hyprkeys
             hyprpaper

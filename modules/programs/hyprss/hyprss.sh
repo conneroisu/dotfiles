@@ -23,7 +23,23 @@ error_notify() {
 
 # Function to send success notification
 success_notify() {
-    dunstify -u normal -h string:bgcolor:"$GREEN" "Screenshot" "$1" -t 2000
+    local message="$1"
+    local file_path="$2"
+
+    # Send notification with action button and capture response
+    local action=$(dunstify -u normal -h string:bgcolor:"$GREEN" \
+                           -A "open,Open in Explorer" \
+                           "Screenshot" "$message" -t 5000)
+
+    # Handle the action response
+    if [[ "$action" == "open" ]]; then
+        if [[ -n "$EXPLORER" && -n "$file_path" ]]; then
+            "$EXPLORER" "$file_path" &
+        else
+            # Fallback to xdg-open if $EXPLORER is not set
+            xdg-open "$file_path" &
+        fi
+    fi
 }
 
 # Function to send warning notification
@@ -192,7 +208,7 @@ take_screenshot() {
     add_to_recent "$FULL_PATH"
     
     # Send success notification with clickable action
-    success_notify "Screenshot saved: $FILENAME"
+    success_notify "Screenshot saved: $FILENAME" "$FULL_PATH"
     
     # Optional: Open in default viewer when clicking notification
     # You can uncomment this if you want the notification to be actionable

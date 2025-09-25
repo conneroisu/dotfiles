@@ -108,6 +108,7 @@ in
             })
           ]
           ++ (with pkgs; [
+            kdePackages.konsole
             wl-clip-persist
             hyprcursor
             hyprkeys
@@ -225,8 +226,9 @@ in
             "text/x-nushell" = lib.mkDefault "nvim.desktop";
             "text/html" = lib.mkDefault "zen.desktop";
             # Directories
-            "inode/directory" = "nemo.desktop";
-            "x-scheme-handler/file" = "nemo.desktop";
+            "inode/directory" = "org.kde.dolphin.desktop";
+            "x-scheme-handler/file" = "org.kde.dolphin.desktop";
+            "application/octet-stream" = "org.kde.dolphin.desktop";
             # .txt
             "text/plain" = "nvim.desktop";
           };

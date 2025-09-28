@@ -98,42 +98,33 @@ validate_directory() {
     fi
 }
 
-# Main function
 main() {
-    # Handle help flags
     if [[ $# -gt 0 ]] && [[ "$1" =~ ^(-h|--help)$ ]]; then
         show_usage
         exit 0
     fi
     
-    # Check dependencies first
     if ! check_dependencies; then
         exit 1
     fi
     
-    # Parse arguments
     local search_dir="${1:-.}"
     local rg_args=("$@")
     
-    # If first argument is a directory, use it and shift arguments
     if [[ $# -gt 0 ]] && [[ -d "$1" ]]; then
         search_dir="$1"
         shift
         rg_args=("$@")
     fi
     
-    # Validate search directory
     if ! validate_directory "$search_dir"; then
         exit 1
     fi
     
-    # Resolve to absolute path for better display
     search_dir="$(realpath "$search_dir")"
     
-    # Set editor with fallback
     local editor="${EDITOR:-nvim}"
     
-    # Validate editor exists
     if ! command -v "$editor" &> /dev/null; then
         echo -e "${YELLOW}Warning: Editor '${editor}' not found, falling back to nvim${NC}" >&2
         editor="nvim"
@@ -143,7 +134,6 @@ main() {
         fi
     fi
     
-    # Display search info
     echo -e "${BLUE}Searching in:${NC} ${search_dir}"
     if [[ ${#rg_args[@]} -gt 0 ]]; then
         echo -e "${BLUE}Ripgrep args:${NC} ${rg_args[*]}"
@@ -152,7 +142,6 @@ main() {
     echo -e "${YELLOW}Press Ctrl-C to exit, Enter to open file${NC}"
     echo
 
-    # Execute interactive live grep with enhanced fzf configuration
     fzf --ansi \
         --disabled \
         --height=100% \

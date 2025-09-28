@@ -1,5 +1,8 @@
 #!/bin/sh
 
+wl-clip-persist --clipboard regular
 determinate-nixd init
-ashell &
+waybar &
+waybar-lyric &
+# -v --log-file=/tmp/waybar-lyric.log
 hyprshell run -vv &

@@ -36,7 +36,6 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         student.enable = true;
-        protonvpn.enable = true;
         ollama.enable = true;
       };
       programs = {
@@ -59,13 +58,13 @@ delib.host {
     networking = {
       hostName = "xps-nixos";
       networkmanager.enable = true;
-      # defaultGateway = {
-      #   # address = "192.168.1.1";
-      #   # interface = "wlp0s20f3";
-      # address = "192.168.1.19";
-      #   # interface = "enp0s13f0u3u1c2";
-      # interface = "enp0s13f0u3c2";
-      # };
+      defaultGateway = {
+        #   # address = "192.168.1.1";
+        #   # interface = "wlp0s20f3";
+        address = "192.168.1.19";
+        #   # interface = "enp0s13f0u3u1c2";
+        interface = "enp0s13f0u4c2";
+      };
     };
 
     hardware = {

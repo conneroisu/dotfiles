@@ -170,34 +170,36 @@ in
         ++ systemIntegration
         ++ themes ++ security ++ utilities ++ games ++ thirdParty;
 
-      environment.variables = {
-        # Session and desktop identification
-        XDG_SESSION_TYPE = "wayland";
-        XDG_SESSION_DESKTOP = lib.mkDefault "KDE";
-        XDG_CURRENT_DESKTOP = lib.mkDefault "KDE";
-        KDE_SESSION_VERSION = "6";
-        KDE_FULL_SESSION = "true";
+      environment = {
+        variables = {
+          # Session and desktop identification
+          XDG_SESSION_TYPE = "wayland";
+          XDG_SESSION_DESKTOP = lib.mkDefault "KDE";
+          XDG_CURRENT_DESKTOP = lib.mkDefault "KDE";
+          KDE_SESSION_VERSION = "6";
+          KDE_FULL_SESSION = "true";
 
-        # Qt/Wayland configuration
-        QT_QPA_PLATFORM = lib.mkDefault "wayland;xcb";
-        QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-        QT_AUTO_SCREEN_SCALE_FACTOR = "1";
-        QT_SCALE_FACTOR_ROUNDING_POLICY = "RoundPreferFloor";
+          # Qt/Wayland configuration
+          QT_QPA_PLATFORM = lib.mkDefault "wayland;xcb";
+          QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+          QT_AUTO_SCREEN_SCALE_FACTOR = "1";
+          QT_SCALE_FACTOR_ROUNDING_POLICY = "RoundPreferFloor";
 
-        # Theme integration (overridden by Stylix when active)
-        GTK_THEME = lib.mkDefault "Breeze";
+          # Theme integration (overridden by Stylix when active)
+          GTK_THEME = lib.mkDefault "Breeze";
 
-        # Input method configuration
-        GTK_IM_MODULE = "fcitx";
-        QT_IM_MODULE = "fcitx";
-        XMODIFIERS = "@im=fcitx";
+          # Input method configuration
+          GTK_IM_MODULE = "fcitx";
+          QT_IM_MODULE = "fcitx";
+          XMODIFIERS = "@im=fcitx";
+        };
+
+        # Plasma locale configuration
+        etc."xdg/plasma-localerc".text = ''
+          [Formats]
+          LANG=en_US.UTF-8
+        '';
       };
-
-      # Plasma locale configuration
-      environment.etc."xdg/plasma-localerc".text = ''
-        [Formats]
-        LANG=en_US.UTF-8
-      '';
 
       # Essential programs
       programs = {

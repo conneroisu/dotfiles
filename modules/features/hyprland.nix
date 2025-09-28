@@ -61,13 +61,6 @@ keyboard-driven workflows.
 - UWSM: Universal Wayland Session Manager
 - GPU acceleration with EGL/GLES
 
-## Common Use Cases
-- Tiling window management workflows
-- Multi-monitor setups
-- Gaming with low latency
-- Development environments
-- Media production
-
 ## Integration Points
 - Works with audio/bluetooth features
 - Integrates with engineer tools
@@ -107,54 +100,42 @@ in
             inputs.ghostty.packages."${pkgs.system}".default
             inputs.hyprland.packages."${pkgs.system}".default
             inputs.hyprshell.packages.${pkgs.system}.default
-            inputs.ashell.defaultPackage.${pkgs.system}
-          ]
-          ++ [
-            pkgs.hyprcursor
-            pkgs.hyprkeys
-            pkgs.hyprpaper
-            pkgs.playerctl
-
-            pkgs.hyprsunset # Needs cc at runtime
-            pkgs.stdenv.cc
-
-            pkgs.xmlstarlet
-            pkgs.hyprwayland-scanner
-            pkgs.hyprutils
-            pkgs.wl-clipboard
-            pkgs.hyprnotify
-            pkgs.uwsm
-            pkgs.grimblast
-            pkgs.grim
-            pkgs.slurp
-            pkgs.kitty
             (pkgs.rofi.override {
               plugins = [
                 pkgs.rofi-rbw
                 pkgs.rofi-calc
               ];
             })
-            pkgs.dunst
-            pkgs.brightnessctl
-            pkgs.hyprls
-            pkgs.swaynotificationcenter
-            pkgs.gnome-control-center
-            pkgs.hyprpicker
-            pkgs.gpu-screen-recorder
-            pkgs.ffmpegthumbnailer
-            pkgs.pipewire
-          ];
-        variables = {
-          XDG_SESSION_TYPE = "wayland";
-          XDG_SESSION_DESKTOP = "Hyprland";
-          XDG_CURRENT_DESKTOP = "Hyprland";
-          GDK_BACKEND = "wayland,x11,*";
-          GTK_THEME = "Adwaita:dark";
-          GBM_BACKEND = "nvidia-drm";
-          SDL_VIDEODRIVER = "wayland";
-          CLUTTER_BACKEND = "wayland";
-          QT_QPA_PLATFORM = "wayland";
-        };
+          ]
+          ++ (with pkgs; [
+            kdePackages.konsole
+            wl-clip-persist
+            hyprcursor
+            hyprkeys
+            hyprpaper
+            playerctl
+            hyprsunset # Needs cc at runtime
+            stdenv.cc
+            xmlstarlet
+            hyprwayland-scanner
+            hyprutils
+            wl-clipboard
+            hyprnotify
+            uwsm
+            grimblast
+            grim
+            slurp
+            kitty
+            dunst
+            brightnessctl
+            hyprls
+            swaynotificationcenter
+            gnome-control-center
+            hyprpicker
+            gpu-screen-recorder
+            ffmpegthumbnailer
+            pipewire
+          ]);
       };
 
       hardware = {
@@ -245,8 +226,9 @@ in
             "text/x-nushell" = lib.mkDefault "nvim.desktop";
             "text/html" = lib.mkDefault "zen.desktop";
             # Directories
-            "inode/directory" = "nemo.desktop";
-            "x-scheme-handler/file" = "nemo.desktop";
+            "inode/directory" = "org.kde.dolphin.desktop";
+            "x-scheme-handler/file" = "org.kde.dolphin.desktop";
+            "application/octet-stream" = "org.kde.dolphin.desktop";
             # .txt
             "text/plain" = "nvim.desktop";
           };

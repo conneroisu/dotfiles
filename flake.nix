@@ -64,8 +64,6 @@ nix develop -c lint # Run quality checks
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
-    ashell.url = "github:MalpenZibo/ashell";
-
     hyprshell = {
       url = "github:H3rmt/hyprshell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -323,107 +321,6 @@ nix develop -c lint # Run quality checks
           shellHook = ''
             export REPO_ROOT="$(git rev-parse --show-toplevel)"
             export CGO_CFLAGS="-O2"
-
-            ${pkgs.gum}/bin/gum style \
-              --foreground 212 --background 235 \
-              --border thick --border-foreground 212 \
-              --align center --width 60 --margin "1 0" --padding "1 2" \
-              --bold "🚀 Dotfiles Development Environment"
-
-            # Available commands section
-            commands_header=$(${pkgs.gum}/bin/gum style \
-              --foreground 99 --bold --underline "📋 Available Commands:")
-
-            commands_content=""
-            ${pkgs.lib.concatStringsSep "\n" (pkgs.lib.mapAttrsToList (name: script: ''commands_content="$commands_content$(${pkgs.gum}/bin/gum style --foreground 51 "▶ ${name}") $(${pkgs.gum}/bin/gum style --foreground 246 "${script.description}")\n"'') scripts)}
-
-            commands_box=$(printf "$commands_content" | ${pkgs.gum}/bin/gum style \
-              --border rounded --border-foreground 99 \
-              --padding "0 2" --margin "0 2")
-
-            ${pkgs.gum}/bin/gum join --vertical "$commands_header" "$commands_box"
-
-            repo_header=$(${pkgs.gum}/bin/gum style \
-              --foreground 212 --bold --underline "📊 Repository Status:")
-
-            branch=$(git branch --show-current 2>/dev/null || echo "unknown")
-            commit_count=$(git rev-list --count HEAD 2>/dev/null || echo "0")
-            last_commit=$(git log -1 --format="%h - %s" 2>/dev/null || echo "No commits")
-
-            branch_info=$(${pkgs.gum}/bin/gum style \
-              --foreground 51 --bold "🌿 Branch: $branch")
-
-            commit_info=$(${pkgs.gum}/bin/gum style \
-              --foreground 99 "📝 Commits: $commit_count")
-
-            last_commit_short="''${last_commit:0:60}$([ ''${#last_commit} -gt 60 ] && echo "...")"
-            last_commit_info=$(${pkgs.gum}/bin/gum style \
-              --foreground 246 "🕐 Latest: $last_commit_short")
-
-            if ! git diff-index --quiet HEAD -- 2>/dev/null; then
-              change_count=$(git status --porcelain | wc -l | tr -d ' ')
-              status_header=$(${pkgs.gum}/bin/gum style \
-                --foreground 214 --bold "⚠️  $change_count file(s) changed:")
-
-              # Create a table of changes using gum format
-              changes_table=""
-              while IFS= read -r line; do
-                if [ -n "$line" ]; then
-                  status="''${line:0:2}"
-                  file="''${line:3}"
-                  case "$status" in
-                    "M "|" M"|"MM")
-                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 214 "│ 📝 Modified  │ $file")\n" ;;
-                    "A "|" A")
-                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 46 "│ ➕ Added     │ $file")\n" ;;
-                    "D "|" D")
-                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 196 "│ 🗑️  Deleted   │ $file")\n" ;;
-                    "R "|" R")
-                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 51 "│ 📁 Renamed   │ $file")\n" ;;
-                    "??")
-                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 99 "│ ❓ Untracked │ $file")\n" ;;
-                    *)
-                      changes_table="$changes_table$(${pkgs.gum}/bin/gum style --foreground 246 "│ 📄 $status      │ $file")\n" ;;
-                  esac
-                fi
-              done < <(git status --porcelain)
-
-              # Format the changes table
-              table_header=$(${pkgs.gum}/bin/gum style --foreground 246 --bold "┌─────────────┬────────────────────────────────────────┐")
-              table_separator=$(${pkgs.gum}/bin/gum style --foreground 246 "└─────────────┴────────────────────────────────────────┘")
-
-              changes_display=$(printf "$changes_table" | ${pkgs.gum}/bin/gum style \
-                --border rounded --border-foreground 214 --padding "0 1")
-
-              status_info="$status_header\n$changes_display"
-            else
-              status_info=$(${pkgs.gum}/bin/gum style \
-                --foreground 46 --bold --border rounded --border-foreground 46 \
-                --padding "1 2" --align center "✅ Repository is clean")
-            fi
-
-            # Combine all repository info
-            repo_info=$(${pkgs.gum}/bin/gum join --vertical \
-              "$branch_info" "$commit_info" "$last_commit_info")
-
-            repo_box=$(echo "$repo_info" | ${pkgs.gum}/bin/gum style \
-              --border rounded --border-foreground 212 \
-              --padding "0 2" --margin "0 2")
-
-            ${pkgs.gum}/bin/gum join --vertical "$repo_header" "$repo_box"
-
-            # Display status info
-            printf "$status_info\n"
-
-            # Add a helpful tip
-            tip=$(${pkgs.gum}/bin/gum style \
-              --foreground 99 --italic \
-              "💡 Tip: Use 'dx' to edit flake.nix, 'lint' to check code quality")
-
-            ${pkgs.gum}/bin/gum style \
-              --border rounded --border-foreground 99 \
-              --padding "1 2" --margin "1 0" --align center \
-              "$tip"
           '';
           packages = with pkgs;
             [

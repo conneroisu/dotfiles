@@ -72,6 +72,7 @@ in
             fdtools
             stdenv.cc
             xdg-utils
+            zip
 
             # VCS
             git-lfs

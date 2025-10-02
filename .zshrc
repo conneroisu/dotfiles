@@ -112,3 +112,4 @@ export NVM_DIR="$HOME/.config/nvm"
 
 # opencode
 export PATH=/home/connerohnesorge/.opencode/bin:$PATH
+

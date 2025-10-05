@@ -73,6 +73,9 @@ in
             stdenv.cc
             xdg-utils
             zip
+            glibc.dev
+            man-pages
+            man-pages-posix
 
             # VCS
             git-lfs

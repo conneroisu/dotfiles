@@ -216,10 +216,6 @@ nix develop -c lint # Run quality checks
             description = "A Remix JS shell for developing with bun.";
             path = ./templates/remix-shell;
           };
-          tanstack-shell = {
-            description = "A tanstack shell for developing with nix.";
-            path = ./templates/tanstack-shell;
-          };
           phoenix-shell = {
             description = "An Elixir Phoenix Framework shell for developing with nix.";
             path = ./templates/phoenix-shell;

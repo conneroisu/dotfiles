@@ -31,7 +31,6 @@ optimal readability and reduced eye strain.
 
 ### Darwin
 - Terminal applications
-- Zathura PDF reader
 - Home Manager managed apps
 - Limited system integration
 
@@ -55,7 +54,6 @@ Tokyo Dark provides:
 - GTK toolkit theming
 - GNOME app integration
 - Spotify custom theme
-- Zathura PDF viewer
 
 ### Disabled
 - GRUB bootloader (keep default)
@@ -99,30 +97,27 @@ Works seamlessly with:
 }:
 delib.rice {
   name = "dark";
-  home =
-    if pkgs.stdenv.isDarwin
-    then {
-      imports = [inputs.stylix.homeModules.stylix];
-      stylix = {
-        enable = true;
-        base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
-        image = ./../../assets/klaus-desktop.jpeg;
-        targets = {
-          zathura.enable = true;
-        };
-      };
-      myconfig.programs.ghostty.enable = true;
-    }
-    else {
-      stylix = {
-        targets = {
-          dunst.enable = true;
-          zellij.enable = true;
-          fzf.enable = true;
-          k9s.enable = true;
-        };
-      };
-    };
+  # home =
+  #   if pkgs.stdenv.isDarwin
+  #   then {
+  #     imports = [inputs.stylix.homeModules.stylix];
+  #     stylix = {
+  #       enable = true;
+  #       base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
+  #       image = ./../../assets/klaus-desktop.jpeg;
+  #     };
+  #     myconfig.programs.ghostty.enable = true;
+  #   }
+  #   else {
+  #     stylix = {
+  #       targets = {
+  #         dunst.enable = true;
+  #         zellij.enable = true;
+  #         fzf.enable = true;
+  #         k9s.enable = true;
+  #       };
+  #     };
+  #   };
   nixos = {
     stylix = {
       enable = true;

@@ -90,11 +90,6 @@ nix develop -c lint # Run quality checks
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
     denix = {
       url = "github:yunfachi/denix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "home-manager";
-        nix-darwin.follows = "nix-darwin";
-      };
     };
 
     hyprland.url = "github:hyprwm/hyprland";

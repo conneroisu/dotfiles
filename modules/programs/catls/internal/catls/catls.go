@@ -25,6 +25,7 @@ type Config struct {
 	ShowLineNumbers bool
 	OmitBins        bool
 	OutputFormat    OutputFormat
+	RelativeTo      string
 }
 
 // defaultIgnoreGlobs returns standard ignore patterns.
@@ -90,6 +91,7 @@ func (a *App) Run(ctx context.Context) error {
 		IgnoreDir:   a.cfg.IgnoreDir,
 		IgnoreGlobs: a.cfg.AllIgnoreGlobs(),
 		Debug:       a.cfg.Debug,
+		RelativeTo:  a.cfg.RelativeTo,
 	}
 
 	files, err := a.scanner.Scan(ctx, scanCfg)

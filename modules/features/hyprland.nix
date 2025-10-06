@@ -108,6 +108,7 @@ in
             })
           ]
           ++ (with pkgs; [
+            evince
             kdePackages.konsole
             wl-clip-persist
             hyprcursor
@@ -161,9 +162,6 @@ in
         pam.services.sddm.enableGnomeKeyring = true;
       };
 
-      xdg = {
-        menus.enable = true;
-      };
       services = {
         gnome.gnome-keyring.enable = true;
         gvfs.enable = true; # Mount, trash, and other functionalities
@@ -180,6 +178,7 @@ in
       };
 
       xdg = {
+        menus.enable = true;
         portal = {
           enable = true;
           wlr.enable = true;

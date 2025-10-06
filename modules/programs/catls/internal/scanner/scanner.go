@@ -25,6 +25,7 @@ type Config struct {
 	IgnoreDir   []string // IgnoreDir option
 	IgnoreGlobs []string // IgnoreGlobs option
 	Debug       bool     // Debug logging
+	RelativeTo  string   // Base directory for relative paths (empty means use Directory)
 }
 
 // Scanner handles file discovery and filtering.
@@ -106,7 +107,7 @@ func (s *Scanner) Scan(ctx context.Context, cfg Config) ([]FileInfo, error) {
 					fmt.Fprintf(os.Stderr, "Debug: Ignoring directory: %s\n", fullPath)
 				}
 			} else if info.Mode().IsRegular() {
-				relPath, err := s.getRelativePath(fullPath, cfg.Directory)
+				relPath, err := s.getRelativePath(fullPath, cfg)
 				if err != nil {
 					continue
 				}
@@ -130,7 +131,14 @@ func (s *Scanner) Scan(ctx context.Context, cfg Config) ([]FileInfo, error) {
 }
 
 // getRelativePath returns the relative path from base directory.
-func (s *Scanner) getRelativePath(fullPath, baseDir string) (string, error) {
+func (s *Scanner) getRelativePath(fullPath string, cfg Config) (string, error) {
+	baseDir := cfg.Directory
+
+	// If RelativeTo is set, use it instead of the scan directory
+	if cfg.RelativeTo != "" {
+		baseDir = cfg.RelativeTo
+	}
+
 	if baseDir == "." {
 		return fullPath, nil
 	}

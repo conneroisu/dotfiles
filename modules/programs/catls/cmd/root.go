@@ -87,6 +87,11 @@ func setupFlags() {
 		"xml",
 		"Output format: xml, json, markdown",
 	)
+	flags.String(
+		"relative-to",
+		"",
+		"Display paths relative to this directory (default: scan directory)",
+	)
 }
 
 func defaultIgnoreDirs() []string {
@@ -135,6 +140,7 @@ func buildConfig(cmd *cobra.Command, args []string) (*catls.Config, error) {
 	cfg.ShowLineNumbers, _ = flags.GetBool("line-numbers")
 	cfg.OmitBins, _ = flags.GetBool("omit-bins")
 	cfg.ContentPattern, _ = flags.GetString("pattern")
+	cfg.RelativeTo, _ = flags.GetString("relative-to")
 	cfg.IgnoreDir, _ = flags.GetStringSlice("ignore-dir")
 	cfg.Globs, _ = flags.GetStringSlice("globs")
 	cfg.IgnoreGlobs, _ = flags.GetStringSlice("ignore-globs")

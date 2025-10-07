@@ -51,7 +51,6 @@ systems with NVIDIA graphics, including hybrid Intel+NVIDIA setups.
 - Dynamic power management
 
 ## Common Use Cases
-- Gaming with native performance
 - CUDA development and compute
 - Machine learning workloads
 - Video editing with NVENC

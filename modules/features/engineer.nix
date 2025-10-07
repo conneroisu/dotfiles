@@ -41,6 +41,12 @@ in
         corefonts
         vistafonts
       ];
+      documentation = {
+        enable = true;
+        dev.enable = true;
+        nixos.enable = true;
+        man.enable = true;
+      };
       environment = {
         systemPackages = with pkgs;
           [
@@ -72,6 +78,11 @@ in
             fdtools
             stdenv.cc
             xdg-utils
+            zip
+            glibc.dev
+            man-pages
+            man-pages-posix
+            man-db
 
             # VCS
             git-lfs

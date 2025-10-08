@@ -138,6 +138,7 @@ nix fmt
           deadnix
           just
           rust-bin.stable.latest.default
+          rust-bin.stable.latest.rust-analyzer
         ]
         ++ builtins.attrValues scriptPackages;
         shellHook = ''

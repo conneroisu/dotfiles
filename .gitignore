@@ -28,3 +28,4 @@ __pycache__/
 logs/
 .crush
 result
+.env

@@ -29,6 +29,7 @@ in
           zshell.enable = true;
         };
         programs = {
+          zlaude.enable = true;
           dx.enable = true;
           convert_img.enable = true;
           catls.enable = true;

@@ -107,9 +107,6 @@ delib.rice {
         enable = true;
         base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
         image = ./../../assets/klaus-desktop.jpeg;
-        targets = {
-          zathura.enable = true;
-        };
       };
       myconfig.programs.ghostty.enable = true;
     }

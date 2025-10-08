@@ -37,8 +37,6 @@ keyboard-driven workflows.
 ### Terminal Emulators
 - Ghostty: Modern GPU-accelerated terminal
 - Kitty: Feature-rich terminal with images
-- Alacritty: Minimal GPU-accelerated terminal
-- Foot: Lightweight Wayland terminal
 
 ### Application Launcher (Rofi)
 - Application launcher

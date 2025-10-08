@@ -102,6 +102,8 @@ delib.rice {
   home =
     if pkgs.stdenv.isDarwin
     then {
+    }
+    else {
       imports = [inputs.stylix.homeModules.stylix];
       stylix = {
         enable = true;
@@ -109,8 +111,6 @@ delib.rice {
         image = ./../../assets/klaus-desktop.jpeg;
       };
       myconfig.programs.ghostty.enable = true;
-    }
-    else {
       stylix = {
         targets = {
           dunst.enable = true;

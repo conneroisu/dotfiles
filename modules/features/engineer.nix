@@ -30,6 +30,7 @@ in
         };
         programs = {
           zlaude.enable = true;
+          ghostty.enable = true;
           dx.enable = true;
           convert_img.enable = true;
           catls.enable = true;
@@ -200,6 +201,8 @@ in
         features.zshell.enable = true;
         programs = {
           dx.enable = true;
+          ghostty.enable = true;
+          zlaude.enable = true;
         };
       };
       environment = {

@@ -110,7 +110,6 @@ delib.rice {
         base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyodark.yaml";
         image = ./../../assets/klaus-desktop.jpeg;
       };
-      myconfig.programs.ghostty.enable = true;
       stylix = {
         targets = {
           dunst.enable = true;

@@ -141,8 +141,6 @@ in
           ++ [
             inputs.conclaude.packages."${pkgs.system}".default
             inputs.nix-ai-tools.packages."${pkgs.system}".crush
-            inputs.nix-ai-tools.packages."${pkgs.system}".claude-code-router
-            inputs.nix-ai-tools.packages."${pkgs.system}".groq-code-cli
             inputs.nordvpn.packages."${pkgs.system}".default
             inputs.zen-browser.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".default
@@ -208,7 +206,6 @@ in
       environment = {
         systemPackages = with pkgs; [
           spicetify-cli
-          zed-editor
           python313Packages.huggingface-hub
           sleek
           tree-sitter
@@ -234,6 +231,8 @@ in
 
           # Nix tools
           inputs.nix-auth.packages."${pkgs.system}".default
+          inputs.nix-ai-tools.packages."${pkgs.system}".crush
+          inputs.conclaude.packages."${pkgs.system}".default
         ];
         variables = {
           EDITOR = "nvim";

@@ -39,7 +39,7 @@ This host runs nix-darwin for package management.
 in
   delib.host {
     name = "Conners-MacBook-Air";
-    rice = "dark";
+    rice = "empty";
     type = "laptop";
 
     home.home.stateVersion = "24.11";

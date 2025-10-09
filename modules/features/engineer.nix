@@ -29,6 +29,7 @@ in
           zshell.enable = true;
         };
         programs = {
+          xlaude.enable = true;
           zlaude.enable = true;
           ghostty.enable = true;
           dx.enable = true;

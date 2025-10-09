@@ -136,14 +136,6 @@ nix develop -c lint # Run quality checks
     nix-auth.url = "github:numtide/nix-auth";
     nix-auth.inputs.nixpkgs.follows = "nixpkgs";
 
-    plasma-manager.url = "github:nix-community/plasma-manager";
-    plasma-manager = {
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "home-manager";
-      };
-    };
-
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
     };

@@ -391,14 +391,6 @@ in
     };
 
     home.ifEnabled = {
-      # Note: Plasma-manager import temporarily disabled due to Denix framework compatibility issues
-      # TODO: Re-enable plasma-manager integration once Denix import handling is resolved
-
-      # Simplified plasma configuration to resolve CI issues with unsupported options
-      # programs.plasma = {
-      #   enable = true;
-      # };
-
       # KDE application configurations
       # Note: KDE-specific Home Manager program modules don't exist in current nixpkgs
       # These applications are installed via system packages above

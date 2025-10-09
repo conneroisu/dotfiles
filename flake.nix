@@ -147,17 +147,11 @@ nix develop -c lint # Run quality checks
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
     };
-
-    nix-snapshotter = {
-      url = "github:pdtpartners/nix-snapshotter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs @ {
     denix,
     flake-parts,
-    nix-snapshotter,
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {

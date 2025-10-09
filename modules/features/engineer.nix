@@ -18,7 +18,6 @@ in
           users = ["connerohnesorge"]; # Users to add to nordvpn group
         };
       }
-      inputs.nix-snapshotter.nixosModules.default
     ];
 
     options = singleEnableOption false;
@@ -185,11 +184,7 @@ in
         };
         containerd = {
           enable = true;
-          nixSnapshotterIntegration = true;
         };
-      };
-      services.nix-snapshotter = {
-        enable = true;
       };
 
       security.rtkit.enable = true;

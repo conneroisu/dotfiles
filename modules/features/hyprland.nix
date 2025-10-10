@@ -184,10 +184,9 @@ in
 
           config.hyprland = {
             default = [
-              "gtk"
-              "wlr"
+              "hyprland"
             ];
-            "org.freedesktop.impl.portal.FileChooser" = "gtk";
+            "org.freedesktop.impl.portal.FileChooser" = "hyprland";
           };
         };
         mime = {

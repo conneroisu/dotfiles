@@ -72,6 +72,7 @@ in
             pkg-config
             lshw
             gdb
+            gotestsum
             gnupg
             procps
             sleek
@@ -94,8 +95,8 @@ in
             # Apps
             obsidian
             brave
-            kdePackages.okular
             spotify
+            evince
             discord
             telegram-desktop
             obs-studio

@@ -68,7 +68,6 @@ delib.host {
         engineer.enable = true;
         darknet.enable = true;
         secrets.enable = true;
-        kde.enable = true;
         ollama.enable = true;
       };
     };

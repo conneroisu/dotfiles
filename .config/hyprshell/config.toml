@@ -1,6 +1,4 @@
-layerrules = true
-kill_bind = "ctrl+shift+alt, h"
-version = 2
+version = 3
 
 [windows]
 scale = 8.5
@@ -41,6 +39,21 @@ key = "y"
 [windows.overview.launcher.plugins.calc]
 
 [windows.overview.launcher.plugins.path]
+
+[windows.overview.launcher.plugins.actions]
+actions = [
+    "lock_screen",
+    "hibernate",
+    "logout",
+    "reboot",
+    "shutdown",
+    "suspend",
+    { custom = { names = [
+    "Kill",
+    "Stop",
+], details = "Kill or stop a process by name", command = 'pkill "{}" && notify-send hyprshell "stopped {}"', icon = "remove" } },
+    { custom = { names = ["Reload Hyprshell"], details = "Reload Hyprshell", command = """sleep 1; hyprshell socat '"Restart"'""", icon = "system-restart" } },
+]
 
 [windows.switch]
 modifier = "alt"

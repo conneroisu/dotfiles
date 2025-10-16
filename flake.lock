@@ -1570,15 +1570,16 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1754421444,
-        "narHash": "sha256-3mOQ2XsKdiBd25c/8VLmQ9/kbgRZq3KfVsL3Y9r4014=",
+        "lastModified": 1759777504,
+        "narHash": "sha256-KY7OLcZIEp2J4gcQcMvLlqjl9Tn5ddYpDW1itaDx+Bc=",
         "owner": "conneroisu",
         "repo": "proton-authenticator-flake",
-        "rev": "1d859c8d9c5fa8ae47a5599a2d7f6220a10506a9",
+        "rev": "0494e1b70724861b4f8e2fb314b744e0591dfbb5",
         "type": "github"
       },
       "original": {
         "owner": "conneroisu",
+        "ref": "0494e1b70724861b4f8e2fb314b744e0591dfbb5",
         "repo": "proton-authenticator-flake",
         "type": "github"
       }

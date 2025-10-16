@@ -1519,29 +1519,6 @@
         "type": "github"
       }
     },
-    "plasma-manager": {
-      "inputs": {
-        "home-manager": [
-          "home-manager"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1759157415,
-        "narHash": "sha256-Fg8cOnVoIe0uQ38UpR6XZzRCwDsjjozVwfevW9yCLI0=",
-        "owner": "nix-community",
-        "repo": "plasma-manager",
-        "rev": "df5b3e6da631f732c26c6044c7cccb8706b4f479",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "plasma-manager",
-        "type": "github"
-      }
-    },
     "pre-commit-hooks": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -1630,7 +1607,6 @@
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_7",
         "nordvpn": "nordvpn",
-        "plasma-manager": "plasma-manager",
         "proton-authenticator": "proton-authenticator",
         "sops": "sops",
         "stylix": "stylix",

@@ -72,6 +72,7 @@ in
             lshw
             gdb
             gotestsum
+            luarocks
             gnupg
             procps
             sleek

@@ -65,6 +65,7 @@ alias k='kubectl'
 alias nix-env='echo "panic: nix-env is disabled (#61)" >&2 && false'
 alias vim='nvim'
 alias os='openspec'
+alias osv='os validate --all --strict'
 
 
 # Load a few important annexes, without Turbo
@@ -114,3 +115,6 @@ export NVM_DIR="$HOME/.config/nvm"
 # opencode
 export PATH=/home/connerohnesorge/.opencode/bin:$PATH
 
+
+# Added by CodeRabbit CLI installer
+export PATH="/home/connerohnesorge/.local/bin:$PATH"

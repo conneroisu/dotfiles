@@ -38,14 +38,8 @@ nix flake init -t github:conneroisu/dotfiles#python-shell
 # Enter development shell
 nix develop
 
-# Initialize Python project
-init-poetry  # or init-pip
-
 # Run development server
 dev
-
-# Format and lint code
-format && lint
 
 # Run tests
 test
@@ -60,12 +54,14 @@ test
 */
 {
   description = "A development shell for Python";
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
+
   outputs = {
     nixpkgs,
     flake-utils,
@@ -126,9 +122,6 @@ test
             ruff # Fast Python linter and formatter
             black # Code formatter
             isort # Import sorter
-
-            # Jupyter and interactive development
-            # (included in pythonEnv)
 
             # Development utilities
             git

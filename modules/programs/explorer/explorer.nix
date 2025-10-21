@@ -16,6 +16,11 @@ TODO: Add comment
       + ''
         wrapProgram $out/bin/dolphin \
             --set XDG_CONFIG_DIRS "${pkgs.libsForQt5.kservice}/etc/xdg:$XDG_CONFIG_DIRS" \
+            --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath (with pkgs; [
+          pipewire
+          kdePackages.qtmultimedia
+          kdePackages.qtbase
+        ])} \
             --run "${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental ${pkgs.libsForQt5.kservice}/etc/xdg/menus/applications.menu"
       '';
   });

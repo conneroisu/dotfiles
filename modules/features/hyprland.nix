@@ -159,9 +159,13 @@ in
       };
 
       security = {
-        pam.services.sddm.enableGnomeKeyring = true;
+        pam.services = {
+          sddm.enableGnomeKeyring = true;
+          login.enableGnomeKeyring = true;
+        };
       };
 
+      environment.variables.XDG_RUNTIME_DIR = "/run/user/$UID"; # set the runtime directory so keyring is unlocked on login
       services = {
         gnome.gnome-keyring.enable = true;
         gvfs.enable = true; # Mount, trash, and other functionalities

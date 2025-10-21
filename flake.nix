@@ -139,7 +139,6 @@ nix develop -c lint # Run quality checks
     nix-version-search = {
       url = "github:jeff-hykin/nix_version_search_cli";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
     };
 
     flake-parts = {

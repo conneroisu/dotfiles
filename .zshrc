@@ -117,4 +117,4 @@ export PATH=/home/connerohnesorge/.opencode/bin:$PATH
 
 
 # Added by CodeRabbit CLI installer
-export PATH="/home/connerohnesorge/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"

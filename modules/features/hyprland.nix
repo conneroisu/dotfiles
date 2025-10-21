@@ -97,7 +97,9 @@ in
           [
             inputs.ghostty.packages."${pkgs.system}".default
             inputs.hyprland.packages."${pkgs.system}".default
-            inputs.hyprshell.packages.${pkgs.system}.default
+            (inputs.hyprshell.helpers.wrap-hyprshell
+            inputs.hyprland.packages."${pkgs.system}".default
+            pkgs)
             (pkgs.rofi.override {
               plugins = [
                 pkgs.rofi-rbw

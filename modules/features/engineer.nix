@@ -72,6 +72,7 @@ in
             lshw
             gdb
             gotestsum
+            luarocks
             gnupg
             procps
             sleek
@@ -147,6 +148,7 @@ in
             inputs.blink.packages."${pkgs.system}".default
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
             inputs.nix-auth.packages."${pkgs.system}".default
+            inputs.nix-version-search.packages."${pkgs.system}".default
           ];
         variables = {
           EDITOR = "nvim";

@@ -338,9 +338,6 @@ nix develop -c lint # Run quality checks
               (buildWithSpecificGo gotests)
               (buildWithSpecificGo gotools)
               (buildWithSpecificGo reftools)
-              pprof
-              graphviz
-              cobra-cli
 
               geesefs
               sops

@@ -140,6 +140,7 @@ in
       };
 
       hardware = {
+        uinput.enable = true;
         graphics = {
           extraPackages = with pkgs; [
             mesa
@@ -178,7 +179,9 @@ in
         xserver = {
           enable = true;
         };
-        displayManager.gdm.enable = lib.mkDefault true;
+        displayManager.gdm = {
+          enable = lib.mkDefault true;
+        };
       };
 
       xdg = {

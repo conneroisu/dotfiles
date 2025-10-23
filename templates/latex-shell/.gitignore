@@ -1,0 +1,35 @@
+.direnv
+result
+
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.vrb
+
+# LaTeX intermediate files
+*.dvi
+*.ps
+
+# BibTeX
+*.bib.bak
+*.bib.sav
+
+# Latexmk
+*.fls
+*.fdb_latexmk
+
+# PDFs (optional - uncomment if you don't want to track PDFs)
+# *.pdf

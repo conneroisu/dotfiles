@@ -247,6 +247,10 @@ nix develop -c lint # Run quality checks
             description = "A astro starlight docs site shell/project for developing with nix.";
             path = ./templates/starlight-shell;
           };
+          latex-shell = {
+            description = "A LaTeX development shell with Overleaf-equivalent features.";
+            path = ./templates/latex-shell;
+          };
         };
       };
 

@@ -36,7 +36,7 @@ delib.host {
         darknet.enable = true;
         secrets.enable = true;
         student.enable = true;
-        ollama.enable = true;
+        # ollama.enable = true;
       };
       programs = {
         proton-x.enable = true;

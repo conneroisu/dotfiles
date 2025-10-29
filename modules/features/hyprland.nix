@@ -150,6 +150,7 @@ in
 
       programs = {
         dconf.enable = true;
+        ydotool.enable = true;
         hyprland = {
           package = inputs.hyprland.packages.${pkgs.system}.default;
           portalPackage = inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
@@ -166,7 +167,6 @@ in
         };
       };
 
-      environment.variables.XDG_RUNTIME_DIR = "/run/user/$UID"; # set the runtime directory so keyring is unlocked on login
       services = {
         gnome.gnome-keyring.enable = true;
         gvfs.enable = true; # Mount, trash, and other functionalities

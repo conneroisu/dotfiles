@@ -50,7 +50,7 @@ nix develop -c lint # Run quality checks
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.16.3b";
+    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.17.3b";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?ref=0494e1b70724861b4f8e2fb314b744e0591dfbb5";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";

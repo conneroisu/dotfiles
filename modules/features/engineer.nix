@@ -30,6 +30,7 @@ in
         programs = {
           xlaude.enable = true;
           zlaude.enable = true;
+          klaude.enable = true;
           ghostty.enable = true;
           dx.enable = true;
           convert_img.enable = true;
@@ -200,6 +201,7 @@ in
           dx.enable = true;
           ghostty.enable = true;
           zlaude.enable = true;
+          klaude.enable = true;
         };
       };
       environment = {

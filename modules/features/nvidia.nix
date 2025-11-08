@@ -75,7 +75,11 @@ systems with NVIDIA graphics, including hybrid Intel+NVIDIA setups.
 - Configure TDP limits for efficiency
 - Enable GPU boost for performance
 */
-{delib, ...}: let
+{
+  delib,
+  pkgs,
+  ...
+}: let
   inherit (delib) singleEnableOption;
 in
   delib.module {
@@ -125,8 +129,13 @@ in
         };
       };
 
-      environment.variables = {
-        LIBVA_DRIVER_NAME = "nvidia";
+      environment = {
+        systemPackages = with pkgs; [
+          nvtopPackages.intel
+        ];
+        variables = {
+          LIBVA_DRIVER_NAME = "nvidia";
+        };
       };
     };
   }

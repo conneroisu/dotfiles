@@ -28,6 +28,7 @@ in
           zshell.enable = true;
         };
         programs = {
+          pdf2md.enable = true;
           xlaude.enable = true;
           zlaude.enable = true;
           ghostty.enable = true;
@@ -139,8 +140,10 @@ in
             nodejs
             lua-language-server
             zed-editor
+            code-cursor
           ]
           ++ [
+            inputs.kiro-flake.packages."${pkgs.system}".default
             inputs.conclaude.packages."${pkgs.system}".default
             inputs.nix-ai-tools.packages."${pkgs.system}".crush
             inputs.nordvpn.packages."${pkgs.system}".default

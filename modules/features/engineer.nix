@@ -140,7 +140,6 @@ in
             nodejs
             lua-language-server
             zed-editor
-            code-cursor
           ]
           ++ [
             inputs.kiro-flake.packages."${pkgs.system}".default

@@ -7,6 +7,7 @@ import io
 import img2pdf
 from PIL import Image
 from desktop_notifier import DesktopNotifier
+from pathlib import Path
 
 PROMPT = '<image>\n<|grounding|>Convert the document to obsidian markdown.'
 API_KEY_KEY = "OCR_API_KEY"
@@ -172,25 +173,63 @@ async def img_to_md(
     return response.choices[0].message.content
 
 
+def re_match(text):
+    pattern = r'(<\|ref\|>(.*?)<\|/ref\|><\|det\|>(.*?)<\|/det\|>)'
+    matches = re.findall(pattern, text, re.DOTALL)
+
+
+    mathes_image = []
+    mathes_other = []
+    for a_match in matches:
+        if '<|ref|>image<|/ref|>' in a_match[0]:
+            mathes_image.append(a_match[0])
+        else:
+            mathes_other.append(a_match[0])
+    return matches, mathes_image, mathes_other
+
+def extract_coordinates_and_label(ref_text: str, image_width: int, image_height: int):
+    try:
+        label_type = ref_text[1]
+        cor_list = eval(ref_text[2])
+    except Exception as e:
+        print(e)
+        return None
+
+    return (label_type, cor_list)
+
+
+
 async def main():
     if len(sys.argv) < 2:
         print("Usage: pdf2md <file_path>")
         return
-    # Get the first argv argument
-    file_path = sys.argv[1]
-    # Convert the PDF to images
+    file_path = Path(sys.argv[1])
+    if not file_path.is_file():
+        raise ValueError(f"File {file_path} does not exist")
     print("Converting PDF to images...")
     images = pdf_to_images(file_path)
     print("Converting images to Markdown...")
-    # Convert the images to Markdown
     markdown: list[str] = []
     for image in images:
-        markdown.append(await img_to_md(image))
+        content = await img_to_md(image)
+        matches, mathes_image, mathes_other = re_match(content)
+        
+        markdown.append(content)
 
+
+    final_markdown = ""
     for i, md in enumerate(markdown):
-        print(f"Image {i+1}:")
-        print(md)
-    await send_notification("~/Downloads/test.pdf")
+        # print(f"Image {i+1}:")
+        # print(md)
+        final_markdown += f"\n<!-- Page {i+1} --->\n"
+        final_markdown += md
+        final_markdown += "\n\n"
+        
+
+    
+
+
+    await send_notification(file_path.with_suffix(".md"))
 
 if __name__ == "__main__":
     asyncio.run(main())

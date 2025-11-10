@@ -28,7 +28,7 @@ in
           zshell.enable = true;
         };
         programs = {
-          pdf2md.enable = true;
+          # pdf2md.enable = true;
           xlaude.enable = true;
           zlaude.enable = true;
           klaude.enable = true;

@@ -112,7 +112,8 @@ in
           enable32Bit = true;
         };
       };
-      virtualisation.docker.enableNvidia = true;
+
+      hardware.nvidia-container-toolkit.enable = true;
 
       services = {
         displayManager = {

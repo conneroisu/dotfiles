@@ -43,7 +43,7 @@ in
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman
         corefonts
-        vistafonts
+        vista-fonts
       ];
       documentation = {
         enable = true;

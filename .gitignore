@@ -27,5 +27,6 @@ __pycache__/
 *.so
 logs/
 .crush
+!.crush/commands/
 result
 .env

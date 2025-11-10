@@ -161,6 +161,7 @@ in
         pam.services = {
           sddm.enableGnomeKeyring = true;
           login.enableGnomeKeyring = true;
+          gdm.enableGnomeKeyring = true;
         };
       };
 

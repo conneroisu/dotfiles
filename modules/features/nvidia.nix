@@ -89,6 +89,7 @@ in
 
     nixos.ifEnabled = {myconfig, ...}: {
       # Load nvidia driver for Xorg and Wayland
+      virtualisation.docker.enableNvidia = true;
       hardware = {
         nvidia = {
           open = false;
@@ -112,8 +113,7 @@ in
           enable32Bit = true;
         };
       };
-
-      hardware.nvidia-container-toolkit.enable = true;
+      # hardware.nvidia-container-toolkit.enable = true;
 
       services = {
         displayManager = {

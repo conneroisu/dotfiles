@@ -136,6 +136,7 @@ nix fmt
             gomarkdoc
             gotests
             gotools
+            gotestsum
             reftools
             pprof
             graphviz

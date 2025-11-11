@@ -24,3 +24,4 @@ background = #000000
 keybind = shift+enter=text:\n
 # Inherit working directory from parent process
 working-directory=inherit
+keybind = ctrl+shift+j=write_scrollback_file:open

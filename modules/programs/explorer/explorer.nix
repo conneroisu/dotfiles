@@ -10,6 +10,7 @@ TODO: Add comment
   inherit (delib) singleEnableOption;
 
   explorer-program = pkgs.kdePackages.dolphin.overrideAttrs (oldAttrs: {
+    meta.mainProgram = "dolphin";
     nativeBuildInputs = (oldAttrs.nativeBuildInputs or []) ++ [pkgs.makeWrapper];
     postInstall =
       (oldAttrs.postInstall or "")
@@ -37,6 +38,8 @@ TODO: Add comment
     plasma-workspace
     kservice
     kded
+    kio-admin
+    kio-fuse
   ];
 
   supporting-libs = with pkgs.libsForQt5; [

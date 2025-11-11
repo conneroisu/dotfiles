@@ -117,7 +117,7 @@ test
             uv # Best
 
             # Type checking and linting
-            basedpyright # Advanced type checker (Pylance)
+            pyrefly # Advanced type checker (Pylance)
             mypy # Static type checker
             ruff # Fast Python linter and formatter
             black # Code formatter

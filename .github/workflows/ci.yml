@@ -7,7 +7,7 @@ on:
 
 env:
   RUST_BACKTRACE: 1
-  
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -21,7 +21,7 @@ jobs:
   #   with:
   #     visibility: public
   #     fail-fast: true
-  
+
   flake-check:
     strategy:
       fail-fast: false
@@ -32,19 +32,20 @@ jobs:
             platform: linux
             arch: x86_64
             runner: ubuntu-latest
-          
-          # macOS x86_64 (Intel)
-          - os: macos-13
-            platform: macos
-            arch: x86_64
-            runner: macos-13
-          
+
+            # No longer supported
+          # # macOS x86_64 (Intel)
+          # - os: macos-13
+          #   platform: macos
+          #   arch: x86_64
+          #   runner: macos-13
+
           # macOS aarch64 (Apple Silicon M1/M2)
           - os: macos-14
             platform: macos
             arch: aarch64
             runner: macos-14
-          
+
           # Linux aarch64 (uncomment and configure self-hosted runner)
           # - os: ubuntu-latest
           #   platform: linux
@@ -52,19 +53,19 @@ jobs:
           #   runner: [self-hosted, linux, arm64]
 
     runs-on: ${{ matrix.runner }}
-    
+
     name: Build (${{ matrix.platform }}-${{ matrix.arch }})
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@v3
-          
+
       - name: Run flake check
         run: nix flake check .
-        
+
       - name: Show build info
         run: |
           echo "Platform: ${{ matrix.platform }}"

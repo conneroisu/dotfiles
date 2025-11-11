@@ -118,6 +118,9 @@ in
             "docker" # Docker daemon access
             "users" # Standard users group
             "nordvpn" # VPN access
+            "uinput" # Input device access
+            "input" # Input device access
+            "ydotool" # Ydotool access
           ];
 
           # SSH public key for remote access

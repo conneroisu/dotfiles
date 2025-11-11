@@ -1,57 +1,9 @@
-/**
-# Main Flake Configuration - Denix-based Dotfiles
-
-## Description
-Sophisticated NixOS/Home Manager dotfiles repository using the Denix framework for
-modular configuration management. Provides unified, cross-platform configuration
-for NixOS, macOS (via nix-darwin), and standalone Home Manager setups.
-
-## Platform Support
-- ✅ NixOS (Linux) - Full system and user configuration
-- ✅ macOS - Via nix-darwin with Home Manager integration
-- ✅ Home Manager - Standalone user environment management
-- ✅ Multi-architecture: x86_64, aarch64 (Apple Silicon, ARM)
-
-## What This Provides
-- **Modular Configuration**: Feature-based modules for desktop environments, development tools
-- **Multi-Host Support**: Desktop, laptop, server configurations with host-specific features
-- **Theme Management**: Stylix-based theming with Base16 color schemes
-- **Development Environment**: Rich devShell with custom scripts and tools
-- **Custom Programs**: Self-contained applications (dx, cmbd, convert_img, etc.)
-- **Templates**: Ready-to-use development environments for various languages/frameworks
-
-## Core Components
-- **Denix Framework**: Type-safe, composable module system with auto-discovery
-- **Feature System**: Granular capability enablement (audio, bluetooth, nvidia, etc.)
-- **Host Types**: Desktop/laptop/server classifications with appropriate defaults
-- **Rice System**: Consistent theming across all applications and environments
-
-## Usage
-```bash
-# macOS rebuild
-darwin-rebuild switch --flake .
-
-# NixOS rebuild
-sudo nixos-rebuild switch --flake .
-
-# Home Manager only
-home-manager switch --flake .
-```
-
-## Development
-```bash
-nix develop        # Enter development shell
-nix develop -c dx  # Edit this flake
-nix develop -c lint # Run quality checks
-```
-*/
 {
   description = "Modular configuration of Home Manager and NixOS with Denix";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    zen-browser.url = "github:conneroisu/zen-browser-flake?tag=v1.16.3b";
-    zen-browser.inputs.nixpkgs.follows = "nixpkgs";
+    zen-browser.url = "github:conneroisu/zen-browser-flake";
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?ref=0494e1b70724861b4f8e2fb314b744e0591dfbb5";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -64,10 +16,9 @@ nix develop -c lint # Run quality checks
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
 
-    hyprshell = {
-      url = "github:H3rmt/hyprshell";
+    kiro-flake = {
+      url = "github:conneroisu/kiro-flake";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
     };
 
     nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
@@ -297,8 +248,6 @@ nix develop -c lint # Run quality checks
           )
           scripts;
 
-        buildWithSpecificGo = pkg: pkg.override {buildGoModule = pkgs.buildGo124Module;};
-
         treefmtModule = {
           projectRootFile = "flake.nix";
           programs = {
@@ -329,19 +278,21 @@ nix develop -c lint # Run quality checks
               biome
               oxlint
 
+              pyrefly
+              poppler
               sqlite
-              go_1_24 # Go
+              go
               air
               golangci-lint
               gopls
-              (buildWithSpecificGo revive)
-              (buildWithSpecificGo templ)
-              (buildWithSpecificGo golines)
-              (buildWithSpecificGo golangci-lint-langserver)
-              (buildWithSpecificGo gomarkdoc)
-              (buildWithSpecificGo gotests)
-              (buildWithSpecificGo gotools)
-              (buildWithSpecificGo reftools)
+              revive
+              templ
+              golines
+              golangci-lint-langserver
+              gomarkdoc
+              gotests
+              gotools
+              reftools
 
               geesefs
               sops

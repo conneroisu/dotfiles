@@ -75,7 +75,11 @@ systems with NVIDIA graphics, including hybrid Intel+NVIDIA setups.
 - Configure TDP limits for efficiency
 - Enable GPU boost for performance
 */
-{delib, ...}: let
+{
+  delib,
+  pkgs,
+  ...
+}: let
   inherit (delib) singleEnableOption;
 in
   delib.module {
@@ -85,6 +89,7 @@ in
 
     nixos.ifEnabled = {myconfig, ...}: {
       # Load nvidia driver for Xorg and Wayland
+      virtualisation.docker.enableNvidia = true;
       hardware = {
         nvidia = {
           open = false;
@@ -108,7 +113,7 @@ in
           enable32Bit = true;
         };
       };
-      virtualisation.docker.enableNvidia = true;
+      # hardware.nvidia-container-toolkit.enable = true;
 
       services = {
         displayManager = {
@@ -125,8 +130,13 @@ in
         };
       };
 
-      environment.variables = {
-        LIBVA_DRIVER_NAME = "nvidia";
+      environment = {
+        systemPackages = with pkgs; [
+          nvtopPackages.intel
+        ];
+        variables = {
+          LIBVA_DRIVER_NAME = "nvidia";
+        };
       };
     };
   }

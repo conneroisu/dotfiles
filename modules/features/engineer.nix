@@ -28,6 +28,7 @@ in
           zshell.enable = true;
         };
         programs = {
+          # pdf2md.enable = true;
           xlaude.enable = true;
           zlaude.enable = true;
           klaude.enable = true;
@@ -42,7 +43,7 @@ in
       fonts.packages = with pkgs; [
         nerd-fonts.code-new-roman
         corefonts
-        vistafonts
+        vista-fonts
       ];
       documentation = {
         enable = true;
@@ -142,6 +143,7 @@ in
             zed-editor
           ]
           ++ [
+            inputs.kiro-flake.packages."${pkgs.system}".default
             inputs.conclaude.packages."${pkgs.system}".default
             inputs.nix-ai-tools.packages."${pkgs.system}".crush
             inputs.nordvpn.packages."${pkgs.system}".default

@@ -143,15 +143,15 @@ in
             zed-editor
           ]
           ++ [
-            inputs.kiro-flake.packages."${pkgs.system}".default
-            inputs.conclaude.packages."${pkgs.system}".default
-            inputs.nix-ai-tools.packages."${pkgs.system}".crush
-            inputs.nordvpn.packages."${pkgs.system}".default
-            inputs.zen-browser.packages."${pkgs.system}".default
-            inputs.blink.packages."${pkgs.system}".default
-            inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
-            inputs.nix-auth.packages."${pkgs.system}".default
-            inputs.nix-version-search.packages."${pkgs.system}".default
+            inputs.kiro-flake.packages."${pkgs.stdenv.hostPlatform.system}".default
+            inputs.conclaude.packages."${pkgs.stdenv.hostPlatform.system}".default
+            inputs.nix-ai-tools.packages."${pkgs.stdenv.hostPlatform.system}".crush
+            inputs.nordvpn.packages."${pkgs.stdenv.hostPlatform.system}".default
+            inputs.zen-browser.packages."${pkgs.stdenv.hostPlatform.system}".default
+            inputs.blink.packages."${pkgs.stdenv.hostPlatform.system}".default
+            inputs.blink.packages."${pkgs.stdenv.hostPlatform.system}".blink-fuzzy-lib
+            inputs.nix-auth.packages."${pkgs.stdenv.hostPlatform.system}".default
+            inputs.nix-version-search.packages."${pkgs.stdenv.hostPlatform.system}".default
           ];
         variables = {
           EDITOR = "nvim";
@@ -233,9 +233,9 @@ in
           lua-language-server
 
           # Nix tools
-          inputs.nix-auth.packages."${pkgs.system}".default
-          inputs.nix-ai-tools.packages."${pkgs.system}".crush
-          inputs.conclaude.packages."${pkgs.system}".default
+          inputs.nix-auth.packages."${pkgs.stdenv.hostPlatform.system}".default
+          inputs.nix-ai-tools.packages."${pkgs.stdenv.hostPlatform.system}".crush
+          inputs.conclaude.packages."${pkgs.stdenv.hostPlatform.system}".default
         ];
         variables = {
           EDITOR = "nvim";

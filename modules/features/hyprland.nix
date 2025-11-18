@@ -95,8 +95,8 @@ in
       environment = {
         systemPackages =
           [
-            inputs.ghostty.packages."${pkgs.system}".default
-            inputs.hyprland.packages."${pkgs.system}".default
+            inputs.ghostty.packages."${pkgs.stdenv.hostPlatform.system}".default
+            inputs.hyprland.packages."${pkgs.stdenv.hostPlatform.system}".default
             (pkgs.rofi.override {
               plugins = [
                 pkgs.rofi-rbw
@@ -149,8 +149,8 @@ in
         dconf.enable = true;
         ydotool.enable = true;
         hyprland = {
-          package = inputs.hyprland.packages.${pkgs.system}.default;
-          portalPackage = inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland;
+          package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.default;
+          portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
           enable = true;
           withUWSM = true;
           xwayland.enable = true;
@@ -187,7 +187,7 @@ in
         portal = {
           enable = true;
           wlr.enable = true;
-          extraPortals = [inputs.hyprland.packages.${pkgs.system}.xdg-desktop-portal-hyprland];
+          extraPortals = [inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland];
 
           config.hyprland = {
             default = [

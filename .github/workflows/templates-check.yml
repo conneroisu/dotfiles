@@ -1,0 +1,134 @@
+name: Templates Check
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-templates:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux x86_64
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_64
+            runner: ubuntu-latest
+            system: x86_64-linux
+
+          # macOS aarch64 (Apple Silicon M1/M2)
+          - os: macos-14
+            platform: macos
+            arch: aarch64
+            runner: macos-14
+            system: aarch64-darwin
+
+    runs-on: ${{ matrix.runner }}
+
+    name: Validate Templates (${{ matrix.platform }}-${{ matrix.arch }})
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/determinate-nix-action@v3
+
+      - name: Get list of templates
+        id: templates
+        run: |
+          cd templates
+          templates=()
+          for dir in */; do
+            if [ -f "$dir/flake.nix" ]; then
+              templates+=("${dir%/}")
+            fi
+          done
+          echo "Found templates: ${templates[@]}"
+          # Export as JSON array for matrix
+          printf '%s\n' "${templates[@]}" | jq -R . | jq -s . > /tmp/templates.json
+          cat /tmp/templates.json
+          echo "templates=$(cat /tmp/templates.json)" >> $GITHUB_OUTPUT
+
+      - name: Validate template devShells evaluate
+        run: |
+          cd templates
+          failed=()
+          for template in askama-shell cpp-shell csharp-shell cuda-shell devshell go-shell laravel-shell latex-shell lua-shell ocaml-shell phoenix-shell python-shell remix-shell rust-shell templ-shell tla-shell typescript-shell zig-shell; do
+            echo "::group::Checking $template"
+            
+            # Create a temporary directory for testing
+            test_dir=$(mktemp -d)
+            
+            # Copy template to temp directory
+            cp -r "$template"/* "$test_dir/"
+            
+            cd "$test_dir"
+            
+            # Try to evaluate the devShell
+            if nix eval .#devShells.${{ matrix.system }}.default --apply 'x: "success"' 2>&1; then
+              echo "✓ $template devShell evaluation succeeded"
+            else
+              echo "✗ $template devShell evaluation failed"
+              failed+=("$template")
+            fi
+            
+            cd - > /dev/null
+            rm -rf "$test_dir"
+            echo "::endgroup::"
+          done
+          
+          if [ ${#failed[@]} -ne 0 ]; then
+            echo "::error::The following templates failed devShell evaluation: ${failed[*]}"
+            exit 1
+          fi
+
+      - name: Validate template devShells build
+        run: |
+          cd templates
+          failed=()
+          for template in askama-shell cpp-shell csharp-shell cuda-shell devshell go-shell laravel-shell latex-shell lua-shell ocaml-shell phoenix-shell python-shell remix-shell rust-shell templ-shell tla-shell typescript-shell zig-shell; do
+            echo "::group::Building $template devShell"
+            
+            # Create a temporary directory for testing
+            test_dir=$(mktemp -d)
+            
+            # Copy template to temp directory
+            cp -r "$template"/* "$test_dir/"
+            
+            cd "$test_dir"
+            
+            # Try to build the devShell
+            if nix build .#devShells.${{ matrix.system }}.default 2>&1; then
+              echo "✓ $template devShell build succeeded"
+            else
+              echo "✗ $template devShell build failed"
+              failed+=("$template")
+            fi
+            
+            cd - > /dev/null
+            rm -rf "$test_dir"
+            echo "::endgroup::"
+          done
+          
+          if [ ${#failed[@]} -ne 0 ]; then
+            echo "::error::The following templates failed devShell build: ${failed[*]}"
+            exit 1
+          fi
+
+      - name: Show validation info
+        run: |
+          echo "Platform: ${{ matrix.platform }}"
+          echo "Architecture: ${{ matrix.arch }}"
+          echo "System: ${{ matrix.system }}"
+          echo "Runner: ${{ matrix.runner }}"
+          uname -a
+          nix --version

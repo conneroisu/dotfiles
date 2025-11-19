@@ -42,27 +42,22 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@v3
 
-      - name: Get list of templates
-        id: templates
+      - name: Validate template devShells evaluate
         run: |
           cd templates
+          failed=()
+          
+          # Dynamically discover all templates with flake.nix
           templates=()
           for dir in */; do
             if [ -f "$dir/flake.nix" ]; then
               templates+=("${dir%/}")
             fi
           done
-          echo "Found templates: ${templates[@]}"
-          # Export as JSON array for matrix
-          printf '%s\n' "${templates[@]}" | jq -R . | jq -s . > /tmp/templates.json
-          cat /tmp/templates.json
-          echo "templates=$(cat /tmp/templates.json)" >> $GITHUB_OUTPUT
-
-      - name: Validate template devShells evaluate
-        run: |
-          cd templates
-          failed=()
-          for template in askama-shell cpp-shell csharp-shell cuda-shell devshell go-shell laravel-shell latex-shell lua-shell ocaml-shell phoenix-shell python-shell remix-shell rust-shell templ-shell tla-shell typescript-shell zig-shell; do
+          
+          echo "Found ${#templates[@]} templates to validate: ${templates[*]}"
+          
+          for template in "${templates[@]}"; do
             echo "::group::Checking $template"
             
             # Create a temporary directory for testing
@@ -95,7 +90,18 @@ jobs:
         run: |
           cd templates
           failed=()
-          for template in askama-shell cpp-shell csharp-shell cuda-shell devshell go-shell laravel-shell latex-shell lua-shell ocaml-shell phoenix-shell python-shell remix-shell rust-shell templ-shell tla-shell typescript-shell zig-shell; do
+          
+          # Dynamically discover all templates with flake.nix
+          templates=()
+          for dir in */; do
+            if [ -f "$dir/flake.nix" ]; then
+              templates+=("${dir%/}")
+            fi
+          done
+          
+          echo "Found ${#templates[@]} templates to validate: ${templates[*]}"
+          
+          for template in "${templates[@]}"; do
             echo "::group::Building $template devShell"
             
             # Create a temporary directory for testing

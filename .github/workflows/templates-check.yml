@@ -63,8 +63,8 @@ jobs:
             # Create a temporary directory for testing
             test_dir=$(mktemp -d)
             
-            # Copy template to temp directory
-            cp -r "$template"/* "$test_dir/"
+            # Copy template to temp directory (including hidden files)
+            cp -r "$template"/. "$test_dir/"
             
             cd "$test_dir"
             
@@ -107,8 +107,8 @@ jobs:
             # Create a temporary directory for testing
             test_dir=$(mktemp -d)
             
-            # Copy template to temp directory
-            cp -r "$template"/* "$test_dir/"
+            # Copy template to temp directory (including hidden files)
+            cp -r "$template"/. "$test_dir/"
             
             cd "$test_dir"
             

@@ -64,8 +64,8 @@ alias wtd='git worktree remove'
 alias k='kubectl'
 alias nix-env='echo "panic: nix-env is disabled (#61)" >&2 && false'
 alias vim='nvim'
-alias os='openspec'
-alias osv='os validate --all --strict'
+alias os='spectr'
+alias osv='spectr validate --all --strict'
 
 
 # Load a few important annexes, without Turbo

@@ -7,6 +7,9 @@
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?ref=0494e1b70724861b4f8e2fb314b744e0591dfbb5";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
 
+    spectr.url = "github:conneroisu/spectr";
+    spectr.inputs.nixpkgs.follows = "nixpkgs";
+
     conclaude.url = "github:connix-io/conclaude";
     conclaude.inputs.nixpkgs.follows = "nixpkgs";
 

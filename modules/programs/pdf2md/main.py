@@ -225,10 +225,6 @@ async def main():
         final_markdown += md
         final_markdown += "\n\n"
         
-
-    
-
-
     await send_notification(file_path.with_suffix(".md"))
 
 if __name__ == "__main__":

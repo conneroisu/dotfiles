@@ -17,7 +17,7 @@ in
         pkgs.protonmail-desktop
         pkgs.proton-pass
 
-        inputs.proton-authenticator.packages."${pkgs.system}".default
+        inputs.proton-authenticator.packages."${pkgs.stdenv.hostPlatform.system}".default
       ];
     };
     darwin.ifEnabled = {

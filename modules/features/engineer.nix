@@ -89,6 +89,7 @@ in
             man-pages
             man-pages-posix
             man-db
+            wezterm
 
             # VCS
             git-lfs
@@ -152,6 +153,7 @@ in
             inputs.blink.packages."${pkgs.system}".blink-fuzzy-lib
             inputs.nix-auth.packages."${pkgs.system}".default
             inputs.nix-version-search.packages."${pkgs.system}".default
+            inputs.spectr.packages."${pkgs.stdenv.hostPlatform.system}".default
           ];
         variables = {
           EDITOR = "nvim";

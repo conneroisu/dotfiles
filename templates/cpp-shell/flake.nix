@@ -149,7 +149,6 @@ nix fmt
             # Debugging and Profiling
             gdb
             lldb
-            valgrind
             rr # Record and replay debugger
 
             # Testing Frameworks
@@ -181,14 +180,13 @@ nix fmt
             gitflow
             pre-commit
 
-            # Performance Tools
-            hotspot # GUI for perf
-            heaptrack # Heap profiler
-
-            # Cross-platform support
+                # Cross-platform support
           ]
           ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
             # Linux-specific tools
+            hotspot # GUI for perf (Linux only)
+            heaptrack # Heap profiler (Linux only)
+            valgrind
             strace
             ltrace
             patchelf

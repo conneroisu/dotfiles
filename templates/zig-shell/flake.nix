@@ -116,7 +116,7 @@ nix fmt
         projectRootFile = "flake.nix";
         programs = {
           alejandra.enable = true; # Nix formatter
-          zig.enable = true; # Zig formatter
+          zig.enable = pkgs.stdenv.isLinux; # Zig formatter (Linux only, broken on macOS)
         };
       };
     in {

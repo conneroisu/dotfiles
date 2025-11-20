@@ -218,7 +218,6 @@ git-latexdiff HEAD~1 HEAD --main main.tex
 
             # PDF viewers with auto-reload
             evince # GNOME document viewer
-            kdePackages.okular # KDE document viewer
 
             # Graphics and figure tools
             inkscape # Vector graphics editor

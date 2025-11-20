@@ -768,9 +768,6 @@ $env.config.hooks.env_change.PWD = (
     $env.config.hooks.env_change.PWD | append ( source ~/dotfiles/.config/nushell/hooks/direnv/config.nu)
 )
 
-def nvimf [] {
-    nvim (fzf --preview "bat --color=always {}")
-}
 def nvimfi [] {
     nvim (fd -type file -path "./.git" -prune -o -type f -not -path "*/.*" -print | fzf --preview "bat --color=always {}")
 }

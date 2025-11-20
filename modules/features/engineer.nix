@@ -39,6 +39,7 @@ in
           cf.enable = true;
           cmbd.enable = true;
           nviml.enable = true;
+          nvimf.enable = true;
         };
       };
       fonts.packages = with pkgs; [
@@ -208,6 +209,7 @@ in
           ghostty.enable = true;
           zlaude.enable = true;
           klaude.enable = true;
+          nvimf.enable = true;
         };
       };
       environment = {

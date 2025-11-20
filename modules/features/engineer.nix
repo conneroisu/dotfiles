@@ -94,6 +94,7 @@ in
 
             # VCS
             git-lfs
+            git-filter-repo
             jujutsu
 
             # Apps
@@ -224,6 +225,9 @@ in
           bun
           podman
           openssl
+
+          # VCS
+          git-filter-repo
 
           # Platforms
           flyctl

@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+# nvimf - Interactive fuzzy file finder with preview that opens files in Neovim
+#
+# Description:
+#   Provides an interactive fuzzy file selection interface with syntax-highlighted
+#   preview using bat. Opens the selected file in Neovim upon confirmation.
+#
+# Usage:
+#   nvimf [directory]
+#
+# Features:
+#   - Fuzzy file search with fzf
+#   - Syntax-highlighted preview with bat
+#   - Graceful cancellation handling
+#   - Works in current directory or specified directory
+#
+# Dependencies:
+#   - fzf: Fuzzy finder
+#   - bat: Syntax highlighter for preview
+#   - neovim: Editor to open selected file
+
+set -euo pipefail
+
+# Color codes for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly NC='\033[0m' # No Color
+
+# Function to print error messages
+error() {
+    echo -e "${RED}Error:${NC} $*" >&2
+}
+
+# Function to print info messages
+info() {
+    echo -e "${GREEN}Info:${NC} $*" >&2
+}
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Function to validate dependencies
+check_dependencies() {
+    local missing_deps=()
+
+    for cmd in fzf bat nvim; do
+        if ! command_exists "$cmd"; then
+            missing_deps+=("$cmd")
+        fi
+    done
+
+    if [ ${#missing_deps[@]} -ne 0 ]; then
+        error "Missing required dependencies: ${missing_deps[*]}"
+        error "These should be provided by Nix wrapper, but are not in PATH"
+        exit 1
+    fi
+}
+
+# Function to display help
+show_help() {
+    cat << EOF
+nvimf - Interactive fuzzy file finder with Neovim
+
+Usage:
+    nvimf [directory]
+
+Description:
+    Opens an interactive fuzzy file finder with syntax-highlighted preview.
+    Select a file to open it in Neovim. Press ESC or Ctrl-C to cancel.
+
+Arguments:
+    directory    Optional directory to search (defaults to current directory)
+
+Key Bindings:
+    Enter        Open selected file in Neovim
+    ESC/Ctrl-C   Exit without opening a file
+    Up/Down      Navigate through files
+    Ctrl-U/D     Scroll preview window
+    Ctrl-/       Toggle preview window
+
+Examples:
+    nvimf                    # Search current directory
+    nvimf ~/projects         # Search specific directory
+    nvimf --help            # Show this help
+
+Dependencies:
+    fzf     Fuzzy finder for file selection
+    bat     Syntax highlighter for preview
+    nvim    Neovim editor
+EOF
+}
+
+# Main function
+main() {
+    # Check for help flag
+    if [ $# -gt 0 ] && { [ "$1" = "--help" ] || [ "$1" = "-h" ]; }; then
+        show_help
+        exit 0
+    fi
+
+    # Validate dependencies
+    check_dependencies
+
+    # Determine search directory
+    local search_dir="${1:-.}"
+
+    # Validate directory exists
+    if [ ! -d "$search_dir" ]; then
+        error "Directory does not exist: $search_dir"
+        exit 1
+    fi
+
+    # Change to search directory
+    cd "$search_dir" || {
+        error "Cannot access directory: $search_dir"
+        exit 1
+    }
+
+    # Run fzf with bat preview
+    # Uses fd if available, otherwise falls back to find
+    local selected_file
+    if command_exists fd; then
+        selected_file=$(fd --type f --hidden --exclude .git --exclude node_modules --exclude .cache \
+            | fzf --preview 'bat --color=always --style=numbers,changes --line-range :500 {}' \
+                  --preview-window=right:60%:wrap \
+                  --height=100% \
+                  --border \
+                  --prompt='Select file to edit: ' \
+                  --header='Enter=open | ESC=cancel | Ctrl-/=toggle preview' \
+                  --bind='ctrl-/:toggle-preview' \
+                  --color='header:italic:underline')
+    else
+        selected_file=$(find . -type f \
+                -not -path '*/\.git/*' \
+                -not -path '*/node_modules/*' \
+                -not -path '*/\.cache/*' \
+                -not -path '*/.next/*' \
+                -not -path '*/dist/*' \
+                -not -path '*/build/*' \
+            | sed 's|^\./||' \
+            | fzf --preview 'bat --color=always --style=numbers,changes --line-range :500 {}' \
+                  --preview-window=right:60%:wrap \
+                  --height=100% \
+                  --border \
+                  --prompt='Select file to edit: ' \
+                  --header='Enter=open | ESC=cancel | Ctrl-/=toggle preview' \
+                  --bind='ctrl-/:toggle-preview' \
+                  --color='header:italic:underline')
+    fi
+
+    # Check if a file was selected
+    if [ -z "${selected_file:-}" ]; then
+        info "No file selected, exiting gracefully"
+        exit 0
+    fi
+
+    # Verify file exists before opening
+    if [ ! -f "$selected_file" ]; then
+        error "Selected file does not exist: $selected_file"
+        exit 1
+    fi
+
+    # Open the file in Neovim
+    exec nvim "$selected_file"
+}
+
+# Run main function
+main "$@"

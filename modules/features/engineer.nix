@@ -36,6 +36,7 @@ in
           dx.enable = true;
           convert_img.enable = true;
           catls.enable = true;
+          cf.enable = true;
           cmbd.enable = true;
           nviml.enable = true;
         };
@@ -203,6 +204,7 @@ in
         features.zshell.enable = true;
         programs = {
           dx.enable = true;
+          cf.enable = true;
           ghostty.enable = true;
           zlaude.enable = true;
           klaude.enable = true;

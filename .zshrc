@@ -46,8 +46,8 @@ source <(carapace chmod zsh)
 
 # cfi is find all ignoring .git
 alias cfi='cd $(find . -type d -path "./.git" -prune -o -type d -not -path "*/\.*" -print | fzf --reverse --preview "ls --color {}")'
-# cf is find all
-alias cf='cd $(fd --type d --hidden --exclude .git | fzf --reverse --preview "ls --color {}")'
+# cf uses the nix-managed cf program for fuzzy directory navigation
+alias cf='cd $(command cf)'
 alias git-reset='git checkout main && git pull'
 
 alias nvimf='nvim "$(fzf --preview "bat --color=always {}")"'

@@ -1,52 +1,23 @@
 {
-  description = "Rust + Python development environment";
+  description = "CUDA development environment";
+
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = inputs @ {
-    self,
+  outputs = {
     nixpkgs,
     flake-utils,
-    rust-overlay,
+    ...
   }:
-    flake-utils.lib.eachSystem ["x86_64-linux" "aarch64-linux" "aarch64-darwin"] (
+    flake-utils.lib.eachSystem ["x86_64-linux"] (
       system: let
-        overlays = [(import rust-overlay)];
         pkgs = import nixpkgs {
-          inherit system overlays;
+          inherit system;
           config.allowUnfree = true;
         };
-
-        rustToolchain = pkgs.rust-bin.stable.latest.default.override {
-          extensions = ["rust-src" "clippy" "rustfmt"];
-        };
-
-        # Platform-specific packages
-        linuxPackages = pkgs.lib.optionals pkgs.stdenv.isLinux [
-          pkgs.libGL
-          pkgs.mesa
-          pkgs.xorg.libX11
-          pkgs.xorg.libXrandr
-          pkgs.xorg.libXinerama
-          pkgs.xorg.libXcursor
-          pkgs.xorg.libXi
-        ];
-
-        darwinPackages = pkgs.lib.optionals pkgs.stdenv.isDarwin [
-          pkgs.libiconv
-          pkgs.darwin.apple_sdk.frameworks.CoreFoundation
-          pkgs.darwin.apple_sdk.frameworks.CoreServices
-          pkgs.darwin.apple_sdk.frameworks.Foundation
-          pkgs.darwin.apple_sdk.frameworks.Security
-          pkgs.darwin.apple_sdk.frameworks.SystemConfiguration
-        ];
 
         rooted = exec:
           builtins.concatStringsSep "\n"
@@ -59,73 +30,6 @@
           dx = {
             exec = rooted ''$EDITOR "$REPO_ROOT"/flake.nix'';
             description = "Edit flake.nix";
-          };
-          cx = {
-            exec = rooted ''$EDITOR "$REPO_ROOT"/Cargo.toml'';
-            description = "Edit Cargo.toml";
-          };
-          px = {
-            exec = rooted ''$EDITOR "$REPO_ROOT"/pyproject.toml'';
-            description = "Edit pyproject.toml";
-          };
-          clean = {
-            exec = ''git clean -fdx'';
-            description = "Clean project";
-          };
-          lint-python = {
-            exec = rooted ''
-              cd "$REPO_ROOT"
-              ruff check .
-              ruff format --check .
-              mypy . || true
-            '';
-            deps = with pkgs; [ruff mypy];
-            description = "Lint Python code";
-          };
-          lint-rust = {
-            exec = rooted ''
-              cd "$REPO_ROOT"
-              cargo clippy -- -D warnings
-              cargo fmt --check
-            '';
-            deps = [rustToolchain];
-            description = "Lint Rust code";
-          };
-          lint = {
-            exec = rooted ''
-              lint-python
-              lint-rust
-              statix check "$REPO_ROOT"
-              deadnix "$REPO_ROOT"/flake.nix
-              nix flake check
-            '';
-            deps = with pkgs; [statix deadnix ruff mypy] ++ [rustToolchain];
-            description = "Run all linting steps";
-          };
-          build-rust = {
-            exec = rooted ''cd "$REPO_ROOT" && cargo build'';
-            deps = [rustToolchain];
-            description = "Build Rust service";
-          };
-          build-nix = {
-            exec = rooted ''cd "$REPO_ROOT" && nix build'';
-            deps = [];
-            description = "Build with Nix";
-          };
-          run-rust = {
-            exec = rooted ''cd "$REPO_ROOT" && cargo run'';
-            deps = [rustToolchain];
-            description = "Run Rust service";
-          };
-          format = {
-            exec = rooted ''
-              cd "$REPO_ROOT"
-              cargo fmt
-              ruff format .
-              alejandra "$REPO_ROOT"/flake.nix
-            '';
-            deps = with pkgs; [alejandra ruff] ++ [rustToolchain];
-            description = "Format all code";
           };
         };
 
@@ -144,72 +48,77 @@
       in {
         devShells = let
           shellHook = ''
-            echo "🦀 Rust + 🐍 Python development environment"
-            echo "Available commands:"
-            ${pkgs.lib.concatStringsSep "\n" (
-              pkgs.lib.mapAttrsToList (name: script: ''echo "  ${name} - ${script.description}"'') scripts
-            )}
-            echo ""
+            export SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+            export NIX_SSL_CERT_FILE="${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+            export LD_LIBRARY_PATH=/run/opengl-driver/lib:$LD_LIBRARY_PATH
           '';
 
-          env =
-            {
-              RUST_BACKTRACE = "1";
-              DEV = "1";
-              LOCAL = "1";
-            }
-            // pkgs.lib.optionalAttrs pkgs.stdenv.isLinux {
-              LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
-            }
-            // pkgs.lib.optionalAttrs pkgs.stdenv.isDarwin {
-              DYLD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
-            };
+          env = {
+            RUST_BACKTRACE = "1";
+            DEV = "1";
+            LOCAL = "1";
+            PYTHONNOUSERSITE = "1";
+            CUDA_HOME = "${pkgs.cudaPackages.cudatoolkit}";
+            LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:${pkgs.lib.makeLibraryPath [
+              pkgs.stdenv.cc.cc.lib
+              pkgs.cudaPackages.cudatoolkit
+              pkgs.stdenv.cc.cc
+              pkgs.glibc
+              pkgs.glib
+              pkgs.libGL
+              pkgs.openssl
+              pkgs.cacert
+              pkgs.libglvnd
+              pkgs.xorg.libX11
+              pkgs.xorg.libXrandr
+              pkgs.xorg.libXinerama
+              pkgs.xorg.libXcursor
+              pkgs.xorg.libXi
+              pkgs.opencv4
+            ]}";
+          };
 
-          corePackages = [
+          corePackages = with pkgs; [
             # Nix development tools
-            pkgs.alejandra
-            pkgs.nixd
-            pkgs.nil
-            pkgs.statix
-            pkgs.deadnix
+            alejandra
+            nixd
+            nil
+            statix
+            deadnix
           ];
 
-          pythonPackages = [
-            pkgs.uv
-            pkgs.ruff
-            pkgs.mypy
+          systemPackages = with pkgs; [
+            pkg-config
+            protobuf
+            openssl
+            opencv4
+            cacert
+            ninja
+            stdenv.cc
+            libglvnd
           ];
 
-          rustPackages = [
-            rustToolchain
-            pkgs.cargo-watch
-            pkgs.cargo-edit
-          ];
-
-          systemPackages = [
-            pkgs.pkg-config
-            pkgs.protobuf
-            pkgs.openssl
-            pkgs.opencv4
+          # Platform-specific packages
+          linuxPackages = [
+            pkgs.libGL
+            pkgs.mesa
+            pkgs.xorg.libX11
+            pkgs.xorg.libXrandr
+            pkgs.xorg.libXinerama
+            pkgs.xorg.libXcursor
+            pkgs.xorg.libXi
           ];
 
           shell-packages =
             corePackages
-            ++ pythonPackages
-            ++ rustPackages
             ++ systemPackages
             ++ linuxPackages
-            ++ darwinPackages
             ++ builtins.attrValues scriptPackages;
         in {
           default = pkgs.mkShell {
             inherit shellHook env;
             packages = shell-packages;
           };
-        };
-
-        packages = {
-          # Add custom packages here
         };
       }
     );

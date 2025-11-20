@@ -186,15 +186,6 @@ nix fmt
           programs = {
             alejandra.enable = true; # Nix formatter
             prettier.enable = true; # JavaScript/TypeScript formatter
-            biome.enable = true; # Alternative all-in-one formatter
-          };
-          settings = {
-            formatter = {
-              prettier = {
-                options = ["--tab-width" "2" "--print-width" "100"];
-                includes = ["*.ts" "*.tsx" "*.js" "*.jsx" "*.json" "*.md" "*.css" "*.html"];
-              };
-            };
           };
         };
       in

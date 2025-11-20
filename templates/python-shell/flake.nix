@@ -170,24 +170,7 @@ test
           programs = {
             alejandra.enable = true; # Nix formatter
             black.enable = true; # Python formatter
-            isort.enable = true; # Python import sorter
-            ruff.enable = true; # Python linter/formatter
-          };
-          settings = {
-            formatter = {
-              black = {
-                options = ["--line-length" "88"];
-                includes = ["*.py"];
-              };
-              isort = {
-                options = ["--profile" "black"];
-                includes = ["*.py"];
-              };
-              ruff = {
-                options = ["--fix"];
-                includes = ["*.py"];
-              };
-            };
+            ruff-format.enable = true; # Python linter/formatter
           };
         };
       in

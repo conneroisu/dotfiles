@@ -45,11 +45,11 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/determinate-nix-action@v3
 
-      - name: Validate template devShells evaluate
+      - name: Validate templates with flake check
         run: |
           cd templates
           failed=()
-          
+
           # Dynamically discover all templates with flake.nix
           templates=()
           for dir in */; do
@@ -57,79 +57,35 @@ jobs:
               templates+=("${dir%/}")
             fi
           done
-          
+
           echo "Found ${#templates[@]} templates to validate: ${templates[*]}"
-          
+
           for template in "${templates[@]}"; do
             echo "::group::Checking $template"
-            
-            # Create a temporary directory for testing
-            test_dir=$(mktemp -d)
-            
-            # Copy template to temp directory (including hidden files)
-            cp -r "$template"/. "$test_dir/"
-            
-            cd "$test_dir"
-            
-            # Try to evaluate the devShell
-            if nix eval .#devShells.${{ matrix.system }}.default --apply 'x: "success"' 2>&1; then
-              echo "✓ $template devShell evaluation succeeded"
-            else
-              echo "✗ $template devShell evaluation failed"
-              failed+=("$template")
-            fi
-            
-            cd - > /dev/null
-            rm -rf "$test_dir"
-            echo "::endgroup::"
-          done
-          
-          if [ ${#failed[@]} -ne 0 ]; then
-            echo "::error::The following templates failed devShell evaluation: ${failed[*]}"
-            exit 1
-          fi
 
-      - name: Validate template devShells build
-        run: |
-          cd templates
-          failed=()
-          
-          # Dynamically discover all templates with flake.nix
-          templates=()
-          for dir in */; do
-            if [ -f "$dir/flake.nix" ]; then
-              templates+=("${dir%/}")
-            fi
-          done
-          
-          echo "Found ${#templates[@]} templates to validate: ${templates[*]}"
-          
-          for template in "${templates[@]}"; do
-            echo "::group::Building $template devShell"
-            
             # Create a temporary directory for testing
             test_dir=$(mktemp -d)
-            
+
             # Copy template to temp directory (including hidden files)
             cp -r "$template"/. "$test_dir/"
-            
+
             cd "$test_dir"
-            
-            # Try to build the devShell
-            if nix build .#devShells.${{ matrix.system }}.default 2>&1; then
-              echo "✓ $template devShell build succeeded"
+
+            # Run nix flake check
+            if nix flake check 2>&1; then
+              echo "✓ $template flake check succeeded"
             else
-              echo "✗ $template devShell build failed"
+              echo "✗ $template flake check failed"
               failed+=("$template")
             fi
-            
+
             cd - > /dev/null
             rm -rf "$test_dir"
             echo "::endgroup::"
           done
-          
+
           if [ ${#failed[@]} -ne 0 ]; then
-            echo "::error::The following templates failed devShell build: ${failed[*]}"
+            echo "::error::The following templates failed flake check: ${failed[*]}"
             exit 1
           fi
 

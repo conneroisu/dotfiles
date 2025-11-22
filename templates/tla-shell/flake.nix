@@ -74,7 +74,6 @@
 
             # Formal tools
             tlaplus
-            tlaplusToolbox
             alloy
             graphviz
 
@@ -89,6 +88,10 @@
             fd
             ripgrep
           ])
+          ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+            # Linux-only formal tools
+            tlaplusToolbox
+          ]
           ++ builtins.attrValues scriptPackages;
 
         shellHook = ''

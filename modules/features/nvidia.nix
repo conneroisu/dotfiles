@@ -90,7 +90,7 @@ in
     nixos.ifEnabled = {myconfig, ...}: {
       # Load nvidia driver for Xorg and Wayland
       hardware = {
-        nvidia-container-toolkit.enable = true;
+        # nvidia-container-toolkit.enable = true;
         nvidia = {
           open = false;
           prime = {

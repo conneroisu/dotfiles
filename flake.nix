@@ -3,11 +3,11 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    zen-browser.url = "github:conneroisu/zen-browser-flake";
+    zen-browser.url = "github:connerohnesorge/zen-browser-flake";
     proton-authenticator.url = "github:conneroisu/proton-authenticator-flake?ref=0494e1b70724861b4f8e2fb314b744e0591dfbb5";
     proton-authenticator.inputs.nixpkgs.follows = "nixpkgs";
 
-    spectr.url = "github:conneroisu/spectr";
+    spectr.url = "github:connerohnesorge/spectr";
     spectr.inputs.nixpkgs.follows = "nixpkgs";
 
     conclaude.url = "github:connix-io/conclaude";
@@ -20,11 +20,11 @@
     };
 
     kiro-flake = {
-      url = "github:conneroisu/kiro-flake";
+      url = "github:connerohnesorge/kiro-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nordvpn.url = "github:conneroisu/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
+    nordvpn.url = "github:connerohnesorge/nordvpn-flake/?ref=0d524b475205d8a69cd7e954580c49493ac6156a";
     nordvpn.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";

@@ -149,7 +149,6 @@ nix fmt
             # Debugging and Profiling
             gdb
             lldb
-            rr # Record and replay debugger
 
             # Testing Frameworks
             gtest
@@ -184,6 +183,7 @@ nix fmt
           ]
           ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
             # Linux-specific tools
+            rr # Record and replay debugger (Linux only)
             hotspot # GUI for perf (Linux only)
             heaptrack # Heap profiler (Linux only)
             valgrind

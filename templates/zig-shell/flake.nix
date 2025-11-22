@@ -134,7 +134,10 @@ nix fmt
             zigpkgs.master # Zig Tools
             lldb # Debugger
             gdb # Alternative debugger
-            valgrind # Memory debugging
+          ]
+          ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+            # Linux-only debugging tools
+            valgrind # Memory debugging (Linux only)
           ]
           ++ [
             zls.packages.${system}.zls # Zig Language Server

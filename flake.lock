@@ -1104,15 +1104,15 @@
         "treefmt-nix": "treefmt-nix_2"
       },
       "locked": {
-        "lastModified": 1762458618,
-        "narHash": "sha256-q+kKewtZJNl7Qy7NCo2z48Hi9y7RQXmXFs7ayFU+Ssc=",
-        "owner": "conneroisu",
+        "lastModified": 1763672406,
+        "narHash": "sha256-4C6AlGiM8HF5Uyhj48xshRjAHdv417pD8CXO+JdzyMY=",
+        "owner": "connerohnesorge",
         "repo": "kiro-flake",
-        "rev": "19b01520c0bf15e57365ed81d3ef331a233f9542",
+        "rev": "4f064c681ece75f32d63c53a8cb695a1b1b94781",
         "type": "github"
       },
       "original": {
-        "owner": "conneroisu",
+        "owner": "connerohnesorge",
         "repo": "kiro-flake",
         "type": "github"
       }
@@ -1555,13 +1555,13 @@
       "locked": {
         "lastModified": 1750683275,
         "narHash": "sha256-nBAmMW/ASUx06DUigh1cKOhLbCNWqV5sF/KbkOBi0qg=",
-        "owner": "conneroisu",
+        "owner": "connerohnesorge",
         "repo": "nordvpn-flake",
         "rev": "0d524b475205d8a69cd7e954580c49493ac6156a",
         "type": "github"
       },
       "original": {
-        "owner": "conneroisu",
+        "owner": "connerohnesorge",
         "ref": "0d524b475205d8a69cd7e954580c49493ac6156a",
         "repo": "nordvpn-flake",
         "type": "github"
@@ -1753,15 +1753,15 @@
         "treefmt-nix": "treefmt-nix_4"
       },
       "locked": {
-        "lastModified": 1763593452,
-        "narHash": "sha256-wNaRuNGN5S3tWTRC57X16/O611qqum9Q4A9ivLEzI4o=",
-        "owner": "conneroisu",
+        "lastModified": 1763665850,
+        "narHash": "sha256-CyWh3eO4eBCRzcCIK4nHCHnb6bnl10jwrGvGaUeClac=",
+        "owner": "connerohnesorge",
         "repo": "spectr",
-        "rev": "65d1ed60d330c563377d08ea1cbbe8d57f70a9c5",
+        "rev": "ac9c2fe131a035468200c5ce3c0d6ef985afc607",
         "type": "github"
       },
       "original": {
-        "owner": "conneroisu",
+        "owner": "connerohnesorge",
         "repo": "spectr",
         "type": "github"
       }
@@ -2221,15 +2221,15 @@
         "nixpkgs": "nixpkgs_9"
       },
       "locked": {
-        "lastModified": 1763486226,
-        "narHash": "sha256-bACdJ1IaVYYye4SHPaywaaHu5MGZ2kbzJ0WbU9JaKmA=",
-        "owner": "conneroisu",
+        "lastModified": 1763667706,
+        "narHash": "sha256-f6j5wi8p0wpvoKQY4DxPnK27qei7+kaphmfpKCW/2jw=",
+        "owner": "connerohnesorge",
         "repo": "zen-browser-flake",
-        "rev": "56f1538e65dbdff235a4d804028f4e711657af63",
+        "rev": "7d9f9c6402676ce799893f2f088f3c7a0a12bef4",
         "type": "github"
       },
       "original": {
-        "owner": "conneroisu",
+        "owner": "connerohnesorge",
         "repo": "zen-browser-flake",
         "type": "github"
       }
